@@ -1,0 +1,14 @@
+{
+  "type": "object",
+  "properties": {
+    "concept": {
+      "x-fromUrl": "api/v1/vocabulary",
+      "x-itemKey": "id",
+      "type": "object",
+      "properties": {
+        "id": {"type": "string"},
+        "title": {"type": "string"}
+      }
+    }
+  }
+}
