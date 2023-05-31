@@ -1,6 +1,97 @@
 {
+  "masterData": {
+    "id": "dataset:sirene-etablissements-test--masterData_singleSearch_sirene-etab",
+    "title": "test sirene etab",
+    "remoteService": {
+      "id": "dataset:sirene-etablissements-test",
+      "server": "http://localhost:5888/data-fair/api/v1/datasets/sirene-etablissements-test"
+    },
+    "action": {
+      "id": "masterData_singleSearch_sirene-etab",
+      "operation": {
+        "path": "/master-data/single-searchs/sirene-etab",
+        "method": "get"
+      },
+      "input": [],
+      "inputCollection": false,
+      "inputBodyTypes": null,
+      "output": [
+        {
+          "name": "output",
+          "concept": "http://dbpedia.org/ontology/siren",
+          "type": "string",
+          "title": "Propriété à retourner",
+          "x-refersTo": "http://dbpedia.org/ontology/siren"
+        },
+        {
+          "name": "_score",
+          "concept": null,
+          "type": "number",
+          "title": "Pertinence du résultat"
+        },
+        {
+          "name": "label",
+          "concept": "http://www.w3.org/2000/01/rdf-schema#label",
+          "type": "string",
+          "title": "Propriété utilisée pour représenter les résultats",
+          "x-refersTo": "http://www.w3.org/2000/01/rdf-schema#label"
+        }
+      ],
+      "outputCollection": false,
+      "outputBodyTypes": [
+        "application/json"
+      ],
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "output": {
+            "type": "string",
+            "title": "Propriété à retourner",
+            "x-refersTo": "http://dbpedia.org/ontology/siren"
+          },
+          "_score": {
+            "type": "number",
+            "title": "Pertinence du résultat"
+          },
+          "label": {
+            "type": "string",
+            "title": "Propriété utilisée pour représenter les résultats",
+            "x-refersTo": "http://www.w3.org/2000/01/rdf-schema#label"
+          }
+        }
+      },
+      "summary": "test sirene etab",
+      "type": "http://schema.org/SearchAction",
+      "canUse": true
+    }
+  },
   "concept": {
-    "id": "address",
-    "title": "Adresse"
-  }
+    "id": "siren",
+    "identifiers": [
+      "http://dbpedia.org/ontology/siren"
+    ],
+    "title": "SIREN"
+  },
+  "sections": [
+    {
+      "elements": [
+        {
+          "type": "tablePreview",
+          "dataset": {
+            "id": "dvf-vannes-562603",
+            "title": "DVF Vannes 56260 3"
+          }
+        },
+        {
+          "type": "application",
+          "application": {
+            "id": "origine-des-nouveaux-arrivants-2017-diagramme-de-sankey",
+            "title": "Origine des nouveaux arrivants 2017"
+          }
+        }
+      ],
+      "title": "test",
+      "description": "bla bla"
+    }
+  ]
 }

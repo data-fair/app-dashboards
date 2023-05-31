@@ -2,12 +2,82 @@
   "type": "object",
   "properties": {
     "concept": {
+      "title": "Concept principal",
+      "description": "Sert de filtre commun à toutes les applications rendues dans ce dashboard.",
       "x-fromUrl": "api/v1/vocabulary",
       "x-itemKey": "id",
       "type": "object",
       "properties": {
         "id": {"type": "string"},
+        "identifiers": {"type": "array"},
         "title": {"type": "string"}
+      }
+    },
+    "masterData": {
+      "title": "Source des valeurs pour le concept principal",
+      "x-fromUrl": "api/v1/remote-services-actions?q={q}&output-concepts={parent.value.concept.identifiers[0}&{context.remoteServiceFilter}&inputCollection=false&select=id,server,actions.operation,actions.input,actions.output",
+      "x-itemsProp": "results",
+      "x-itemKey": "id",
+      "x-itemTitle": "title",
+      "x-if": "parent.value.concept",
+      "type": "object",
+      "properties": {
+        "id": {"type": "string"},
+        "title": {"type": "string"},
+        "remoteService": {"type": "object"},
+        "action": {"type": "object"}
+      }
+    },
+    "sections": {
+      "title": "Sections",
+      "type": "array",
+      "x-options": {"editMode": "inline"},
+      "items": {
+        "type": "object",
+        "properties": {
+          "title": { "type": "string" },
+          "description": { "type": "string" },
+          "elements": {
+            "title": "Éléments",
+            "type": "array",
+            "items": {
+              "type": "object",
+              "oneOf": [{
+                "title": "Prévisualisation table",
+                "properties": {
+                  "type": { "const": "tablePreview", "title": "Type de l'élément" },
+                  "dataset": {
+                    "type": "object",
+                    "x-fromUrl": "api/v1/datasets?q={q}&concept={modelRoot.concept.identifiers[0}&{context.datasetFilter}&select=id,title",
+                    "x-itemKey": "id",
+                    "x-itemTitle": "title",
+                    "x-itemsProp": "results",
+                    "properties": {
+                      "id": {"type": "string"},
+                      "title": {"type": "string"}
+                    }
+                  }
+                }
+              }, {
+                "title": "Visualisation",
+                "properties": {
+                  "type": { "const": "application", "title": "Type de l'élément" },
+                  "application": {
+                    "type": "object",
+                    "x-fromUrl": "api/v1/applications?q={q}&{context.datasetFilter}&syncState=true&filterConcepts=true&select=id,title",
+                    "x-itemKey": "id",
+                    "x-itemTitle": "title",
+                    "x-itemsProp": "results",
+                    "properties": {
+                      "id": {"type": "string"},
+                      "title": {"type": "string"}
+                    }
+                  }
+                }
+              }]
+            }
+          }
+        }
       }
     }
   }
