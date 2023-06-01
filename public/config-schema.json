@@ -15,11 +15,11 @@
     },
     "masterData": {
       "title": "Source des valeurs pour le concept principal",
-      "x-fromUrl": "api/v1/remote-services-actions?q={q}&output-concepts={parent.value.concept.identifiers[0}&{context.remoteServiceFilter}&inputCollection=false&select=id,server,actions.operation,actions.input,actions.output",
+      "x-fromUrl": "api/v1/remote-services-actions?q={q}&output-concepts={modelRoot.concept.id}&{context.remoteServiceFilter}&inputCollection=false&select=id,server,actions.operation,actions.input,actions.output",
       "x-itemsProp": "results",
       "x-itemKey": "id",
       "x-itemTitle": "title",
-      "x-if": "parent.value.concept",
+      "x-if": "modelRoot.concept",
       "type": "object",
       "properties": {
         "id": {"type": "string"},
@@ -48,7 +48,7 @@
                   "type": { "const": "tablePreview", "title": "Type de l'élément" },
                   "dataset": {
                     "type": "object",
-                    "x-fromUrl": "api/v1/datasets?q={q}&concept={modelRoot.concept.identifiers[0}&{context.datasetFilter}&select=id,title",
+                    "x-fromUrl": "api/v1/datasets?q={q}&short-concept={modelRoot.concept.id}&{context.datasetFilter}&select=id,title",
                     "x-itemKey": "id",
                     "x-itemTitle": "title",
                     "x-itemsProp": "results",
