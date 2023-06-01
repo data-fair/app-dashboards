@@ -3,7 +3,9 @@ const props = defineProps({
   concept: { type: Object, required: true },
   masterData: { type: Object, required: true }
 })
-defineEmits(['update:model-value'])
+const emit = defineEmits(['update:model-value'])
+const route = useRoute()
+const router = useRouter()
 
 const labelOutput = props.masterData.action.output.find(o => o.concept === 'http://www.w3.org/2000/01/rdf-schema#label')
 const keyOutput = props.masterData.action.output.find(o => o.concept && o.concept !== 'http://www.w3.org/2000/01/rdf-schema#label')
@@ -19,6 +21,30 @@ const searchItems = async (search) => {
   items.value = res.results
 }
 searchItems('')
+
+const conceptParamKey = `_c_${props.concept.id}_in`
+if (route.query[conceptParamKey]) {
+  console.log('existing value ?')
+  const res = await $fetch(props.masterData.remoteService.server + props.masterData.action.operation.path, {
+    params: { q: route.query[conceptParamKey] }
+  })
+  console.log(res)
+  const result = res.results.find(r => r[keyOutput.name] === route.query[conceptParamKey])
+  if (result) {
+    value.value = result
+  }
+}
+
+const setValue = (value) => {
+  emit('update:model-value', value)
+  const newQuery = { ...route.query }
+  if (value) {
+    newQuery[conceptParamKey] = value[keyOutput.name]
+  } else {
+    delete newQuery[conceptParamKey]
+  }
+  router.replace({ query: newQuery })
+}
 </script>
 
 <template>
@@ -35,6 +61,6 @@ searchItems('')
     :label="concept.title"
     :clearable="true"
     @update:search="search => searchItems(search)"
-    @update:model-value="value => $emit('update:model-value', value)"
+    @update:model-value="setValue"
   />
 </template>
