@@ -1,6 +1,6 @@
 {
   "name": "@data-fair/app-dashboards",
-  "version": "0.0.1-staging.1",
+  "version": "0.0.1-staging.2",
   "scripts": {
     "dev": "DATAFAIR_URL=https://staging-koumoul.com/data-fair DATAFAIR_OWNER_ID=jxKDdH3lR df-dev-server",
     "dev-src": "nuxt dev",
