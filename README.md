@@ -49,4 +49,5 @@ To publish a version for testing purposes you can tag it as a pre-release and pu
     npm version prerelease --preid=staging
     npm publish --tag staging
     curl https://purge.jsdelivr.net/npm/@data-fair/app-dashboards@staging/dist/index.html
+    curl https://purge.jsdelivr.net/npm/@data-fair/app-dashboards@staging/dist/config-schema.json
     git push && git push --tags
