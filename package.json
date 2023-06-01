@@ -4,7 +4,8 @@
   "scripts": {
     "dev": "DATAFAIR_URL=https://staging-koumoul.com/data-fair DATAFAIR_OWNER_ID=jxKDdH3lR df-dev-server",
     "dev-src": "nuxt dev",
-    "prepublishOnly": "rm -rf dist && PUBLIC_URL=https://cdn.jsdelivr.net/npm/@data-fair/app-dashboards@${npm_package_version}/dist nuxt generate && rm dist && cp -rf .output/public ./dist",
+    "build": "rm -rf dist && PUBLIC_URL=https://cdn.jsdelivr.net/npm/@data-fair/app-dashboards@${npm_package_version}/dist nuxt generate && rm dist && cp -rf .output/public ./dist",
+    "prepublishOnly": "npm run build",
     "lint": "eslint . --fix"
   },
   "files": [

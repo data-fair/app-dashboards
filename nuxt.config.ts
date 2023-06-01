@@ -5,7 +5,7 @@ import vuetify from 'vite-plugin-vuetify'
 export default defineNuxtConfig({
   ssr: false,
   app: {
-    // cdnURL: process.env.PUBLIC_URL + '/_nuxt/',
+    cdnURL: process.env.PUBLIC_URL,
     head: {
       title: 'Dashboards'
     }
