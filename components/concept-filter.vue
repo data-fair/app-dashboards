@@ -1,49 +1,51 @@
 <script setup>
 const props = defineProps({
-  concept: { type: Object, required: true },
-  masterData: { type: Object, required: true }
+  dataset: { type: Object, required: true },
+  labelField: { type: Object, required: true },
+  conceptsFields: { type: Array, required: true }
 })
 const emit = defineEmits(['update:model-value'])
 const route = useRoute()
 const router = useRouter()
-
-const labelOutput = props.masterData.action.output.find(o => o.concept === 'http://www.w3.org/2000/01/rdf-schema#label')
-const keyOutput = props.masterData.action.output.find(o => o.concept && o.concept !== 'http://www.w3.org/2000/01/rdf-schema#label')
 
 const value = ref('')
 const items = ref([])
 const loading = ref(false)
 
 const searchItems = async (search) => {
-  const res = await $fetch(props.masterData.remoteService.server + props.masterData.action.operation.path, {
-    params: { q: search }
+  const res = await $fetch(props.dataset.href + '/lines', {
+    params: { q: search, select: [props.labelField.key].concat(props.conceptsFields.map(f => f.key)).join(',') }
   })
   items.value = res.results
 }
 searchItems('')
 
-const conceptParamKey = `_c_${props.concept.id}_in`
-if (route.query[conceptParamKey]) {
-  console.log('existing value ?')
-  const res = await $fetch(props.masterData.remoteService.server + props.masterData.action.operation.path, {
-    params: { q: route.query[conceptParamKey] }
+if (route.query[props.labelField.key]) {
+  const res = await $fetch(props.dataset.href + '/lines', {
+    params: { q: route.query[props.labelField.key], select: [props.labelField.key].concat(props.conceptsFields.map(f => f.key)).join(',') }
   })
-  console.log(res)
-  const result = res.results.find(r => r[keyOutput.name] === route.query[conceptParamKey])
+  const result = res.results.find(r => r[props.labelField.key] === route.query[props.labelField.key])
   if (result) {
     value.value = result
+    emit('update:model-value', result)
   }
 }
 
-const setValue = (value) => {
-  emit('update:model-value', value)
+const setValue = (item) => {
+  emit('update:model-value', item)
   const newQuery = { ...route.query }
-  if (value) {
-    newQuery[conceptParamKey] = value[keyOutput.name]
+  if (item) {
+    for (const field of props.conceptsFields) {
+      newQuery[`_c_${field['x-concept'].id}_in`] = item[field.key]
+    }
+    newQuery[props.labelField.key] = item[props.labelField.key]
   } else {
-    delete newQuery[conceptParamKey]
+    delete newQuery[props.labelField.key]
+    for (const field of props.conceptsFields) {
+      delete newQuery[`_c_${field['x-concept'].id}_in`]
+    }
   }
-  router.replace({ query: newQuery })
+  router.replace({ path: route.path, query: newQuery })
 }
 </script>
 
@@ -55,10 +57,9 @@ const setValue = (value) => {
     variant="outlined"
     hide-no-data
     hide-details
-    :item-value="keyOutput.name"
-    :item-title="labelOutput.name"
+    :item-title="props.labelField.key"
     return-object
-    :label="concept.title"
+    :label="props.labelField.title"
     :clearable="true"
     @update:search="search => searchItems(search)"
     @update:model-value="setValue"

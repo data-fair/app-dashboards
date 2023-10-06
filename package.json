@@ -2,7 +2,7 @@
   "name": "@data-fair/app-dashboards",
   "version": "0.0.1-staging.4",
   "scripts": {
-    "dev": "DATAFAIR_URL=https://staging-koumoul.com/data-fair DATAFAIR_OWNER_ID=jxKDdH3lR df-dev-server",
+    "dev": "df-dev-server",
     "dev-src": "nuxt dev",
     "build": "rm -rf dist && PUBLIC_URL=https://cdn.jsdelivr.net/npm/@data-fair/app-dashboards@${npm_package_version}/dist nuxt generate && rm dist && cp -rf .output/public ./dist",
     "prepublishOnly": "npm run build",
