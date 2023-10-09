@@ -1,6 +1,6 @@
 {
   "name": "@data-fair/app-dashboards",
-  "version": "0.0.1-staging.4",
+  "version": "0.1.0",
   "scripts": {
     "dev": "df-dev-server",
     "dev-src": "nuxt dev",
