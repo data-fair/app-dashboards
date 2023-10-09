@@ -28,9 +28,9 @@ const widths = {
 </script>
 
 <template>
-  <h2 class="text-h5 mt-8">
+  <h3 class="text-h5 mt-8">
     {{ section.title }}
-  </h2>
+  </h3>
   <p v-if="section.description" class="mt-4">
     {{ section.description }}
   </p>
@@ -43,6 +43,9 @@ const widths = {
       :lg="widths.lg[element.width]"
       :xl="widths.xl[element.width]"
     >
+      <h4 v-if="element.title" class="text-h6 mt-4">
+        {{ element.title }}
+      </h4>
       <v-alert v-if="element.valueMandatory && (!conceptValues || !conceptValues[element.concept.key])" type="info" variant="outlined">
         <h4>Veuillez sélectionner une valeur dans la liste</h4>
       </v-alert>
