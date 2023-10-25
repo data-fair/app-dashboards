@@ -14,7 +14,7 @@ const loading = ref(false)
 
 const searchItems = async (search) => {
   const res = await $fetch(props.dataset.href + '/lines', {
-    params: { q: search, select: [props.labelField.key].concat(props.conceptsFields.map(f => f.key)).join(',') }
+    params: { q: search, select: [props.labelField.key].concat(props.conceptsFields.map(f => f.key)).join(','), q_mode: 'complete' }
   })
   items.value = res.results
 }
