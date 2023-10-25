@@ -55,12 +55,12 @@ const setValue = (item) => {
     :loading="loading"
     :items="items"
     variant="outlined"
-    hide-no-data
     hide-details
+    no-data-text="Aucun élément trouvé"
     :item-title="props.labelField.key"
     return-object
     :label="props.labelField.title"
-    :clearable="true"
+    clearable
     style="min-width:280px;"
     @update:search="search => searchItems(search)"
     @update:model-value="setValue"
