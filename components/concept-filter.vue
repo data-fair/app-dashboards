@@ -22,7 +22,7 @@ searchItems('')
 
 if (route.query[props.labelField.key]) {
   const res = await $fetch(props.dataset.href + '/lines', {
-    params: { q: route.query[props.labelField.key], select: [props.labelField.key].concat(props.conceptsFields.map(f => f.key)).join(',') }
+    params: { q: route.query[props.labelField.key], select: [props.labelField.key].concat(props.conceptsFields.map(f => f.key)).join(','), q_mode: 'complete' }
   })
   const result = res.results.find(r => r[props.labelField.key] === route.query[props.labelField.key])
   if (result) {
@@ -61,6 +61,7 @@ const setValue = (item) => {
     return-object
     :label="props.labelField.title"
     :clearable="true"
+    style="min-width:280px;"
     @update:search="search => searchItems(search)"
     @update:model-value="setValue"
   />

@@ -157,13 +157,14 @@
                   },
                   "application": {
                     "type": "object",
-                    "x-fromUrl": "api/v1/applications?q={q}&{context.datasetFilter}&syncState=true&filterConcepts=true&select=id,title",
+                    "x-fromUrl": "api/v1/applications?q={q}&{context.datasetFilter}&filterConcepts=true&select=id,title,baseApp",
                     "x-itemKey": "id",
                     "x-itemTitle": "title",
                     "x-itemsProp": "results",
                     "properties": {
                       "id": {"type": "string"},
-                      "title": {"type": "string"}
+                      "title": {"type": "string"},
+                      "baseApp":{"type": "object"}
                     }
                   }
                 }
