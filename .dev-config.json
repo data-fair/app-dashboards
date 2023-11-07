@@ -3,55 +3,53 @@
     {
       "elements": [
         {
-          "width": "full",
-          "title": "Titre visu 1",
+          "width": "medium",
+          "display": "table",
+          "valueMandatory": true,
+          "type": "tablePreview",
+          "dataset": {
+            "id": "icpe",
+            "title": "Installations Classées pour la Protection de l’Environnement"
+          },
           "concept": {
-            "key": "dep",
-            "label": "Département",
+            "key": "code_aiot",
+            "label": "code_aiot",
             "x-concept": {
-              "id": "codeDepartement",
-              "title": "Code département",
+              "id": "code-aiot",
+              "title": "Code AIOT",
+              "primary": true
+            }
+          }
+        },
+        {
+          "width": "medium",
+          "display": "table",
+          "valueMandatory": true,
+          "type": "tablePreview",
+          "concept": {
+            "key": "nom_ets",
+            "label": "nom_ets",
+            "x-concept": {
+              "id": "label",
+              "title": "Libellé",
               "primary": true
             }
           },
-          "type": "application",
-          "valueMandatory": true,
-          "application": {
-            "id": "accidents-de-velo-proportions",
-            "title": "Gravité des accidents de vélo en fonction des situations",
-            "baseApp": {
-              "id": "https:koumoul.comappsdata-fair-proportions1.0",
-              "url": "https://koumoul.com/apps/data-fair-proportions/1.0/",
-              "meta": {
-                "title": "Comparaison de proportions",
-                "description": "Cette application permet de faire des comparaisons.",
-                "keywords": [],
-                "charset": "utf-8",
-                "viewport": "width=device-width,initial-scale=1",
-                "df:overflow": "false",
-                "df:sync-state": "false",
-                "df:capture-width": "1024",
-                "df:capture-height": "768",
-                "df:filter-concepts": "true",
-                "application-name": "Comparaison de proportions",
-                "version": "1.0"
-              }
-            }
+          "dataset": {
+            "id": "icpe",
+            "title": "Installations Classées pour la Protection de l’Environnement"
           }
         }
       ],
-      "title": "section1",
-      "height": 400,
-      "description": "Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
+      "height": 400
     }
   ],
   "datasets": [
     {
-      "href": "http://localhost:5888/data-fair/api/v1/datasets/etablissements-finess-france",
-      "title": "Liste des établissements du domaine sanitaire et social",
-      "id": "etablissements-finess-france"
+      "href": "http://localhost:5888/data-fair/api/v1/datasets/icpe",
+      "title": "Installations Classées pour la Protection de l’Environnement",
+      "id": "icpe"
     }
   ],
-  "title": "Titre global",
-  "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
+  "labelField": "nom_ets"
 }

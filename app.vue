@@ -14,7 +14,7 @@ const dataset = await $fetch(config.datasets[0].href)
 const labelField = dataset.schema.find(f => f.key === config.labelField || f['x-refersTo'] === 'http://www.w3.org/2000/01/rdf-schema#label')
 
 const conceptsFields = [].concat(...config.sections.map(s => [].concat(...s.elements.filter(e => e.concept).map(e => e.concept)))).filter((e1, i, s) => s.findIndex(e2 => e1.key === e2.key) === i)
-const paramFields = [labelField.key].concat(conceptsFields.map(f => `_c_${f['x-concept'].id}_in`))
+const paramFields = [labelField.key].concat(conceptsFields.map(f => `_c_${f['x-concept'].id}_eq`))
 const conceptValues = ref(null)
 </script>
 

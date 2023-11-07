@@ -36,13 +36,13 @@ const setValue = (item) => {
   const newQuery = { ...route.query }
   if (item) {
     for (const field of props.conceptsFields) {
-      newQuery[`_c_${field['x-concept'].id}_in`] = item[field.key]
+      newQuery[`_c_${field['x-concept'].id}_eq`] = item[field.key]
     }
     newQuery[props.labelField.key] = item[props.labelField.key]
   } else {
     delete newQuery[props.labelField.key]
     for (const field of props.conceptsFields) {
-      delete newQuery[`_c_${field['x-concept'].id}_in`]
+      delete newQuery[`_c_${field['x-concept'].id}_eq`]
     }
   }
   router.replace({ path: route.path, query: newQuery })

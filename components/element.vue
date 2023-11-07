@@ -4,7 +4,7 @@ const props = defineProps({
   paramFields: { type: Array, required: true },
   height: { type: Number, default: 400 }
 })
-const conceptParamKey = props.element.concept && `_c_${props.element.concept['x-concept'].id}_in`
+const conceptParamKey = props.element.concept && `_c_${props.element.concept['x-concept'].id}_eq`
 </script>
 
 <template>
