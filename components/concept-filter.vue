@@ -47,6 +47,7 @@ const setValue = (item) => {
   }
   router.replace({ path: route.path, query: newQuery })
 }
+console.log(props.labelField)
 </script>
 
 <template>
@@ -59,7 +60,7 @@ const setValue = (item) => {
     no-data-text="Aucun élément trouvé"
     :item-title="props.labelField.key"
     return-object
-    :label="props.labelField.title"
+    :label="props.labelField.title || props.labelField['x-originalName'] || props.labelField.key"
     clearable
     style="min-width:280px;"
     @update:search="search => searchItems(search)"

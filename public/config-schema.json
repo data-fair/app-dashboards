@@ -50,6 +50,20 @@
       "title": "Introduction",
       "x-display": "textarea"
     },
+    "sectionsGroup": {
+      "title": "Rendu des sections",
+      "type": "string",
+      "oneOf": [{
+          "const": "flow",
+          "title": "A la suite les unes des autres"
+        },
+        {
+          "const": "tabs",
+          "title": "Dans des onglets"
+        }
+      ],
+      "default": "flow"
+    },
     "sections": {
       "title": "Sections",
       "type": "array",
@@ -74,7 +88,7 @@
                 "width": {
                   "title": "Largeur",
                   "type": "string",
-                    "oneOf": [{
+                  "oneOf": [{
                       "const": "small",
                       "title": "Fin"
                     },

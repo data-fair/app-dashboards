@@ -2,7 +2,8 @@
 defineProps({
   section: { type: Object, required: true },
   paramFields: { type: Array, required: true },
-  conceptValues: { type: [Object, null], required: true }
+  conceptValues: { type: [Object, null], required: true },
+  hideTitle: { type: Boolean, default: false }
 })
 
 const widths = {
@@ -28,7 +29,7 @@ const widths = {
 </script>
 
 <template>
-  <h3 class="text-h5 mt-8">
+  <h3 v-if="!hideTitle" class="text-h5 mt-8">
     {{ section.title }}
   </h3>
   <p v-if="section.description" class="mt-4">

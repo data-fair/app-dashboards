@@ -23,6 +23,7 @@ if (!route.query[labelField.key] && config.startValue) {
 const conceptsFields = [].concat(...config.sections.map(s => [].concat(...s.elements.filter(e => e.concept).map(e => e.concept)))).filter((e1, i, s) => s.findIndex(e2 => e1.key === e2.key) === i)
 const paramFields = [labelField.key].concat(conceptsFields.map(f => `_c_${f['x-concept'].id}_eq`))
 const conceptValues = ref(null)
+const tab = ref(null)
 </script>
 
 <template>
@@ -40,6 +41,38 @@ const conceptValues = ref(null)
       </v-col>
       <v-spacer />
     </v-row>
-    <dashboard-section v-for="(section, i) of (config.sections || [])" :key="i" :section="section" :param-fields="paramFields" :concept-values="conceptValues" />
+    <template v-if="sectionsGroup === tabs">
+      <v-tabs
+        v-model="tab"
+        class="mb-3"
+        grow
+      >
+        <v-tab
+          v-for="(section, i) of (config.sections || [])"
+          :key="i"
+          :value="i"
+        >
+          {{ section.title }}
+        </v-tab>
+      </v-tabs>
+
+      <v-window v-model="tab">
+        <v-window-item
+          v-for="(section, i) of (config.sections || [])"
+          :key="i"
+          :value="i"
+        >
+          <dashboard-section :section="section" :param-fields="paramFields" :concept-values="conceptValues" hide-title />
+        </v-window-item>
+      </v-window>
+    </template>
+    <dashboard-section
+      v-for="(section, i) of (config.sections || [])"
+      v-else
+      :key="i"
+      :section="section"
+      :param-fields="paramFields"
+      :concept-values="conceptValues"
+    />
   </v-container>
 </template>

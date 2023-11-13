@@ -41,7 +41,13 @@
           }
         }
       ],
-      "height": 400
+      "height": 400,
+      "title": "tab 1"
+    },
+    {
+      "elements": [],
+      "height": 400,
+      "title": "tab 2"
     }
   ],
   "datasets": [
@@ -53,5 +59,6 @@
   ],
   "labelField": "nom_ets",
   "forceOneValue": true,
-  "startValue": "(Mme WIART  ET M HENRY)"
+  "startValue": "(Mme WIART  ET M HENRY)",
+  "sectionsGroup": "tabs"
 }
