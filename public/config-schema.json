@@ -41,6 +41,11 @@
       "x-fromUrl": "{datasets.0.href}/values/{labelField}?q={q}&q_mode=complete&size=100&stringify=true",
       "x-if": "forceOneValue"
     },
+    "showAllValues":{
+      "title": "Garder toutes les valeurs dans la liste",
+      "type": "boolean",
+      "default": false
+    },
     "title": {
       "type": "string",
       "title": "Titre"

@@ -3,7 +3,7 @@ const props = defineProps({
   dataset: { type: Object, required: true },
   labelField: { type: Object, required: true },
   conceptsFields: { type: Array, required: true },
-  clearable: { type: Boolean, default: true }
+  config: { type: Object, required: true }
 })
 const emit = defineEmits(['update:model-value'])
 const route = useRoute()
@@ -14,9 +14,14 @@ const items = ref([])
 const loading = ref(false)
 
 const searchItems = async (search) => {
-  const res = await $fetch(props.dataset.href + '/lines', {
-    params: { q: search + '*', select: [props.labelField.key].concat(props.conceptsFields.map(f => f.key)).join(','), q_mode: 'complete' }
-  })
+  const params = { select: [props.labelField.key].concat(props.conceptsFields.map(f => f.key)).join(',') }
+  if (!props.config.showAllValues) {
+    params.q = search + '*'
+    params.q_mode = 'complete'
+  } else {
+    params.size = 100
+  }
+  const res = await $fetch(props.dataset.href + '/lines', { params })
   items.value = res.results
 }
 searchItems('')
@@ -38,6 +43,7 @@ if (route.query[props.labelField.key]) {
 }
 
 const setValue = (item) => {
+  if (props.config.forceOneValue && !item) return
   emit('update:model-value', item)
   const newQuery = { ...route.query }
   if (item) {
@@ -66,9 +72,9 @@ const setValue = (item) => {
     :item-title="props.labelField.key"
     return-object
     :label="props.labelField.title || props.labelField['x-originalName'] || props.labelField.key"
-    :clearable="props.clearable"
+    :clearable="!props.config.forceOneValue"
     style="min-width:280px;"
-    @update:search="search => searchItems(search)"
+    @update:search="search => !props.config.showAllValues && searchItems(search)"
     @update:model-value="setValue"
   />
 </template>

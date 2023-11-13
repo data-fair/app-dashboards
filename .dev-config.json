@@ -68,5 +68,6 @@
   "labelField": "nom_ets",
   "forceOneValue": true,
   "startValue": "(Mme WIART  ET M HENRY)",
-  "sectionsGroup": "tabs"
+  "sectionsGroup": "tabs",
+  "showAllValues": true
 }

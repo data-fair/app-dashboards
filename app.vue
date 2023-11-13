@@ -37,7 +37,7 @@ const tab = ref(null)
     <v-row class="mt-3">
       <v-spacer />
       <v-col v-if="conceptsFields" cols="auto">
-        <concept-filter :dataset="dataset" :label-field="labelField" :concepts-fields="conceptsFields" :clearable="!config.forceOneValue" @update:model-value="value => conceptValues = value" />
+        <concept-filter :dataset="dataset" :label-field="labelField" :concepts-fields="conceptsFields" :config="config" @update:model-value="value => conceptValues = value" />
       </v-col>
       <v-spacer />
     </v-row>
