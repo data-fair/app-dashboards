@@ -2,7 +2,8 @@
 const props = defineProps({
   dataset: { type: Object, required: true },
   labelField: { type: Object, required: true },
-  conceptsFields: { type: Array, required: true }
+  conceptsFields: { type: Array, required: true },
+  clearable: { type: Boolean, default: true }
 })
 const emit = defineEmits(['update:model-value'])
 const route = useRoute()
@@ -27,6 +28,11 @@ if (route.query[props.labelField.key]) {
   const result = res.results.find(r => r[props.labelField.key] === route.query[props.labelField.key])
   if (result) {
     value.value = result
+    const newQuery = { ...route.query }
+    for (const field of props.conceptsFields) {
+      newQuery[`_c_${field['x-concept'].id}_eq`] = result[field.key]
+    }
+    router.replace({ path: route.path, query: newQuery })
     emit('update:model-value', result)
   }
 }
@@ -47,7 +53,6 @@ const setValue = (item) => {
   }
   router.replace({ path: route.path, query: newQuery })
 }
-console.log(props.labelField)
 </script>
 
 <template>
@@ -61,7 +66,7 @@ console.log(props.labelField)
     :item-title="props.labelField.key"
     return-object
     :label="props.labelField.title || props.labelField['x-originalName'] || props.labelField.key"
-    clearable
+    :clearable="props.clearable"
     style="min-width:280px;"
     @update:search="search => searchItems(search)"
     @update:model-value="setValue"

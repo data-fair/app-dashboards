@@ -37,11 +37,11 @@ const tab = ref(null)
     <v-row class="mt-3">
       <v-spacer />
       <v-col v-if="conceptsFields" cols="auto">
-        <concept-filter :dataset="dataset" :label-field="labelField" :concepts-fields="conceptsFields" @update:model-value="value => conceptValues = value" />
+        <concept-filter :dataset="dataset" :label-field="labelField" :concepts-fields="conceptsFields" :clearable="!config.forceOneValue" @update:model-value="value => conceptValues = value" />
       </v-col>
       <v-spacer />
     </v-row>
-    <template v-if="sectionsGroup === tabs">
+    <template v-if="config.sectionsGroup === 'tabs'">
       <v-tabs
         v-model="tab"
         class="mb-3"
@@ -52,6 +52,12 @@ const tab = ref(null)
           :key="i"
           :value="i"
         >
+          <template v-if="section.icon">
+            <v-icon>
+              mdi-{{ section.icon.name }}
+            </v-icon>
+            &nbsp;
+          </template>
           {{ section.title }}
         </v-tab>
       </v-tabs>

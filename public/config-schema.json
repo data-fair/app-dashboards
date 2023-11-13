@@ -72,6 +72,24 @@
         "type": "object",
         "properties": {
           "title": { "type": "string" },
+          "icon": {
+            "title": "Icône",
+            "description": "Il est possible de consulter plus facilement la liste des icones disponibles sur <a href=\"https://materialdesignicons.com\" target=\"_blank\">ce site</a>.",
+            "type": "object",
+            "x-fromUrl": "https://koumoul.com/data-fair/api/v1/datasets/icons-mdi/lines?q={q}&size=10000",
+            "x-itemKey": "name",
+            "x-itemTitle": "name",
+            "x-itemIcon": "svg",
+            "x-itemsProp": "results",
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "svg": {
+                "type": "string"
+              }
+            }
+          },
           "description": { "type": "string", "x-display": "textarea" },
           "height": {
             "title": "Hauteur (px)",

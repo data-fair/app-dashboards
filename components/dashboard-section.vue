@@ -30,6 +30,12 @@ const widths = {
 
 <template>
   <h3 v-if="!hideTitle" class="text-h5 mt-8">
+    <template v-if="section.icon">
+      <v-icon>
+        mdi-{{ section.icon.name }}
+      </v-icon>
+      &nbsp;
+    </template>
     {{ section.title }}
   </h3>
   <p v-if="section.description" class="mt-4">
