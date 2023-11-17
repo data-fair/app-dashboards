@@ -135,7 +135,7 @@
                 "title": "Prévisualisation table",
                 "properties": {
                   "type": { "const": "tablePreview", "title": "Type de l'élément" },
-                   "concept": {
+                  "concept": {
                     "title": "Colonne du filtre commun",
                     "x-fromUrl": "{datasets.0.href}/schema?calculated=false&separator=false&concept=true",
                     "x-itemKey": "id",
@@ -186,7 +186,7 @@
                 "title": "Visualisation",
                 "properties": {
                   "type": { "const": "application", "title": "Type de l'élément" },
-                   "concept": {
+                  "concept": {
                     "title": "Colonne du filtre commun",
                     "x-fromUrl": "{datasets.0.href}/schema?calculated=false&separator=false&concept=true",
                     "x-itemKey": "id",

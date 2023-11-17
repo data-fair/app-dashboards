@@ -27,7 +27,7 @@ const tab = ref(null)
 </script>
 
 <template>
-  <v-container v-if="dataset && labelField">
+  <v-container v-if="dataset && labelField" fluid>
     <h2 v-if="config.title" class="text-h4 text-center">
       {{ config.title }}
     </h2>

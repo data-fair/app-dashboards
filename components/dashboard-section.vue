@@ -13,15 +13,21 @@ const widths = {
     large: 12,
     full: 12
   },
-  lg: {
+  md: {
     small: 4,
     medium: 6,
     large: 8,
     full: 12
   },
-  xl: {
+  lg: {
     small: 3,
     medium: 4,
+    large: 6,
+    full: 12
+  },
+  xl: {
+    small: 2,
+    medium: 3,
     large: 6,
     full: 12
   }
@@ -47,6 +53,7 @@ const widths = {
       :key="i"
       :cols="12"
       :sm="widths.sm[element.width]"
+      :md="widths.md[element.width]"
       :lg="widths.lg[element.width]"
       :xl="widths.xl[element.width]"
     >
