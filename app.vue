@@ -1,4 +1,5 @@
 <script setup>
+import 'iframe-resizer/js/iframeResizer'
 const application = window.APPLICATION
 const config = application.configuration
 const setError = (error) => {

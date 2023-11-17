@@ -98,6 +98,7 @@
           "description": { "type": "string", "x-display": "textarea" },
           "height": {
             "title": "Hauteur (px)",
+            "description": "Mettez une valeur négative pour un redimensionnement automatique",
             "type": "integer",
             "default": 400
           },
@@ -154,7 +155,7 @@
                   },
                   "dataset": {
                     "type": "object",
-                    "x-fromUrl": "api/v1/datasets?q={q}&short-concept={parent.parent.value.concept['x-concept'].id}&{context.datasetFilter}&select=id,title",
+                    "x-fromUrl": "api/v1/datasets?q={q}&short-concept={parent.value.concept['x-concept'].id}&{context.datasetFilter}&select=id,title",
                     "x-itemKey": "id",
                     "x-itemTitle": "title",
                     "x-itemsProp": "results",

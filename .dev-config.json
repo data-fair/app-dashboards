@@ -4,19 +4,35 @@
       "elements": [
         {
           "width": "medium",
-          "display": "table",
           "valueMandatory": true,
-          "type": "tablePreview",
-          "dataset": {
-            "id": "icpe",
-            "title": "Installations Classées pour la Protection de l’Environnement"
+          "type": "application",
+          "application": {
+            "id": "8Zkec5VnCSVQ9WG5u78ND",
+            "title": "liste et fiche dashboard",
+            "baseApp": {
+              "id": "https:staging-koumoul.comappslist-detailsmaster",
+              "url": "https://staging-koumoul.com/apps/list-details/master/",
+              "meta": {
+                "title": "Liste et fiches",
+                "description": "Cette application permet de configurer un petit moteur de recherche multicritère et d'avoir une fiche détaillée pour chaque élément.",
+                "keywords": [],
+                "charset": "utf-8",
+                "viewport": "width=device-width,initial-scale=1",
+                "x-capture": "trigger",
+                "df:overflow": "true",
+                "df:sync-state": "true",
+                "df:filter-concepts": "true",
+                "version": "master",
+                "application-name": "Liste et fiches"
+              }
+            }
           },
           "concept": {
-            "key": "code_aiot",
-            "label": "code_aiot",
+            "key": "insee_com",
+            "label": "insee_com",
             "x-concept": {
-              "id": "code-aiot",
-              "title": "Code AIOT",
+              "id": "codeCommune",
+              "title": "Code commune",
               "primary": true
             }
           }
@@ -24,50 +40,75 @@
         {
           "width": "medium",
           "display": "table",
-          "valueMandatory": true,
+          "valueMandatory": false,
           "type": "tablePreview",
           "concept": {
-            "key": "nom_ets",
-            "label": "nom_ets",
+            "key": "insee_com",
+            "label": "insee_com",
             "x-concept": {
-              "id": "label",
-              "title": "Libellé",
+              "id": "codeCommune",
+              "title": "Code commune",
               "primary": true
             }
           },
           "dataset": {
-            "id": "icpe",
-            "title": "Installations Classées pour la Protection de l’Environnement"
+            "id": "demandes-de-valeurs-foncieres-france",
+            "title": "Demandes de valeurs foncières - France"
+          }
+        },
+        {
+          "width": "medium",
+          "valueMandatory": true,
+          "type": "application",
+          "application": {
+            "id": "sitadel-locaux",
+            "title": "Carte des permis de construire et déclarations préalables de locaux depuis 2013 - SITADEL",
+            "baseApp": {
+              "id": "https:koumoul.comappscarto-stats1.0",
+              "url": "https://koumoul.com/apps/carto-stats/1.0/",
+              "meta": {
+                "title": "Carto stats",
+                "description": "Cette application permet de visualiser un grand nombre d'informations spatiales",
+                "keywords": [
+                  "cartographie",
+                  "statistiques"
+                ],
+                "charset": "utf-8",
+                "viewport": "width=device-width,initial-scale=1",
+                "x-capture": "trigger",
+                "df:overflow": "false",
+                "df:sync-state": "true",
+                "df:filter-concepts": "true",
+                "application-name": "Carto stats",
+                "thumbnail": "thumbnail.png",
+                "vocabulary-require": "https://schema.org/box"
+              }
+            }
+          },
+          "concept": {
+            "key": "insee_com",
+            "label": "insee_com",
+            "x-concept": {
+              "id": "codeCommune",
+              "title": "Code commune",
+              "primary": true
+            }
           }
         }
       ],
-      "height": 400,
-      "title": "tab 1",
-      "icon": {
-        "name": "zodiac-taurus",
-        "svg": "<?xml version=\"1.0\" encoding=\"UTF-8\"?><!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 1.1//EN\" \"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd\"><svg xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" version=\"1.1\" id=\"mdi-zodiac-taurus\" width=\"24\" height=\"24\" viewBox=\"0 0 24 24\"><path d=\"M15.59,9C17.7,7.74 19,5.46 19,3H17A5,5 0 0,1 12,8A5,5 0 0,1 7,3H5C5,5.46 6.3,7.74 8.41,9C5.09,11 4,15.28 6,18.6C7.97,21.92 12.27,23 15.59,21C18.91,19.04 20,14.74 18,11.42C17.42,10.43 16.58,9.59 15.59,9M12,20A5,5 0 0,1 7,15A5,5 0 0,1 12,10A5,5 0 0,1 17,15A5,5 0 0,1 12,20Z\" /></svg>"
-      }
-    },
-    {
-      "elements": [],
-      "height": 400,
-      "title": "tab 2",
-      "icon": {
-        "name": "home",
-        "svg": "<?xml version=\"1.0\" encoding=\"UTF-8\"?><!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 1.1//EN\" \"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd\"><svg xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" version=\"1.1\" id=\"mdi-home\" width=\"24\" height=\"24\" viewBox=\"0 0 24 24\"><path d=\"M10,20V14H14V20H19V12H22L12,3L2,12H5V20H10Z\" /></svg>"
-      }
+      "height": 400
     }
   ],
   "datasets": [
     {
-      "href": "http://localhost:5888/data-fair/api/v1/datasets/icpe",
-      "title": "Installations Classées pour la Protection de l’Environnement",
-      "id": "icpe"
+      "href": "http://localhost:5888/data-fair/api/v1/datasets/contours-des-communes",
+      "title": "Contours des communes",
+      "id": "contours-des-communes"
     }
   ],
-  "labelField": "nom_ets",
+  "labelField": "nom_com",
   "forceOneValue": true,
-  "startValue": "(Mme WIART  ET M HENRY)",
   "sectionsGroup": "tabs",
-  "showAllValues": true
+  "showAllValues": true,
+  "startValue": "Vannes"
 }
