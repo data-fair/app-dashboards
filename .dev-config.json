@@ -4,29 +4,9 @@
       "elements": [
         {
           "width": "medium",
-          "valueMandatory": true,
-          "type": "application",
-          "application": {
-            "id": "8Zkec5VnCSVQ9WG5u78ND",
-            "title": "liste et fiche dashboard",
-            "baseApp": {
-              "id": "https:staging-koumoul.comappslist-detailsmaster",
-              "url": "https://staging-koumoul.com/apps/list-details/master/",
-              "meta": {
-                "title": "Liste et fiches",
-                "description": "Cette application permet de configurer un petit moteur de recherche multicritère et d'avoir une fiche détaillée pour chaque élément.",
-                "keywords": [],
-                "charset": "utf-8",
-                "viewport": "width=device-width,initial-scale=1",
-                "x-capture": "trigger",
-                "df:overflow": "true",
-                "df:sync-state": "true",
-                "df:filter-concepts": "true",
-                "version": "master",
-                "application-name": "Liste et fiches"
-              }
-            }
-          },
+          "display": "table",
+          "valueMandatory": false,
+          "type": "tablePreview",
           "concept": {
             "key": "insee_com",
             "label": "insee_com",
@@ -35,6 +15,10 @@
               "title": "Code commune",
               "primary": true
             }
+          },
+          "dataset": {
+            "id": "demandes-de-valeurs-foncieres-france",
+            "title": "Demandes de valeurs foncières - France"
           }
         },
         {
@@ -58,33 +42,9 @@
         },
         {
           "width": "medium",
-          "valueMandatory": true,
-          "type": "application",
-          "application": {
-            "id": "sitadel-locaux",
-            "title": "Carte des permis de construire et déclarations préalables de locaux depuis 2013 - SITADEL",
-            "baseApp": {
-              "id": "https:koumoul.comappscarto-stats1.0",
-              "url": "https://koumoul.com/apps/carto-stats/1.0/",
-              "meta": {
-                "title": "Carto stats",
-                "description": "Cette application permet de visualiser un grand nombre d'informations spatiales",
-                "keywords": [
-                  "cartographie",
-                  "statistiques"
-                ],
-                "charset": "utf-8",
-                "viewport": "width=device-width,initial-scale=1",
-                "x-capture": "trigger",
-                "df:overflow": "false",
-                "df:sync-state": "true",
-                "df:filter-concepts": "true",
-                "application-name": "Carto stats",
-                "thumbnail": "thumbnail.png",
-                "vocabulary-require": "https://schema.org/box"
-              }
-            }
-          },
+          "display": "table",
+          "valueMandatory": false,
+          "type": "tablePreview",
           "concept": {
             "key": "insee_com",
             "label": "insee_com",
@@ -93,10 +53,43 @@
               "title": "Code commune",
               "primary": true
             }
+          },
+          "dataset": {
+            "id": "demandes-de-valeurs-foncieres-france",
+            "title": "Demandes de valeurs foncières - France"
           }
         }
       ],
-      "height": 400
+      "height": 400,
+      "title": "premier",
+      "icon": {
+        "name": "zodiac-libra",
+        "svg": "<?xml version=\"1.0\" encoding=\"UTF-8\"?><!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 1.1//EN\" \"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd\"><svg xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" version=\"1.1\" id=\"mdi-zodiac-libra\" width=\"24\" height=\"24\" viewBox=\"0 0 24 24\"><path d=\"M20,16V18H13V15.91C16,15.36 17.96,12.5 17.41,9.5C16.86,6.5 14,4.54 11,5.09C8,5.65 6.04,8.5 6.59,11.5C7,13.74 8.76,15.5 11,15.91V18H4V16H6.92C5.37,14.59 4.5,12.59 4.5,10.5A7.5,7.5 0 0,1 12,3A7.5,7.5 0 0,1 19.5,10.5C19.5,12.59 18.63,14.59 17.08,16H20M20,19H4V21H20V19Z\" /></svg>"
+      }
+    },
+    {
+      "elements": [ {
+          "width": "full",
+          "display": "table",
+          "valueMandatory": false,
+          "type": "tablePreview",
+          "concept": {
+            "key": "insee_com",
+            "label": "insee_com",
+            "x-concept": {
+              "id": "codeCommune",
+              "title": "Code commune",
+              "primary": true
+            }
+          },
+          "dataset": {
+            "id": "demandes-de-valeurs-foncieres-france",
+            "title": "Demandes de valeurs foncières - France"
+          }
+        }],
+      "height": 400,
+      "title": "deuxieme",
+      "description": "youpi"
     }
   ],
   "datasets": [

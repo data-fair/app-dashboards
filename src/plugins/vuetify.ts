@@ -3,6 +3,8 @@ import { aliases, mdi } from 'vuetify/iconsets/mdi'
 import '@mdi/font/css/materialdesignicons.css'
 import 'vuetify/styles'
 
+const params = new URLSearchParams(window.location.search)
+
 export default defineNuxtPlugin((nuxtApp) => {
   const vuetify = createVuetify({
     ssr: false,
@@ -11,6 +13,16 @@ export default defineNuxtPlugin((nuxtApp) => {
       aliases,
       sets: {
         mdi
+      }
+    },
+    theme: {
+      defaultTheme: 'myCustomTheme',
+      themes: {
+        myCustomTheme: {
+          colors: {
+            primary: params.get('primary') || '#1E88E5'
+          }
+        }
       }
     }
   })

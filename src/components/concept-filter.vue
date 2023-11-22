@@ -1,4 +1,6 @@
 <script setup>
+import { ofetch } from 'ofetch'
+
 const props = defineProps({
   dataset: { type: Object, required: true },
   labelField: { type: Object, required: true },
@@ -14,21 +16,21 @@ const items = ref([])
 const loading = ref(false)
 
 const searchItems = async (search) => {
-  const params = { select: [props.labelField.key].concat(props.conceptsFields.map(f => f.key)).join(',') }
+  const params = { collapse: props.labelField.key, select: [props.labelField.key].concat(props.conceptsFields.map(f => f.key)).join(',') }
   if (!props.config.showAllValues) {
     params.q = search + '*'
     params.q_mode = 'complete'
   } else {
     params.size = 100
   }
-  const res = await $fetch(props.dataset.href + '/lines', { params })
+  const res = await (props.dataset.href + '/lines', { params })
   items.value = res.results
 }
 searchItems('')
 
 if (route.query[props.labelField.key]) {
-  const res = await $fetch(props.dataset.href + '/lines', {
-    params: { q: route.query[props.labelField.key], select: [props.labelField.key].concat(props.conceptsFields.map(f => f.key)).join(','), q_mode: 'complete' }
+  const res = await ofetch(props.dataset.href + '/lines', {
+    params: { q: route.query[props.labelField.key], collapse: props.labelField.key, select: [props.labelField.key].concat(props.conceptsFields.map(f => f.key)).join(','), q_mode: 'complete' }
   })
   const result = res.results.find(r => r[props.labelField.key] === route.query[props.labelField.key])
   if (result) {
