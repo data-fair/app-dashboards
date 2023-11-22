@@ -152,6 +152,7 @@ const tab = ref(null)
         v-for="(section, i) of (config.sections || [])"
         :key="i"
         :value="i"
+        eager
       >
         <v-expansion-panel-title class="bg-primary">
           <h3>

@@ -232,7 +232,7 @@
   ],
   "labelField": "nom_com",
   "forceOneValue": true,
-  "sectionsGroup": "tabs-button",
+  "sectionsGroup": "tabs-tab",
   "showAllValues": true,
   "startValue": "Vannes"
 }
