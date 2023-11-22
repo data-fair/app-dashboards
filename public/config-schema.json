@@ -6,7 +6,7 @@
       "items": [{
         "title": "Source des valeurs pour le filtre commun",
         "type": "object",
-        "x-fromUrl": "api/v1/datasets?status=finalized&q={q}&select=id,title&owner={context.owner.type}:{context.owner.id}",
+        "x-fromUrl": "api/v1/datasets?status=finalized&q={q}&select=id,title,schema&owner={context.owner.type}:{context.owner.id}",
         "x-itemsProp": "results",
         "x-itemTitle": "title",
         "x-itemKey": "href",
@@ -19,6 +19,9 @@
           },
           "id": {
             "type": "string"
+          },
+          "schema": {
+            "type": "array"
           }
         }
       }]
@@ -59,15 +62,19 @@
       "title": "Rendu des sections",
       "type": "string",
       "oneOf": [{
-          "const": "flow",
-          "title": "A la suite les unes des autres"
+          "const": "accordion",
+          "title": "En accordéon"
         },
         {
-          "const": "tabs",
+          "const": "tabs-tab",
           "title": "Dans des onglets"
+        },
+        {
+          "const": "tabs-button",
+          "title": "Dans des onglets (sélection par boutton)"
         }
       ],
-      "default": "flow"
+      "default": "accordion"
     },
     "sections": {
       "title": "Sections",

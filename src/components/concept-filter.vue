@@ -1,65 +1,63 @@
 <script setup>
 import { ofetch } from 'ofetch'
+import { ref } from 'vue'
+import reactiveSearchParams from '@data-fair/lib/vue/reactive-search-params.js'
 
 const props = defineProps({
-  dataset: { type: Object, required: true },
   labelField: { type: Object, required: true },
   conceptsFields: { type: Array, required: true },
   config: { type: Object, required: true }
 })
 const emit = defineEmits(['update:model-value'])
-const route = useRoute()
-const router = useRouter()
 
 const value = ref('')
 const items = ref([])
 const loading = ref(false)
 
+if (reactiveSearchParams[props.labelField.key]) {
+  const res = await ofetch(props.config.datasets[0].href + '/lines', {
+    params: { q: reactiveSearchParams[props.labelField.key], collapse: props.labelField.key, select: [props.labelField.key].concat(props.conceptsFields.map(f => f.key)).join(','), q_mode: 'complete' }
+  })
+  const result = res.results.find(r => r[props.labelField.key] === reactiveSearchParams[props.labelField.key])
+  if (result) {
+    value.value = result
+    for (const field of props.conceptsFields) {
+      reactiveSearchParams[`_c_${field['x-concept'].id}_eq`] = result[field.key]
+    }
+    emit('update:model-value', result)
+  }
+}
+
 const searchItems = async (search) => {
+  console.log('search !!!')
+
   const params = { collapse: props.labelField.key, select: [props.labelField.key].concat(props.conceptsFields.map(f => f.key)).join(',') }
+  console.log(params)
   if (!props.config.showAllValues) {
     params.q = search + '*'
     params.q_mode = 'complete'
   } else {
     params.size = 100
   }
-  const res = await (props.dataset.href + '/lines', { params })
+  const res = await ofetch(props.config.datasets[0].href + '/lines', { params })
   items.value = res.results
 }
 searchItems('')
 
-if (route.query[props.labelField.key]) {
-  const res = await ofetch(props.dataset.href + '/lines', {
-    params: { q: route.query[props.labelField.key], collapse: props.labelField.key, select: [props.labelField.key].concat(props.conceptsFields.map(f => f.key)).join(','), q_mode: 'complete' }
-  })
-  const result = res.results.find(r => r[props.labelField.key] === route.query[props.labelField.key])
-  if (result) {
-    value.value = result
-    const newQuery = { ...route.query }
-    for (const field of props.conceptsFields) {
-      newQuery[`_c_${field['x-concept'].id}_eq`] = result[field.key]
-    }
-    router.replace({ path: route.path, query: newQuery })
-    emit('update:model-value', result)
-  }
-}
-
 const setValue = (item) => {
   if (props.config.forceOneValue && !item) return
   emit('update:model-value', item)
-  const newQuery = { ...route.query }
   if (item) {
     for (const field of props.conceptsFields) {
-      newQuery[`_c_${field['x-concept'].id}_eq`] = item[field.key]
+      reactiveSearchParams[`_c_${field['x-concept'].id}_eq`] = item[field.key]
     }
-    newQuery[props.labelField.key] = item[props.labelField.key]
+    reactiveSearchParams[props.labelField.key] = item[props.labelField.key]
   } else {
-    delete newQuery[props.labelField.key]
+    delete reactiveSearchParams[props.labelField.key]
     for (const field of props.conceptsFields) {
-      delete newQuery[`_c_${field['x-concept'].id}_eq`]
+      delete reactiveSearchParams[`_c_${field['x-concept'].id}_eq`]
     }
   }
-  router.replace({ path: route.path, query: newQuery })
 }
 </script>
 

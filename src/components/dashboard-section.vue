@@ -1,7 +1,8 @@
 <script setup>
+import element from './element.vue'
+
 defineProps({
   section: { type: Object, required: true },
-  paramFields: { type: Array, required: true },
   conceptValues: { type: [Object, null], required: true },
   hideTitle: { type: Boolean, default: false }
 })
@@ -35,7 +36,10 @@ const widths = {
 </script>
 
 <template>
-  <h3 v-if="!hideTitle" class="text-h5 mt-8">
+  <h3
+    v-if="!hideTitle"
+    class="text-h5 mt-8"
+  >
     <template v-if="section.icon">
       <v-icon>
         mdi-{{ section.icon.name }}
@@ -44,7 +48,10 @@ const widths = {
     </template>
     {{ section.title }}
   </h3>
-  <p v-if="section.description" class="mt-4">
+  <p
+    v-if="section.description"
+    class="mt-4"
+  >
     {{ section.description }}
   </p>
   <v-row>
@@ -57,13 +64,24 @@ const widths = {
       :lg="widths.lg[element.width]"
       :xl="widths.xl[element.width]"
     >
-      <h4 v-if="element.title" class="text-h6 mt-4">
+      <h4
+        v-if="element.title"
+        class="text-h6 mt-4"
+      >
         {{ element.title }}
       </h4>
-      <v-alert v-if="element.valueMandatory && (!conceptValues || !conceptValues[element.concept.key])" type="info" variant="outlined">
+      <v-alert
+        v-if="element.valueMandatory && (!conceptValues || !conceptValues[element.concept.key])"
+        type="info"
+        variant="outlined"
+      >
         <h4>Veuillez sélectionner une valeur dans la liste</h4>
       </v-alert>
-      <element v-else :element="element" :paramFields="paramFields" :height="section.height" />
+      <element
+        v-else
+        :element="element"
+        :height="section.height"
+      />
     </v-col>
   </v-row>
 </template>

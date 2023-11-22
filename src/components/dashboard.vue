@@ -4,32 +4,36 @@ import { ref } from 'vue'
 import reactiveSearchParams from '@data-fair/lib/vue/reactive-search-params.js'
 import 'iframe-resizer/js/iframeResizer'
 import conceptFilter from './concept-filter.vue'
+import dashboardSection from './dashboard-section.vue'
 
+// @ts-ignore
 const application = window.APPLICATION
 const config = application.configuration
-const setError = (error) => {
+const setError = (/** @type{any} */error) => {
   console.error(error)
   ofetch(application.href + '/error', { method: 'POST', body: { message: error.message || error } })
 }
 
 const incompleteConfiguration = !config.datasets || !config.datasets.length
 if (incompleteConfiguration) {
-  setError('configuration incomplète')
+  setError('Veuillez choisir un source de données pour le filtre commun')
 }
-const dataset = await ofetch(config.datasets[0].href)
-const labelField = dataset.schema.find(f => f.key === config.labelField || f['x-refersTo'] === 'http://www.w3.org/2000/01/rdf-schema#label')
+const labelField = config.datasets[0].schema.find((/** @type{any} */f) => f.key === config.labelField || f['x-refersTo'] === 'http://www.w3.org/2000/01/rdf-schema#label')
+if (!labelField) {
+  setError('Veuillez configurer la colonne de libellé pour le filtre commun')
+}
 if (!reactiveSearchParams[labelField.key] && config.startValue) {
   reactiveSearchParams[labelField.key] = config.startValue
 }
-const conceptsFields = [].concat(...config.sections.map(s => [].concat(...s.elements.filter(e => e.concept).map(e => e.concept)))).filter((e1, i, s) => s.findIndex(e2 => e1.key === e2.key) === i)
-const paramFields = [labelField.key].concat(conceptsFields.map(f => `_c_${f['x-concept'].id}_eq`))
+/** @type{any[]} */
+const conceptsFields = [].concat(...config.sections.map((/** @type{any} */s) => [].concat(...s.elements.filter((/** @type{any} */e) => e.concept).map((/** @type{any} */e) => e.concept)))).filter((/** @type{any} */e1, i, s) => s.findIndex((/** @type{any} */e2) => e1.key === e2.key) === i)
 const conceptValues = ref(null)
 const tab = ref(null)
 </script>
 
 <template>
   <v-container
-    v-if="dataset && labelField"
+    v-if="labelField"
     fluid
   >
     <h2
@@ -44,30 +48,34 @@ const tab = ref(null)
     >
       {{ config.description }}
     </p>
-    <v-row class="mt-3">
-      <v-spacer />
-      <v-col
-        v-if="conceptsFields"
-        cols="auto"
-      >
-        <concept-filter
-          :dataset="dataset"
-          :label-field="labelField"
-          :concepts-fields="conceptsFields"
-          :config="config"
-          @update:model-value="value => conceptValues = value"
-        />
-      </v-col>
-      <v-spacer />
-    </v-row>
+    <v-card
+      flat
+      class="py-3"
+    >
+      <v-row>
+        <v-spacer />
+        <v-col
+          v-if="conceptsFields"
+          cols="auto"
+        >
+          <concept-filter
+            :label-field="labelField"
+            :concepts-fields="conceptsFields"
+            :config="config"
+            @update:model-value="value => conceptValues = value"
+          />
+        </v-col>
+        <v-spacer />
+      </v-row>
+    </v-card>
     <dashboard-section
       v-if="config.sections.length === 1"
       :section="config.sections[0]"
-      :param-fields="paramFields"
       :concept-values="conceptValues"
     />
-    <template v-else-if="config.sectionsGroup === 'tabs'">
+    <template v-else-if="config.sectionsGroup.includes('tabs')">
       <v-tabs
+        v-if="config.sectionsGroup === 'tabs-tab'"
         v-model="tab"
         class="mb-3"
         color="primary"
@@ -88,25 +96,38 @@ const tab = ref(null)
         </v-tab>
       </v-tabs>
       <!-- variant="outlined" -->
-      <!-- <v-btn-toggle
-        v-model="tab"
-        color="primary"
-        group
-      >
-        <v-btn
-          v-for="(section, i) of (config.sections || [])"
-          :key="i"
-          :value="i"
+      <v-row v-else-if="config.sectionsGroup === 'tabs-button'">
+        <v-spacer />
+        <v-col
+          cols="auto"
         >
-          <template v-if="section.icon">
-            <v-icon>
-              mdi-{{ section.icon.name }}
-            </v-icon>
+          <v-card
+            variant="outlined"
+          >
+            <v-btn-toggle
+
+              v-model="tab"
+              color="primary"
+              group
+            >
+              <v-btn
+                v-for="(section, i) of (config.sections || [])"
+                :key="i"
+                :value="i"
+              >
+                <template v-if="section.icon">
+                  <v-icon>
+                    mdi-{{ section.icon.name }}
+                  </v-icon>
               &nbsp;
-          </template>
-          {{ section.title }}
-        </v-btn>
-      </v-btn-toggle> -->
+                </template>
+                {{ section.title }}
+              </v-btn>
+            </v-btn-toggle>
+          </v-card>
+        </v-col>
+        <v-spacer />
+      </v-row>
       <v-window v-model="tab">
         <v-window-item
           v-for="(section, i) of (config.sections || [])"
@@ -115,7 +136,6 @@ const tab = ref(null)
         >
           <dashboard-section
             :section="section"
-            :param-fields="paramFields"
             :concept-values="conceptValues"
             hide-title
           />
@@ -147,7 +167,6 @@ const tab = ref(null)
         <v-expansion-panel-text>
           <dashboard-section
             :section="section"
-            :param-fields="paramFields"
             :concept-values="conceptValues"
             hide-title
           />
