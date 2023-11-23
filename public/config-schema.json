@@ -168,7 +168,8 @@
                     "x-itemsProp": "results",
                     "properties": {
                       "id": {"type": "string"},
-                      "title": {"type": "string"}
+                      "title": {"type": "string"},
+                      "href": {"type": "string"}
                     }
                   },
                   "display": {
@@ -188,6 +189,22 @@
                     ],
                     "default": "table",
                     "title": "Affichage"
+                  },
+                  "noInteractions": {
+                    "title": "Désactiver les interactions",
+                    "type": "boolean",
+                    "default": false
+                  },
+                  "fields": {
+                    "title": "Champs à afficher",
+                    "description": "Si vide, tous les champs seront affichés",
+                    "type": "array",
+                    "x-fromUrl": "{parent.value.dataset.href}/schema?calculated=false",
+                    "x-itemTitle": "label",
+                    "x-itemKey": "key",
+                    "items": {
+                      "type": "string"
+                    }
                   }
                 }
               }, {

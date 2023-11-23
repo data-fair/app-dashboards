@@ -16,9 +16,15 @@
               "primary": true
             }
           },
+          "noInteractions": true,
+          "fields": [
+            "date_mutation",
+            "nature_mutation"
+          ],
           "dataset": {
             "id": "demandes-de-valeurs-foncieres-france",
-            "title": "Demandes de valeurs foncières - France"
+            "title": "Demandes de valeurs foncières - France",
+            "href": "http://localhost:5888/data-fair/api/v1/datasets/demandes-de-valeurs-foncieres-france"
           }
         },
         {
@@ -38,7 +44,9 @@
           "dataset": {
             "id": "demandes-de-valeurs-foncieres-france",
             "title": "Demandes de valeurs foncières - France"
-          }
+          },
+          "noInteractions": false,
+          "fields": []
         },
         {
           "width": "medium",
@@ -57,7 +65,9 @@
           "dataset": {
             "id": "demandes-de-valeurs-foncieres-france",
             "title": "Demandes de valeurs foncières - France"
-          }
+          },
+          "noInteractions": false,
+          "fields": []
         }
       ],
       "height": 400,
@@ -86,7 +96,9 @@
           "dataset": {
             "id": "demandes-de-valeurs-foncieres-france",
             "title": "Demandes de valeurs foncières - France"
-          }
+          },
+          "noInteractions": false,
+          "fields": []
         }
       ],
       "height": 400,

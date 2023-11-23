@@ -7,13 +7,12 @@ const props = defineProps({
   height: { type: Number, default: 400 }
 })
 const conceptParamKey = props.element.concept && `_c_${props.element.concept['x-concept'].id}_eq`
-console.log(props.element)
 </script>
 
 <template>
   <v-iframe
     v-if="element.type === 'tablePreview'"
-    :src="`/data-fair/embed/dataset/${element.dataset.id}/table?display=${element.display}`"
+    :src="`/data-fair/embed/dataset/${element.dataset.id}/table?display=${element.display}&interaction=${!element.noInteractions}${element.fields.length ? ('&cols=' + element.fields.join(',')) : ''}`"
     :query-params-extra="{[conceptParamKey]: reactiveSearchParams[conceptParamKey] }"
     :style="`height:${height>0 ? height+'px' : '100%'}`"
   />

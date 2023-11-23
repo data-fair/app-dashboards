@@ -4,7 +4,7 @@
   "scripts": {
     "dev": "APP_URL=http://localhost:3000/app/ df-dev-server",
     "dev-src": "vite",
-    "build": "rm -rf dist && PUBLIC_URL=https://cdn.jsdelivr.net/npm/@data-fair/app-dashboards@${npm_package_version}/dist nuxt generate && rm dist && cp -rf .output/public ./dist",
+    "build": "rm -rf dist && PUBLIC_URL=https://cdn.jsdelivr.net/npm/@data-fair/app-dashboards@${npm_package_version}/dist vite build",
     "prepublishOnly": "npm run build",
     "lint": "eslint . --fix --ignore-path .gitignore"
   },
@@ -18,7 +18,7 @@
     "not ie 11"
   ],
   "dependencies": {
-    "@data-fair/lib": "^0.13.0",
+    "@data-fair/lib": "^0.14.0",
     "@koumoul/v-iframe": "^2.4.0",
     "@vueuse/core": "^10.6.1",
     "core-js": "^3.29.0",
