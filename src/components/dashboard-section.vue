@@ -1,5 +1,5 @@
 <script setup>
-import element from './element.vue'
+import dashboardElement from './dashboard-element.vue'
 
 defineProps({
   section: { type: Object, required: true },
@@ -77,7 +77,7 @@ const widths = {
       >
         <h4>Veuillez sélectionner une valeur dans la liste</h4>
       </v-alert>
-      <element
+      <dashboard-element
         v-else
         :element="element"
         :height="section.height"

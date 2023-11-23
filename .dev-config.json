@@ -29,9 +29,8 @@
         },
         {
           "width": "medium",
-          "display": "table",
           "valueMandatory": false,
-          "type": "tablePreview",
+          "type": "application",
           "concept": {
             "key": "insee_com",
             "label": "insee_com",
@@ -41,12 +40,27 @@
               "primary": true
             }
           },
-          "dataset": {
-            "id": "demandes-de-valeurs-foncieres-france",
-            "title": "Demandes de valeurs foncières - France"
-          },
-          "noInteractions": false,
-          "fields": []
+          "application": {
+            "id": "evolution-du-nombre-d'accidents-de-velo",
+            "title": "Évolution du nombre d'accidents de vélo",
+            "baseApp": {
+              "_id": "61631772e66872aae0be0b01",
+              "id": "https:cdn.jsdelivr.netnpm@data-fairapp-charts@0.10dist",
+              "meta": {
+                "title": "data-fair-charts",
+                "description": "Une application simple de graphiques pour data-fair.",
+                "keywords": [],
+                "charset": "utf-8",
+                "viewport": "width=device-width,initial-scale=1",
+                "df:overflow": "false",
+                "df:sync-state": "true",
+                "df:filter-concepts": "true",
+                "version": "0.10.3",
+                "application-name": "Charts"
+              },
+              "url": "https://cdn.jsdelivr.net/npm/@data-fair/app-charts@0.10/dist/"
+            }
+          }
         },
         {
           "width": "medium",

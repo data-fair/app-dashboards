@@ -29,10 +29,7 @@ if (reactiveSearchParams[props.labelField.key]) {
 }
 
 const searchItems = async (search) => {
-  console.log('search !!!')
-
   const params = { collapse: props.labelField.key, select: [props.labelField.key].concat(props.conceptsFields.map(f => f.key)).join(',') }
-  console.log(params)
   if (!props.config.showAllValues) {
     params.q = search + '*'
     params.q_mode = 'complete'

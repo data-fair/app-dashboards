@@ -6,7 +6,6 @@ import App from './app.vue'
 
 const app = createApp(App)
 
-console.log(defaultOptions)
 app.use(createVuetify(defaultOptions))
 
 app.mount('#app')
