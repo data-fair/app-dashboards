@@ -35,6 +35,7 @@ const tab = ref(null)
   <v-container
     v-if="labelField"
     fluid
+    data-iframe-height
   >
     <h2
       v-if="config.title"

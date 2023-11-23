@@ -7,13 +7,17 @@ const props = defineProps({
   height: { type: Number, default: 400 }
 })
 const conceptParamKey = props.element.concept && `_c_${props.element.concept['x-concept'].id}_eq`
+const queryParamsExtra = {}
+if (reactiveSearchParams[conceptParamKey]) queryParamsExtra[conceptParamKey] = reactiveSearchParams[conceptParamKey]
+if (reactiveSearchParams.primary) queryParamsExtra.primary = reactiveSearchParams.primary
+if (reactiveSearchParams.secondary) queryParamsExtra.secondary = reactiveSearchParams.secondary
 </script>
 
 <template>
   <v-iframe
     v-if="element.type === 'tablePreview'"
     :src="`/data-fair/embed/dataset/${element.dataset.id}/table?display=${element.display}&interaction=${!element.noInteractions}${element.fields.length ? ('&cols=' + element.fields.join(',')) : ''}`"
-    :query-params-extra="reactiveSearchParams[conceptParamKey] ? {[conceptParamKey]: reactiveSearchParams[conceptParamKey] } : {}"
+    :query-params-extra="queryParamsExtra"
     :style="`height:${height>0 ? height+'px' : '100%'}`"
   />
   <div
@@ -23,7 +27,7 @@ const conceptParamKey = props.element.concept && `_c_${props.element.concept['x-
     <v-iframe
       v-if="element.type === 'application'"
       :src="`/data-fair/app/${element.application.id}`"
-      :query-params-extra="reactiveSearchParams[conceptParamKey] ? {[conceptParamKey]: reactiveSearchParams[conceptParamKey] } : {}"
+      :query-params-extra="queryParamsExtra"
       :style="element.application.baseApp.meta['df:overflow'] !== 'true' ? `height:${height>0 ? height+'px' : '100%'}` : ''"
     />
     <div v-else-if="element.type === 'text'">
