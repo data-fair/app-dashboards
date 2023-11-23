@@ -1,16 +1,22 @@
 <script setup>
 import vIframe from '@koumoul/v-iframe'
 import reactiveSearchParams from '@data-fair/lib/vue/reactive-search-params.js'
+import { computed } from 'vue'
 
 const props = defineProps({
   element: { type: Object, required: true },
   height: { type: Number, default: 400 }
 })
 const conceptParamKey = props.element.concept && `_c_${props.element.concept['x-concept'].id}_eq`
-const queryParamsExtra = {}
-if (reactiveSearchParams[conceptParamKey]) queryParamsExtra[conceptParamKey] = reactiveSearchParams[conceptParamKey]
-if (reactiveSearchParams.primary) queryParamsExtra.primary = reactiveSearchParams.primary
-if (reactiveSearchParams.secondary) queryParamsExtra.secondary = reactiveSearchParams.secondary
+
+const queryParamsExtra = computed(() => {
+  const qpe = {}
+  if (reactiveSearchParams[conceptParamKey]) qpe[conceptParamKey] = reactiveSearchParams[conceptParamKey]
+  if (reactiveSearchParams.primary) qpe.primary = reactiveSearchParams.primary
+  if (reactiveSearchParams.secondary) qpe.secondary = reactiveSearchParams.secondary
+  return qpe
+})
+
 </script>
 
 <template>
