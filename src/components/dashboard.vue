@@ -29,6 +29,8 @@ if (!reactiveSearchParams[labelField.key] && config.startValue) {
 const conceptsFields = [].concat(...config.sections.map((/** @type{any} */s) => [].concat(...s.elements.filter((/** @type{any} */e) => e.concept).map((/** @type{any} */e) => e.concept)))).filter((/** @type{any} */e1, i, s) => s.findIndex((/** @type{any} */e2) => e1.key === e2.key) === i)
 const conceptValues = ref(null)
 const tab = ref(null)
+const maxTitleLength = Math.max(...config.sections.map((/** @type{any} */s) => (s.title && s.title.length) || 0))
+const sumTitleLength = config.sections.reduce((/** @type{any} */acc, /** @type{any} */s) => acc + ((s.title && s.title.length) || 0), 0)
 </script>
 
 <template>
@@ -80,7 +82,9 @@ const tab = ref(null)
         v-model="tab"
         class="mb-3"
         color="primary"
-        fixed-tabs
+        :fixed-tabs="maxTitleLength <= 30"
+        :grow="maxTitleLength > 30 && sumTitleLength < 200"
+        :direction="sumTitleLength >= 200 ? 'vertical' : 'horizontal'"
       >
         <v-tab
           v-for="(section, i) of (config.sections || [])"
@@ -109,7 +113,7 @@ const tab = ref(null)
 
               v-model="tab"
               color="primary"
-              group
+              :style="sumTitleLength >= 200 ? `flex-direction: column;height:${config.sections.length*19}px`:''"
             >
               <v-btn
                 v-for="(section, i) of (config.sections || [])"
@@ -144,7 +148,7 @@ const tab = ref(null)
       </v-window>
     </template>
     <v-expansion-panels
-      v-else
+      v-else-if="config.sectionsGroup === 'accordion'"
       multiple
       variant="accordion"
       :model-value="config.sections.map((s, i) => i)"
@@ -175,5 +179,27 @@ const tab = ref(null)
         </v-expansion-panel-text>
       </v-expansion-panel>
     </v-expansion-panels>
+    <template v-else>
+      <div
+        v-for="(section, i) of (config.sections || [])"
+        :key="i"
+        class="my-6"
+      >
+        <h2>
+          <template v-if="section.icon">
+            <v-icon>
+              mdi-{{ section.icon.name }}
+            </v-icon>
+                &nbsp;
+          </template>
+          {{ section.title }}
+        </h2>
+        <dashboard-section
+          :section="section"
+          :concept-values="conceptValues"
+          hide-title
+        />
+      </div>
+    </template>
   </v-container>
 </template>

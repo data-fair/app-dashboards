@@ -72,6 +72,10 @@
         {
           "const": "tabs-button",
           "title": "Dans des onglets (sélection par boutton)"
+        },
+        {
+          "const": "flow",
+          "title": "Les unes à la suite des autres"
         }
       ],
       "default": "accordion"
