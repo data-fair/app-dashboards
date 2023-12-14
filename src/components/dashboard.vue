@@ -18,7 +18,7 @@ const incompleteConfiguration = !config.datasets || !config.datasets.length
 if (incompleteConfiguration) {
   setError('Veuillez choisir un source de données pour le filtre commun')
 }
-const labelField = config.datasets[0].schema.find((/** @type{any} */f) => f.key === config.labelField || f['x-refersTo'] === 'http://www.w3.org/2000/01/rdf-schema#label')
+const labelField = config.datasets[0].schema.find((/** @type{any} */f) => f.key === config.labelField) || config.datasets[0].schema.find((/** @type{any} */f) => f['x-refersTo'] === 'http://www.w3.org/2000/01/rdf-schema#label')
 if (!labelField) {
   setError('Veuillez configurer la colonne de libellé pour le filtre commun')
 }

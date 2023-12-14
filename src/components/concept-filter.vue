@@ -18,7 +18,7 @@ if (reactiveSearchParams[props.labelField.key]) {
   const res = await ofetch(props.config.datasets[0].href + '/lines', {
     params: { q: reactiveSearchParams[props.labelField.key], collapse: props.labelField.key, select: [props.labelField.key].concat(props.conceptsFields.map(f => f.key)).join(','), q_mode: 'complete' }
   })
-  const result = res.results.find(r => r[props.labelField.key] === reactiveSearchParams[props.labelField.key])
+  const result = res.results.find(r => (r[props.labelField.key] + '') === reactiveSearchParams[props.labelField.key])
   if (result) {
     value.value = result
     for (const field of props.conceptsFields) {
@@ -29,7 +29,7 @@ if (reactiveSearchParams[props.labelField.key]) {
 }
 
 const searchItems = async (search) => {
-  const params = { collapse: props.labelField.key, select: [props.labelField.key].concat(props.conceptsFields.map(f => f.key)).join(',') }
+  const params = { collapse: props.labelField.key, sort: props.labelField.key, select: [props.labelField.key].concat(props.conceptsFields.map(f => f.key)).join(',') }
   if (!props.config.showAllValues) {
     params.q = search + '*'
     params.q_mode = 'complete'
