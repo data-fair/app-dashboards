@@ -287,6 +287,6 @@
   "labelField": "nom_com",
   "forceOneValue": true,
   "sectionsGroup": "flow",
-  "showAllValues": true,
+  "showAllValues": false,
   "startValue": "Vannes"
 }

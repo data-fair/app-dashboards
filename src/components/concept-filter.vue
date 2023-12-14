@@ -29,12 +29,13 @@ if (reactiveSearchParams[props.labelField.key]) {
 }
 
 const searchItems = async (search) => {
-  const params = { collapse: props.labelField.key, sort: props.labelField.key, select: [props.labelField.key].concat(props.conceptsFields.map(f => f.key)).join(',') }
+  const params = { collapse: props.labelField.key, select: [props.labelField.key].concat(props.conceptsFields.map(f => f.key)).join(',') }
   if (!props.config.showAllValues) {
     params.q = search + '*'
     params.q_mode = 'complete'
   } else {
-    params.size = 100
+    params.size = 1000
+    params.sort = props.labelField.key
   }
   const res = await ofetch(props.config.datasets[0].href + '/lines', { params })
   items.value = res.results
