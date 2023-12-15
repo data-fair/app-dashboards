@@ -42,7 +42,7 @@ Simply publish the project on the global npm registry (you need to be member of 
 
 If the release is a bug fix and you don't want to wait 24h (the cache delay of jsdelivr), you can purge the cache for the index.html file of the minor version in the CDN:
 
-    curl https://purge.jsdelivr.net/npm/@data-fair/app-dashboards@0.8/dist/index.html
+    curl https://purge.jsdelivr.net/npm/@data-fair/app-dashboards@0.4/dist/index.html
 
 To publish a version for testing purposes you can tag it as a pre-release and publish it with the tag "staging".
 

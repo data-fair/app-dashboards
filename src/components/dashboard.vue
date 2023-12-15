@@ -3,7 +3,7 @@ import { ofetch } from 'ofetch'
 import { ref } from 'vue'
 import reactiveSearchParams from '@data-fair/lib/vue/reactive-search-params.js'
 import 'iframe-resizer/js/iframeResizer'
-import conceptFilter from './concept-filter.vue'
+import conceptFilters from './concept-filters.vue'
 import dashboardSection from './dashboard-section.vue'
 
 // @ts-ignore
@@ -18,15 +18,18 @@ const incompleteConfiguration = !config.datasets || !config.datasets.length
 if (incompleteConfiguration) {
   setError('Veuillez choisir un source de données pour le filtre commun')
 }
-const labelField = config.datasets[0].schema.find((/** @type{any} */f) => f.key === config.labelField) || config.datasets[0].schema.find((/** @type{any} */f) => f['x-refersTo'] === 'http://www.w3.org/2000/01/rdf-schema#label')
-if (!labelField) {
-  setError('Veuillez configurer la colonne de libellé pour le filtre commun')
+// const labelField = config.datasets[0].schema.find((/** @type{any} */f) => f.key === config.labelField) || config.datasets[0].schema.find((/** @type{any} */f) => f['x-refersTo'] === 'http://www.w3.org/2000/01/rdf-schema#label')
+if (!config.conceptFilters || !config.conceptFilters.length) {
+  setError('Veuillez configurer un filtre')
 }
-if (!reactiveSearchParams[labelField.key] && config.startValue) {
-  reactiveSearchParams[labelField.key] = config.startValue
+for (const filter of config.conceptFilters) {
+  if (!reactiveSearchParams[filter.labelField.key] && filter.startValue) {
+    reactiveSearchParams[filter.labelField.key] = filter.startValue
+  }
 }
 /** @type{any[]} */
-const conceptsFields = [].concat(...config.sections.map((/** @type{any} */s) => [].concat(...s.elements.filter((/** @type{any} */e) => e.concept).map((/** @type{any} */e) => e.concept)))).filter((/** @type{any} */e1, i, s) => s.findIndex((/** @type{any} */e2) => e1.key === e2.key) === i)
+const conceptsFields = [].concat(...config.sections.map((/** @type{any} */s) => [].concat(...s.elements.filter((/** @type{any} */e) => e.concepts && e.concepts.length).map((/** @type{any} */e) => e.concepts)))).filter((/** @type{any} */e1, i, s) => s.findIndex((/** @type{any} */e2) => e1.key === e2.key) === i)
+console.log('conceptsFields', conceptsFields)
 const conceptValues = ref(null)
 const tab = ref(null)
 const maxTitleLength = Math.max(...config.sections.map((/** @type{any} */s) => (s.title && s.title.length) || 0))
@@ -35,7 +38,7 @@ const sumTitleLength = config.sections.reduce((/** @type{any} */acc, /** @type{a
 
 <template>
   <v-container
-    v-if="labelField"
+    v-if="config.conceptFilters && config.conceptFilters.length"
     fluid
     data-iframe-height
   >
@@ -51,26 +54,12 @@ const sumTitleLength = config.sections.reduce((/** @type{any} */acc, /** @type{a
     >
       {{ config.description }}
     </p>
-    <v-card
-      flat
-      class="py-3"
-    >
-      <v-row>
-        <v-spacer />
-        <v-col
-          v-if="conceptsFields"
-          cols="auto"
-        >
-          <concept-filter
-            :label-field="labelField"
-            :concepts-fields="conceptsFields"
-            :config="config"
-            @update:model-value="value => conceptValues = value"
-          />
-        </v-col>
-        <v-spacer />
-      </v-row>
-    </v-card>
+    <concept-filters
+      v-if="conceptsFields"
+      :concepts-fields="conceptsFields"
+      :config="config"
+      @update:model-value="value => conceptValues = value"
+    />
     <dashboard-section
       v-if="config.sections.length === 1"
       :section="config.sections[0]"

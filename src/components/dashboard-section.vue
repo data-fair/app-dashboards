@@ -71,7 +71,7 @@ const widths = {
         {{ element.title }}
       </h4>
       <v-alert
-        v-if="element.valueMandatory && (!conceptValues || !conceptValues[element.concept.key])"
+        v-if="element.valueMandatory && (!conceptValues || !element.concepts.find(c => conceptValues[c.key] ))"
         type="info"
         variant="outlined"
       >

@@ -3,261 +3,326 @@
     {
       "elements": [
         {
-          "width": "medium",
-          "display": "table",
-          "valueMandatory": false,
-          "type": "tablePreview",
-          "concept": {
-            "key": "insee_com",
-            "label": "insee_com",
-            "x-concept": {
-              "id": "codeCommune",
-              "title": "Code commune",
-              "primary": true
-            }
-          },
-          "noInteractions": true,
-          "fields": [
-            "date_mutation",
-            "nature_mutation"
-          ],
-          "dataset": {
-            "id": "demandes-de-valeurs-foncieres-france",
-            "title": "Demandes de valeurs foncières - France",
-            "href": "http://localhost:5888/data-fair/api/v1/datasets/demandes-de-valeurs-foncieres-france"
-          }
-        },
-        {
-          "width": "medium",
-          "valueMandatory": false,
-          "type": "application",
-          "concept": {
-            "key": "insee_com",
-            "label": "insee_com",
-            "x-concept": {
-              "id": "codeCommune",
-              "title": "Code commune",
-              "primary": true
-            }
-          },
-          "application": {
-            "id": "evolution-du-nombre-d'accidents-de-velo",
-            "title": "Évolution du nombre d'accidents de vélo",
-            "baseApp": {
-              "_id": "61631772e66872aae0be0b01",
-              "id": "https:cdn.jsdelivr.netnpm@data-fairapp-charts@0.10dist",
-              "meta": {
-                "title": "data-fair-charts",
-                "description": "Une application simple de graphiques pour data-fair.",
-                "keywords": [],
-                "charset": "utf-8",
-                "viewport": "width=device-width,initial-scale=1",
-                "df:overflow": "false",
-                "df:sync-state": "true",
-                "df:filter-concepts": "true",
-                "version": "0.10.3",
-                "application-name": "Charts"
-              },
-              "url": "https://cdn.jsdelivr.net/npm/@data-fair/app-charts@0.10/dist/"
-            }
-          }
-        },
-        {
-          "width": "medium",
-          "display": "table",
-          "valueMandatory": false,
-          "type": "tablePreview",
-          "concept": {
-            "key": "insee_com",
-            "label": "insee_com",
-            "x-concept": {
-              "id": "codeCommune",
-              "title": "Code commune",
-              "primary": true
-            }
-          },
-          "dataset": {
-            "id": "demandes-de-valeurs-foncieres-france",
-            "title": "Demandes de valeurs foncières - France"
-          },
+          "width": "full",
+          "fields": [],
           "noInteractions": false,
-          "fields": []
+          "display": "table",
+          "valueMandatory": false,
+          "concepts": [
+            {
+              "key": "noc",
+              "label": "NOC",
+              "x-concept": {
+                "id": "countryCodeISOAlpha3",
+                "title": "Code pays (ISO, 3 caractères)",
+                "primary": true
+              }
+            },
+            {
+              "key": "games",
+              "label": "Games",
+              "x-concept": {
+                "id": "concept-event",
+                "title": "Evenement Sportif",
+                "primary": true
+              }
+            },
+            {
+              "key": "sport",
+              "label": "Sport",
+              "x-concept": {
+                "id": "discipline",
+                "title": "Discipline",
+                "primary": true
+              }
+            }
+          ],
+          "type": "tablePreview",
+          "dataset": {
+            "id": "lr5m9tbsoabv528wgu7egeky",
+            "title": "athlete events",
+            "href": "http://localhost:5888/data-fair/api/v1/datasets/lr5m9tbsoabv528wgu7egeky"
+          }
         }
       ],
-      "height": 400,
-      "title": "premier premier premier premier premier",
-      "icon": {
-        "name": "zodiac-libra",
-        "svg": "<?xml version=\"1.0\" encoding=\"UTF-8\"?><!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 1.1//EN\" \"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd\"><svg xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" version=\"1.1\" id=\"mdi-zodiac-libra\" width=\"24\" height=\"24\" viewBox=\"0 0 24 24\"><path d=\"M20,16V18H13V15.91C16,15.36 17.96,12.5 17.41,9.5C16.86,6.5 14,4.54 11,5.09C8,5.65 6.04,8.5 6.59,11.5C7,13.74 8.76,15.5 11,15.91V18H4V16H6.92C5.37,14.59 4.5,12.59 4.5,10.5A7.5,7.5 0 0,1 12,3A7.5,7.5 0 0,1 19.5,10.5C19.5,12.59 18.63,14.59 17.08,16H20M20,19H4V21H20V19Z\" /></svg>"
+      "height": 400
+    }
+  ],
+  "sectionsGroup": "accordion",
+  "conceptFilters": [
+    {
+      "showAllValues": false,
+      "forceOneValue": false,
+      "labelField": {
+        "key": "team",
+        "label": "Team"
       }
     },
     {
-      "elements": [
-        {
-          "width": "full",
-          "display": "table",
-          "valueMandatory": false,
-          "type": "tablePreview",
-          "concept": {
-            "key": "insee_com",
-            "label": "insee_com",
-            "x-concept": {
-              "id": "codeCommune",
-              "title": "Code commune",
-              "primary": true
-            }
-          },
-          "dataset": {
-            "id": "demandes-de-valeurs-foncieres-france",
-            "title": "Demandes de valeurs foncières - France"
-          },
-          "noInteractions": false,
-          "fields": []
-        }
-      ],
-      "height": 400,
-      "title": "deuxieme deuxieme deuxieme deuxieme deuxieme",
-      "description": "youpi"
+      "showAllValues": false,
+      "forceOneValue": false,
+      "labelField": {
+        "key": "games",
+        "label": "Games"
+      }
     },
     {
-      "elements": [
-        {
-          "width": "full",
-          "display": "table",
-          "valueMandatory": false,
-          "type": "tablePreview",
-          "concept": {
-            "key": "insee_com",
-            "label": "insee_com",
-            "x-concept": {
-              "id": "codeCommune",
-              "title": "Code commune",
-              "primary": true
-            }
-          },
-          "dataset": {
-            "id": "demandes-de-valeurs-foncieres-france",
-            "title": "Demandes de valeurs foncières - France"
-          },
-          "noInteractions": false,
-          "fields": []
-        }
-      ],
-      "height": 400,
-      "title": "troisieme troisieme troisieme troisieme troisieme",
-      "description": "youpi"
+      "showAllValues": false,
+      "forceOneValue": false,
+      "labelField": {
+        "key": "sport",
+        "label": "Sport"
+      }
     }
   ],
   "datasets": [
     {
-      "href": "http://localhost:5888/data-fair/api/v1/datasets/contours-des-communes",
-      "title": "Contours des communes",
-      "id": "contours-des-communes",
+      "href": "http://localhost:5888/data-fair/api/v1/datasets/lr5m9tbsoabv528wgu7egeky",
+      "title": "athlete events",
+      "id": "lr5m9tbsoabv528wgu7egeky",
       "schema": [
         {
-          "key": "geometry",
+          "key": "id",
+          "x-originalName": "ID",
+          "type": "integer",
+          "x-cardinality": 136163,
+          "description": ""
+        },
+        {
+          "key": "name",
+          "x-originalName": "Name",
           "type": "string",
-          "x-refersTo": "https://purl.org/geojson/vocab#geometry",
+          "x-cardinality": 135539,
+          "description": "",
+          "x-refersTo": null
+        },
+        {
+          "key": "sex",
+          "x-originalName": "Sex",
+          "type": "string",
+          "x-cardinality": 2,
+          "description": "",
+          "enum": [
+            "M",
+            "F"
+          ]
+        },
+        {
+          "key": "age",
+          "x-originalName": "Age",
+          "type": "integer",
+          "x-cardinality": 74,
+          "description": ""
+        },
+        {
+          "key": "height",
+          "x-originalName": "Height",
+          "type": "integer",
+          "x-cardinality": 95,
+          "description": ""
+        },
+        {
+          "key": "weight",
+          "x-originalName": "Weight",
+          "type": "number",
+          "x-cardinality": 220,
+          "description": ""
+        },
+        {
+          "key": "team",
+          "x-originalName": "Team",
+          "type": "string",
+          "x-cardinality": 1184,
+          "description": ""
+        },
+        {
+          "key": "noc",
+          "x-originalName": "NOC",
+          "type": "string",
+          "x-cardinality": 230,
+          "description": "",
+          "x-refersTo": "https://www.omg.org/spec/LCC/Countries/CountryRepresentation/Alpha3Code",
           "x-concept": {
-            "id": "geometry",
-            "title": "Géométrie GeoJSON ou WKT",
+            "id": "countryCodeISOAlpha3",
+            "title": "Code pays (ISO, 3 caractères)",
             "primary": true
-          },
-          "title": "",
-          "description": "",
-          "x-capabilities": {}
+          }
         },
         {
-          "key": "niveau",
-          "title": "Niveau",
+          "key": "games",
+          "x-originalName": "Games",
           "type": "string",
-          "x-capabilities": {
-            "insensitive": false,
-            "text": false,
-            "textStandard": false
-          },
+          "x-cardinality": 51,
           "description": "",
-          "x-cardinality": 2,
+          "x-refersTo": "concept-event",
+          "x-concept": {
+            "id": "concept-event",
+            "title": "Evenement Sportif",
+            "primary": true
+          }
+        },
+        {
+          "key": "year",
+          "x-originalName": "Year",
+          "type": "integer",
+          "x-cardinality": 35,
+          "description": "",
           "enum": [
-            "commune",
-            "arrondissement municipal"
+            1992,
+            1988,
+            2000,
+            1996,
+            2016,
+            2008,
+            2004,
+            2012,
+            1972,
+            1984,
+            1976,
+            1968,
+            1964,
+            1952,
+            1960,
+            1980,
+            1948,
+            1936,
+            1956,
+            1924,
+            1928,
+            2014,
+            2010,
+            2006,
+            1920,
+            2002,
+            1912,
+            1998,
+            1932,
+            1994,
+            1908,
+            1900,
+            1906,
+            1904,
+            1896
           ]
         },
         {
-          "key": "annee",
-          "title": "Année",
-          "type": "integer",
-          "description": "",
-          "x-capabilities": {},
+          "key": "season",
+          "x-originalName": "Season",
+          "type": "string",
           "x-cardinality": 2,
+          "description": "",
           "enum": [
-            2017,
-            2023
+            "Summer",
+            "Winter"
           ]
         },
         {
-          "key": "population",
-          "type": "integer",
-          "title": "",
-          "description": "",
-          "x-capabilities": {},
-          "x-cardinality": 5925
-        },
-        {
-          "key": "nom_com",
+          "key": "city",
+          "x-originalName": "City",
           "type": "string",
+          "x-cardinality": 42,
+          "description": "",
           "x-refersTo": "http://schema.org/City",
           "x-concept": {
             "id": "city",
             "title": "Commune",
             "primary": true
           },
-          "title": "",
-          "description": "",
-          "x-capabilities": {},
-          "x-cardinality": 32861
+          "enum": [
+            "London",
+            "Athina",
+            "Sydney",
+            "Atlanta",
+            "Rio de Janeiro",
+            "Beijing",
+            "Barcelona",
+            "Los Angeles",
+            "Seoul",
+            "Munich",
+            "Montreal",
+            "Mexico City",
+            "Helsinki",
+            "Roma",
+            "Tokyo",
+            "Moskva",
+            "Paris",
+            "Berlin",
+            "Amsterdam",
+            "Sochi",
+            "Melbourne",
+            "Vancouver",
+            "Torino",
+            "Stockholm",
+            "Antwerpen",
+            "Salt Lake City",
+            "Innsbruck",
+            "Nagano",
+            "Albertville",
+            "Lillehammer",
+            "Calgary",
+            "Sarajevo",
+            "Lake Placid",
+            "Grenoble",
+            "Sankt Moritz",
+            "Sapporo",
+            "Cortina d'Ampezzo",
+            "St. Louis",
+            "Squaw Valley",
+            "Oslo",
+            "Garmisch-Partenkirchen",
+            "Chamonix"
+          ]
         },
         {
-          "key": "insee_com",
+          "key": "sport",
+          "x-originalName": "Sport",
           "type": "string",
-          "x-refersTo": "http://rdf.insee.fr/def/geo#codeCommune",
-          "x-concept": {
-            "id": "codeCommune",
-            "title": "Code commune",
-            "primary": true
-          },
-          "title": "",
+          "x-cardinality": 66,
           "description": "",
-          "x-capabilities": {},
-          "x-cardinality": 34986
-        },
-        {
-          "x-calculated": true,
-          "key": "_geoshape",
-          "type": "object",
-          "title": "Géométrie",
-          "description": "Au format d'une géométrie GeoJSON",
-          "x-capabilities": {}
-        },
-        {
-          "x-calculated": true,
-          "key": "_geocorners",
-          "type": "array",
-          "title": "Boite englobante de la géométrie",
-          "description": "Sous forme d'un tableau de coordonnées au format \"lat,lon\""
-        },
-        {
-          "x-calculated": true,
-          "key": "_geopoint",
-          "type": "string",
-          "title": "Coordonnée géographique",
-          "description": "Centroïde au format \"lat,lon\"",
-          "x-refersTo": "http://www.w3.org/2003/01/geo/wgs84_pos#lat_long",
+          "x-refersTo": "discipline",
           "x-concept": {
-            "id": "latLon",
-            "title": "Latitude / Longitude",
+            "id": "discipline",
+            "title": "Discipline",
             "primary": true
           }
+        },
+        {
+          "key": "event",
+          "x-originalName": "Event",
+          "type": "string",
+          "x-cardinality": 765,
+          "description": ""
+        },
+        {
+          "key": "medal",
+          "x-originalName": "Medal",
+          "type": "string",
+          "x-cardinality": 4,
+          "description": "",
+          "enum": [
+            "NA",
+            "Gold",
+            "Bronze",
+            "Silver"
+          ]
+        },
+        {
+          "key": "_noc3_pays.region",
+          "x-originalName": "_noc3_pays.region",
+          "x-extension": "dataset:e-np3je0lsrmnx0qy2dye7cg/masterData_bulkSearch_noc3-pays",
+          "title": "region",
+          "description": "",
+          "type": "string",
+          "x-cardinality": 206
+        },
+        {
+          "key": "_noc3_pays._error",
+          "type": "string",
+          "x-originalName": "_error",
+          "x-extension": "dataset:e-np3je0lsrmnx0qy2dye7cg/masterData_bulkSearch_noc3-pays",
+          "title": "Erreur de récupération de données de référence",
+          "description": "Une erreur lors de la récupération des informations depuis un service distant",
+          "x-calculated": true
         },
         {
           "x-calculated": true,
@@ -283,10 +348,5 @@
         }
       ]
     }
-  ],
-  "labelField": "nom_com",
-  "forceOneValue": true,
-  "sectionsGroup": "flow",
-  "showAllValues": false,
-  "startValue": "Vannes"
+  ]
 }

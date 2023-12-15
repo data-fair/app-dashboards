@@ -7,11 +7,13 @@ const props = defineProps({
   element: { type: Object, required: true },
   height: { type: Number, default: 400 }
 })
-const conceptParamKey = props.element.concept && `_c_${props.element.concept['x-concept'].id}_eq`
 
 const queryParamsExtra = computed(() => {
   const qpe = {}
-  if (reactiveSearchParams[conceptParamKey]) qpe[conceptParamKey] = reactiveSearchParams[conceptParamKey]
+  props.element.concepts.forEach(concept => {
+    const conceptParamKey = `_c_${concept['x-concept'].id}_eq`
+    if (reactiveSearchParams[conceptParamKey]) qpe[conceptParamKey] = reactiveSearchParams[conceptParamKey]
+  })
   if (reactiveSearchParams.primary) qpe.primary = reactiveSearchParams.primary
   if (reactiveSearchParams.secondary) qpe.secondary = reactiveSearchParams.secondary
   return qpe
