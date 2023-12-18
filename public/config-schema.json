@@ -44,6 +44,21 @@
               "label": {"type": "string"}
             }
           },
+          "concepts": {
+            "type": "array",
+            "x-fromUrl": "{datasets.0.href}/schema?calculated=false&separator=false&concept=true",
+            "x-itemKey": "id",
+            "x-itemTitle": "label",
+            "items": {
+              "title": "Colonnes pour les valeurs du filtre",
+              "type": "object",
+              "properties": {
+                "key": {"type": "string"},
+                "label": {"type": "string"},
+                "x-concept": {"type": "object"}
+              }
+            }
+          },
           "forceOneValue":{
             "title": "Toujours filtrer par une valeur",
             "type": "boolean",

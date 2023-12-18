@@ -2,9 +2,9 @@
 import { ofetch } from 'ofetch'
 import { ref } from 'vue'
 import reactiveSearchParams from '@data-fair/lib/vue/reactive-search-params.js'
+import { escape } from '@data-fair/lib/filters.js'
 
 const props = defineProps({
-  conceptsFields: { type: Array, required: true },
   config: { type: Object, required: true }
 })
 const emit = defineEmits(['update:model-value'])
@@ -17,12 +17,13 @@ const filters = props.config.conceptFilters.map(filter => {
     items,
     loading: ref(false),
     searchItems: async (search) => {
-      const qs = props.config.conceptFilters.filter(f => f.labelField.key !== filter.labelField.key && reactiveSearchParams[f.labelField.key]).map(f => `${f.labelField.key}:"${reactiveSearchParams[f.labelField.key]}"`)
+      const qs = props.config.conceptFilters.filter(f => f.labelField.key !== filter.labelField.key && reactiveSearchParams[f.labelField.key]).map(f => `${escape(f.labelField.key)}:"${escape(reactiveSearchParams[f.labelField.key])}"`)
       const params = { collapse: filter.labelField.key, select }
       if (qs.length) params.qs = qs.join(' AND ')
       if (!filter.showAllValues) {
         params.q = search + '*'
         params.q_mode = 'complete'
+        params.sort = '_score,' + filter.labelField.key
       } else {
         params.size = 1000
         params.sort = filter.labelField.key
@@ -39,47 +40,45 @@ filters.forEach((filter, i, self) => {
     emit('update:model-value', item)
     if (item) {
       reactiveSearchParams[filter.labelField.key] = item[filter.labelField.key]
-      console.log(filter, props.conceptsFields)
-      for (const field of props.conceptsFields.filter(f => reactiveSearchParams[f.key])) {
-        console.log('field', field)
+      for (const field of filter.concepts) {
         reactiveSearchParams[`_c_${field['x-concept'].id}_eq`] = item[field.key]
       }
     } else {
       delete reactiveSearchParams[filter.labelField.key]
-      for (const field of props.conceptsFields.filter(f => !reactiveSearchParams[f.key])) {
+      for (const field of filter.concepts) {
         delete reactiveSearchParams[`_c_${field['x-concept'].id}_eq`]
       }
     }
-    const qs = props.config.conceptFilters.filter(f => reactiveSearchParams[f.labelField.key]).map(f => `${f.labelField.key}:"${reactiveSearchParams[f.labelField.key]}"`)
+    const qs = props.config.conceptFilters.filter(f => reactiveSearchParams[f.labelField.key]).map(f => `${escape(f.labelField.key)}:"${escape(reactiveSearchParams[f.labelField.key])}"`)
     const params = { select }
     if (qs.length) params.qs = qs.join(' AND ')
     const res = await ofetch(props.config.datasets[0].href + '/lines', { params })
     const result = res.results.pop()
     if (result) {
       self.forEach(f => {
-        if (f.labelField.key !== filter.labelField.key && reactiveSearchParams[f.labelField.key]) f.value.value = result
+        if (f.labelField.key !== filter.labelField.key) {
+          if (reactiveSearchParams[f.labelField.key])f.value.value = result
+        } else filter.searchItems('')
       })
     }
   }
 })
 
-const select = props.config.conceptFilters.map(f => f.labelField.key).concat(props.conceptsFields.map(f => f.key)).join(',')
-
+const select = [].concat(props.config.conceptFilters.map(f => [f.labelField.key].concat(f.concepts.map(f => f.key)))).join(',')
 if (props.config.conceptFilters.reduce((acc, f) => acc || reactiveSearchParams[f.labelField.key], false)) {
   // TODO escape in qs
-  const qs = props.config.conceptFilters.filter(f => reactiveSearchParams[f.labelField.key]).map(f => `${f.labelField.key}:"${reactiveSearchParams[f.labelField.key]}"`)
+  const qs = props.config.conceptFilters.filter(f => reactiveSearchParams[f.labelField.key]).map(f => `${escape(f.labelField.key)}:"${escape(reactiveSearchParams[f.labelField.key])}"`)
   const params = { select }
   if (qs.length) params.qs = qs.join(' AND ')
   const res = await ofetch(props.config.datasets[0].href + '/lines', { params })
   const result = res.results.pop()
   if (result) {
-    filters.forEach(filter => {
+    filters.filter(f => reactiveSearchParams[f.labelField.key]).forEach(filter => {
       filter.value.value = result
+      for (const field of filter.concepts) {
+        reactiveSearchParams[`_c_${field['x-concept'].id}_eq`] = result[field.key]
+      }
     })
-
-    for (const field of props.conceptsFields) {
-      reactiveSearchParams[`_c_${field['x-concept'].id}_eq`] = result[field.key]
-    }
     emit('update:model-value', result)
   }
 }
@@ -109,7 +108,7 @@ filters.forEach(filter => { filter.searchItems('') })
           no-data-text="Aucun élément trouvé"
           :item-title="filter.labelField.key"
           return-object
-          :label="filter.labelField.title || filter.labelField['x-originalName'] || filter.labelField.key"
+          :label="filter.labelField.label || filter.labelField.title || filter.labelField['x-originalName'] || filter.labelField.key"
           :clearable="!filter.forceOneValue"
           style="min-width:280px;"
           @update:search="search => !filter.showAllValues && filter.searchItems(search)"

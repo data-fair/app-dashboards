@@ -22,14 +22,16 @@ if (incompleteConfiguration) {
 if (!config.conceptFilters || !config.conceptFilters.length) {
   setError('Veuillez configurer un filtre')
 }
+/** @type{any[]} */
+// const conceptsFields = [].concat(...config.sections.map((/** @type{any} */s) => [].concat(...s.elements.filter((/** @type{any} */e) => e.concepts && e.concepts.length).map((/** @type{any} */e) => e.concepts)))).filter((/** @type{any} */e1, i, s) => s.findIndex((/** @type{any} */e2) => e1.key === e2.key) === i)
+// TODO : set error if same concept is usesd in 2 filters
+
 for (const filter of config.conceptFilters) {
   if (!reactiveSearchParams[filter.labelField.key] && filter.startValue) {
     reactiveSearchParams[filter.labelField.key] = filter.startValue
   }
 }
-/** @type{any[]} */
-const conceptsFields = [].concat(...config.sections.map((/** @type{any} */s) => [].concat(...s.elements.filter((/** @type{any} */e) => e.concepts && e.concepts.length).map((/** @type{any} */e) => e.concepts)))).filter((/** @type{any} */e1, i, s) => s.findIndex((/** @type{any} */e2) => e1.key === e2.key) === i)
-console.log('conceptsFields', conceptsFields)
+
 const conceptValues = ref(null)
 const tab = ref(null)
 const maxTitleLength = Math.max(...config.sections.map((/** @type{any} */s) => (s.title && s.title.length) || 0))
@@ -55,8 +57,6 @@ const sumTitleLength = config.sections.reduce((/** @type{any} */acc, /** @type{a
       {{ config.description }}
     </p>
     <concept-filters
-      v-if="conceptsFields"
-      :concepts-fields="conceptsFields"
       :config="config"
       @update:model-value="value => conceptValues = value"
     />

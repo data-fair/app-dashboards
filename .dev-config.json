@@ -54,9 +54,20 @@
       "showAllValues": false,
       "forceOneValue": false,
       "labelField": {
-        "key": "team",
-        "label": "Team"
-      }
+        "key": "_noc3_pays.region",
+        "label": "region"
+      },
+      "concepts": [
+        {
+          "key": "noc",
+          "label": "NOC",
+          "x-concept": {
+            "id": "countryCodeISOAlpha3",
+            "title": "Code pays (ISO, 3 caractères)",
+            "primary": true
+          }
+        }
+      ]
     },
     {
       "showAllValues": false,
@@ -64,7 +75,18 @@
       "labelField": {
         "key": "games",
         "label": "Games"
-      }
+      },
+      "concepts": [
+        {
+          "key": "games",
+          "label": "Games",
+          "x-concept": {
+            "id": "concept-event",
+            "title": "Evenement Sportif",
+            "primary": true
+          }
+        }
+      ]
     },
     {
       "showAllValues": false,
@@ -72,7 +94,18 @@
       "labelField": {
         "key": "sport",
         "label": "Sport"
-      }
+      },
+      "concepts": [
+        {
+          "key": "sport",
+          "label": "Sport",
+          "x-concept": {
+            "id": "discipline",
+            "title": "Discipline",
+            "primary": true
+          }
+        }
+      ]
     }
   ],
   "datasets": [
