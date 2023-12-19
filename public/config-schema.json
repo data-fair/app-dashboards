@@ -47,7 +47,7 @@
           "concepts": {
             "type": "array",
             "x-fromUrl": "{datasets.0.href}/schema?calculated=false&separator=false&concept=true",
-            "x-itemKey": "id",
+            "x-itemKey": "key",
             "x-itemTitle": "label",
             "items": {
               "title": "Colonnes pour les valeurs du filtre",
@@ -179,7 +179,7 @@
                   "concepts": {
                     "type": "array",
                     "x-fromUrl": "{datasets.0.href}/schema?calculated=false&separator=false&concept=true",
-                    "x-itemKey": "id",
+                    "x-itemKey": "key",
                     "x-itemTitle": "label",
                     "items": {
                       "title": "Colonne du filtre commun",
@@ -250,7 +250,7 @@
                   "concepts": {
                     "type": "array",
                     "x-fromUrl": "{datasets.0.href}/schema?calculated=false&separator=false&concept=true",
-                    "x-itemKey": "id",
+                    "x-itemKey": "key",
                     "x-itemTitle": "label",
                     "items": [{
                       "title": "Colonne du filtre commun",
