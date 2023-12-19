@@ -252,7 +252,7 @@
                     "x-fromUrl": "{datasets.0.href}/schema?calculated=false&separator=false&concept=true",
                     "x-itemKey": "key",
                     "x-itemTitle": "label",
-                    "items": [{
+                    "items": {
                       "title": "Colonne du filtre commun",
                       "type": "object",
                       "properties": {
@@ -260,7 +260,7 @@
                         "label": {"type": "string"},
                         "x-concept": {"type": "object"}
                       }
-                    }]
+                    }
                   },
                   "valueMandatory": {
                     "title": "Nécessite une valeur dans le filtre",
