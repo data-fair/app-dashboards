@@ -43,6 +43,12 @@
             "title": "athlete events",
             "href": "http://localhost:5888/data-fair/api/v1/datasets/lr5m9tbsoabv528wgu7egeky"
           }
+        },
+        {
+          "width": "medium",
+          "title": "texte !!!",
+          "type": "text",
+          "content": "blablabla\ndsfdsfdsfds"
         }
       ],
       "height": 400

@@ -173,7 +173,7 @@
                 }
               },
               "oneOf": [{
-                "title": "Prévisualisation table",
+                "title": "Vue table",
                 "properties": {
                   "type": { "const": "tablePreview", "title": "Type de l'élément" },
                   "concepts": {

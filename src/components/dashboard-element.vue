@@ -38,7 +38,10 @@ const queryParamsExtra = computed(() => {
       :query-params-extra="queryParamsExtra"
       :style="element.application.baseApp.meta['df:overflow'] !== 'true' ? `height:${height>0 ? height+'px' : '100%'}` : ''"
     />
-    <div v-else-if="element.type === 'text'">
+    <div
+      v-else-if="element.type === 'text'"
+      class="mt-4"
+    >
       {{ element.content }}
     </div>
   </div>

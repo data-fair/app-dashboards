@@ -92,8 +92,7 @@ filters.forEach(filter => { filter.searchItems('') })
     flat
     class="py-3"
   >
-    <v-row>
-      <v-spacer />
+    <v-row justify="center">
       <v-col
         v-for="(filter, i) in filters"
         :key="i"
@@ -115,7 +114,6 @@ filters.forEach(filter => { filter.searchItems('') })
           @update:model-value="filter.setValue"
         />
       </v-col>
-      <v-spacer />
     </v-row>
   </v-card>
 </template>
