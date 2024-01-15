@@ -120,7 +120,7 @@
   "datasets": [
     {
       "href": "http://localhost:5888/data-fair/api/v1/datasets/lr5m9tbsoabv528wgu7egeky",
-      "title": "athlete events",
+      "title": "Historique des réultats des athlètes aux jeux olympiques",
       "id": "lr5m9tbsoabv528wgu7egeky",
       "schema": [
         {
@@ -136,7 +136,8 @@
           "type": "string",
           "x-cardinality": 135539,
           "description": "",
-          "x-refersTo": null
+          "x-refersTo": null,
+          "title": "Nom"
         },
         {
           "key": "sex",
@@ -157,7 +158,8 @@
           "enum": [
             "M",
             "F"
-          ]
+          ],
+          "title": "Sexe"
         },
         {
           "key": "age",
@@ -171,14 +173,16 @@
           "x-originalName": "Height",
           "type": "integer",
           "x-cardinality": 95,
-          "description": ""
+          "description": "",
+          "title": "Taille"
         },
         {
           "key": "weight",
           "x-originalName": "Weight",
           "type": "number",
           "x-cardinality": 220,
-          "description": ""
+          "description": "",
+          "title": "Poids"
         },
         {
           "key": "team",
@@ -191,7 +195,8 @@
             "id": "equipe",
             "title": "Equipe",
             "primary": true
-          }
+          },
+          "title": "Equipe"
         },
         {
           "key": "noc",
@@ -212,7 +217,8 @@
             "id": "concept-event",
             "title": "Evenement Sportif",
             "primary": true
-          }
+          },
+          "title": "Jeux"
         },
         {
           "key": "year",
@@ -256,7 +262,8 @@
             1906,
             1904,
             1896
-          ]
+          ],
+          "title": "Année"
         },
         {
           "key": "season",
@@ -267,7 +274,8 @@
           "enum": [
             "Summer",
             "Winter"
-          ]
+          ],
+          "title": "Saison"
         },
         {
           "key": "city",
@@ -324,7 +332,8 @@
             "Oslo",
             "Garmisch-Partenkirchen",
             "Chamonix"
-          ]
+          ],
+          "title": "Ville"
         },
         {
           "key": "sport",
@@ -344,7 +353,8 @@
           "x-originalName": "Event",
           "type": "string",
           "x-cardinality": 765,
-          "description": ""
+          "description": "",
+          "title": "Epreuve"
         },
         {
           "key": "medal",
@@ -357,7 +367,8 @@
             "Gold",
             "Bronze",
             "Silver"
-          ]
+          ],
+          "title": "Médaille"
         },
         {
           "x-calculated": true,

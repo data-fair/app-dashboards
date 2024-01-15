@@ -170,7 +170,7 @@
                             "title": "Large"
                           }
                         ],
-                        "default": 1
+                        "default": 2
                       }
                     },
                     "oneOf": [
@@ -216,7 +216,7 @@
         "valueMandatory": {
           "title": "Nécessite une valeur dans le filtre",
           "type": "boolean",
-          "default": true
+          "default": false
         },
         "dataset": {
           "type": "object",
@@ -288,7 +288,7 @@
         "valueMandatory": {
           "title": "Nécessite une valeur dans le filtre",
           "type": "boolean",
-          "default": true
+          "default": false
         },
         "application": {
           "type": "object",

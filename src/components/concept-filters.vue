@@ -9,6 +9,8 @@ const props = defineProps({
 })
 const emit = defineEmits(['update:model-value'])
 
+const fields = Object.assign({}, ...props.config.datasets[0].schema.map(f => ({[f.key]: f})))
+
 const filters = props.config.conceptFilters.map(filter => {
   const items = ref([])
   return {
@@ -107,7 +109,7 @@ filters.forEach(filter => { filter.searchItems('') })
           no-data-text="Aucun élément trouvé"
           :item-title="filter.labelField.key"
           return-object
-          :label="filter.labelField.label || filter.labelField.title || filter.labelField['x-originalName'] || filter.labelField.key"
+          :label="fields[filter.labelField.key].label || fields[filter.labelField.key].title || fields[filter.labelField.key]['x-originalName'] || filter.labelField.key"
           :clearable="!filter.forceOneValue"
           style="min-width:280px;"
           @update:search="search => !filter.showAllValues && filter.searchItems(search)"
