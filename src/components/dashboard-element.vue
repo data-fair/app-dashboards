@@ -5,7 +5,8 @@ import { computed } from 'vue'
 
 const props = defineProps({
   element: { type: Object, required: true },
-  height: { type: Number, default: 400 }
+  height: { type: Number, default: 400 },
+  conceptValues: { type: [Object, null], required: true }
 })
 
 const queryParamsExtra = computed(() => {
@@ -22,8 +23,15 @@ const queryParamsExtra = computed(() => {
 </script>
 
 <template>
+  <v-alert
+    v-if="element.valueMandatory && (!conceptValues || !element.concepts.find(c => conceptValues[c.key] ))"
+    type="info"
+    variant="outlined"
+  >
+    <h4>Veuillez sélectionner une valeur dans la liste</h4>
+  </v-alert>
   <v-iframe
-    v-if="element.type === 'tablePreview'"
+    v-else-if="element.type === 'tablePreview'"
     :src="`/data-fair/embed/dataset/${element.dataset.id}/table?display=${element.display}&interaction=${!element.noInteractions}${element.fields.length ? ('&cols=' + element.fields.join(',')) : ''}`"
     :query-params-extra="queryParamsExtra"
     :style="`height:${height>0 ? height+'px' : '100%'}`"

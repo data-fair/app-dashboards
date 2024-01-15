@@ -1,119 +1,122 @@
 {
   "sections": [
     {
-      "elements": [
+      "rows": [
         {
-          "width": "full",
-          "fields": [],
-          "noInteractions": false,
-          "display": "table",
-          "valueMandatory": false,
-          "concepts": [
+          "elements": [
             {
-              "key": "noc",
-              "label": "NOC",
-              "x-concept": {
-                "id": "countryCodeISOAlpha3",
-                "title": "Code pays (ISO, 3 caractères)",
-                "primary": true
+              "width": 1,
+              "elements": [
+                {
+                  "valueMandatory": true,
+                  "type": "tablePreview",
+                  "fields": [],
+                  "noInteractions": false,
+                  "display": "table",
+                  "dataset": {
+                    "id": "lr5m9tbsoabv528wgu7egeky",
+                    "title": "athlete events",
+                    "href": "http://localhost:5888/data-fair/api/v1/datasets/lr5m9tbsoabv528wgu7egeky"
+                  },
+                  "concepts": [
+                    {
+                      "key": "team",
+                      "label": "Team",
+                      "x-concept": {
+                        "id": "equipe",
+                        "title": "Equipe",
+                        "primary": true
+                      }
+                    }
+                  ]
+                },
+                {
+                  "fields": [],
+                  "noInteractions": false,
+                  "display": "table",
+                  "valueMandatory": true,
+                  "type": "tablePreview",
+                  "dataset": {
+                    "id": "lr5m9tbsoabv528wgu7egeky",
+                    "title": "athlete events",
+                    "href": "http://localhost:5888/data-fair/api/v1/datasets/lr5m9tbsoabv528wgu7egeky"
+                  },
+                  "concepts": [
+                    {
+                      "key": "team",
+                      "label": "Team",
+                      "x-concept": {
+                        "id": "equipe",
+                        "title": "Equipe",
+                        "primary": true
+                      }
+                    }
+                  ]
+                }
+              ],
+              "type": "column"
+            },
+            {
+              "width": 1,
+              "fields": [],
+              "noInteractions": false,
+              "display": "table",
+              "valueMandatory": true,
+              "type": "tablePreview",
+              "dataset": {
+                "id": "lr5m9tbsoabv528wgu7egeky",
+                "title": "athlete events",
+                "href": "http://localhost:5888/data-fair/api/v1/datasets/lr5m9tbsoabv528wgu7egeky"
+              },
+              "concepts": [
+                {
+                  "key": "team",
+                  "label": "Team",
+                  "x-concept": {
+                    "id": "equipe",
+                    "title": "Equipe",
+                    "primary": true
+                  }
+                }
+              ]
+            },
+            {
+              "width": 1,
+              "fields": [],
+              "noInteractions": false,
+              "display": "table",
+              "valueMandatory": true,
+              "concepts": [
+                {
+                  "key": "team",
+                  "label": "Team",
+                  "x-concept": {
+                    "id": "equipe",
+                    "title": "Equipe",
+                    "primary": true
+                  }
+                }
+              ],
+              "type": "tablePreview",
+              "dataset": {
+                "id": "lr5m9tbsoabv528wgu7egeky",
+                "title": "athlete events",
+                "href": "http://localhost:5888/data-fair/api/v1/datasets/lr5m9tbsoabv528wgu7egeky"
               }
             },
             {
-              "key": "games",
-              "label": "Games",
-              "x-concept": {
-                "id": "concept-event",
-                "title": "Evenement Sportif",
-                "primary": true
-              }
-            },
-            {
-              "key": "sport",
-              "label": "Sport",
-              "x-concept": {
-                "id": "discipline",
-                "title": "Discipline",
-                "primary": true
-              }
+              "width": 1,
+              "title": "texte",
+              "type": "text",
+              "content": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
             }
           ],
-          "type": "tablePreview",
-          "dataset": {
-            "id": "lr5m9tbsoabv528wgu7egeky",
-            "title": "athlete events",
-            "href": "http://localhost:5888/data-fair/api/v1/datasets/lr5m9tbsoabv528wgu7egeky"
-          }
-        },
-        {
-          "width": "medium",
-          "title": "texte !!!",
-          "type": "text",
-          "content": "blablabla\ndsfdsfdsfds"
+          "height": 400
         }
-      ],
-      "height": 400
+      ]
     }
   ],
   "sectionsGroup": "accordion",
-  "conceptFilters": [
-    {
-      "showAllValues": false,
-      "forceOneValue": false,
-      "labelField": {
-        "key": "_noc3_pays.region",
-        "label": "region"
-      },
-      "concepts": [
-        {
-          "key": "noc",
-          "label": "NOC",
-          "x-concept": {
-            "id": "countryCodeISOAlpha3",
-            "title": "Code pays (ISO, 3 caractères)",
-            "primary": true
-          }
-        }
-      ]
-    },
-    {
-      "showAllValues": false,
-      "forceOneValue": false,
-      "labelField": {
-        "key": "games",
-        "label": "Games"
-      },
-      "concepts": [
-        {
-          "key": "games",
-          "label": "Games",
-          "x-concept": {
-            "id": "concept-event",
-            "title": "Evenement Sportif",
-            "primary": true
-          }
-        }
-      ]
-    },
-    {
-      "showAllValues": false,
-      "forceOneValue": false,
-      "labelField": {
-        "key": "sport",
-        "label": "Sport"
-      },
-      "concepts": [
-        {
-          "key": "sport",
-          "label": "Sport",
-          "x-concept": {
-            "id": "discipline",
-            "title": "Discipline",
-            "primary": true
-          }
-        }
-      ]
-    }
-  ],
   "datasets": [
     {
       "href": "http://localhost:5888/data-fair/api/v1/datasets/lr5m9tbsoabv528wgu7egeky",
@@ -141,6 +144,16 @@
           "type": "string",
           "x-cardinality": 2,
           "description": "",
+          "x-refersTo": "sex",
+          "x-concept": {
+            "id": "sex",
+            "title": "Genre",
+            "primary": true
+          },
+          "x-labels": {
+            "M": "Homme",
+            "F": "Femme"
+          },
           "enum": [
             "M",
             "F"
@@ -172,7 +185,13 @@
           "x-originalName": "Team",
           "type": "string",
           "x-cardinality": 1184,
-          "description": ""
+          "description": "",
+          "x-refersTo": "equipe",
+          "x-concept": {
+            "id": "equipe",
+            "title": "Equipe",
+            "primary": true
+          }
         },
         {
           "key": "noc",
@@ -180,12 +199,7 @@
           "type": "string",
           "x-cardinality": 230,
           "description": "",
-          "x-refersTo": "https://www.omg.org/spec/LCC/Countries/CountryRepresentation/Alpha3Code",
-          "x-concept": {
-            "id": "countryCodeISOAlpha3",
-            "title": "Code pays (ISO, 3 caractères)",
-            "primary": true
-          }
+          "x-refersTo": null
         },
         {
           "key": "games",
@@ -346,24 +360,6 @@
           ]
         },
         {
-          "key": "_noc3_pays.region",
-          "x-originalName": "_noc3_pays.region",
-          "x-extension": "dataset:e-np3je0lsrmnx0qy2dye7cg/masterData_bulkSearch_noc3-pays",
-          "title": "region",
-          "description": "",
-          "type": "string",
-          "x-cardinality": 206
-        },
-        {
-          "key": "_noc3_pays._error",
-          "type": "string",
-          "x-originalName": "_error",
-          "x-extension": "dataset:e-np3je0lsrmnx0qy2dye7cg/masterData_bulkSearch_noc3-pays",
-          "title": "Erreur de récupération de données de référence",
-          "description": "Une erreur lors de la récupération des informations depuis un service distant",
-          "x-calculated": true
-        },
-        {
           "x-calculated": true,
           "key": "_id",
           "type": "string",
@@ -386,6 +382,27 @@
           "description": "Un nombre aléatoire associé à la ligne qui permet d'obtenir un tri aléatoire par exemple"
         }
       ]
+    }
+  ],
+  "conceptFilters": [
+    {
+      "showAllValues": false,
+      "forceOneValue": false,
+      "concepts": [
+        {
+          "key": "team",
+          "label": "Team",
+          "x-concept": {
+            "id": "equipe",
+            "title": "Equipe",
+            "primary": true
+          }
+        }
+      ],
+      "labelField": {
+        "key": "team",
+        "label": "Team"
+      }
     }
   ]
 }

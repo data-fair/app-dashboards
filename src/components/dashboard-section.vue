@@ -1,36 +1,39 @@
 <script setup>
-import dashboardElement from './dashboard-element.vue'
+import dashboardColumn from './dashboard-column.vue'
 
-defineProps({
+const props = defineProps({
   section: { type: Object, required: true },
   conceptValues: { type: [Object, null], required: true },
   hideTitle: { type: Boolean, default: false }
 })
 
 const widths = {
-  sm: {
-    small: 6,
-    medium: 12,
-    large: 12,
-    full: 12
-  },
-  md: {
-    small: 4,
-    medium: 6,
-    large: 8,
-    full: 12
-  },
-  lg: {
-    small: 3,
-    medium: 4,
-    large: 6,
-    full: 12
-  },
-  xl: {
-    small: 2,
-    medium: 3,
-    large: 6,
-    full: 12
+  sm: [6, 12, 12],
+  md: [4, 6, 8],
+  lg: [3, 4, 6],
+  xl: [2, 3, 6]
+}
+
+for (const row of props.section.rows){
+  for (const breakpoint of ['sm', 'md', 'lg', 'xl']) {
+    let i = 0
+    while(i < row.elements.length){
+      let j = i, cpt = 0
+      while (j < row.elements.length && cpt + widths[breakpoint][row.elements[j].width-1] <= 12 ) {
+        cpt += widths[breakpoint][row.elements[j].width-1]
+        j += 1
+      }
+      for (let k = i ; k < j ; k++) {
+        row.elements[k][breakpoint] = Math.floor(0.3 + 12 * widths[breakpoint][row.elements[k].width-1] / cpt)
+        row.elements[k].class = row.elements[k].class || (row.elements[k].type === 'text' ? ['order-first'] : [])
+        if (row.elements[k].type === 'text' && row.elements[k][breakpoint] === 12) {
+          row.elements[k].class.push('order-'+breakpoint+'-first')
+        } else {
+          row.elements[k].class.push('order-'+breakpoint+'-'+(k+1))
+        }
+      }
+      i = j
+    }
   }
 }
 </script>
@@ -54,15 +57,16 @@ const widths = {
   >
     {{ section.description }}
   </p>
-  <v-row>
+  <v-row v-for="(row,j) of (section.rows || [])" :key="j" justify="center">
     <v-col
-      v-for="(element,i) of (section.elements || [])"
+      v-for="(element,i) of (row.elements || [])"
       :key="i"
       :cols="12"
-      :sm="widths.sm[element.width]"
-      :md="widths.md[element.width]"
-      :lg="widths.lg[element.width]"
-      :xl="widths.xl[element.width]"
+      :sm="element.sm"
+      :md="element.md"
+      :lg="element.lg"
+      :xl="element.xl"
+      :class="element.class ? element.class.join(' ') : ''"
     >
       <h4
         v-if="element.title"
@@ -70,17 +74,10 @@ const widths = {
       >
         {{ element.title }}
       </h4>
-      <v-alert
-        v-if="element.valueMandatory && (!conceptValues || !element.concepts.find(c => conceptValues[c.key] ))"
-        type="info"
-        variant="outlined"
-      >
-        <h4>Veuillez sélectionner une valeur dans la liste</h4>
-      </v-alert>
-      <dashboard-element
-        v-else
+      <dashboard-column
         :element="element"
-        :height="section.height"
+        :height="row.height"
+        :concept-values="conceptValues"
       />
     </v-col>
   </v-row>
