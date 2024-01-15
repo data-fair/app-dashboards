@@ -113,10 +113,23 @@
           ],
           "height": 400
         }
-      ]
+      ],
+      "title": "Section 1"
+    },
+    {
+      "rows": [],
+      "title": "Section 2"
+    },
+    {
+      "rows": [],
+      "title": "Section 3"
+    },
+    {
+      "rows": [],
+      "title": "Section 4"
     }
   ],
-  "sectionsGroup": "accordion",
+  "sectionsGroup": "tabs-button",
   "datasets": [
     {
       "href": "http://localhost:5888/data-fair/api/v1/datasets/lr5m9tbsoabv528wgu7egeky",

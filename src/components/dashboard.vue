@@ -103,12 +103,13 @@ const sumTitleLength = config.sections.reduce((/** @type{any} */acc, /** @type{a
               v-model="tab"
               color="primary"
               mandatory
-              :style="sumTitleLength >= 200 ? `flex-direction: column;height:${config.sections.length*19}px`:''"
+              :style="sumTitleLength*15 >= $vuetify.display.width ? `flex-direction: column;height:${config.sections.length*36}px`:''"
             >
               <v-btn
                 v-for="(section, i) of (config.sections || [])"
                 :key="i"
                 :value="i"
+                :height="sumTitleLength*15 >= $vuetify.display.width ? 36 : 48"
               >
                 <template v-if="section.icon">
                   <v-icon>
