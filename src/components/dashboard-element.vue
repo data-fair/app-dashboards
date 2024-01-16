@@ -12,8 +12,7 @@ const props = defineProps({
 const queryParamsExtra = computed(() => {
   const qpe = {}
   props.element.concepts.forEach(concept => {
-    const conceptParamKey = `_c_${concept['x-concept'].id}_eq`
-    if (reactiveSearchParams[conceptParamKey]) qpe[conceptParamKey] = reactiveSearchParams[conceptParamKey]
+    if (props.conceptValues[concept.key]) qpe[`_c_${concept['x-concept'].id}_eq`] = props.conceptValues[concept.key]
   })
   if (reactiveSearchParams.primary) qpe.primary = reactiveSearchParams.primary
   if (reactiveSearchParams.secondary) qpe.secondary = reactiveSearchParams.secondary

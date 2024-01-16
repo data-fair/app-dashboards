@@ -32,7 +32,7 @@ for (const filter of config.conceptFilters) {
   }
 }
 
-const conceptValues = ref(null)
+const conceptValues = ref({})
 const tab = ref(null)
 const maxTitleLength = Math.max(...config.sections.map((/** @type{any} */s) => (s.title && s.title.length) || 0))
 const sumTitleLength = config.sections.reduce((/** @type{any} */acc, /** @type{any} */s) => acc + ((s.title && s.title.length) || 0), 0)

@@ -5,94 +5,36 @@
         {
           "elements": [
             {
-              "width": 1,
-              "elements": [
+              "width": 2,
+              "fields": [],
+              "noInteractions": false,
+              "display": "table",
+              "valueMandatory": false,
+              "concepts": [
                 {
-                  "valueMandatory": true,
-                  "type": "tablePreview",
-                  "fields": [],
-                  "noInteractions": false,
-                  "display": "table",
-                  "dataset": {
-                    "id": "lr5m9tbsoabv528wgu7egeky",
-                    "title": "athlete events",
-                    "href": "http://localhost:5888/data-fair/api/v1/datasets/lr5m9tbsoabv528wgu7egeky"
-                  },
-                  "concepts": [
-                    {
-                      "key": "team",
-                      "label": "Team",
-                      "x-concept": {
-                        "id": "equipe",
-                        "title": "Equipe",
-                        "primary": true
-                      }
-                    }
-                  ]
+                  "key": "sex",
+                  "label": "Sexe",
+                  "x-concept": {
+                    "id": "sex",
+                    "title": "Genre",
+                    "primary": true
+                  }
                 },
                 {
-                  "fields": [],
-                  "noInteractions": false,
-                  "display": "table",
-                  "valueMandatory": true,
-                  "type": "tablePreview",
-                  "dataset": {
-                    "id": "lr5m9tbsoabv528wgu7egeky",
-                    "title": "athlete events",
-                    "href": "http://localhost:5888/data-fair/api/v1/datasets/lr5m9tbsoabv528wgu7egeky"
-                  },
-                  "concepts": [
-                    {
-                      "key": "team",
-                      "label": "Team",
-                      "x-concept": {
-                        "id": "equipe",
-                        "title": "Equipe",
-                        "primary": true
-                      }
-                    }
-                  ]
-                }
-              ],
-              "type": "column"
-            },
-            {
-              "width": 1,
-              "fields": [],
-              "noInteractions": false,
-              "display": "table",
-              "valueMandatory": true,
-              "type": "tablePreview",
-              "dataset": {
-                "id": "lr5m9tbsoabv528wgu7egeky",
-                "title": "athlete events",
-                "href": "http://localhost:5888/data-fair/api/v1/datasets/lr5m9tbsoabv528wgu7egeky"
-              },
-              "concepts": [
-                {
                   "key": "team",
-                  "label": "Team",
+                  "label": "Equipe",
                   "x-concept": {
                     "id": "equipe",
                     "title": "Equipe",
                     "primary": true
                   }
-                }
-              ]
-            },
-            {
-              "width": 1,
-              "fields": [],
-              "noInteractions": false,
-              "display": "table",
-              "valueMandatory": true,
-              "concepts": [
+                },
                 {
-                  "key": "team",
-                  "label": "Team",
+                  "key": "sport",
+                  "label": "Sport",
                   "x-concept": {
-                    "id": "equipe",
-                    "title": "Equipe",
+                    "id": "discipline",
+                    "title": "Discipline",
                     "primary": true
                   }
                 }
@@ -100,33 +42,14 @@
               "type": "tablePreview",
               "dataset": {
                 "id": "lr5m9tbsoabv528wgu7egeky",
-                "title": "athlete events",
+                "title": "Historique des résultats des athlètes aux jeux olympiques",
                 "href": "http://localhost:5888/data-fair/api/v1/datasets/lr5m9tbsoabv528wgu7egeky"
               }
-            },
-            {
-              "width": 1,
-              "title": "texte",
-              "type": "text",
-              "content": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
             }
           ],
           "height": 400
         }
-      ],
-      "title": "Section 1"
-    },
-    {
-      "rows": [],
-      "title": "Section 2"
-    },
-    {
-      "rows": [],
-      "title": "Section 3"
-    },
-    {
-      "rows": [],
-      "title": "Section 4"
+      ]
     }
   ],
   "sectionsGroup": "tabs-button",
@@ -426,6 +349,45 @@
       "labelField": {
         "key": "team",
         "label": "Team"
+      }
+    },
+    {
+      "showAllValues": false,
+      "forceOneValue": true,
+      "concepts": [
+        {
+          "key": "sport",
+          "label": "Sport",
+          "x-concept": {
+            "id": "discipline",
+            "title": "Discipline",
+            "primary": true
+          }
+        }
+      ],
+      "labelField": {
+        "key": "sport",
+        "label": "Sport"
+      },
+      "startValue": "Alpine Skiing"
+    },
+    {
+      "showAllValues": true,
+      "forceOneValue": false,
+      "concepts": [
+        {
+          "key": "sex",
+          "label": "Sexe",
+          "x-concept": {
+            "id": "sex",
+            "title": "Genre",
+            "primary": true
+          }
+        }
+      ],
+      "labelField": {
+        "key": "sex",
+        "label": "Sexe"
       }
     }
   ]
