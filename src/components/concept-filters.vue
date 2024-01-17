@@ -9,7 +9,7 @@ const props = defineProps({
 })
 const emit = defineEmits(['update:model-value'])
 
-const fields = Object.assign({}, ...props.config.datasets[0].schema.map(f => ({[f.key]: f})))
+const fields = Object.assign({}, ...props.config.datasets[0].schema.map(f => ({ [f.key]: f })))
 
 const filters = props.config.conceptFilters.map(filter => {
   const items = ref([])
@@ -55,7 +55,7 @@ const updateConcepts = async (noFieldUpdate) => {
   }
   emit('update:model-value', conceptValues)
   filters.forEach(filter => {
-    if(filter.labelField.key !== noFieldUpdate) filter.searchItems()
+    if (filter.labelField.key !== noFieldUpdate) filter.searchItems()
   })
 }
 

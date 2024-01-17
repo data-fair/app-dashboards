@@ -11,8 +11,8 @@ const props = defineProps({
 
 <template>
   <dashboard-element
-    v-if="element.type==='column'"
     v-for="(el, k) in element.elements"
+    v-if="element.type==='column'"
     :key="k"
     :element="el"
     :height="height / element.elements.length"
@@ -24,5 +24,4 @@ const props = defineProps({
     :height="height"
     :concept-values="conceptValues"
   />
-
 </template>
