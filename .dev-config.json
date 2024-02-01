@@ -1,57 +1,5 @@
 {
-  "sections": [
-    {
-      "rows": [
-        {
-          "elements": [
-            {
-              "width": 2,
-              "fields": [],
-              "noInteractions": false,
-              "display": "table",
-              "valueMandatory": false,
-              "concepts": [
-                {
-                  "key": "sex",
-                  "label": "Sexe",
-                  "x-concept": {
-                    "id": "sex",
-                    "title": "Genre",
-                    "primary": true
-                  }
-                },
-                {
-                  "key": "team",
-                  "label": "Equipe",
-                  "x-concept": {
-                    "id": "equipe",
-                    "title": "Equipe",
-                    "primary": true
-                  }
-                },
-                {
-                  "key": "sport",
-                  "label": "Sport",
-                  "x-concept": {
-                    "id": "discipline",
-                    "title": "Discipline",
-                    "primary": true
-                  }
-                }
-              ],
-              "type": "tablePreview",
-              "dataset": {
-                "id": "lr5m9tbsoabv528wgu7egeky",
-                "title": "Historique des résultats des athlètes aux jeux olympiques",
-                "href": "http://localhost:5888/data-fair/api/v1/datasets/lr5m9tbsoabv528wgu7egeky"
-              }
-            }
-          ],
-          "height": 400
-        }
-      ]
-    }
-  ],
+  "sections": [],
   "sectionsGroup": "tabs-button",
   "datasets": [
     {
@@ -338,7 +286,7 @@
       "concepts": [
         {
           "key": "team",
-          "label": "Team",
+          "label": "Equipe",
           "x-concept": {
             "id": "equipe",
             "title": "Equipe",
@@ -353,7 +301,7 @@
     },
     {
       "showAllValues": false,
-      "forceOneValue": true,
+      "forceOneValue": false,
       "concepts": [
         {
           "key": "sport",
@@ -368,26 +316,25 @@
       "labelField": {
         "key": "sport",
         "label": "Sport"
-      },
-      "startValue": "Alpine Skiing"
+      }
     },
     {
-      "showAllValues": true,
+      "showAllValues": false,
       "forceOneValue": false,
       "concepts": [
         {
-          "key": "sex",
-          "label": "Sexe",
+          "key": "city",
+          "label": "Ville",
           "x-concept": {
-            "id": "sex",
-            "title": "Genre",
+            "id": "city",
+            "title": "Commune",
             "primary": true
           }
         }
       ],
       "labelField": {
-        "key": "sex",
-        "label": "Sexe"
+        "key": "games",
+        "label": "Jeux"
       }
     }
   ]

@@ -5,6 +5,7 @@ import reactiveSearchParams from '@data-fair/lib/vue/reactive-search-params.js'
 import 'iframe-resizer/js/iframeResizer'
 import conceptFilters from './concept-filters.vue'
 import dashboardSection from './dashboard-section.vue'
+import { escape } from '@data-fair/lib/filters.js'
 
 // @ts-ignore
 const application = window.APPLICATION
@@ -27,8 +28,30 @@ if (!config.conceptFilters || !config.conceptFilters.length) {
 // TODO : set error if same concept is usesd in 2 filters
 
 for (const filter of config.conceptFilters) {
-  if (!reactiveSearchParams[filter.labelField.key] && filter.startValue) {
+  if (!reactiveSearchParams[filter.labelField.key] && filter.forceOneValue && filter.startValue) {
     reactiveSearchParams[filter.labelField.key] = filter.startValue
+  }
+}
+
+for (const key in reactiveSearchParams) {
+  if (key.startsWith('_c_')) {
+    const concept = key.slice(3, key.lastIndexOf('_'))
+    const filter = config.conceptFilters.find(f => {
+      return f.concepts.find(c => c['x-concept'].id === concept)
+    })
+    if (filter) {
+      const field = filter.concepts.find(c => c['x-concept'].id === concept)
+      const params = {
+        select: field.key + ',' + filter.labelField.key,
+        qs: `${escape(field.key)}:"${escape(reactiveSearchParams[key])}"`,
+        size: 1
+      }
+      const res = await ofetch(config.datasets[0].href + '/lines', { params })
+      if (res.results.length) {
+        reactiveSearchParams[filter.labelField.key] = res.results[0][filter.labelField.key]
+        delete reactiveSearchParams[key]
+      }
+    }
   }
 }
 
