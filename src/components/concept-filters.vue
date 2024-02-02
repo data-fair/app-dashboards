@@ -25,6 +25,9 @@ const filters = props.config.conceptFilters.map(filter => {
       } else {
         params.size = 1000
       }
+      if (props.config.datasets[0].timePeriod) {
+        params._c_date_match = reactiveSearchParams.startDate + ',' + reactiveSearchParams.endDate
+      }
       if (qs.length) params.qs = qs.join(' AND ')
       const values = await ofetch(props.config.datasets[0].href + '/values/' + filter.labelField.key, { params })
       if (reactiveSearchParams[filter.labelField.key] && !values.includes(reactiveSearchParams[filter.labelField.key])) {
@@ -52,6 +55,9 @@ const updateConcepts = async (noFieldUpdate) => {
     if (qs.length) params.qs = qs.join(' AND ')
     const res = await ofetch(props.config.datasets[0].href + '/lines', { params })
     conceptValues = res.results.pop() || {}
+  }
+  if (props.config.datasets[0].timePeriod) {
+    conceptValues._c_date_match = reactiveSearchParams.startDate + ',' + reactiveSearchParams.endDate
   }
   emit('update:model-value', conceptValues)
   filters.forEach(filter => {
@@ -89,6 +95,26 @@ await updateConcepts()
           @update:search="search => (search == null || search.length) && search !== reactiveSearchParams[filter.labelField.key] && !filter.showAllValues && filter.searchItems(search)"
           @update:model-value="updateValue(filter, $event)"
         />
+      </v-col>
+      <v-col cols="auto">
+        <v-row v-if="config.datasets[0].timePeriod">
+          <v-col>
+            <v-text-field
+              v-model="reactiveSearchParams.startDate"
+              type="date"
+              label="Date de début"
+              @update:model-value="updateConcepts()"
+            />
+          </v-col>
+          <v-col>
+            <v-text-field
+              v-model="reactiveSearchParams.endDate"
+              type="date"
+              label="Date de fin"
+              @update:model-value="updateConcepts()"
+            />
+          </v-col>
+        </v-row>
       </v-col>
     </v-row>
   </v-card>

@@ -13,6 +13,7 @@ const queryParamsExtra = computed(() => {
   const qpe = {}
   props.element.concepts.forEach(concept => {
     if (props.conceptValues[concept.key]) qpe[`_c_${concept['x-concept'].id}_eq`] = props.conceptValues[concept.key]
+    if (['date', 'startDate', 'endDate'].includes(concept['x-concept'].id)) qpe._c_date_match = props.conceptValues._c_date_match
   })
   if (reactiveSearchParams.primary) qpe.primary = reactiveSearchParams.primary
   if (reactiveSearchParams.secondary) qpe.secondary = reactiveSearchParams.secondary

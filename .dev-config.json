@@ -1,258 +1,287 @@
 {
-  "sections": [],
-  "sectionsGroup": "tabs-button",
-  "datasets": [
+  "sections": [
     {
-      "href": "http://localhost:5888/data-fair/api/v1/datasets/lr5m9tbsoabv528wgu7egeky",
-      "title": "Historique des réultats des athlètes aux jeux olympiques",
-      "id": "lr5m9tbsoabv528wgu7egeky",
-      "schema": [
+      "rows": [
         {
-          "key": "id",
-          "x-originalName": "ID",
-          "type": "integer",
-          "x-cardinality": 136163,
-          "description": ""
-        },
-        {
-          "key": "name",
-          "x-originalName": "Name",
-          "type": "string",
-          "x-cardinality": 135539,
-          "description": "",
-          "x-refersTo": null,
-          "title": "Nom"
-        },
-        {
-          "key": "sex",
-          "x-originalName": "Sex",
-          "type": "string",
-          "x-cardinality": 2,
-          "description": "",
-          "x-refersTo": "sex",
-          "x-concept": {
-            "id": "sex",
-            "title": "Genre",
-            "primary": true
-          },
-          "x-labels": {
-            "M": "Homme",
-            "F": "Femme"
-          },
-          "enum": [
-            "M",
-            "F"
+          "elements": [
+            {
+              "width": 2,
+              "fields": [],
+              "noInteractions": false,
+              "display": "table",
+              "valueMandatory": false,
+              "concepts": [
+                {
+                  "key": "Date_de_début",
+                  "label": "Date de début",
+                  "x-concept": {
+                    "id": "startDate",
+                    "title": "Date de début",
+                    "primary": true
+                  }
+                },
+                {
+                  "key": "Date_de_fin",
+                  "label": "Date de fin",
+                  "x-concept": {
+                    "id": "endDate",
+                    "title": "Date de fin",
+                    "primary": true
+                  }
+                }
+              ],
+              "type": "tablePreview",
+              "dataset": {
+                "id": "fr-en-calendrier-scolaire",
+                "title": "Calendrier scolaire",
+                "href": "http://localhost:5888/data-fair/api/v1/datasets/fr-en-calendrier-scolaire"
+              }
+            }
           ],
-          "title": "Sexe"
-        },
+          "height": 400
+        }
+      ]
+    }
+  ],
+  "sectionsGroup": "accordion",
+  "conceptFilters": [
+    {
+      "showAllValues": false,
+      "forceOneValue": false,
+      "concepts": [
         {
-          "key": "age",
-          "x-originalName": "Age",
-          "type": "integer",
-          "x-cardinality": 74,
-          "description": ""
-        },
-        {
-          "key": "height",
-          "x-originalName": "Height",
-          "type": "integer",
-          "x-cardinality": 95,
-          "description": "",
-          "title": "Taille"
-        },
-        {
-          "key": "weight",
-          "x-originalName": "Weight",
-          "type": "number",
-          "x-cardinality": 220,
-          "description": "",
-          "title": "Poids"
-        },
-        {
-          "key": "team",
-          "x-originalName": "Team",
-          "type": "string",
-          "x-cardinality": 1184,
-          "description": "",
-          "x-refersTo": "equipe",
+          "key": "Description",
+          "label": "Description",
           "x-concept": {
-            "id": "equipe",
-            "title": "Equipe",
-            "primary": true
-          },
-          "title": "Equipe"
-        },
-        {
-          "key": "noc",
-          "x-originalName": "NOC",
-          "type": "string",
-          "x-cardinality": 230,
-          "description": "",
-          "x-refersTo": null
-        },
-        {
-          "key": "games",
-          "x-originalName": "Games",
-          "type": "string",
-          "x-cardinality": 51,
-          "description": "",
-          "x-refersTo": "concept-event",
-          "x-concept": {
-            "id": "concept-event",
-            "title": "Evenement Sportif",
-            "primary": true
-          },
-          "title": "Jeux"
-        },
-        {
-          "key": "year",
-          "x-originalName": "Year",
-          "type": "integer",
-          "x-cardinality": 35,
-          "description": "",
-          "enum": [
-            1992,
-            1988,
-            2000,
-            1996,
-            2016,
-            2008,
-            2004,
-            2012,
-            1972,
-            1984,
-            1976,
-            1968,
-            1964,
-            1952,
-            1960,
-            1980,
-            1948,
-            1936,
-            1956,
-            1924,
-            1928,
-            2014,
-            2010,
-            2006,
-            1920,
-            2002,
-            1912,
-            1998,
-            1932,
-            1994,
-            1908,
-            1900,
-            1906,
-            1904,
-            1896
-          ],
-          "title": "Année"
-        },
-        {
-          "key": "season",
-          "x-originalName": "Season",
-          "type": "string",
-          "x-cardinality": 2,
-          "description": "",
-          "enum": [
-            "Summer",
-            "Winter"
-          ],
-          "title": "Saison"
-        },
-        {
-          "key": "city",
-          "x-originalName": "City",
-          "type": "string",
-          "x-cardinality": 42,
-          "description": "",
-          "x-refersTo": "http://schema.org/City",
-          "x-concept": {
-            "id": "city",
-            "title": "Commune",
-            "primary": true
-          },
-          "enum": [
-            "London",
-            "Athina",
-            "Sydney",
-            "Atlanta",
-            "Rio de Janeiro",
-            "Beijing",
-            "Barcelona",
-            "Los Angeles",
-            "Seoul",
-            "Munich",
-            "Montreal",
-            "Mexico City",
-            "Helsinki",
-            "Roma",
-            "Tokyo",
-            "Moskva",
-            "Paris",
-            "Berlin",
-            "Amsterdam",
-            "Sochi",
-            "Melbourne",
-            "Vancouver",
-            "Torino",
-            "Stockholm",
-            "Antwerpen",
-            "Salt Lake City",
-            "Innsbruck",
-            "Nagano",
-            "Albertville",
-            "Lillehammer",
-            "Calgary",
-            "Sarajevo",
-            "Lake Placid",
-            "Grenoble",
-            "Sankt Moritz",
-            "Sapporo",
-            "Cortina d'Ampezzo",
-            "St. Louis",
-            "Squaw Valley",
-            "Oslo",
-            "Garmisch-Partenkirchen",
-            "Chamonix"
-          ],
-          "title": "Ville"
-        },
-        {
-          "key": "sport",
-          "x-originalName": "Sport",
-          "type": "string",
-          "x-cardinality": 66,
-          "description": "",
-          "x-refersTo": "discipline",
-          "x-concept": {
-            "id": "discipline",
-            "title": "Discipline",
+            "id": "label",
+            "title": "Libellé",
             "primary": true
           }
-        },
+        }
+      ],
+      "labelField": {
+        "key": "Description",
+        "label": "Description"
+      }
+    }
+  ],
+  "datasets": [
+    {
+      "href": "http://localhost:5888/data-fair/api/v1/datasets/fr-en-calendrier-scolaire",
+      "title": "Calendrier scolaire",
+      "id": "fr-en-calendrier-scolaire",
+      "schema": [
         {
-          "key": "event",
-          "x-originalName": "Event",
+          "key": "Description",
           "type": "string",
-          "x-cardinality": 765,
-          "description": "",
-          "title": "Epreuve"
-        },
-        {
-          "key": "medal",
-          "x-originalName": "Medal",
-          "type": "string",
-          "x-cardinality": 4,
-          "description": "",
+          "x-originalName": "Description",
+          "x-cardinality": 31,
+          "x-refersTo": "http://www.w3.org/2000/01/rdf-schema#label",
+          "x-concept": {
+            "id": "label",
+            "title": "Libellé",
+            "primary": true
+          },
+          "x-capabilities": {
+            "textAgg": true
+          },
           "enum": [
-            "NA",
-            "Gold",
-            "Bronze",
-            "Silver"
+            "Vacances d'Été",
+            "Vacances de Noël",
+            "Vacances de la Toussaint",
+            "Vacances de Printemps",
+            "Vacances d'Hiver",
+            "Pont de l'Ascension",
+            "Début des Vacances d'Été",
+            "Grandes Vacances",
+            "Vacances de Carnaval",
+            "Vacances d'Hiver austral",
+            "Vacances 1ère période",
+            "Vacances 2ème période",
+            "Vacances 3ème période",
+            "Vacances 4ème période",
+            "Vacances après 1ère période",
+            "Vacances après 3ème période",
+            "Vacances après 4ème période",
+            "Vacances d'Été austral",
+            "Abolition de l’esclavage",
+            "Vacances de Février",
+            "Vacances de Mai",
+            "Vacances de Novembre",
+            "Vacances de Pâques",
+            "Vacances de Septembre",
+            "Début des Grandes Vacances",
+            "Mi-carême",
+            "Pont",
+            "Pentecôte",
+            "Semaine en mai",
+            "Ascension",
+            "Début des Vacances d'Hiver austral"
           ],
-          "title": "Médaille"
+          "description": ""
+        },
+        {
+          "key": "Population",
+          "type": "string",
+          "x-originalName": "Population",
+          "x-cardinality": 19,
+          "x-capabilities": {
+            "textAgg": true
+          },
+          "enum": [
+            "-",
+            "Enseignants",
+            "Élèves",
+            "Élèves du premier degré",
+            "Enseignants du premier degré",
+            "Guadeloupe & Saint-Martin",
+            "Élèves du second degré",
+            "Enseignants du second degré",
+            "Premier degré et collèges",
+            "Saint-Barthélémy",
+            "Saint-Martin",
+            "Enseignants des collèges",
+            "Enseignants des lycées",
+            "Guadeloupe sauf Saint-Martin",
+            "Élèves des collèges",
+            "Élèves des lycées",
+            "Collèges",
+            "Lycées",
+            "Premier degré"
+          ],
+          "description": ""
+        },
+        {
+          "key": "Date_de_début",
+          "type": "string",
+          "x-originalName": "Date de début",
+          "format": "date-time",
+          "x-cardinality": 299,
+          "x-refersTo": "https://schema.org/startDate",
+          "x-concept": {
+            "id": "startDate",
+            "title": "Date de début",
+            "primary": true
+          },
+          "description": ""
+        },
+        {
+          "key": "Date_de_fin",
+          "type": "string",
+          "x-originalName": "Date de fin",
+          "format": "date-time",
+          "x-cardinality": 347,
+          "x-refersTo": "https://schema.org/endDate",
+          "x-concept": {
+            "id": "endDate",
+            "title": "Date de fin",
+            "primary": true
+          },
+          "description": ""
+        },
+        {
+          "key": "Académies",
+          "type": "string",
+          "x-originalName": "Académies",
+          "x-cardinality": 36,
+          "x-capabilities": {
+            "textAgg": true
+          },
+          "enum": [
+            "Corse",
+            "Polynésie",
+            "Aix-Marseille",
+            "Amiens",
+            "Besançon",
+            "Bordeaux",
+            "Clermont-Ferrand",
+            "Créteil",
+            "Dijon",
+            "Grenoble",
+            "Lille",
+            "Limoges",
+            "Lyon",
+            "Montpellier",
+            "Nancy-Metz",
+            "Nantes",
+            "Nice",
+            "Orléans-Tours",
+            "Paris",
+            "Poitiers",
+            "Reims",
+            "Rennes",
+            "Strasbourg",
+            "Toulouse",
+            "Versailles",
+            "Réunion",
+            "Guadeloupe",
+            "Normandie",
+            "Martinique",
+            "Guyane",
+            "Saint Pierre et Miquelon",
+            "Mayotte",
+            "Nouvelle Calédonie",
+            "Wallis et Futuna",
+            "Caen",
+            "Rouen"
+          ],
+          "description": ""
+        },
+        {
+          "key": "Zones",
+          "x-originalName": "Zones",
+          "type": "string",
+          "x-cardinality": 13,
+          "enum": [
+            "Zone B",
+            "Zone A",
+            "Zone C",
+            "Corse",
+            "Polynésie",
+            "Réunion",
+            "Guadeloupe",
+            "Martinique",
+            "Guyane",
+            "Saint Pierre et Miquelon",
+            "Mayotte",
+            "Nouvelle Calédonie",
+            "Wallis et Futuna"
+          ],
+          "description": ""
+        },
+        {
+          "key": "annee_scolaire",
+          "type": "string",
+          "x-originalName": "annee_scolaire",
+          "x-cardinality": 22,
+          "x-capabilities": {
+            "textAgg": true
+          },
+          "enum": [
+            "2021-2022",
+            "2020-2021",
+            "2018-2019",
+            "2022-2023",
+            "2019-2020",
+            "2017-2018",
+            "2023-2024",
+            "2024-2025",
+            "2025-2026",
+            "2018",
+            "2019",
+            "2020",
+            "2021",
+            "2022",
+            "2009-2010",
+            "2010-2011",
+            "2011-2012",
+            "2012-2013",
+            "2013-2014",
+            "2014-2015",
+            "2015-2016",
+            "2016-2017"
+          ],
+          "description": ""
         },
         {
           "x-calculated": true,
@@ -276,65 +305,10 @@
           "title": "Nombre aléatoire",
           "description": "Un nombre aléatoire associé à la ligne qui permet d'obtenir un tri aléatoire par exemple"
         }
-      ]
-    }
-  ],
-  "conceptFilters": [
-    {
-      "showAllValues": false,
-      "forceOneValue": false,
-      "concepts": [
-        {
-          "key": "team",
-          "label": "Equipe",
-          "x-concept": {
-            "id": "equipe",
-            "title": "Equipe",
-            "primary": true
-          }
-        }
       ],
-      "labelField": {
-        "key": "team",
-        "label": "Team"
-      }
-    },
-    {
-      "showAllValues": false,
-      "forceOneValue": false,
-      "concepts": [
-        {
-          "key": "sport",
-          "label": "Sport",
-          "x-concept": {
-            "id": "discipline",
-            "title": "Discipline",
-            "primary": true
-          }
-        }
-      ],
-      "labelField": {
-        "key": "sport",
-        "label": "Sport"
-      }
-    },
-    {
-      "showAllValues": false,
-      "forceOneValue": false,
-      "concepts": [
-        {
-          "key": "city",
-          "label": "Ville",
-          "x-concept": {
-            "id": "city",
-            "title": "Commune",
-            "primary": true
-          }
-        }
-      ],
-      "labelField": {
-        "key": "games",
-        "label": "Jeux"
+      "timePeriod": {
+        "startDate": "2009-10-25T23:00:00.000Z",
+        "endDate": "2026-07-03T22:00:00.000Z"
       }
     }
   ]

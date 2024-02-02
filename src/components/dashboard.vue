@@ -28,9 +28,13 @@ if (!config.conceptFilters || !config.conceptFilters.length) {
 // TODO : set error if same concept is usesd in 2 filters
 
 for (const filter of config.conceptFilters) {
-  if (!reactiveSearchParams[filter.labelField.key] && filter.forceOneValue && filter.startValue) {
+  if (filter.type === 'field' && !reactiveSearchParams[filter.labelField.key] && filter.forceOneValue && filter.startValue) {
     reactiveSearchParams[filter.labelField.key] = filter.startValue
   }
+}
+if (config.datasets[0].timePeriod) {
+  if (!reactiveSearchParams.startDate) reactiveSearchParams.startDate = config.datasets[0].timePeriod.startDate.slice(0, 10)
+  if (!reactiveSearchParams.endDate) reactiveSearchParams.endDate = config.datasets[0].timePeriod.endDate.slice(0, 10)
 }
 
 for (const key in reactiveSearchParams) {
