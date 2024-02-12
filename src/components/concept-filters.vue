@@ -96,8 +96,11 @@ await updateConcepts()
           @update:model-value="updateValue(filter, $event)"
         />
       </v-col>
-      <v-col cols="auto">
-        <v-row v-if="config.datasets[0].timePeriod">
+      <v-col
+        v-if="config.datasets[0].timePeriod"
+        cols="auto"
+      >
+        <v-row>
           <v-col>
             <v-text-field
               v-model="reactiveSearchParams.startDate"
