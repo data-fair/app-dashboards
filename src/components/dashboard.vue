@@ -1,7 +1,7 @@
 <script setup>
 import { ofetch } from 'ofetch'
 import { ref } from 'vue'
-import reactiveSearchParams from '@data-fair/lib/vue/reactive-search-params.js'
+import reactiveSearchParams from '@data-fair/lib/vue/reactive-search-params-global.js'
 import 'iframe-resizer/js/iframeResizer'
 import conceptFilters from './concept-filters.vue'
 import dashboardSection from './dashboard-section.vue'
@@ -15,59 +15,64 @@ const setError = (/** @type{any} */error) => {
   ofetch(application.href + '/error', { method: 'POST', body: { message: error.message || error } })
 }
 
+const conceptValues = ref({})
+const tab = ref(null)
+let maxTitleLength = 0
+let sumTitleLength = 0
+
 const incompleteConfiguration = !config.datasets || !config.datasets.length
 if (incompleteConfiguration) {
   setError('Veuillez choisir un source de données pour le filtre commun')
-}
-// const labelField = config.datasets[0].schema.find((/** @type{any} */f) => f.key === config.labelField) || config.datasets[0].schema.find((/** @type{any} */f) => f['x-refersTo'] === 'http://www.w3.org/2000/01/rdf-schema#label')
-if (!config.conceptFilters || !config.conceptFilters.length) {
+} else if ((!config.conceptFilters || !config.conceptFilters.length) && !config.datasets[0].timePeriod && !config.datasets[0].bbox) {
   setError('Veuillez configurer un filtre')
-}
+} else {
 /** @type{any[]} */
-// const conceptsFields = [].concat(...config.sections.map((/** @type{any} */s) => [].concat(...s.elements.filter((/** @type{any} */e) => e.concepts && e.concepts.length).map((/** @type{any} */e) => e.concepts)))).filter((/** @type{any} */e1, i, s) => s.findIndex((/** @type{any} */e2) => e1.key === e2.key) === i)
-// TODO : set error if same concept is usesd in 2 filters
+  // const conceptsFields = [].concat(...config.sections.map((/** @type{any} */s) => [].concat(...s.elements.filter((/** @type{any} */e) => e.concepts && e.concepts.length).map((/** @type{any} */e) => e.concepts)))).filter((/** @type{any} */e1, i, s) => s.findIndex((/** @type{any} */e2) => e1.key === e2.key) === i)
+  // TODO : set error if same concept is usesd in 2 filters
 
-for (const filter of config.conceptFilters) {
-  if (filter.type === 'field' && !reactiveSearchParams[filter.labelField.key] && filter.forceOneValue && filter.startValue) {
-    reactiveSearchParams[filter.labelField.key] = filter.startValue
+  for (const filter of config.conceptFilters) {
+    if (filter.type === 'field' && !reactiveSearchParams[filter.labelField.key] && filter.forceOneValue && filter.startValue) {
+      reactiveSearchParams[filter.labelField.key] = filter.startValue
+    }
   }
-}
-if (config.datasets[0].timePeriod) {
-  if (!reactiveSearchParams.startDate) reactiveSearchParams.startDate = config.datasets[0].timePeriod.startDate.slice(0, 10)
-  if (!reactiveSearchParams.endDate) reactiveSearchParams.endDate = config.datasets[0].timePeriod.endDate.slice(0, 10)
-}
+  if (config.datasets[0].timePeriod && !reactiveSearchParams.period) {
+    const start = config.datasets[0].timePeriod.startDate.slice(0, 10)
+    const end = config.datasets[0].timePeriod.endDate.slice(0, 10)
+    const period = [start]
+    if (start !== end) period.push(end)
+    reactiveSearchParams.period = period.join(',')
+  }
 
-for (const key in reactiveSearchParams) {
-  if (key.startsWith('_c_')) {
-    const concept = key.slice(3, key.lastIndexOf('_'))
-    const filter = config.conceptFilters.find(f => {
-      return f.concepts.find(c => c['x-concept'].id === concept)
-    })
-    if (filter) {
-      const field = filter.concepts.find(c => c['x-concept'].id === concept)
-      const params = {
-        select: field.key + ',' + filter.labelField.key,
-        qs: `${escape(field.key)}:"${escape(reactiveSearchParams[key])}"`,
-        size: 1
-      }
-      const res = await ofetch(config.datasets[0].href + '/lines', { params })
-      if (res.results.length) {
-        reactiveSearchParams[filter.labelField.key] = res.results[0][filter.labelField.key]
-        delete reactiveSearchParams[key]
+  for (const key in reactiveSearchParams) {
+    if (key.startsWith('_c_')) {
+      const concept = key.slice(3, key.lastIndexOf('_'))
+      const filter = config.conceptFilters.find(f => {
+        return f.concepts.find(c => c['x-concept'].id === concept)
+      })
+      if (filter) {
+        const field = filter.concepts.find(c => c['x-concept'].id === concept)
+        const params = {
+          select: field.key + ',' + filter.labelField.key,
+          qs: `${escape(field.key)}:"${escape(reactiveSearchParams[key])}"`,
+          size: 1
+        }
+        const res = await ofetch(config.datasets[0].href + '/lines', { params })
+        if (res.results.length) {
+          reactiveSearchParams[filter.labelField.key] = res.results[0][filter.labelField.key]
+          delete reactiveSearchParams[key]
+        }
       }
     }
   }
-}
 
-const conceptValues = ref({})
-const tab = ref(null)
-const maxTitleLength = Math.max(...config.sections.map((/** @type{any} */s) => (s.title && s.title.length) || 0))
-const sumTitleLength = config.sections.reduce((/** @type{any} */acc, /** @type{any} */s) => acc + ((s.title && s.title.length) || 0), 0)
+  maxTitleLength = Math.max(...config.sections.map((/** @type{any} */s) => (s.title && s.title.length) || 0))
+  sumTitleLength = config.sections.reduce((/** @type{any} */acc, /** @type{any} */s) => acc + ((s.title && s.title.length) || 0), 0)
+}
 </script>
 
 <template>
   <v-container
-    v-if="config.conceptFilters && config.conceptFilters.length"
+    v-if="config.conceptFilters?.length || config.datasets?.[0].timePeriod || config.datasets?.[0].bbox"
     fluid
     data-iframe-height
   >
@@ -116,7 +121,6 @@ const sumTitleLength = config.sections.reduce((/** @type{any} */acc, /** @type{a
           {{ section.title }}
         </v-tab>
       </v-tabs>
-      <!-- variant="outlined" -->
       <v-row v-else-if="config.sectionsGroup === 'tabs-button'">
         <v-spacer />
         <v-col

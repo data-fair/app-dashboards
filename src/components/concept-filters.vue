@@ -1,13 +1,16 @@
 <script setup>
 import { ofetch } from 'ofetch'
 import { ref } from 'vue'
-import reactiveSearchParams from '@data-fair/lib/vue/reactive-search-params.js'
+import reactiveSearchParams from '@data-fair/lib/vue/reactive-search-params-global.js'
+import SearchAddress from '@data-fair/lib/vuetify/search-address.vue'
+import DateRangePicker from '@data-fair/lib/vuetify/date-range-picker.vue'
 import { escape } from '@data-fair/lib/filters.js'
 
 const props = defineProps({
   config: { type: Object, required: true }
 })
 const emit = defineEmits(['update:model-value'])
+let address
 
 const fields = Object.assign({}, ...props.config.datasets[0].schema.map(f => ({ [f.key]: f })))
 
@@ -26,7 +29,10 @@ const filters = props.config.conceptFilters.map(filter => {
         params.size = 1000
       }
       if (props.config.datasets[0].timePeriod) {
-        params._c_date_match = reactiveSearchParams.startDate + ',' + reactiveSearchParams.endDate
+        params._c_date_match = reactiveSearchParams.period
+      }
+      if (props.config.datasets[0].bbox && address && reactiveSearchParams.radius) {
+        params._c_geo_distance = address.lon + ',' + address.lat + ',' + reactiveSearchParams.radius * 1000
       }
       if (qs.length) params.qs = qs.join(' AND ')
       const values = await ofetch(props.config.datasets[0].href + '/values/' + filter.labelField.key, { params })
@@ -57,7 +63,10 @@ const updateConcepts = async (noFieldUpdate) => {
     conceptValues = res.results.pop() || {}
   }
   if (props.config.datasets[0].timePeriod) {
-    conceptValues._c_date_match = reactiveSearchParams.startDate + ',' + reactiveSearchParams.endDate
+    conceptValues._c_date_match = reactiveSearchParams.period
+  }
+  if (props.config.datasets[0].bbox && address && reactiveSearchParams.radius) {
+    conceptValues._c_geo_distance = address.lon + ',' + address.lat + ',' + reactiveSearchParams.radius * 1000
   }
   emit('update:model-value', conceptValues)
   filters.forEach(filter => {
@@ -73,7 +82,10 @@ await updateConcepts()
     flat
     class="py-3"
   >
-    <v-row justify="center">
+    <v-row
+      justify="center"
+      align="center"
+    >
       <v-col
         v-for="(filter, i) in filters"
         :key="i"
@@ -100,24 +112,53 @@ await updateConcepts()
         v-if="config.datasets[0].timePeriod"
         cols="auto"
       >
-        <v-row>
-          <v-col>
-            <v-text-field
-              v-model="reactiveSearchParams.startDate"
-              type="date"
-              label="Date de début"
-              @update:model-value="updateConcepts()"
-            />
-          </v-col>
-          <v-col>
-            <v-text-field
-              v-model="reactiveSearchParams.endDate"
-              type="date"
-              label="Date de fin"
-              @update:model-value="updateConcepts()"
-            />
-          </v-col>
-        </v-row>
+        <date-range-picker
+          v-model="reactiveSearchParams.period"
+          :min="config.datasets[0].timePeriod.startDate.slice(0, 10)"
+          :max="config.datasets[0].timePeriod.endDate.slice(0, 10)"
+          label="Période"
+          @update:model-value="updateConcepts()"
+        />
+      </v-col>
+      <v-col
+        v-if="config.datasets[0].bbox"
+        cols="auto"
+      >
+        <v-card
+          variant="outlined"
+          class="px-1 py-2"
+          style="width:320px;border-color:#A0A0A0"
+        >
+          <!-- <label
+            class="text-body-2 text-medium-emphasis ml-2"
+          >Autour d'une adresse</label> -->
+          <v-row align="start">
+            <v-col
+              class="pr-0"
+              :cols="8"
+            >
+              <search-address
+                v-model="reactiveSearchParams.address"
+                variant="plain"
+                @selected="address = $event; updateConcepts()"
+              />
+            </v-col>
+            <v-col
+              class="pl-0"
+              :cols="4"
+            >
+              <v-text-field
+                v-model="reactiveSearchParams.radius"
+                style="height:38px"
+                variant="plain"
+                type="number"
+                label="Rayon (km)"
+                density="compact"
+                @update:model-value="updateConcepts()"
+              />
+            </v-col>
+          </v-row>
+        </v-card>
       </v-col>
     </v-row>
   </v-card>
