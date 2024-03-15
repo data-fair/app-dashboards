@@ -84,8 +84,13 @@
         }
       }
     },
-    "geoFilter":{
-      "title": "Ajouter un filtre géographique",
+    "periodFilter":{
+      "title": "Ajouter un filtre sur la période",
+      "type": "boolean",
+      "default": false
+    },
+    "addressFilter":{
+      "title": "Ajouter un filtre par adresse",
       "type": "boolean",
       "default": false
     },
@@ -209,21 +214,6 @@
       "title": "Prévisualisation table",
       "properties": {
         "type": { "const": "tablePreview", "title": "Type de l'élément" },
-        "concepts": {
-          "type": "array",
-          "x-fromUrl": "{datasets.0.href}/schema?calculated=false&separator=false&concept=true",
-          "x-itemKey": "key",
-          "x-itemTitle": "label",
-          "items": {
-            "title": "Colonne du filtre commun",
-            "type": "object",
-            "properties": {
-              "key": {"type": "string"},
-              "label": {"type": "string"},
-              "x-concept": {"type": "object"}
-            }
-          }
-        },
         "valueMandatory": {
           "title": "Nécessite une valeur dans le filtre",
           "type": "boolean",
@@ -231,14 +221,15 @@
         },
         "dataset": {
           "type": "object",
-          "x-fromUrl": "api/v1/datasets?q={q}&{context.datasetFilter}&select=id,title",
+          "x-fromUrl": "api/v1/datasets?q={q}&{context.datasetFilter}&select=id,title,schema",
           "x-itemKey": "id",
           "x-itemTitle": "title",
           "x-itemsProp": "results",
           "properties": {
             "id": {"type": "string"},
             "title": {"type": "string"},
-            "href": {"type": "string"}
+            "href": {"type": "string"},
+            "schema": {"type": "array"}
           }
         },
         "display": {
@@ -281,21 +272,6 @@
       "title": "Visualisation",
       "properties": {
         "type": { "const": "application", "title": "Type de l'élément" },
-        "concepts": {
-          "type": "array",
-          "x-fromUrl": "{datasets.0.href}/schema?calculated=false&separator=false&concept=true",
-          "x-itemKey": "key",
-          "x-itemTitle": "label",
-          "items": {
-            "title": "Colonne du filtre commun",
-            "type": "object",
-            "properties": {
-              "key": {"type": "string"},
-              "label": {"type": "string"},
-              "x-concept": {"type": "object"}
-            }
-          }
-        },
         "valueMandatory": {
           "title": "Nécessite une valeur dans le filtre",
           "type": "boolean",

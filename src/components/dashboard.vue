@@ -23,7 +23,7 @@ let sumTitleLength = 0
 const incompleteConfiguration = !config.datasets || !config.datasets.length
 if (incompleteConfiguration) {
   setError('Veuillez choisir un source de données pour le filtre commun')
-} else if ((!config.conceptFilters || !config.conceptFilters.length) && !config.datasets[0].timePeriod && !config.datasets[0].bbox) {
+} else if ((!config.conceptFilters || !config.conceptFilters.length) && !config.periodFilter && !config.addressFilter) {
   setError('Veuillez configurer un filtre')
 } else {
 /** @type{any[]} */
@@ -35,9 +35,9 @@ if (incompleteConfiguration) {
       reactiveSearchParams[filter.labelField.key] = filter.startValue
     }
   }
-  if (config.datasets[0].timePeriod && !reactiveSearchParams.period) {
-    const start = config.datasets[0].timePeriod.startDate.slice(0, 10)
-    const end = config.datasets[0].timePeriod.endDate.slice(0, 10)
+  if (config.periodFilter && !reactiveSearchParams.period) {
+    const start = (config.datasets[0].timePeriod ? config.datasets[0].timePeriod.startDate : new Date().toISOString()).slice(0, 10)
+    const end = (config.datasets[0].timePeriod ? config.datasets[0].timePeriod.endDate : new Date().toISOString()).slice(0, 10)
     const period = [start]
     if (start !== end) period.push(end)
     reactiveSearchParams.period = period.join(',')
@@ -72,7 +72,7 @@ if (incompleteConfiguration) {
 
 <template>
   <v-container
-    v-if="config.conceptFilters?.length || config.datasets?.[0].timePeriod || config.datasets?.[0].bbox"
+    v-if="config.conceptFilters?.length || config.periodFilter || config.addressFilter"
     fluid
     data-iframe-height
   >

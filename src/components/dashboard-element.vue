@@ -10,14 +10,22 @@ const props = defineProps({
 })
 
 const queryParamsExtra = computed(() => {
-  const qpe = {}
-  props.element.concepts.forEach(concept => {
-    if (props.conceptValues[concept.key]) qpe[`_c_${concept['x-concept'].id}_eq`] = props.conceptValues[concept.key]
-    if (props.conceptValues._c_date_match && ['date', 'startDate', 'endDate'].includes(concept['x-concept'].id)) qpe._c_date_match = props.conceptValues._c_date_match
-    if (props.conceptValues._c_geo_distance && ['latitude', 'longitude', 'geometry'].includes(concept['x-concept'].id)) qpe._c_geo_distance = props.conceptValues._c_geo_distance
-  })
+  const qpe = { ...props.conceptValues }
+  if (props.element.type === 'tablePreview') {
+    for (const key of Object.keys(props.conceptValues)) {
+      if (!(props.element.dataset.schema || []).find(f => f['x-concept'] && f['x-concept'].id === key.split('_')[2])) delete qpe[key]
+    }
+  }
+  console.log(props.element)
+
+  // props.element.concepts.forEach(concept => {
+  //   if (props.conceptValues[concept.key]) qpe[`_c_${concept['x-concept'].id}_eq`] = props.conceptValues[concept.key]
+  //   if (props.conceptValues._c_date_match) qpe._c_date_match = props.conceptValues._c_date_match
+  //   if (props.conceptValues._c_geo_distance) qpe._c_geo_distance = props.conceptValues._c_geo_distance
+  // })
   if (reactiveSearchParams.primary) qpe.primary = reactiveSearchParams.primary
   if (reactiveSearchParams.secondary) qpe.secondary = reactiveSearchParams.secondary
+  console.log('qpe', qpe)
   return qpe
 })
 
@@ -25,7 +33,7 @@ const queryParamsExtra = computed(() => {
 
 <template>
   <v-alert
-    v-if="element.valueMandatory && (!conceptValues || !element.concepts.find(c => conceptValues[c.key] ))"
+    v-if="element.valueMandatory && (!conceptValues || !Object.keys(conceptValues).length)"
     type="info"
     variant="outlined"
   >

@@ -7,35 +7,6 @@
             {
               "width": 2,
               "valueMandatory": false,
-              "concepts": [
-                {
-                  "key": "Latitude",
-                  "label": "Latitude",
-                  "x-concept": {
-                    "id": "latitude",
-                    "title": "Latitude",
-                    "primary": true
-                  }
-                },
-                {
-                  "key": "Longitude",
-                  "label": "Longitude",
-                  "x-concept": {
-                    "id": "longitude",
-                    "title": "Longitude",
-                    "primary": true
-                  }
-                },
-                {
-                  "key": "Code_postal",
-                  "label": "Code postal",
-                  "x-concept": {
-                    "id": "postalCode",
-                    "title": "Code postal",
-                    "primary": true
-                  }
-                }
-              ],
               "type": "tablePreview",
               "fields": [],
               "noInteractions": false,
@@ -43,7 +14,1005 @@
               "dataset": {
                 "id": "jep-2018-france",
                 "title": "Journées européennes du patrimoine en France métropolitaine",
-                "href": "http://localhost:5888/data-fair/api/v1/datasets/jep-2018-france"
+                "href": "http://localhost:5888/data-fair/api/v1/datasets/jep-2018-france",
+                "schema": [
+                  {
+                    "key": "File",
+                    "type": "string",
+                    "x-originalName": "File",
+                    "x-cardinality": 12,
+                    "x-refersTo": null,
+                    "description": "",
+                    "x-capabilities": {
+                      "textAgg": true
+                    },
+                    "enum": [
+                      "jep-2018-auvergne-rhone-alpes.0907.csv",
+                      "jep-2018-ile-de-france.0907.csv",
+                      "jep-2018-occitanie.0907.csv",
+                      "jep-2018-nouvelle-aquitaine.0911.csv",
+                      "jep-2018-grand-est.0907.csv",
+                      "jep-2018-hauts-de-france.0907.csv",
+                      "jep-2018-pays-de-la-loire.0908.csv",
+                      "jep-2018-normandie.0907.csv",
+                      "jep-2018-bourgogne-franche-comte.0908.csv",
+                      "jep-2018-centre-val-de-loire.0907.csv",
+                      "jep-2018-provence-alpes-cote-dazur.0907.csv",
+                      "jep-2018-bretagne.0907.csv"
+                    ]
+                  },
+                  {
+                    "key": "Identifiant",
+                    "type": "integer",
+                    "x-originalName": "Identifiant",
+                    "x-cardinality": 23231,
+                    "x-refersTo": null,
+                    "description": ""
+                  },
+                  {
+                    "key": "Titre_-_FR",
+                    "type": "string",
+                    "x-originalName": "Titre - FR",
+                    "x-refersTo": "http://www.w3.org/2000/01/rdf-schema#label",
+                    "x-cardinality": 19442,
+                    "description": "",
+                    "x-concept": {
+                      "id": "label",
+                      "title": "Libellé",
+                      "primary": true
+                    },
+                    "x-capabilities": {
+                      "textAgg": true
+                    }
+                  },
+                  {
+                    "key": "Description_-_FR",
+                    "type": "string",
+                    "x-originalName": "Description - FR",
+                    "x-refersTo": null,
+                    "x-cardinality": 20889,
+                    "description": "",
+                    "x-capabilities": {
+                      "textAgg": true
+                    }
+                  },
+                  {
+                    "key": "Description_longue_-_FR",
+                    "type": "string",
+                    "x-originalName": "Description longue - FR",
+                    "x-refersTo": "http://schema.org/description",
+                    "x-cardinality": 3251,
+                    "description": "",
+                    "x-concept": {
+                      "id": "description",
+                      "title": "Description",
+                      "primary": true
+                    },
+                    "x-capabilities": {
+                      "textAgg": true
+                    }
+                  },
+                  {
+                    "key": "Détail_des_conditions_-_FR",
+                    "type": "string",
+                    "x-originalName": "Détail des conditions - FR",
+                    "x-refersTo": null,
+                    "x-cardinality": 6664,
+                    "title": "Détails",
+                    "description": "",
+                    "x-capabilities": {
+                      "textAgg": true
+                    }
+                  },
+                  {
+                    "key": "Description_longue_-_HTML_-_FR",
+                    "type": "string",
+                    "x-originalName": "Description longue - HTML - FR",
+                    "x-refersTo": null,
+                    "x-cardinality": 2804,
+                    "description": "",
+                    "x-capabilities": {
+                      "textAgg": true
+                    }
+                  },
+                  {
+                    "key": "Mots_clés_-_FR",
+                    "type": "string",
+                    "x-originalName": "Mots clés - FR",
+                    "x-cardinality": 11,
+                    "x-refersTo": null,
+                    "description": "",
+                    "x-capabilities": {
+                      "textAgg": true
+                    }
+                  },
+                  {
+                    "key": "Image",
+                    "type": "string",
+                    "x-originalName": "Image",
+                    "x-cardinality": 16899,
+                    "x-refersTo": null,
+                    "description": "",
+                    "x-capabilities": {
+                      "textAgg": true
+                    }
+                  },
+                  {
+                    "key": "Crédits_image",
+                    "type": "string",
+                    "x-originalName": "Crédits image",
+                    "x-refersTo": null,
+                    "x-cardinality": 9759,
+                    "description": "",
+                    "x-capabilities": {
+                      "textAgg": true
+                    }
+                  },
+                  {
+                    "key": "Aperçu",
+                    "type": "string",
+                    "x-originalName": "Aperçu",
+                    "x-cardinality": 16750,
+                    "x-refersTo": null,
+                    "description": "",
+                    "x-capabilities": {
+                      "textAgg": true
+                    }
+                  },
+                  {
+                    "key": "Image_source",
+                    "type": "string",
+                    "x-originalName": "Image source",
+                    "x-cardinality": 17012,
+                    "x-refersTo": "http://schema.org/image",
+                    "description": "",
+                    "x-concept": {
+                      "id": "image",
+                      "title": "Image",
+                      "primary": true
+                    },
+                    "x-capabilities": {
+                      "textAgg": true
+                    }
+                  },
+                  {
+                    "key": "Dernière_mise_à_jour",
+                    "type": "string",
+                    "x-originalName": "Dernière mise à jour",
+                    "x-cardinality": 19450,
+                    "x-refersTo": null,
+                    "format": "date-time",
+                    "description": ""
+                  },
+                  {
+                    "key": "Horaires_détaillés_-_FR",
+                    "type": "string",
+                    "x-originalName": "Horaires détaillés - FR",
+                    "x-refersTo": null,
+                    "x-cardinality": 4373,
+                    "description": "",
+                    "x-capabilities": {
+                      "textAgg": true
+                    }
+                  },
+                  {
+                    "key": "Résumé_horaires_-_FR",
+                    "type": "string",
+                    "x-originalName": "Résumé horaires - FR",
+                    "x-refersTo": null,
+                    "x-cardinality": 738,
+                    "description": "",
+                    "x-capabilities": {
+                      "textAgg": true
+                    }
+                  },
+                  {
+                    "key": "Horaires_ISO",
+                    "type": "string",
+                    "x-originalName": "Horaires ISO",
+                    "x-refersTo": null,
+                    "x-cardinality": 3329,
+                    "description": "",
+                    "x-capabilities": {
+                      "textAgg": true
+                    }
+                  },
+                  {
+                    "key": "Première_date",
+                    "type": "string",
+                    "x-originalName": "Première date",
+                    "x-cardinality": 7,
+                    "x-refersTo": null,
+                    "format": "date",
+                    "description": "",
+                    "enum": [
+                      "2018-09-15T00:00:00.000Z",
+                      "2018-09-16T00:00:00.000Z",
+                      "2018-09-14T00:00:00.000Z",
+                      "2017-09-16T00:00:00.000Z",
+                      "2016-09-17T00:00:00.000Z",
+                      "2017-09-15T00:00:00.000Z",
+                      "2017-09-17T00:00:00.000Z"
+                    ]
+                  },
+                  {
+                    "key": "Première_ouverture",
+                    "type": "string",
+                    "x-originalName": "Première ouverture",
+                    "x-cardinality": 72,
+                    "x-refersTo": null,
+                    "description": "",
+                    "x-capabilities": {
+                      "textAgg": true
+                    }
+                  },
+                  {
+                    "key": "Première_fermeture",
+                    "type": "string",
+                    "x-originalName": "Première fermeture",
+                    "x-cardinality": 116,
+                    "x-refersTo": null,
+                    "description": "",
+                    "x-capabilities": {
+                      "textAgg": true
+                    }
+                  },
+                  {
+                    "key": "Dernière_date",
+                    "type": "string",
+                    "x-originalName": "Dernière date",
+                    "x-cardinality": 7,
+                    "x-refersTo": null,
+                    "format": "date",
+                    "description": "",
+                    "enum": [
+                      "2018-09-16T00:00:00.000Z",
+                      "2018-09-15T00:00:00.000Z",
+                      "2018-09-14T00:00:00.000Z",
+                      "2017-09-17T00:00:00.000Z",
+                      "2018-09-17T00:00:00.000Z",
+                      "2016-09-18T00:00:00.000Z",
+                      "2018-12-20T00:00:00.000Z"
+                    ]
+                  },
+                  {
+                    "key": "Dernière_ouverture",
+                    "type": "string",
+                    "x-originalName": "Dernière ouverture",
+                    "x-cardinality": 82,
+                    "x-refersTo": null,
+                    "description": "",
+                    "x-capabilities": {
+                      "textAgg": true
+                    }
+                  },
+                  {
+                    "key": "Dernière_fermeture",
+                    "type": "string",
+                    "x-originalName": "Dernière fermeture",
+                    "x-cardinality": 116,
+                    "x-refersTo": null,
+                    "description": "",
+                    "x-capabilities": {
+                      "textAgg": true
+                    }
+                  },
+                  {
+                    "key": "Catégorie",
+                    "type": "string",
+                    "x-originalName": "Catégorie",
+                    "x-cardinality": 0,
+                    "x-refersTo": null,
+                    "description": "",
+                    "x-capabilities": {
+                      "textAgg": true
+                    }
+                  },
+                  {
+                    "key": "Types_d'événement",
+                    "type": "string",
+                    "x-originalName": "Types d'événement",
+                    "x-refersTo": null,
+                    "x-cardinality": 11,
+                    "description": "",
+                    "x-capabilities": {
+                      "textAgg": true
+                    },
+                    "enum": [
+                      "Visite commentée / Conférence",
+                      "Visite libre",
+                      "Exposition",
+                      "Atelier / Démonstration / Savoir-faire",
+                      "Circuit",
+                      "Animation Jeune public",
+                      "Concert",
+                      "Spectacle / Lecture",
+                      "Projection",
+                      "Animation pour scolaires",
+                      "Fouille archéologique"
+                    ]
+                  },
+                  {
+                    "key": "Conditions_de_participation",
+                    "type": "string",
+                    "x-originalName": "Conditions de participation",
+                    "x-refersTo": null,
+                    "x-cardinality": 14,
+                    "description": "",
+                    "x-capabilities": {
+                      "textAgg": true
+                    },
+                    "enum": [
+                      "Gratuit",
+                      "Gratuit|Sur inscription",
+                      "Tarif préférentiel",
+                      "Tarif habituel",
+                      "Tarif préférentiel|Sur inscription",
+                      "Sur inscription",
+                      "Tarif habituel|Sur inscription",
+                      "Gratuit|Tarif préférentiel",
+                      "Gratuit|Tarif habituel",
+                      "Tarif préférentiel|Tarif habituel",
+                      "Gratuit|Tarif habituel|Sur inscription",
+                      "Gratuit|Tarif préférentiel|Tarif habituel",
+                      "Gratuit|Tarif préférentiel|Sur inscription",
+                      "Tarif préférentiel|Tarif habituel|Sur inscription"
+                    ]
+                  },
+                  {
+                    "key": "Édition_2018",
+                    "type": "string",
+                    "x-originalName": "Édition 2018",
+                    "x-refersTo": null,
+                    "x-cardinality": 3,
+                    "description": "",
+                    "x-capabilities": {
+                      "textAgg": true
+                    },
+                    "enum": [
+                      "Thème : L'Art du partage",
+                      "Opération : Journées du 1% artistique ( du 18 au 22 septembre )",
+                      "Thème : L'Art du partage|Opération : Journées du 1% artistique ( du 18 au 22 septembre )"
+                    ]
+                  },
+                  {
+                    "key": "Accessibilité_-_FR",
+                    "type": "string",
+                    "x-originalName": "Accessibilité - FR",
+                    "x-refersTo": null,
+                    "x-cardinality": 103,
+                    "description": "",
+                    "x-capabilities": {
+                      "textAgg": true
+                    }
+                  },
+                  {
+                    "key": "Lien_d'inscription",
+                    "type": "string",
+                    "x-originalName": "Lien d'inscription",
+                    "x-refersTo": null,
+                    "x-cardinality": 3059,
+                    "title": "Contact",
+                    "description": "",
+                    "x-capabilities": {
+                      "textAgg": true
+                    }
+                  },
+                  {
+                    "key": "Agenda_d'origine_(_titre_)",
+                    "type": "string",
+                    "x-originalName": "Agenda d'origine ( titre )",
+                    "x-refersTo": null,
+                    "x-cardinality": 22,
+                    "description": "",
+                    "x-capabilities": {
+                      "textAgg": true
+                    },
+                    "enum": [
+                      "JEP 2018 : Auvergne - Rhône-Alpes",
+                      "JEP 2018 : Île-de-France",
+                      "JEP 2018 : Occitanie",
+                      "JEP 2018 : Nouvelle-Aquitaine",
+                      "JEP 2018 : Grand Est",
+                      "JEP 2018 : Hauts-de-France",
+                      "JEP 2018 : Pays de la Loire",
+                      "JEP 2018 : Normandie",
+                      "JEP 2018 : Bourgogne - Franche-Comté",
+                      "JEP 2018 : Centre-Val de Loire",
+                      "JEP 2018 : Provence-Alpes-Côte-d'Azur",
+                      "JEP 2018 : Bretagne",
+                      "Musée départemental de la Résistance et de la Déportation de la Haute-Garonne",
+                      "Année européenne du patrimoine culturel 2018",
+                      "[Archives] JEP 2017 : Auvergne - Rhône-Alpes",
+                      "[Archives] JEP 2017 : Grand Est",
+                      "[Archives] JEP 2017 : Pays de la Loire",
+                      "[Archives] JEP 2017 : Bretagne",
+                      "Agenda annuel de l'architecture - MCC",
+                      "CAUE de la Haute-Garonne",
+                      "Galerie du Faune -Atelier Cegede",
+                      "[Archives] JEP 2017 : Hauts-de-France"
+                    ]
+                  },
+                  {
+                    "key": "Agenda_d'origine_(_uid_)",
+                    "type": "integer",
+                    "x-originalName": "Agenda d'origine ( uid )",
+                    "x-cardinality": 22,
+                    "x-refersTo": null,
+                    "description": "",
+                    "enum": [
+                      49608514,
+                      47826291,
+                      19150068,
+                      24289585,
+                      46442738,
+                      35560845,
+                      78087398,
+                      7732152,
+                      76370366,
+                      86517213,
+                      76247219,
+                      54011288,
+                      16637096,
+                      13651298,
+                      61654690,
+                      63843775,
+                      75270446,
+                      9836132,
+                      31340680,
+                      78782228,
+                      89534358,
+                      90014930
+                    ]
+                  },
+                  {
+                    "key": "Age_minimum",
+                    "type": "integer",
+                    "x-originalName": "Age minimum",
+                    "x-cardinality": 24,
+                    "x-refersTo": null,
+                    "description": "",
+                    "enum": [
+                      7,
+                      6,
+                      10,
+                      5,
+                      8,
+                      12,
+                      3,
+                      4,
+                      1,
+                      15,
+                      9,
+                      18,
+                      2,
+                      16,
+                      14,
+                      13,
+                      11,
+                      20,
+                      17,
+                      40,
+                      25,
+                      22,
+                      26,
+                      35
+                    ]
+                  },
+                  {
+                    "key": "Age_maximum",
+                    "type": "integer",
+                    "x-originalName": "Age maximum",
+                    "x-cardinality": 61,
+                    "x-refersTo": null,
+                    "description": ""
+                  },
+                  {
+                    "key": "En_Une",
+                    "type": "boolean",
+                    "x-originalName": "En Une",
+                    "x-cardinality": 1,
+                    "x-refersTo": null,
+                    "description": ""
+                  },
+                  {
+                    "key": "Lien",
+                    "type": "string",
+                    "x-originalName": "Lien",
+                    "x-cardinality": 22787,
+                    "x-refersTo": "https://schema.org/WebPage",
+                    "description": "",
+                    "x-concept": {
+                      "id": "webPage",
+                      "title": "Page Web",
+                      "primary": true
+                    },
+                    "x-capabilities": {
+                      "textAgg": true
+                    }
+                  },
+                  {
+                    "key": "Identifiant_du_lieu",
+                    "type": "integer",
+                    "x-originalName": "Identifiant du lieu",
+                    "x-cardinality": 14877,
+                    "x-refersTo": null,
+                    "description": ""
+                  },
+                  {
+                    "key": "Latitude",
+                    "type": "number",
+                    "x-originalName": "Latitude",
+                    "x-cardinality": 10,
+                    "x-refersTo": "http://schema.org/latitude",
+                    "enum": [
+                      48,
+                      47,
+                      45,
+                      43,
+                      49,
+                      46,
+                      44,
+                      50,
+                      42,
+                      51
+                    ],
+                    "description": "",
+                    "x-concept": {
+                      "id": "latitude",
+                      "title": "Latitude",
+                      "primary": true
+                    }
+                  },
+                  {
+                    "key": "Longitude",
+                    "type": "number",
+                    "x-originalName": "Longitude",
+                    "x-cardinality": 14,
+                    "x-refersTo": "http://schema.org/longitude",
+                    "enum": [
+                      2,
+                      0,
+                      4,
+                      1,
+                      3,
+                      5,
+                      6,
+                      -1,
+                      7,
+                      -2,
+                      -3,
+                      -4,
+                      -5,
+                      8
+                    ],
+                    "description": "",
+                    "x-concept": {
+                      "id": "longitude",
+                      "title": "Longitude",
+                      "primary": true
+                    }
+                  },
+                  {
+                    "key": "Nom_du_lieu",
+                    "type": "string",
+                    "x-originalName": "Nom du lieu",
+                    "x-refersTo": null,
+                    "x-cardinality": 12416,
+                    "description": "",
+                    "x-capabilities": {
+                      "textAgg": true
+                    }
+                  },
+                  {
+                    "key": "Adresse",
+                    "type": "string",
+                    "x-originalName": "Adresse",
+                    "x-refersTo": null,
+                    "x-cardinality": 14668,
+                    "description": "",
+                    "x-capabilities": {
+                      "textAgg": true
+                    }
+                  },
+                  {
+                    "key": "Code_postal",
+                    "type": "string",
+                    "x-originalName": "Code postal",
+                    "x-cardinality": 3625,
+                    "x-refersTo": "http://schema.org/postalCode",
+                    "description": "",
+                    "x-concept": {
+                      "id": "postalCode",
+                      "title": "Code postal",
+                      "primary": true
+                    }
+                  },
+                  {
+                    "key": "Ville",
+                    "type": "string",
+                    "x-originalName": "Ville",
+                    "x-refersTo": null,
+                    "x-cardinality": 6483,
+                    "description": "",
+                    "x-capabilities": {
+                      "textAgg": true
+                    }
+                  },
+                  {
+                    "key": "Arrondissement",
+                    "type": "string",
+                    "x-originalName": "Arrondissement",
+                    "x-refersTo": null,
+                    "x-cardinality": 200,
+                    "description": "",
+                    "x-capabilities": {
+                      "textAgg": true
+                    }
+                  },
+                  {
+                    "key": "Département",
+                    "type": "string",
+                    "x-originalName": "Département",
+                    "x-refersTo": null,
+                    "x-cardinality": 112,
+                    "description": "",
+                    "x-capabilities": {
+                      "textAgg": true
+                    }
+                  },
+                  {
+                    "key": "Région",
+                    "type": "string",
+                    "x-originalName": "Région",
+                    "x-refersTo": null,
+                    "x-cardinality": 27,
+                    "description": "",
+                    "x-capabilities": {
+                      "textAgg": true
+                    },
+                    "enum": [
+                      "Auvergne-Rhône-Alpes",
+                      "Île-de-France",
+                      "Occitanie",
+                      "Nouvelle-Aquitaine",
+                      "Grand Est",
+                      "Hauts-de-France",
+                      "Pays de la Loire",
+                      "Normandie",
+                      "Bourgogne-Franche-Comté",
+                      "Centre-Val de Loire",
+                      "Provence-Alpes-Côte d'Azur",
+                      "Bretagne",
+                      "Provence-Alpes-Côte d'azur",
+                      "Auvergne-Rhone-Alpes",
+                      "Burgundy-Franche-Comte",
+                      "IdF",
+                      "Provence-Alpes-Cote d'Azur",
+                      "PACA",
+                      "Aquitaine",
+                      "Loire Region",
+                      "Brittany",
+                      "Center",
+                      "Ile-de-France",
+                      "Catalonia",
+                      "Catalunya",
+                      "Pennsylvania",
+                      "Wallonie"
+                    ]
+                  },
+                  {
+                    "key": "Pays",
+                    "type": "string",
+                    "x-originalName": "Pays",
+                    "x-refersTo": null,
+                    "x-cardinality": 5,
+                    "description": "",
+                    "x-capabilities": {
+                      "textAgg": true
+                    },
+                    "enum": [
+                      "France (Métropole)",
+                      "Etats-Unis",
+                      "Espagne",
+                      "Suisse",
+                      "Belgique"
+                    ]
+                  },
+                  {
+                    "key": "Image_du_lieu",
+                    "type": "string",
+                    "x-originalName": "Image du lieu",
+                    "x-cardinality": 6342,
+                    "x-refersTo": null,
+                    "description": "",
+                    "x-capabilities": {
+                      "textAgg": true
+                    }
+                  },
+                  {
+                    "key": "Téléphone_du_lieu",
+                    "type": "string",
+                    "x-originalName": "Téléphone du lieu",
+                    "x-refersTo": null,
+                    "x-cardinality": 7635,
+                    "description": "",
+                    "x-capabilities": {
+                      "textAgg": true
+                    }
+                  },
+                  {
+                    "key": "Site_web_du_lieu",
+                    "type": "string",
+                    "x-originalName": "Site web du lieu",
+                    "x-cardinality": 6253,
+                    "x-refersTo": null,
+                    "description": "",
+                    "x-capabilities": {
+                      "textAgg": true
+                    }
+                  },
+                  {
+                    "key": "Liens_du_lieu",
+                    "type": "string",
+                    "x-originalName": "Liens du lieu",
+                    "x-cardinality": 1422,
+                    "x-refersTo": null,
+                    "description": "",
+                    "x-capabilities": {
+                      "textAgg": true
+                    }
+                  },
+                  {
+                    "key": "Crédits_de_l'image_du_lieu",
+                    "type": "string",
+                    "x-originalName": "Crédits de l'image du lieu",
+                    "x-refersTo": null,
+                    "x-cardinality": 3591,
+                    "description": "",
+                    "x-capabilities": {
+                      "textAgg": true
+                    }
+                  },
+                  {
+                    "key": "Tags_du_lieu",
+                    "type": "string",
+                    "x-originalName": "Tags du lieu",
+                    "x-refersTo": null,
+                    "x-cardinality": 2221,
+                    "description": "",
+                    "x-capabilities": {
+                      "textAgg": true
+                    }
+                  },
+                  {
+                    "key": "Description_du_lieu_-_FR",
+                    "type": "string",
+                    "x-originalName": "Description du lieu - FR",
+                    "x-refersTo": null,
+                    "x-cardinality": 3073,
+                    "description": "",
+                    "x-capabilities": {
+                      "textAgg": true
+                    }
+                  },
+                  {
+                    "key": "Accès_/_Itinéraire_-_FR",
+                    "type": "string",
+                    "x-originalName": "Accès / Itinéraire - FR",
+                    "x-refersTo": null,
+                    "x-cardinality": 3801,
+                    "description": "",
+                    "x-capabilities": {
+                      "textAgg": true
+                    }
+                  },
+                  {
+                    "key": "Mots_clés",
+                    "type": "string",
+                    "x-originalName": "Mots clés",
+                    "x-cardinality": 0,
+                    "x-refersTo": null,
+                    "description": "",
+                    "x-capabilities": {
+                      "textAgg": true
+                    }
+                  },
+                  {
+                    "key": "Types_d'événement_fr",
+                    "type": "string",
+                    "x-originalName": "Types d'événement_fr",
+                    "x-cardinality": 0,
+                    "x-refersTo": null,
+                    "description": "",
+                    "x-capabilities": {
+                      "textAgg": true
+                    }
+                  },
+                  {
+                    "key": "Conditions_de_participation_fr",
+                    "type": "string",
+                    "x-originalName": "Conditions de participation_fr",
+                    "x-cardinality": 0,
+                    "x-refersTo": null,
+                    "description": "",
+                    "x-capabilities": {
+                      "textAgg": true
+                    }
+                  },
+                  {
+                    "key": "Édition_2018_fr",
+                    "type": "string",
+                    "x-originalName": "Édition 2018_fr",
+                    "x-cardinality": 0,
+                    "x-refersTo": null,
+                    "description": "",
+                    "x-capabilities": {
+                      "textAgg": true
+                    }
+                  },
+                  {
+                    "key": "accessibility_fr_fr",
+                    "type": "string",
+                    "x-originalName": "accessibility_fr_fr",
+                    "x-cardinality": 0,
+                    "x-refersTo": null,
+                    "description": "",
+                    "x-capabilities": {
+                      "textAgg": true
+                    }
+                  },
+                  {
+                    "key": "Liens_du_lieu_-_FR",
+                    "type": "string",
+                    "x-originalName": "Liens du lieu - FR",
+                    "x-cardinality": 0,
+                    "x-refersTo": null,
+                    "description": "",
+                    "x-capabilities": {
+                      "textAgg": true
+                    }
+                  },
+                  {
+                    "key": "Tags_du_lieu_-_FR",
+                    "type": "string",
+                    "x-originalName": "Tags du lieu - FR",
+                    "x-cardinality": 0,
+                    "x-refersTo": null,
+                    "description": "",
+                    "x-capabilities": {
+                      "textAgg": true
+                    }
+                  },
+                  {
+                    "key": "Contributeur__organisation",
+                    "type": "string",
+                    "x-originalName": "Contributeur: organisation",
+                    "x-cardinality": 7340,
+                    "description": "",
+                    "x-capabilities": {
+                      "textAgg": true
+                    }
+                  },
+                  {
+                    "x-calculated": true,
+                    "key": "_geopoint",
+                    "type": "string",
+                    "title": "Coordonnée géographique",
+                    "description": "Centroïde au format \"lat,lon\"",
+                    "x-refersTo": "http://www.w3.org/2003/01/geo/wgs84_pos#lat_long",
+                    "x-concept": {
+                      "id": "latLon",
+                      "title": "Latitude / Longitude",
+                      "primary": true
+                    }
+                  },
+                  {
+                    "x-calculated": true,
+                    "key": "_id",
+                    "type": "string",
+                    "format": "uri-reference",
+                    "title": "Identifiant",
+                    "description": "Identifiant unique parmi toutes les lignes du jeu de données"
+                  },
+                  {
+                    "x-calculated": true,
+                    "key": "_i",
+                    "type": "integer",
+                    "title": "Numéro de ligne",
+                    "description": "Indice de la ligne dans le fichier d'origine"
+                  },
+                  {
+                    "x-calculated": true,
+                    "key": "_rand",
+                    "type": "integer",
+                    "title": "Nombre aléatoire",
+                    "description": "Un nombre aléatoire associé à la ligne qui permet d'obtenir un tri aléatoire par exemple"
+                  }
+                ]
+              }
+            },
+            {
+              "width": 2,
+              "fields": [],
+              "noInteractions": false,
+              "display": "table",
+              "valueMandatory": false,
+              "type": "tablePreview",
+              "dataset": {
+                "id": "prenom-france-1900-2017",
+                "title": "Prénoms attribués aux enfants nés en France entre 1900 et 2019",
+                "href": "http://localhost:5888/data-fair/api/v1/datasets/prenom-france-1900-2017",
+                "schema": [
+                  {
+                    "key": "sexe",
+                    "type": "integer",
+                    "x-originalName": "sexe",
+                    "x-cardinality": 2,
+                    "enum": [
+                      2,
+                      1
+                    ],
+                    "x-refersTo": null,
+                    "title": "Sexe",
+                    "description": ""
+                  },
+                  {
+                    "key": "preusuel",
+                    "type": "string",
+                    "x-originalName": "preusuel",
+                    "x-cardinality": 34230,
+                    "x-refersTo": null,
+                    "title": "Prénom usuel",
+                    "x-capabilities": {
+                      "textAgg": true
+                    },
+                    "description": ""
+                  },
+                  {
+                    "key": "annais",
+                    "type": "string",
+                    "x-originalName": "annais",
+                    "x-cardinality": 121,
+                    "x-refersTo": null,
+                    "title": "Année de naissance",
+                    "x-capabilities": {
+                      "textAgg": true
+                    },
+                    "description": ""
+                  },
+                  {
+                    "key": "nombre",
+                    "type": "integer",
+                    "x-originalName": "nombre",
+                    "x-cardinality": 7252,
+                    "x-refersTo": null,
+                    "title": "Nombre de naissances",
+                    "description": ""
+                  },
+                  {
+                    "x-calculated": true,
+                    "key": "_id",
+                    "type": "string",
+                    "format": "uri-reference",
+                    "title": "Identifiant",
+                    "description": "Identifiant unique parmi toutes les lignes du jeu de données"
+                  },
+                  {
+                    "x-calculated": true,
+                    "key": "_i",
+                    "type": "integer",
+                    "title": "Numéro de ligne",
+                    "description": "Indice de la ligne dans le fichier d'origine"
+                  },
+                  {
+                    "x-calculated": true,
+                    "key": "_rand",
+                    "type": "integer",
+                    "title": "Nombre aléatoire",
+                    "description": "Un nombre aléatoire associé à la ligne qui permet d'obtenir un tri aléatoire par exemple"
+                  }
+                ]
               }
             }
           ],
@@ -1001,5 +1970,7 @@
         51.06527798809111
       ]
     }
-  ]
+  ],
+  "addressFilter": false,
+  "periodFilter": false
 }

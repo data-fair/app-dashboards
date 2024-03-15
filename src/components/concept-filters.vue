@@ -28,10 +28,10 @@ const filters = props.config.conceptFilters.map(filter => {
       } else {
         params.size = 1000
       }
-      if (props.config.datasets[0].timePeriod) {
+      if (props.config.periodFilter) {
         params._c_date_match = reactiveSearchParams.period
       }
-      if (props.config.datasets[0].bbox && address && reactiveSearchParams.radius) {
+      if (props.config.addressFilter && address && reactiveSearchParams.radius) {
         params._c_geo_distance = address.lon + ',' + address.lat + ',' + reactiveSearchParams.radius * 1000
       }
       if (qs.length) params.qs = qs.join(' AND ')
@@ -55,17 +55,19 @@ const updateConcepts = async (noFieldUpdate) => {
   let conceptValues = {}
   const fieldsWithFilter = filters.filter(f => reactiveSearchParams[f.labelField.key])
   if (fieldsWithFilter.length) {
-    const select = [].concat(...fieldsWithFilter.map(f => [f.labelField.key].concat(f.concepts.map(f => f.key)))).filter((f, i, s) => s.indexOf(f) === i).join(',')
+    const fields = [].concat(...fieldsWithFilter.map(f => [].concat(f.concepts)))
+    const select = fields.map(f => f.key).filter((f, i, s) => s.indexOf(f) === i).join(',')
     const qs = props.config.conceptFilters.filter(f => reactiveSearchParams[f.labelField.key]).map(f => `${escape(f.labelField.key)}:"${escape(reactiveSearchParams[f.labelField.key])}"`)
     const params = { select }
     if (qs.length) params.qs = qs.join(' AND ')
     const res = await ofetch(props.config.datasets[0].href + '/lines', { params })
-    conceptValues = res.results.pop() || {}
+    const values = (res.results.pop() || {})
+    conceptValues = Object.assign({}, ...fields.map(f => ({ [`_c_${f['x-concept'].id}_eq`]: values[f.key] })))
   }
-  if (props.config.datasets[0].timePeriod) {
+  if (props.config.periodFilter) {
     conceptValues._c_date_match = reactiveSearchParams.period
   }
-  if (props.config.datasets[0].bbox && address && reactiveSearchParams.radius) {
+  if (props.config.addressFilter && address && reactiveSearchParams.radius) {
     conceptValues._c_geo_distance = address.lon + ',' + address.lat + ',' + reactiveSearchParams.radius * 1000
   }
   emit('update:model-value', conceptValues)
@@ -109,19 +111,19 @@ await updateConcepts()
         />
       </v-col>
       <v-col
-        v-if="config.datasets[0].timePeriod"
+        v-if="config.periodFilter"
         cols="auto"
       >
         <date-range-picker
           v-model="reactiveSearchParams.period"
-          :min="config.datasets[0].timePeriod.startDate.slice(0, 10)"
-          :max="config.datasets[0].timePeriod.endDate.slice(0, 10)"
+          :min="config.datasets[0].timePeriod ? config.datasets[0].timePeriod.startDate.slice(0, 10) : undefined"
+          :max="config.datasets[0].timePeriod ? config.datasets[0].timePeriod.endDate.slice(0, 10) : undefined"
           label="Période"
           @update:model-value="updateConcepts()"
         />
       </v-col>
       <v-col
-        v-if="config.datasets[0].bbox"
+        v-if="config.addressFilter"
         cols="auto"
       >
         <v-card
