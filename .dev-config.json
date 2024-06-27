@@ -934,85 +934,40 @@
             },
             {
               "width": 2,
-              "fields": [],
-              "noInteractions": false,
-              "display": "table",
               "valueMandatory": false,
-              "type": "tablePreview",
-              "dataset": {
-                "id": "prenom-france-1900-2017",
-                "title": "Prénoms attribués aux enfants nés en France entre 1900 et 2019",
-                "href": "http://localhost:5888/data-fair/api/v1/datasets/prenom-france-1900-2017",
-                "schema": [
-                  {
-                    "key": "sexe",
-                    "type": "integer",
-                    "x-originalName": "sexe",
-                    "x-cardinality": 2,
-                    "enum": [
-                      2,
-                      1
-                    ],
-                    "x-refersTo": null,
-                    "title": "Sexe",
-                    "description": ""
+              "type": "application",
+              "application": {
+                "id": "diagramme-de-sankey",
+                "title": "Diagramme de Sankey",
+                "baseApp": {
+                  "id": "https:koumoul.comappssankey0.6",
+                  "url": "https://koumoul.com/apps/sankey/0.6/",
+                  "meta": {
+                    "title": "Diagramme de Sankey",
+                    "description": "Cette application permet de visualiser des informations de flux.",
+                    "keywords": [],
+                    "charset": "utf-8",
+                    "viewport": "width=device-width,initial-scale=1",
+                    "application-name": "Diagramme de Sankey",
+                    "df:capture-width": "800",
+                    "df:capture-height": "600",
+                    "df:overflow": "false",
+                    "df:sync-state": "false",
+                    "df:filter-concepts": "true"
                   },
-                  {
-                    "key": "preusuel",
-                    "type": "string",
-                    "x-originalName": "preusuel",
-                    "x-cardinality": 34230,
-                    "x-refersTo": null,
-                    "title": "Prénom usuel",
-                    "x-capabilities": {
-                      "textAgg": true
-                    },
-                    "description": ""
-                  },
-                  {
-                    "key": "annais",
-                    "type": "string",
-                    "x-originalName": "annais",
-                    "x-cardinality": 121,
-                    "x-refersTo": null,
-                    "title": "Année de naissance",
-                    "x-capabilities": {
-                      "textAgg": true
-                    },
-                    "description": ""
-                  },
-                  {
-                    "key": "nombre",
-                    "type": "integer",
-                    "x-originalName": "nombre",
-                    "x-cardinality": 7252,
-                    "x-refersTo": null,
-                    "title": "Nombre de naissances",
-                    "description": ""
-                  },
-                  {
-                    "x-calculated": true,
-                    "key": "_id",
-                    "type": "string",
-                    "format": "uri-reference",
-                    "title": "Identifiant",
-                    "description": "Identifiant unique parmi toutes les lignes du jeu de données"
-                  },
-                  {
-                    "x-calculated": true,
-                    "key": "_i",
-                    "type": "integer",
-                    "title": "Numéro de ligne",
-                    "description": "Indice de la ligne dans le fichier d'origine"
-                  },
-                  {
-                    "x-calculated": true,
-                    "key": "_rand",
-                    "type": "integer",
-                    "title": "Nombre aléatoire",
-                    "description": "Un nombre aléatoire associé à la ligne qui permet d'obtenir un tri aléatoire par exemple"
-                  }
-                ]
+                  "datasetsFilters": [
+                    {
+                      "field-type": [
+                        "integer",
+                        "number"
+                      ],
+                      "select": [
+                        "id",
+                        "title"
+                      ]
+                    }
+                  ]
+                }
               }
             }
           ],
@@ -1972,5 +1927,11 @@
     }
   ],
   "addressFilter": false,
-  "periodFilter": false
+  "periodFilter": false,
+  "applications": [
+    {
+      "id": "diagramme-de-sankey",
+      "title": "Diagramme de Sankey"
+    }
+  ]
 }

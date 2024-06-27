@@ -15,6 +15,13 @@ const setError = (/** @type{any} */error) => {
   ofetch(application.href + '/error', { method: 'POST', body: { message: error.message || error } })
 }
 
+if (reactiveSearchParams.draft === 'true') {
+  const elements = [].concat(...config.sections.map(s => [].concat(...s.rows.map(r => [].concat(...r.elements)))))
+  const applications = elements.filter(e => e.type === 'application' && e.application).map(e => ({ id: e.application.id, title: e.application.title }))
+  console.log(applications)
+  if (window.parent && (config.applications || []).map(a => a.id).join('-') !== applications.map(a => a.id).join('-')) window.parent.postMessage({ type: 'set-config', content: { field: 'applications', value: applications } }, '*')
+}
+
 const conceptValues = ref({})
 const tab = ref(null)
 let maxTitleLength = 0

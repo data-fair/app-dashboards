@@ -16,19 +16,15 @@ const queryParamsExtra = computed(() => {
       if (!(props.element.dataset.schema || []).find(f => f['x-concept'] && f['x-concept'].id === key.split('_')[2])) delete qpe[key]
     }
   }
-  console.log(props.element)
-
-  // props.element.concepts.forEach(concept => {
-  //   if (props.conceptValues[concept.key]) qpe[`_c_${concept['x-concept'].id}_eq`] = props.conceptValues[concept.key]
-  //   if (props.conceptValues._c_date_match) qpe._c_date_match = props.conceptValues._c_date_match
-  //   if (props.conceptValues._c_geo_distance) qpe._c_geo_distance = props.conceptValues._c_geo_distance
-  // })
   if (reactiveSearchParams.primary) qpe.primary = reactiveSearchParams.primary
   if (reactiveSearchParams.secondary) qpe.secondary = reactiveSearchParams.secondary
-  console.log('qpe', qpe)
   return qpe
 })
 
+const application = window.APPLICATION
+const last = application.exposedUrl.split('/').pop()
+const toks = last.split('%3A')
+const accessKey = (toks.length === 2) ? toks[0] : null
 </script>
 
 <template>
@@ -51,7 +47,7 @@ const queryParamsExtra = computed(() => {
   >
     <v-iframe
       v-if="element.type === 'application'"
-      :src="`/data-fair/app/${element.application.id}`"
+      :src="`/data-fair/app/${accessKey ? (accessKey + '%3A') : ''}${element.application.id}`"
       :query-params-extra="queryParamsExtra"
       :style="element.application.baseApp.meta['df:overflow'] !== 'true' ? `height:${height>0 ? height+'px' : '100%'}` : ''"
     />

@@ -1,4 +1,4 @@
-# @data-fai/app-dashboards
+# @data-fair/app-dashboards
 
 A data-fair application for generic dashboards created by assembling other applications.
 
