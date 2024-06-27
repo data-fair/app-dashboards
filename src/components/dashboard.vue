@@ -15,11 +15,16 @@ const setError = (/** @type{any} */error) => {
   ofetch(application.href + '/error', { method: 'POST', body: { message: error.message || error } })
 }
 
-if (reactiveSearchParams.draft === 'true') {
+if (reactiveSearchParams.draft === 'true' && window.parent) {
   const elements = [].concat(...config.sections.map(s => [].concat(...s.rows.map(r => [].concat(...r.elements)))))
-  const applications = elements.filter(e => e.type === 'application' && e.application).map(e => ({ id: e.application.id, title: e.application.title }))
-  console.log(applications)
-  if (window.parent && (config.applications || []).map(a => a.id).join('-') !== applications.map(a => a.id).join('-')) window.parent.postMessage({ type: 'set-config', content: { field: 'applications', value: applications } }, '*')
+  const applications = elements.filter(e => e.type === 'application' && e.application).map(e => ({ id: e.application.id, title: e.application.title })).filter((a1, i, s) => s.findIndex(a2 => a1.id === a2.id) === i)
+  if ((config.applications || []).map(a => a.id).join('-') !== applications.map(a => a.id).join('-')) window.parent.postMessage({ type: 'set-config', content: { field: 'applications', value: applications } }, '*')
+  if (config.datasets && config.datasets.length) {
+    const filtersDataset = config.datasets[0]
+    const datasets = elements.filter(e => e.type === 'tablePreview' && e.dataset).map(e => ({ id: e.dataset.id, title: e.dataset.title, href: e.dataset.href })).filter((d1, i, s) => d1.id !== filtersDataset.id && s.findIndex(d2 => d1.id === d2.id) === i)
+    datasets.unshift(filtersDataset)
+    if ((config.datasets || []).map(d => d.id).join('-') !== datasets.map(d => d.id).join('-')) window.parent.postMessage({ type: 'set-config', content: { field: 'datasets', value: datasets } }, '*')
+  }
 }
 
 const conceptValues = ref({})

@@ -37,7 +37,7 @@ const accessKey = (toks.length === 2) ? toks[0] : null
   </v-alert>
   <v-iframe
     v-else-if="element.type === 'tablePreview'"
-    :src="`/data-fair/embed/dataset/${element.dataset.id}/table?display=${element.display}&interaction=${!element.noInteractions}${element.fields.length ? ('&cols=' + element.fields.join(',')) : ''}`"
+    :src="`/data-fair/embed/dataset/${accessKey ? (accessKey + '%3A') : ''}${element.dataset.id}/table?display=${element.display}&interaction=${!element.noInteractions}${element.fields.length ? ('&cols=' + element.fields.join(',')) : ''}`"
     :query-params-extra="queryParamsExtra"
     :style="`height:${height>0 ? height+'px' : '100%'}`"
   />
