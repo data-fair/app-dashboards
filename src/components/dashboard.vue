@@ -43,7 +43,7 @@ if (incompleteConfiguration) {
   // TODO : set error if same concept is usesd in 2 filters
 
   for (const filter of config.conceptFilters) {
-    if (filter.type === 'field' && !reactiveSearchParams[filter.labelField.key] && filter.forceOneValue && filter.startValue) {
+    if (!reactiveSearchParams[filter.labelField.key] && filter.forceOneValue && filter.startValue) {
       reactiveSearchParams[filter.labelField.key] = filter.startValue
     }
   }
