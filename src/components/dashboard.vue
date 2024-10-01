@@ -66,7 +66,8 @@ if (incompleteConfiguration) {
         const params = {
           select: field.key + ',' + filter.labelField.key,
           qs: `${escape(field.key)}:"${escape(reactiveSearchParams[key])}"`,
-          size: 1
+          size: 1,
+          finalizedAt: config.datasets[0].finalizedAt
         }
         const res = await ofetch(config.datasets[0].href + '/lines', { params })
         if (res.results.length) {

@@ -22,7 +22,9 @@ const filters = props.config.conceptFilters.map(filter => {
     loading: ref(false),
     searchItems: async (search) => {
       const qs = props.config.conceptFilters.filter(f => f.labelField.key !== filter.labelField.key && reactiveSearchParams[f.labelField.key]).map(f => `${escape(f.labelField.key)}:"${escape(reactiveSearchParams[f.labelField.key])}"`)
-      const params = {}
+      const params = {
+        finalizedAt: props.config.datasets[0].finalizedAt
+      }
       if (!filter.showAllValues) {
         if (search != null) params.q = search + '*'
       } else {
@@ -58,7 +60,7 @@ const updateConcepts = async (noFieldUpdate) => {
     const fields = [].concat(...fieldsWithFilter.map(f => [].concat(f.concepts)))
     const select = fields.map(f => f.key).filter((f, i, s) => s.indexOf(f) === i).join(',')
     const qs = props.config.conceptFilters.filter(f => reactiveSearchParams[f.labelField.key]).map(f => `${escape(f.labelField.key)}:"${escape(reactiveSearchParams[f.labelField.key])}"`)
-    const params = { select }
+    const params = { select, finalizedAt: props.config.datasets[0].finalizedAt }
     if (qs.length) params.qs = qs.join(' AND ')
     const res = await ofetch(props.config.datasets[0].href + '/lines', { params })
     const values = (res.results.pop() || {})

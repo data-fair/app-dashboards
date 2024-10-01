@@ -3,36 +3,41 @@
   "properties": {
     "datasets": {
       "type": "array",
-      "items": [{
-        "title": "Source des valeurs pour les filtres",
-        "type": "object",
-        "x-fromUrl": "api/v1/datasets?status=finalized&q={q}&select=id,title,schema,timePeriod,bbox&owner={context.owner.type}:{context.owner.id}",
-        "x-itemsProp": "results",
-        "x-itemTitle": "title",
-        "x-itemKey": "href",
-        "properties": {
-          "href": {
-            "type": "string"
-          },
-          "title": {
-            "type": "string"
-          },
-          "id": {
-            "type": "string"
-          },
-          "schema": {
-            "type": "array"
-          },
-          "timePeriod": {
-            "type": "object"
-          },
-          "bbox": {
-            "type": "array"
+      "items": [
+        {
+          "title": "Source des valeurs pour les filtres",
+          "type": "object",
+          "x-fromUrl": "api/v1/datasets?status=&q={q}&select=id,title,schema,timePeriod,bbox&owner={context.owner.type}:{context.owner.id}",
+          "x-itemsProp": "results",
+          "x-itemTitle": "title",
+          "x-itemKey": "href",
+          "properties": {
+            "href": {
+              "type": "string"
+            },
+            "title": {
+              "type": "string"
+            },
+            "id": {
+              "type": "string"
+            },
+            "schema": {
+              "type": "array"
+            },
+            "timePeriod": {
+              "type": "object"
+            },
+            "bbox": {
+              "type": "array"
+            },
+            "finalizedAt": {
+              "type": "string"
+            }
           }
         }
-      }]
+      ]
     },
-    "conceptFilters":{
+    "conceptFilters": {
       "type": "array",
       "title": "Filtres du tableau de bord",
       "items": {
@@ -46,8 +51,8 @@
             "x-itemTitle": "label",
             "x-itemKey": "key",
             "properties": {
-              "key": {"type": "string"},
-              "label": {"type": "string"}
+              "key": { "type": "string" },
+              "label": { "type": "string" }
             }
           },
           "concepts": {
@@ -59,13 +64,13 @@
               "title": "Colonnes pour les valeurs du filtre",
               "type": "object",
               "properties": {
-                "key": {"type": "string"},
-                "label": {"type": "string"},
-                "x-concept": {"type": "object"}
+                "key": { "type": "string" },
+                "label": { "type": "string" },
+                "x-concept": { "type": "object" }
               }
             }
           },
-          "forceOneValue":{
+          "forceOneValue": {
             "title": "Toujours filtrer par une valeur",
             "type": "boolean",
             "default": false
@@ -76,7 +81,7 @@
             "x-fromUrl": "{datasets.0.href}/values/{parent.value.labelField.key}?q={q}&q_mode=complete&size=100&stringify=true",
             "x-if": "parent.value.forceOneValue"
           },
-          "showAllValues":{
+          "showAllValues": {
             "title": "Garder toutes les valeurs dans la liste",
             "type": "boolean",
             "default": false
@@ -84,12 +89,12 @@
         }
       }
     },
-    "periodFilter":{
+    "periodFilter": {
       "title": "Ajouter un filtre sur la période",
       "type": "boolean",
       "default": false
     },
-    "addressFilter":{
+    "addressFilter": {
       "title": "Ajouter un filtre par adresse",
       "type": "boolean",
       "default": false
@@ -106,7 +111,8 @@
     "sectionsGroup": {
       "title": "Rendu des sections",
       "type": "string",
-      "oneOf": [{
+      "oneOf": [
+        {
           "const": "accordion",
           "title": "En accordéon"
         },
@@ -128,7 +134,7 @@
     "sections": {
       "title": "Sections",
       "type": "array",
-      "x-options": {"editMode": "inline"},
+      "x-options": { "editMode": "inline" },
       "items": {
         "type": "object",
         "properties": {
@@ -154,9 +160,9 @@
           "rows": {
             "title": "Lignes",
             "type": "array",
-            "items":{
+            "items": {
               "type": "object",
-              "properties":{
+              "properties": {
                 "height": {
                   "title": "Hauteur (px)",
                   "description": "Mettez une valeur négative pour un redimensionnement automatique",
@@ -168,12 +174,13 @@
                   "type": "array",
                   "items": {
                     "type": "object",
-                    "properties":{
+                    "properties": {
                       "title": { "type": "string", "title": "Titre" },
                       "width": {
                         "title": "Largeur",
                         "type": "integer",
-                        "oneOf": [{
+                        "oneOf": [
+                          {
                             "const": 1,
                             "title": "Fin"
                           },
@@ -192,11 +199,14 @@
                     "oneOf": [
                       {
                         "$ref": "#/definitions/table"
-                      },{
+                      },
+                      {
                         "$ref": "#/definitions/application"
-                      },{
+                      },
+                      {
                         "$ref": "#/definitions/text"
-                      },{
+                      },
+                      {
                         "$ref": "#/definitions/column"
                       }
                     ]
@@ -209,7 +219,7 @@
       }
     }
   },
-  "definitions":{
+  "definitions": {
     "table": {
       "title": "Prévisualisation table",
       "properties": {
@@ -226,15 +236,16 @@
           "x-itemTitle": "title",
           "x-itemsProp": "results",
           "properties": {
-            "id": {"type": "string"},
-            "title": {"type": "string"},
-            "href": {"type": "string"},
-            "schema": {"type": "array"}
+            "id": { "type": "string" },
+            "title": { "type": "string" },
+            "href": { "type": "string" },
+            "schema": { "type": "array" }
           }
         },
         "display": {
           "type": "string",
-           "oneOf": [{
+          "oneOf": [
+            {
               "const": "table",
               "title": "Tableau"
             },
@@ -268,7 +279,7 @@
         }
       }
     },
-    "application":{
+    "application": {
       "title": "Visualisation",
       "properties": {
         "type": { "const": "application", "title": "Type de l'élément" },
@@ -284,9 +295,9 @@
           "x-itemTitle": "title",
           "x-itemsProp": "results",
           "properties": {
-            "id": {"type": "string"},
-            "title": {"type": "string"},
-            "baseApp":{"type": "object"}
+            "id": { "type": "string" },
+            "title": { "type": "string" },
+            "baseApp": { "type": "object" }
           }
         }
       }
@@ -295,23 +306,29 @@
       "title": "Texte",
       "properties": {
         "type": { "const": "text", "title": "Type de l'élément" },
-        "content": { "type": "string", "x-display": "textarea", "title": "Contenu" }
+        "content": {
+          "type": "string",
+          "x-display": "textarea",
+          "title": "Contenu"
+        }
       }
     },
     "column": {
       "title": "Colonne",
-      "properties":{
+      "properties": {
         "type": { "const": "column", "title": "Type de l'élément" },
-        "elements":{
-          "type":"array",
+        "elements": {
+          "type": "array",
           "items": {
             "type": "object",
             "oneOf": [
               {
                 "$ref": "#/definitions/table"
-              },{
+              },
+              {
                 "$ref": "#/definitions/application"
-              },{
+              },
+              {
                 "$ref": "#/definitions/text"
               }
             ]
