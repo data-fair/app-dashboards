@@ -3,7 +3,7 @@ import { ofetch } from 'ofetch'
 import { ref } from 'vue'
 import reactiveSearchParams from '@data-fair/lib/vue/reactive-search-params-global.js'
 import 'iframe-resizer/js/iframeResizer'
-import conceptFilters from './concept-filters.vue'
+import dashboardFilters from './dashboard-filters.vue'
 import dashboardSection from './dashboard-section.vue'
 import { escape } from '@data-fair/lib/filters.js'
 
@@ -27,7 +27,7 @@ if (reactiveSearchParams.draft === 'true' && window.parent) {
   }
 }
 
-const conceptValues = ref({})
+const filtersValues = ref({})
 const tab = ref(null)
 let maxTitleLength = 0
 let sumTitleLength = 0
@@ -35,16 +35,17 @@ let sumTitleLength = 0
 const incompleteConfiguration = !config.datasets || !config.datasets.length
 if (incompleteConfiguration) {
   setError('Veuillez choisir un source de données pour le filtre commun')
-} else if ((!config.conceptFilters || !config.conceptFilters.length) && !config.periodFilter && !config.addressFilter) {
+} else if ((!config.filters || !config.filters.length) && !config.periodFilter && !config.addressFilter) {
   setError('Veuillez configurer un filtre')
 } else {
 /** @type{any[]} */
   // const conceptsFields = [].concat(...config.sections.map((/** @type{any} */s) => [].concat(...s.elements.filter((/** @type{any} */e) => e.concepts && e.concepts.length).map((/** @type{any} */e) => e.concepts)))).filter((/** @type{any} */e1, i, s) => s.findIndex((/** @type{any} */e2) => e1.key === e2.key) === i)
   // TODO : set error if same concept is usesd in 2 filters
 
-  for (const filter of config.conceptFilters) {
-    if (!reactiveSearchParams[filter.labelField.key] && filter.forceOneValue && filter.startValue) {
-      reactiveSearchParams[filter.labelField.key] = filter.startValue
+  const datasetFilterPrefix = '_d_' + config.datasets[0].id + '_'
+  for (const filter of config.filters) {
+    if (!reactiveSearchParams[datasetFilterPrefix + filter.labelField + '_in'] && filter.forceOneValue && filter.startValue) {
+      reactiveSearchParams[datasetFilterPrefix + filter.labelField + '_in'] = filter.startValue
     }
   }
   if (config.periodFilter && !reactiveSearchParams.period) {
@@ -55,29 +56,6 @@ if (incompleteConfiguration) {
     reactiveSearchParams.period = period.join(',')
   }
 
-  for (const key in reactiveSearchParams) {
-    if (key.startsWith('_c_')) {
-      const concept = key.slice(3, key.lastIndexOf('_'))
-      const filter = config.conceptFilters.find(f => {
-        return f.concepts.find(c => c['x-concept'].id === concept)
-      })
-      if (filter) {
-        const field = filter.concepts.find(c => c['x-concept'].id === concept)
-        const params = {
-          select: field.key + ',' + filter.labelField.key,
-          qs: `${escape(field.key)}:"${escape(reactiveSearchParams[key])}"`,
-          size: 1,
-          finalizedAt: config.datasets[0].finalizedAt
-        }
-        const res = await ofetch(config.datasets[0].href + '/lines', { params })
-        if (res.results.length) {
-          reactiveSearchParams[filter.labelField.key] = res.results[0][filter.labelField.key]
-          delete reactiveSearchParams[key]
-        }
-      }
-    }
-  }
-
   maxTitleLength = Math.max(...config.sections.map((/** @type{any} */s) => (s.title && s.title.length) || 0))
   sumTitleLength = config.sections.reduce((/** @type{any} */acc, /** @type{any} */s) => acc + ((s.title && s.title.length) || 0), 0)
 }
@@ -85,7 +63,7 @@ if (incompleteConfiguration) {
 
 <template>
   <v-container
-    v-if="config.conceptFilters?.length || config.periodFilter || config.addressFilter"
+    v-if="config.filters?.length || config.periodFilter || config.addressFilter"
     fluid
     data-iframe-height
   >
@@ -101,14 +79,14 @@ if (incompleteConfiguration) {
     >
       {{ config.description }}
     </p>
-    <concept-filters
+    <dashboard-filters
       :config="config"
-      @update:model-value="value => conceptValues = value"
+      @update:model-value="value => filtersValues = value"
     />
     <dashboard-section
       v-if="config.sections.length === 1"
       :section="config.sections[0]"
-      :concept-values="conceptValues"
+      :filters-values="filtersValues"
     />
     <template v-else-if="config.sectionsGroup.includes('tabs')">
       <v-tabs
@@ -176,7 +154,7 @@ if (incompleteConfiguration) {
         >
           <dashboard-section
             :section="section"
-            :concept-values="conceptValues"
+            :filters-values="filtersValues"
             hide-title
           />
         </v-window-item>
@@ -208,7 +186,7 @@ if (incompleteConfiguration) {
         <v-expansion-panel-text>
           <dashboard-section
             :section="section"
-            :concept-values="conceptValues"
+            :filters-values="filtersValues"
             hide-title
           />
         </v-expansion-panel-text>
@@ -231,7 +209,7 @@ if (incompleteConfiguration) {
         </h2>
         <dashboard-section
           :section="section"
-          :concept-values="conceptValues"
+          :filters-values="filtersValues"
           hide-title
         />
       </div>

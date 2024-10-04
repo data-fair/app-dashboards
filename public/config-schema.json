@@ -7,7 +7,7 @@
         {
           "title": "Source des valeurs pour les filtres",
           "type": "object",
-          "x-fromUrl": "api/v1/datasets?status=&q={q}&select=id,title,schema,timePeriod,bbox&owner={context.owner.type}:{context.owner.id}",
+          "x-fromUrl": "api/v1/datasets?status=finalized&q={q}&select=id,title,schema,timePeriod,bbox&owner={context.owner.type}:{context.owner.id}",
           "x-itemsProp": "results",
           "x-itemTitle": "title",
           "x-itemKey": "href",
@@ -37,7 +37,7 @@
         }
       ]
     },
-    "conceptFilters": {
+    "filters": {
       "type": "array",
       "title": "Filtres du tableau de bord",
       "items": {
@@ -46,29 +46,27 @@
         "properties": {
           "labelField": {
             "title": "Colonne de libellé du filtre",
-            "type": "object",
+            "type": "string",
             "x-fromUrl": "{datasets.0.href}/schema?calculated=false&separator=false",
             "x-itemTitle": "label",
-            "x-itemKey": "key",
-            "properties": {
-              "key": { "type": "string" },
-              "label": { "type": "string" }
-            }
+            "x-itemKey": "key"
           },
-          "concepts": {
+          "values": {
+            "title": "Valeurs Associées",
+            "description": "Si vide utilise la valeur du libellé",
             "type": "array",
-            "x-fromUrl": "{datasets.0.href}/schema?calculated=false&separator=false&concept=true",
+            "x-fromUrl": "{datasets.0.href}/schema?calculated=false&separator=false",
             "x-itemKey": "key",
             "x-itemTitle": "label",
             "items": {
               "title": "Colonnes pour les valeurs du filtre",
-              "type": "object",
-              "properties": {
-                "key": { "type": "string" },
-                "label": { "type": "string" },
-                "x-concept": { "type": "object" }
-              }
+              "type": "string"
             }
+          },
+          "multipleValues": {
+            "title": "Permettre de filtrer par plusieurs valeur",
+            "type": "boolean",
+            "default": false
           },
           "forceOneValue": {
             "title": "Toujours filtrer par une valeur",
@@ -224,11 +222,6 @@
       "title": "Prévisualisation table",
       "properties": {
         "type": { "const": "tablePreview", "title": "Type de l'élément" },
-        "valueMandatory": {
-          "title": "Nécessite une valeur dans le filtre",
-          "type": "boolean",
-          "default": false
-        },
         "dataset": {
           "type": "object",
           "x-fromUrl": "api/v1/datasets?q={q}&{context.datasetFilter}&select=id,title,schema",
@@ -276,6 +269,22 @@
           "items": {
             "type": "string"
           }
+        },
+        "valueMandatory": {
+          "title": "Nécessite une valeur dans des filtres",
+          "type": "boolean",
+          "default": false
+        },
+        "mandatoryFilters": {
+          "title": "Filtres requis",
+          "type": "array",
+          "x-if": "parent.value.valueMandatory",
+          "x-fromData": "filters",
+          "x-itemKey": "labelField",
+          "x-itemTitle": "labelField",
+          "items": {
+            "type": "string"
+          }
         }
       }
     },
@@ -283,11 +292,6 @@
       "title": "Visualisation",
       "properties": {
         "type": { "const": "application", "title": "Type de l'élément" },
-        "valueMandatory": {
-          "title": "Nécessite une valeur dans le filtre",
-          "type": "boolean",
-          "default": false
-        },
         "application": {
           "type": "object",
           "x-fromUrl": "api/v1/applications?q={q}&{context.datasetFilter}&filterConcepts=true&select=id,title,baseApp",
@@ -299,6 +303,11 @@
             "title": { "type": "string" },
             "baseApp": { "type": "object" }
           }
+        },
+        "valueMandatory": {
+          "title": "Nécessite une valeur dans des filtres",
+          "type": "boolean",
+          "default": false
         }
       }
     },

@@ -4,7 +4,7 @@ import dashboardElement from './dashboard-element.vue'
 const props = defineProps({
   element: { type: Object, required: true },
   height: { type: Number, default: 400 },
-  conceptValues: { type: [Object, null], required: true }
+  filtersValues: { type: [Object, null], required: true }
 })
 
 </script>
@@ -16,12 +16,12 @@ const props = defineProps({
     :key="k"
     :element="el"
     :height="height / element.elements.length"
-    :concept-values="conceptValues"
+    :filters-values="filtersValues"
   />
   <dashboard-element
     v-else
     :element="element"
     :height="height"
-    :concept-values="conceptValues"
+    :filters-values="filtersValues"
   />
 </template>

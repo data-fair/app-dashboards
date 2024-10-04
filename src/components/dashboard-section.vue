@@ -3,7 +3,7 @@ import dashboardColumn from './dashboard-column.vue'
 
 const props = defineProps({
   section: { type: Object, required: true },
-  conceptValues: { type: [Object, null], required: true },
+  filtersValues: { type: [Object, null], required: true },
   hideTitle: { type: Boolean, default: false }
 })
 
@@ -81,7 +81,7 @@ for (const row of props.section.rows) {
       <dashboard-column
         :element="element"
         :height="row.height"
-        :concept-values="conceptValues"
+        :filters-values="filtersValues"
       />
     </v-col>
   </v-row>
