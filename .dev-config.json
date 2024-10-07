@@ -6,626 +6,66 @@
           "elements": [
             {
               "width": 2,
-              "fields": [
-                "dep",
-                "lmft",
-                "lsph"
-              ],
+              "type": "application",
+              "mandatoryFilters": [],
+              "valueMandatory": false,
+              "source": "root",
+              "application": {
+                "id": "evolution-des-prenoms-a-la-naissance-en-france-de-1900-a-2107",
+                "title": "Evolution des prénoms à la naissance en France de 1900 à 2021",
+                "baseApp": {
+                  "id": "https:cdn.jsdelivr.netnpm@data-fairapp-charts@1.1dist",
+                  "url": "https://cdn.jsdelivr.net/npm/@data-fair/app-charts@1.1/dist/",
+                  "meta": {
+                    "title": "data-fair-chartsdata-fair-chartsdata-fair-charts",
+                    "description": "A simple charts application for data-fair.",
+                    "keywords": [
+                      "data-fair",
+                      "charts",
+                      "graphs"
+                    ],
+                    "charset": "UTF-8",
+                    "viewport": "width=device-width, initial-scale=1.0",
+                    "df:overflow": "false",
+                    "df:sync-state": "true",
+                    "df:filter-concepts": "true",
+                    "thumbnail": "thumbnail.png",
+                    "application-name": "Charts",
+                    "vocabulary-accept": "http://www.w3.org/2000/01/rdf-schema#label",
+                    "vocabulary-require": "http://www.w3.org/2003/01/geo/wgs84_pos#lat_long"
+                  },
+                  "datasetsFilters": [
+                    {
+                      "field-type": [
+                        "integer",
+                        "number"
+                      ],
+                      "{context.datasetFilter}": [
+                        ""
+                      ]
+                    }
+                  ]
+                }
+              }
+            }
+          ],
+          "height": 400
+        }
+      ]
+    },
+    {
+      "rows": [
+        {
+          "elements": [
+            {
+              "width": 2,
+              "type": "tablePreview",
+              "mandatoryFilters": [],
+              "valueMandatory": false,
               "noInteractions": false,
               "display": "table",
-              "valueMandatory": true,
-              "type": "tablePreview",
-              "dataset": {
-                "id": "etablissements-finess-france",
-                "title": "Liste des établissements du domaine sanitaire et social",
-                "href": "http://localhost:5888/data-fair/api/v1/datasets/etablissements-finess-france",
-                "schema": [
-                  {
-                    "key": "NumET",
-                    "x-originalName": "NumET",
-                    "type": "integer",
-                    "label": "Numéro FINESS ET",
-                    "title": "Numéro FINESS ET",
-                    "description": "Un numéro d'identification unique et définitif, appelé numéro FINESS, est attribué à chaque personne morale et ses établissements inscrits au fichier FINESS.",
-                    "x-cardinality": 99135
-                  },
-                  {
-                    "key": "src",
-                    "x-originalName": "src",
-                    "type": "string",
-                    "x-capabilities": {
-                      "textAgg": false
-                    },
-                    "label": "Source des coordonnées",
-                    "title": "Source des coordonnées",
-                    "description": "",
-                    "x-cardinality": 125
-                  },
-                  {
-                    "key": "dmaj",
-                    "x-originalName": "dmaj",
-                    "type": "string",
-                    "format": "date",
-                    "label": "Date de mise à jour des coordonnées",
-                    "title": "Date de mise à jour des coordonnées",
-                    "description": "",
-                    "x-cardinality": 4,
-                    "enum": [
-                      "2024-07-01T00:00:00.000Z",
-                      "2024-07-16T00:00:00.000Z",
-                      "2024-07-09T00:00:00.000Z",
-                      "2024-07-15T00:00:00.000Z"
-                    ]
-                  },
-                  {
-                    "key": "NumEJ",
-                    "x-originalName": "NumEJ",
-                    "type": "integer",
-                    "label": "Numéro FINESS EJ",
-                    "title": "Numéro FINESS EJ",
-                    "description": "Le numéro FINESS juridique, qui porte l'immatriculation des entités juridiques (EJ) régissant les établissements sanitaires, sociaux, médico-sociaux, correspond à la notion de personnalité morale et est associé au SIREN de l'entreprise au moment de son enrengistrement.",
-                    "x-cardinality": 47730
-                  },
-                  {
-                    "key": "Rs",
-                    "x-originalName": "Rs",
-                    "type": "string",
-                    "x-capabilities": {
-                      "textAgg": false
-                    },
-                    "label": "Raison sociale",
-                    "title": "Raison sociale",
-                    "description": "La raison sociale correspond au nom donné à une société",
-                    "x-refersTo": "http://www.w3.org/2000/01/rdf-schema#label",
-                    "x-concept": {
-                      "id": "label",
-                      "title": "Libellé",
-                      "primary": true
-                    },
-                    "x-cardinality": 87733
-                  },
-                  {
-                    "key": "Rsl",
-                    "x-originalName": "Rsl",
-                    "type": "string",
-                    "x-capabilities": {
-                      "textAgg": false
-                    },
-                    "label": "Raison sociale longue",
-                    "title": "Raison sociale longue",
-                    "description": "La raison sociale non abrégée",
-                    "x-cardinality": 70990
-                  },
-                  {
-                    "key": "crs",
-                    "x-originalName": "crs",
-                    "type": "string",
-                    "x-capabilities": {
-                      "textAgg": false
-                    },
-                    "label": "Complément de raison sociale",
-                    "title": "Complément de raison sociale",
-                    "description": "le complément de raison sociale est un élément qui vient compléter la dénomination sociale d'une société ",
-                    "x-cardinality": 6596
-                  },
-                  {
-                    "key": "cd",
-                    "x-originalName": "cd",
-                    "type": "string",
-                    "x-capabilities": {
-                      "textAgg": false
-                    },
-                    "label": "Complément de distribution",
-                    "title": "Complément de distribution",
-                    "description": "adresse complémentaire qui peut être associée à un établissement de santé ou médico-social.",
-                    "x-cardinality": 8454
-                  },
-                  {
-                    "key": "nvoie",
-                    "x-originalName": "nvoie",
-                    "type": "integer",
-                    "label": "Numéro de voie",
-                    "title": "Numéro de voie",
-                    "description": "Numéro de voie",
-                    "x-cardinality": 1440
-                  },
-                  {
-                    "key": "tvoie",
-                    "x-originalName": "tvoie",
-                    "type": "string",
-                    "x-capabilities": {
-                      "textAgg": false
-                    },
-                    "label": "Type de voie",
-                    "title": "Type de voie",
-                    "description": "Type de voie",
-                    "x-cardinality": 110
-                  },
-                  {
-                    "key": "lvoie",
-                    "x-originalName": "lvoie",
-                    "type": "string",
-                    "x-capabilities": {
-                      "textAgg": false
-                    },
-                    "label": "Libellé de voie",
-                    "title": "Libellé de voie",
-                    "description": "Libellé de voie",
-                    "x-cardinality": 36651
-                  },
-                  {
-                    "key": "cvoie",
-                    "x-originalName": "cvoie",
-                    "type": "string",
-                    "x-capabilities": {
-                      "textAgg": false
-                    },
-                    "label": "Complement de voie",
-                    "title": "Complement de voie",
-                    "description": "Complement de voie",
-                    "x-cardinality": 4
-                  },
-                  {
-                    "key": "ld",
-                    "x-originalName": "ld",
-                    "type": "string",
-                    "x-capabilities": {
-                      "textAgg": false
-                    },
-                    "label": "Lieu-dit / BP",
-                    "title": "Lieu-dit / BP",
-                    "description": "",
-                    "x-cardinality": 5931
-                  },
-                  {
-                    "key": "dep",
-                    "x-originalName": "dep",
-                    "type": "string",
-                    "label": "Département",
-                    "title": "Département",
-                    "description": "",
-                    "x-refersTo": "http://rdf.insee.fr/def/geo#codeDepartement",
-                    "x-concept": {
-                      "id": "codeDepartement",
-                      "title": "Code département",
-                      "primary": true
-                    },
-                    "x-cardinality": 102
-                  },
-                  {
-                    "key": "lddep",
-                    "x-originalName": "lddep",
-                    "type": "string",
-                    "x-capabilities": {
-                      "textAgg": false
-                    },
-                    "label": "Libellé département",
-                    "title": "Libellé département",
-                    "description": "",
-                    "x-cardinality": 102
-                  },
-                  {
-                    "key": "lach",
-                    "x-originalName": "lach",
-                    "type": "string",
-                    "x-capabilities": {
-                      "textAgg": false
-                    },
-                    "label": "Ligne d'acheminement (Code postal + Lib Commune)",
-                    "title": "Ligne d'acheminement (Code postal + Lib Commune)",
-                    "description": "",
-                    "x-cardinality": 13413
-                  },
-                  {
-                    "key": "tel",
-                    "x-originalName": "tel",
-                    "type": "string",
-                    "x-capabilities": {
-                      "textAgg": false
-                    },
-                    "label": "Téléphone",
-                    "title": "Téléphone",
-                    "description": "",
-                    "x-refersTo": "https://www.w3.org/2006/vcard/ns#tel",
-                    "x-concept": {
-                      "id": "tel",
-                      "title": "N° de téléphone",
-                      "primary": true
-                    },
-                    "x-cardinality": 73287
-                  },
-                  {
-                    "key": "telc",
-                    "x-originalName": "telc",
-                    "type": "string",
-                    "label": "Télécopie",
-                    "title": "Télécopie",
-                    "description": "",
-                    "ignoreDetection": true,
-                    "x-cardinality": 41639
-                  },
-                  {
-                    "key": "catet",
-                    "x-originalName": "catet",
-                    "type": "integer",
-                    "label": "Catégorie d'établissement",
-                    "title": "Catégorie d'établissement",
-                    "description": "",
-                    "x-cardinality": 156
-                  },
-                  {
-                    "key": "lcatet",
-                    "x-originalName": "lcatet",
-                    "type": "string",
-                    "x-capabilities": {
-                      "textAgg": false
-                    },
-                    "label": "Libellé catégorie d'établissement",
-                    "title": "Libellé catégorie d'établissement",
-                    "description": "",
-                    "x-cardinality": 159
-                  },
-                  {
-                    "key": "catag",
-                    "x-originalName": "catag",
-                    "type": "integer",
-                    "label": "Catégorie d'agrégat d'établissement",
-                    "title": "Catégorie d'agrégat d'établissement",
-                    "description": "",
-                    "x-cardinality": 57
-                  },
-                  {
-                    "key": "lcatag",
-                    "x-originalName": "lcatag",
-                    "type": "string",
-                    "x-capabilities": {
-                      "textAgg": false
-                    },
-                    "label": "Libellé catégorie d'agégat d'établissement",
-                    "title": "Libellé catégorie d'agégat d'établissement",
-                    "description": "",
-                    "x-cardinality": 57
-                  },
-                  {
-                    "key": "nsiret",
-                    "x-originalName": "nsiret",
-                    "type": "string",
-                    "x-capabilities": {
-                      "textAgg": false
-                    },
-                    "label": "Numéro de SIRET",
-                    "title": "Numéro de SIRET",
-                    "description": "",
-                    "x-refersTo": "http://www.datatourisme.fr/ontology/core/1.0/#siret",
-                    "x-concept": {
-                      "id": "siret",
-                      "title": "SIRET",
-                      "primary": true
-                    },
-                    "x-cardinality": 79059
-                  },
-                  {
-                    "key": "ape",
-                    "x-originalName": "ape",
-                    "type": "string",
-                    "x-capabilities": {
-                      "textAgg": false
-                    },
-                    "label": "Code APE",
-                    "title": "Code APE",
-                    "description": "",
-                    "x-cardinality": 130
-                  },
-                  {
-                    "key": "mft",
-                    "x-originalName": "mft",
-                    "type": "integer",
-                    "x-capabilities": {
-                      "textAgg": false
-                    },
-                    "label": "Code MFT",
-                    "title": "Code MFT",
-                    "description": "",
-                    "x-cardinality": 46,
-                    "enum": [
-                      1,
-                      8,
-                      99,
-                      3,
-                      45,
-                      36,
-                      34,
-                      57,
-                      5,
-                      7,
-                      30,
-                      54,
-                      9,
-                      10,
-                      40,
-                      41,
-                      35,
-                      4,
-                      47,
-                      2,
-                      22,
-                      43,
-                      52,
-                      58,
-                      32,
-                      17,
-                      15,
-                      33,
-                      38,
-                      21,
-                      53,
-                      14,
-                      44,
-                      25,
-                      42,
-                      11,
-                      48,
-                      23,
-                      51,
-                      55,
-                      56,
-                      31,
-                      6,
-                      49,
-                      50,
-                      46
-                    ]
-                  },
-                  {
-                    "key": "lmft",
-                    "x-originalName": "lmft",
-                    "type": "string",
-                    "x-capabilities": {
-                      "textAgg": false
-                    },
-                    "label": "Libellé MFT",
-                    "title": "Libellé MFT",
-                    "description": "",
-                    "x-cardinality": 48,
-                    "enum": [
-                      "Etablissement Tarif Libre",
-                      "Président du Conseil Départemental",
-                      "Indéterminé",
-                      "ARS établissements Publics de santé dotation globale",
-                      "ARS/PCD, Tarif partiel, habilité aide sociale sans PUI",
-                      "Tarifs conventionnels assurance maladie",
-                      "ARS / DG dotation globale",
-                      "ARS /ARS PCD   Dotation forfait ou prix de journée globalisé",
-                      "ARS établissements médico-soc. non financés dotation globale",
-                      "ARS établissements de santé non financés dotation globale",
-                      "Préfet de région établissements et services sociaux",
-                      "Tarif AM - Services de Soins Infirmiers A Domicile",
-                      "ARS PCD mixte (2 arrêtés), habilité aide sociale",
-                      "Autorité Conjointe Préfet ou ARS et PCD (1 arrêté)",
-                      "ARS/PCD, Tarif global, habilité aide sociale, recours PUI",
-                      "ARS/PCD, Tarif global, habilité aide sociale sans PUI",
-                      "Préfet de département Subvention",
-                      "ARS établissements PSPH dotation globale",
-                      "ARS/PCD, Tarif partiel, non habilité aide sociale sans PUI",
-                      "Autorité Ministérielle",
-                      "Autorité mixte ARS PCD  ESLD tripartite DG global",
-                      "ARS/PCD, Tarif global, non habilité aide sociale sans PUI",
-                      "ARS/PCD, LF, forfait soins, habilité aide sociale",
-                      "ARS dotation forfait ou prix de journée globalisé hors CPOM",
-                      "Echelle tarifaire publique",
-                      "Autorité mixte ARS PCD  dotation globale",
-                      "ARS privé hors PSPH sous dotation globale",
-                      "Echelle tarifaire privée",
-                      "Régime spécial de prévoyance",
-                      "ARS PCD mixte, Accueil de jour PA, HAS",
-                      "ARS/PCD, LF, forfait soins, non habilité aide sociale",
-                      "Organismes Nationaux de Sécurité Sociale",
-                      "ARS/PCD, Tarif partiel, habilité aide sociale, recours PUI",
-                      "ARS PCD mixte, Accueil de jour PA, nHAS, hébergement libre",
-                      "ARS/PCD, Tarif global, non hab.aide sociale, recours PUI",
-                      "Tarifs ARS, PCD, hébergt libre",
-                      "ARS/PCD, EHPA, dot globale de soins, habilité aide sociale",
-                      "ARS/PCD, PUV, forfait soins, non habilité aide sociale",
-                      "Autorité mixte ARS PCD  ESLD tripartite DG partielle",
-                      "ARS/PCD, PUV, convention SSIAD, habilité à l'aide sociale",
-                      "ARS/PCD, PUV, convention SSIAD, non habilité à l'aide social",
-                      "Pdt Conseil Départemental/Subvention",
-                      "Tarif d'Autorité",
-                      "ARS/PCD, EHPA, dot globale soins, non habilité aide sociale",
-                      "ARS/PCD, PUV, forfait soins, habilité aide sociale",
-                      "ARS/PCD, Tarif partiel, non hab.aide sociale, recours PUI",
-                      "ARS PCD mixte (2 arrêtés), habilit�� aide sociale",
-                      "ARS ��tablissements Publics de santé dotation globale"
-                    ]
-                  },
-                  {
-                    "key": "sph",
-                    "x-originalName": "sph",
-                    "type": "integer",
-                    "x-capabilities": {
-                      "textAgg": false
-                    },
-                    "label": "Code SPH",
-                    "title": "Code SPH",
-                    "description": "",
-                    "x-cardinality": 7
-                  },
-                  {
-                    "key": "lsph",
-                    "x-originalName": "lsph",
-                    "type": "string",
-                    "x-capabilities": {
-                      "textAgg": false
-                    },
-                    "label": "Libellé SPH",
-                    "title": "Libellé SPH",
-                    "description": "",
-                    "x-cardinality": 7
-                  },
-                  {
-                    "key": "douverture",
-                    "x-originalName": "douverture",
-                    "type": "string",
-                    "x-capabilities": {
-                      "textAgg": false
-                    },
-                    "label": "Date d'ouverture",
-                    "title": "Date d'ouverture",
-                    "format": "date",
-                    "description": "",
-                    "x-cardinality": 14854
-                  },
-                  {
-                    "key": "dautorisation",
-                    "x-originalName": "dautorisation",
-                    "type": "string",
-                    "x-capabilities": {
-                      "textAgg": false
-                    },
-                    "label": "Date d'autorisation",
-                    "title": "Date d'autorisation",
-                    "format": "date",
-                    "description": "",
-                    "x-cardinality": 16170
-                  },
-                  {
-                    "key": "dms",
-                    "x-originalName": "dms",
-                    "type": "string",
-                    "x-capabilities": {
-                      "textAgg": false
-                    },
-                    "label": "Date de mise à jour sur la structre",
-                    "title": "Date de mise à jour sur la structre",
-                    "format": "date",
-                    "description": "",
-                    "x-cardinality": 3856
-                  },
-                  {
-                    "key": "uai",
-                    "x-originalName": "uai",
-                    "type": "string",
-                    "x-capabilities": {
-                      "textAgg": false
-                    },
-                    "label": "Code UAI (RNE)",
-                    "title": "Code UAI (RNE)",
-                    "description": "",
-                    "x-cardinality": 3373
-                  },
-                  {
-                    "key": "lat",
-                    "x-originalName": "lat",
-                    "type": "number",
-                    "label": "Latitude",
-                    "title": "Latitude",
-                    "description": "",
-                    "x-refersTo": "http://schema.org/latitude",
-                    "x-concept": {
-                      "id": "latitude",
-                      "title": "Latitude",
-                      "primary": true
-                    }
-                  },
-                  {
-                    "key": "lon",
-                    "x-originalName": "lon",
-                    "type": "number",
-                    "label": "Longitude",
-                    "title": "Longitude",
-                    "description": "",
-                    "x-refersTo": "http://schema.org/longitude",
-                    "x-concept": {
-                      "id": "longitude",
-                      "title": "Longitude",
-                      "primary": true
-                    }
-                  },
-                  {
-                    "key": "codeCom",
-                    "x-originalName": "codeCom",
-                    "type": "string",
-                    "label": "Code commune",
-                    "title": "Code commune",
-                    "description": "",
-                    "x-refersTo": "http://rdf.insee.fr/def/geo#codeCommune",
-                    "x-concept": {
-                      "id": "codeCommune",
-                      "title": "Code commune",
-                      "primary": true
-                    },
-                    "x-cardinality": 10866
-                  },
-                  {
-                    "key": "_infos_commune.code_epci",
-                    "x-originalName": "_infos_commune.code_epci",
-                    "x-extension": "dataset:communes-de-france/masterData_bulkSearch_infos-commune",
-                    "title": "Code EPCI",
-                    "description": "Code de l'établissement public de coopération intercommunale",
-                    "type": "string",
-                    "x-refersTo": "http://rdf.insee.fr/def/geo#EtablissementPublicDeCooperationIntercommunale",
-                    "x-capabilities": {
-                      "textStandard": false,
-                      "insensitive": false,
-                      "text": false
-                    },
-                    "x-concept": {
-                      "id": "codeEPCI",
-                      "title": "Code EPCI",
-                      "primary": true
-                    },
-                    "x-cardinality": 1255
-                  },
-                  {
-                    "key": "_infos_commune._error",
-                    "type": "string",
-                    "x-originalName": "_error",
-                    "x-extension": "dataset:communes-de-france/masterData_bulkSearch_infos-commune",
-                    "title": "Erreur de récupération de données de référence",
-                    "description": "Une erreur lors de la récupération des informations depuis un service distant",
-                    "x-calculated": true
-                  },
-                  {
-                    "x-calculated": true,
-                    "key": "_geopoint",
-                    "type": "string",
-                    "title": "Coordonnée géographique",
-                    "description": "Centroïde au format \"lat,lon\"",
-                    "x-refersTo": "http://www.w3.org/2003/01/geo/wgs84_pos#lat_long",
-                    "x-concept": {
-                      "id": "latLon",
-                      "title": "Latitude / Longitude",
-                      "primary": true
-                    }
-                  },
-                  {
-                    "x-calculated": true,
-                    "key": "_id",
-                    "type": "string",
-                    "format": "uri-reference",
-                    "title": "Identifiant",
-                    "description": "Identifiant unique parmi toutes les lignes du jeu de données"
-                  },
-                  {
-                    "x-calculated": true,
-                    "key": "_i",
-                    "type": "integer",
-                    "title": "Numéro de ligne",
-                    "description": "Indice de la ligne dans le fichier d'origine"
-                  },
-                  {
-                    "x-calculated": true,
-                    "key": "_rand",
-                    "type": "integer",
-                    "title": "Nombre aléatoire",
-                    "description": "Un nombre aléatoire associé à la ligne qui permet d'obtenir un tri aléatoire par exemple"
-                  }
-                ]
-              },
-              "mandatoryFilters": [
-                "lddep",
-                "lmft"
-              ]
+              "fields": [],
+              "source": "root"
             }
           ],
           "height": 400
@@ -638,614 +78,64 @@
   "periodFilter": false,
   "filters": [
     {
-      "showAllValues": false,
+      "showAllValues": true,
       "forceOneValue": false,
-      "values": [
-        "dep"
-      ],
-      "labelField": "lddep",
-      "multipleValues": false
-    },
-    {
-      "showAllValues": false,
-      "forceOneValue": false,
-      "values": [
-        "mft"
-      ],
-      "labelField": "lmft",
-      "multipleValues": true
-    },
-    {
-      "showAllValues": false,
-      "forceOneValue": false,
+      "multipleValues": false,
       "values": [],
-      "labelField": "lsph",
-      "multipleValues": false
+      "labelField": "sexe"
     }
   ],
   "datasets": [
     {
-      "href": "http://localhost:5888/data-fair/api/v1/datasets/etablissements-finess-france",
-      "title": "Liste des établissements du domaine sanitaire et social",
-      "id": "etablissements-finess-france",
+      "href": "http://localhost:5888/data-fair/api/v1/datasets/prenom-france-1900-2017",
+      "title": "Prénoms attribués aux enfants nés en France entre 1900 et 2021",
+      "id": "prenom-france-1900-2017",
       "schema": [
         {
-          "key": "NumET",
-          "x-originalName": "NumET",
+          "key": "sexe",
           "type": "integer",
-          "label": "Numéro FINESS ET",
-          "title": "Numéro FINESS ET",
-          "description": "Un numéro d'identification unique et définitif, appelé numéro FINESS, est attribué à chaque personne morale et ses établissements inscrits au fichier FINESS.",
-          "x-cardinality": 99135
-        },
-        {
-          "key": "src",
-          "x-originalName": "src",
-          "type": "string",
-          "x-capabilities": {
-            "textAgg": false
-          },
-          "label": "Source des coordonnées",
-          "title": "Source des coordonnées",
-          "description": "",
-          "x-cardinality": 125
-        },
-        {
-          "key": "dmaj",
-          "x-originalName": "dmaj",
-          "type": "string",
-          "format": "date",
-          "label": "Date de mise à jour des coordonnées",
-          "title": "Date de mise à jour des coordonnées",
-          "description": "",
-          "x-cardinality": 4,
+          "x-originalName": "sexe",
+          "x-cardinality": 2,
+          "x-refersTo": null,
+          "title": "Sexe",
           "enum": [
-            "2024-07-01T00:00:00.000Z",
-            "2024-07-16T00:00:00.000Z",
-            "2024-07-09T00:00:00.000Z",
-            "2024-07-15T00:00:00.000Z"
-          ]
-        },
-        {
-          "key": "NumEJ",
-          "x-originalName": "NumEJ",
-          "type": "integer",
-          "label": "Numéro FINESS EJ",
-          "title": "Numéro FINESS EJ",
-          "description": "Le numéro FINESS juridique, qui porte l'immatriculation des entités juridiques (EJ) régissant les établissements sanitaires, sociaux, médico-sociaux, correspond à la notion de personnalité morale et est associé au SIREN de l'entreprise au moment de son enrengistrement.",
-          "x-cardinality": 47730
-        },
-        {
-          "key": "Rs",
-          "x-originalName": "Rs",
-          "type": "string",
-          "x-capabilities": {
-            "textAgg": false
-          },
-          "label": "Raison sociale",
-          "title": "Raison sociale",
-          "description": "La raison sociale correspond au nom donné à une société",
-          "x-refersTo": "http://www.w3.org/2000/01/rdf-schema#label",
-          "x-concept": {
-            "id": "label",
-            "title": "Libellé",
-            "primary": true
-          },
-          "x-cardinality": 87733
-        },
-        {
-          "key": "Rsl",
-          "x-originalName": "Rsl",
-          "type": "string",
-          "x-capabilities": {
-            "textAgg": false
-          },
-          "label": "Raison sociale longue",
-          "title": "Raison sociale longue",
-          "description": "La raison sociale non abrégée",
-          "x-cardinality": 70990
-        },
-        {
-          "key": "crs",
-          "x-originalName": "crs",
-          "type": "string",
-          "x-capabilities": {
-            "textAgg": false
-          },
-          "label": "Complément de raison sociale",
-          "title": "Complément de raison sociale",
-          "description": "le complément de raison sociale est un élément qui vient compléter la dénomination sociale d'une société ",
-          "x-cardinality": 6596
-        },
-        {
-          "key": "cd",
-          "x-originalName": "cd",
-          "type": "string",
-          "x-capabilities": {
-            "textAgg": false
-          },
-          "label": "Complément de distribution",
-          "title": "Complément de distribution",
-          "description": "adresse complémentaire qui peut être associée à un établissement de santé ou médico-social.",
-          "x-cardinality": 8454
-        },
-        {
-          "key": "nvoie",
-          "x-originalName": "nvoie",
-          "type": "integer",
-          "label": "Numéro de voie",
-          "title": "Numéro de voie",
-          "description": "Numéro de voie",
-          "x-cardinality": 1440
-        },
-        {
-          "key": "tvoie",
-          "x-originalName": "tvoie",
-          "type": "string",
-          "x-capabilities": {
-            "textAgg": false
-          },
-          "label": "Type de voie",
-          "title": "Type de voie",
-          "description": "Type de voie",
-          "x-cardinality": 110
-        },
-        {
-          "key": "lvoie",
-          "x-originalName": "lvoie",
-          "type": "string",
-          "x-capabilities": {
-            "textAgg": false
-          },
-          "label": "Libellé de voie",
-          "title": "Libellé de voie",
-          "description": "Libellé de voie",
-          "x-cardinality": 36651
-        },
-        {
-          "key": "cvoie",
-          "x-originalName": "cvoie",
-          "type": "string",
-          "x-capabilities": {
-            "textAgg": false
-          },
-          "label": "Complement de voie",
-          "title": "Complement de voie",
-          "description": "Complement de voie",
-          "x-cardinality": 4
-        },
-        {
-          "key": "ld",
-          "x-originalName": "ld",
-          "type": "string",
-          "x-capabilities": {
-            "textAgg": false
-          },
-          "label": "Lieu-dit / BP",
-          "title": "Lieu-dit / BP",
-          "description": "",
-          "x-cardinality": 5931
-        },
-        {
-          "key": "dep",
-          "x-originalName": "dep",
-          "type": "string",
-          "label": "Département",
-          "title": "Département",
-          "description": "",
-          "x-refersTo": "http://rdf.insee.fr/def/geo#codeDepartement",
-          "x-concept": {
-            "id": "codeDepartement",
-            "title": "Code département",
-            "primary": true
-          },
-          "x-cardinality": 102
-        },
-        {
-          "key": "lddep",
-          "x-originalName": "lddep",
-          "type": "string",
-          "x-capabilities": {
-            "textAgg": false
-          },
-          "label": "Libellé département",
-          "title": "Libellé département",
-          "description": "",
-          "x-cardinality": 102
-        },
-        {
-          "key": "lach",
-          "x-originalName": "lach",
-          "type": "string",
-          "x-capabilities": {
-            "textAgg": false
-          },
-          "label": "Ligne d'acheminement (Code postal + Lib Commune)",
-          "title": "Ligne d'acheminement (Code postal + Lib Commune)",
-          "description": "",
-          "x-cardinality": 13413
-        },
-        {
-          "key": "tel",
-          "x-originalName": "tel",
-          "type": "string",
-          "x-capabilities": {
-            "textAgg": false
-          },
-          "label": "Téléphone",
-          "title": "Téléphone",
-          "description": "",
-          "x-refersTo": "https://www.w3.org/2006/vcard/ns#tel",
-          "x-concept": {
-            "id": "tel",
-            "title": "N° de téléphone",
-            "primary": true
-          },
-          "x-cardinality": 73287
-        },
-        {
-          "key": "telc",
-          "x-originalName": "telc",
-          "type": "string",
-          "label": "Télécopie",
-          "title": "Télécopie",
-          "description": "",
-          "ignoreDetection": true,
-          "x-cardinality": 41639
-        },
-        {
-          "key": "catet",
-          "x-originalName": "catet",
-          "type": "integer",
-          "label": "Catégorie d'établissement",
-          "title": "Catégorie d'établissement",
-          "description": "",
-          "x-cardinality": 156
-        },
-        {
-          "key": "lcatet",
-          "x-originalName": "lcatet",
-          "type": "string",
-          "x-capabilities": {
-            "textAgg": false
-          },
-          "label": "Libell�� catégorie d'établissement",
-          "title": "Libellé catégorie d'établissement",
-          "description": "",
-          "x-cardinality": 159
-        },
-        {
-          "key": "catag",
-          "x-originalName": "catag",
-          "type": "integer",
-          "label": "Catégorie d'agrégat d'établissement",
-          "title": "Catégorie d'agrégat d'établissement",
-          "description": "",
-          "x-cardinality": 57
-        },
-        {
-          "key": "lcatag",
-          "x-originalName": "lcatag",
-          "type": "string",
-          "x-capabilities": {
-            "textAgg": false
-          },
-          "label": "Libellé catégorie d'agégat d'établissement",
-          "title": "Libellé catégorie d'agégat d'établissement",
-          "description": "",
-          "x-cardinality": 57
-        },
-        {
-          "key": "nsiret",
-          "x-originalName": "nsiret",
-          "type": "string",
-          "x-capabilities": {
-            "textAgg": false
-          },
-          "label": "Numéro de SIRET",
-          "title": "Numéro de SIRET",
-          "description": "",
-          "x-refersTo": "http://www.datatourisme.fr/ontology/core/1.0/#siret",
-          "x-concept": {
-            "id": "siret",
-            "title": "SIRET",
-            "primary": true
-          },
-          "x-cardinality": 79059
-        },
-        {
-          "key": "ape",
-          "x-originalName": "ape",
-          "type": "string",
-          "x-capabilities": {
-            "textAgg": false
-          },
-          "label": "Code APE",
-          "title": "Code APE",
-          "description": "",
-          "x-cardinality": 130
-        },
-        {
-          "key": "mft",
-          "x-originalName": "mft",
-          "type": "integer",
-          "x-capabilities": {
-            "textAgg": false
-          },
-          "label": "Code MFT",
-          "title": "Code MFT",
-          "description": "",
-          "x-cardinality": 46,
-          "enum": [
-            1,
-            8,
-            99,
-            3,
-            45,
-            36,
-            34,
-            57,
-            5,
-            7,
-            30,
-            54,
-            9,
-            10,
-            40,
-            41,
-            35,
-            4,
-            47,
             2,
-            22,
-            43,
-            52,
-            58,
-            32,
-            17,
-            15,
-            33,
-            38,
-            21,
-            53,
-            14,
-            44,
-            25,
-            42,
-            11,
-            48,
-            23,
-            51,
-            55,
-            56,
-            31,
-            6,
-            49,
-            50,
-            46
-          ]
+            1
+          ],
+          "description": ""
         },
         {
-          "key": "lmft",
-          "x-originalName": "lmft",
+          "key": "preusuel",
           "type": "string",
+          "x-originalName": "preusuel",
+          "x-cardinality": 36271,
+          "x-refersTo": null,
+          "title": "Prénom usuel",
           "x-capabilities": {
-            "textAgg": false
+            "textAgg": true
           },
-          "label": "Libellé MFT",
-          "title": "Libellé MFT",
-          "description": "",
-          "x-cardinality": 48,
-          "enum": [
-            "Etablissement Tarif Libre",
-            "Président du Conseil Départemental",
-            "Indéterminé",
-            "ARS établissements Publics de santé dotation globale",
-            "ARS/PCD, Tarif partiel, habilité aide sociale sans PUI",
-            "Tarifs conventionnels assurance maladie",
-            "ARS / DG dotation globale",
-            "ARS /ARS PCD   Dotation forfait ou prix de journée globalisé",
-            "ARS établissements médico-soc. non financés dotation globale",
-            "ARS établissements de santé non financés dotation globale",
-            "Préfet de région établissements et services sociaux",
-            "Tarif AM - Services de Soins Infirmiers A Domicile",
-            "ARS PCD mixte (2 arrêtés), habilité aide sociale",
-            "Autorité Conjointe Préfet ou ARS et PCD (1 arrêté)",
-            "ARS/PCD, Tarif global, habilité aide sociale, recours PUI",
-            "ARS/PCD, Tarif global, habilité aide sociale sans PUI",
-            "Préfet de département Subvention",
-            "ARS établissements PSPH dotation globale",
-            "ARS/PCD, Tarif partiel, non habilité aide sociale sans PUI",
-            "Autorité Ministérielle",
-            "Autorité mixte ARS PCD  ESLD tripartite DG global",
-            "ARS/PCD, Tarif global, non habilité aide sociale sans PUI",
-            "ARS/PCD, LF, forfait soins, habilité aide sociale",
-            "ARS dotation forfait ou prix de journée globalisé hors CPOM",
-            "Echelle tarifaire publique",
-            "Autorité mixte ARS PCD  dotation globale",
-            "ARS privé hors PSPH sous dotation globale",
-            "Echelle tarifaire privée",
-            "Régime spécial de prévoyance",
-            "ARS PCD mixte, Accueil de jour PA, HAS",
-            "ARS/PCD, LF, forfait soins, non habilité aide sociale",
-            "Organismes Nationaux de Sécurité Sociale",
-            "ARS/PCD, Tarif partiel, habilité aide sociale, recours PUI",
-            "ARS PCD mixte, Accueil de jour PA, nHAS, hébergement libre",
-            "ARS/PCD, Tarif global, non hab.aide sociale, recours PUI",
-            "Tarifs ARS, PCD, hébergt libre",
-            "ARS/PCD, EHPA, dot globale de soins, habilité aide sociale",
-            "ARS/PCD, PUV, forfait soins, non habilité aide sociale",
-            "Autorité mixte ARS PCD  ESLD tripartite DG partielle",
-            "ARS/PCD, PUV, convention SSIAD, habilité à l'aide sociale",
-            "ARS/PCD, PUV, convention SSIAD, non habilité à l'aide social",
-            "Pdt Conseil Départemental/Subvention",
-            "Tarif d'Autorité",
-            "ARS/PCD, EHPA, dot globale soins, non habilité aide sociale",
-            "ARS/PCD, PUV, forfait soins, habilité aide sociale",
-            "ARS/PCD, Tarif partiel, non hab.aide sociale, recours PUI",
-            "ARS PCD mixte (2 arrêtés), habilit�� aide sociale",
-            "ARS ��tablissements Publics de santé dotation globale"
-          ]
+          "description": ""
         },
         {
-          "key": "sph",
-          "x-originalName": "sph",
+          "key": "annais",
+          "type": "string",
+          "x-originalName": "annais",
+          "x-cardinality": 123,
+          "x-refersTo": null,
+          "title": "Année de naissance",
+          "x-capabilities": {
+            "textAgg": true
+          },
+          "description": ""
+        },
+        {
+          "key": "nombre",
           "type": "integer",
-          "x-capabilities": {
-            "textAgg": false
-          },
-          "label": "Code SPH",
-          "title": "Code SPH",
-          "description": "",
-          "x-cardinality": 7
-        },
-        {
-          "key": "lsph",
-          "x-originalName": "lsph",
-          "type": "string",
-          "x-capabilities": {
-            "textAgg": false
-          },
-          "label": "Libellé SPH",
-          "title": "Libellé SPH",
-          "description": "",
-          "x-cardinality": 7
-        },
-        {
-          "key": "douverture",
-          "x-originalName": "douverture",
-          "type": "string",
-          "x-capabilities": {
-            "textAgg": false
-          },
-          "label": "Date d'ouverture",
-          "title": "Date d'ouverture",
-          "format": "date",
-          "description": "",
-          "x-cardinality": 14854
-        },
-        {
-          "key": "dautorisation",
-          "x-originalName": "dautorisation",
-          "type": "string",
-          "x-capabilities": {
-            "textAgg": false
-          },
-          "label": "Date d'autorisation",
-          "title": "Date d'autorisation",
-          "format": "date",
-          "description": "",
-          "x-cardinality": 16170
-        },
-        {
-          "key": "dms",
-          "x-originalName": "dms",
-          "type": "string",
-          "x-capabilities": {
-            "textAgg": false
-          },
-          "label": "Date de mise à jour sur la structre",
-          "title": "Date de mise à jour sur la structre",
-          "format": "date",
-          "description": "",
-          "x-cardinality": 3856
-        },
-        {
-          "key": "uai",
-          "x-originalName": "uai",
-          "type": "string",
-          "x-capabilities": {
-            "textAgg": false
-          },
-          "label": "Code UAI (RNE)",
-          "title": "Code UAI (RNE)",
-          "description": "",
-          "x-cardinality": 3373
-        },
-        {
-          "key": "lat",
-          "x-originalName": "lat",
-          "type": "number",
-          "label": "Latitude",
-          "title": "Latitude",
-          "description": "",
-          "x-refersTo": "http://schema.org/latitude",
-          "x-concept": {
-            "id": "latitude",
-            "title": "Latitude",
-            "primary": true
-          }
-        },
-        {
-          "key": "lon",
-          "x-originalName": "lon",
-          "type": "number",
-          "label": "Longitude",
-          "title": "Longitude",
-          "description": "",
-          "x-refersTo": "http://schema.org/longitude",
-          "x-concept": {
-            "id": "longitude",
-            "title": "Longitude",
-            "primary": true
-          }
-        },
-        {
-          "key": "codeCom",
-          "x-originalName": "codeCom",
-          "type": "string",
-          "label": "Code commune",
-          "title": "Code commune",
-          "description": "",
-          "x-refersTo": "http://rdf.insee.fr/def/geo#codeCommune",
-          "x-concept": {
-            "id": "codeCommune",
-            "title": "Code commune",
-            "primary": true
-          },
-          "x-cardinality": 10866
-        },
-        {
-          "key": "_infos_commune.code_epci",
-          "x-originalName": "_infos_commune.code_epci",
-          "x-extension": "dataset:communes-de-france/masterData_bulkSearch_infos-commune",
-          "title": "Code EPCI",
-          "description": "Code de l'établissement public de coopération intercommunale",
-          "type": "string",
-          "x-refersTo": "http://rdf.insee.fr/def/geo#EtablissementPublicDeCooperationIntercommunale",
-          "x-capabilities": {
-            "textStandard": false,
-            "insensitive": false,
-            "text": false
-          },
-          "x-concept": {
-            "id": "codeEPCI",
-            "title": "Code EPCI",
-            "primary": true
-          },
-          "x-cardinality": 1255
-        },
-        {
-          "key": "_infos_commune._error",
-          "type": "string",
-          "x-originalName": "_error",
-          "x-extension": "dataset:communes-de-france/masterData_bulkSearch_infos-commune",
-          "title": "Erreur de récupération de données de référence",
-          "description": "Une erreur lors de la récupération des informations depuis un service distant",
-          "x-calculated": true
-        },
-        {
-          "x-calculated": true,
-          "key": "_geopoint",
-          "type": "string",
-          "title": "Coordonnée géographique",
-          "description": "Centroïde au format \"lat,lon\"",
-          "x-refersTo": "http://www.w3.org/2003/01/geo/wgs84_pos#lat_long",
-          "x-concept": {
-            "id": "latLon",
-            "title": "Latitude / Longitude",
-            "primary": true
-          }
+          "x-originalName": "nombre",
+          "x-cardinality": 7282,
+          "x-refersTo": null,
+          "title": "Nombre de naissances",
+          "description": ""
         },
         {
           "x-calculated": true,
@@ -1269,13 +159,13 @@
           "title": "Nombre aléatoire",
           "description": "Un nombre aléatoire associé à la ligne qui permet d'obtenir un tri aléatoire par exemple"
         }
-      ],
-      "bbox": [
-        -67.48874394223094,
-        -21.385485408827662,
-        55.82683383487165,
-        51.07180246151984
       ]
+    }
+  ],
+  "applications": [
+    {
+      "id": "evolution-des-prenoms-a-la-naissance-en-france-de-1900-a-2107",
+      "title": "Evolution des prénoms à la naissance en France de 1900 à 2021"
     }
   ]
 }

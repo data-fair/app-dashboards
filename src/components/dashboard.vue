@@ -5,7 +5,6 @@ import reactiveSearchParams from '@data-fair/lib/vue/reactive-search-params-glob
 import 'iframe-resizer/js/iframeResizer'
 import dashboardFilters from './dashboard-filters.vue'
 import dashboardSection from './dashboard-section.vue'
-import { escape } from '@data-fair/lib/filters.js'
 
 // @ts-ignore
 const application = window.APPLICATION

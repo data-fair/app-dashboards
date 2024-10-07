@@ -7,7 +7,7 @@
         {
           "title": "Source des valeurs pour les filtres",
           "type": "object",
-          "x-fromUrl": "api/v1/datasets?status=finalized&q={q}&select=id,title,schema,timePeriod,bbox&owner={context.owner.type}:{context.owner.id}",
+          "x-fromUrl": "api/v1/datasets?status=finalized&q={q}&select=id,title,schema,timePeriod,bbox&{context.datasetFilter}&sort=createdAt:-1",
           "x-itemsProp": "results",
           "x-itemTitle": "title",
           "x-itemKey": "href",
@@ -220,95 +220,232 @@
   "definitions": {
     "table": {
       "title": "Prévisualisation table",
+      "type": "object",
       "properties": {
-        "type": { "const": "tablePreview", "title": "Type de l'élément" },
-        "dataset": {
-          "type": "object",
-          "x-fromUrl": "api/v1/datasets?q={q}&{context.datasetFilter}&select=id,title,schema",
-          "x-itemKey": "id",
-          "x-itemTitle": "title",
-          "x-itemsProp": "results",
+        "type": { "const": "tablePreview", "title": "Type de l'élément" }
+      },
+      "oneOf": [
+        {
+          "title": "Jeu de données des filtres",
           "properties": {
-            "id": { "type": "string" },
-            "title": { "type": "string" },
-            "href": { "type": "string" },
-            "schema": { "type": "array" }
-          }
-        },
-        "display": {
-          "type": "string",
-          "oneOf": [
-            {
-              "const": "table",
-              "title": "Tableau"
+            "source": {
+              "const": "root",
+              "title": "Source des données"
             },
-            {
-              "const": "table-dense",
-              "title": "Tableau dense"
+            "fields": {
+              "title": "Champs à afficher",
+              "description": "Si vide, tous les champs seront affichés",
+              "type": "array",
+              "x-fromUrl": "{datasets[0].href}/schema?calculated=false",
+              "x-itemTitle": "label",
+              "x-itemKey": "key",
+              "items": {
+                "type": "string"
+              }
             },
-            {
-              "const": "list",
-              "title": "Vignettes"
+            "display": {
+              "type": "string",
+              "oneOf": [
+                {
+                  "const": "table",
+                  "title": "Tableau"
+                },
+                {
+                  "const": "table-dense",
+                  "title": "Tableau dense"
+                },
+                {
+                  "const": "list",
+                  "title": "Vignettes"
+                }
+              ],
+              "default": "table",
+              "title": "Affichage"
+            },
+            "noInteractions": {
+              "title": "Désactiver les interactions",
+              "type": "boolean",
+              "default": false
+            },
+            "valueMandatory": {
+              "title": "Nécessite une valeur dans des filtres",
+              "type": "boolean",
+              "default": false
+            },
+            "mandatoryFilters": {
+              "title": "Filtres requis",
+              "type": "array",
+              "x-if": "parent.value.valueMandatory",
+              "x-fromData": "filters",
+              "x-itemKey": "labelField",
+              "x-itemTitle": "labelField",
+              "items": {
+                "type": "string"
+              }
             }
-          ],
-          "default": "table",
-          "title": "Affichage"
-        },
-        "noInteractions": {
-          "title": "Désactiver les interactions",
-          "type": "boolean",
-          "default": false
-        },
-        "fields": {
-          "title": "Champs à afficher",
-          "description": "Si vide, tous les champs seront affichés",
-          "type": "array",
-          "x-fromUrl": "{parent.value.dataset.href}/schema?calculated=false",
-          "x-itemTitle": "label",
-          "x-itemKey": "key",
-          "items": {
-            "type": "string"
           }
         },
-        "valueMandatory": {
-          "title": "Nécessite une valeur dans des filtres",
-          "type": "boolean",
-          "default": false
-        },
-        "mandatoryFilters": {
-          "title": "Filtres requis",
-          "type": "array",
-          "x-if": "parent.value.valueMandatory",
-          "x-fromData": "filters",
-          "x-itemKey": "labelField",
-          "x-itemTitle": "labelField",
-          "items": {
-            "type": "string"
+        {
+          "title": "Autre jeu de données",
+          "properties": {
+            "source": {
+              "const": "external",
+              "title": "Source des données"
+            },
+            "dataset": {
+              "type": "object",
+              "x-fromUrl": "api/v1/datasets?q={q}&{context.datasetFilter}&select=id,title,schema&sort=createdAt:-1",
+              "x-itemKey": "id",
+              "x-itemTitle": "title",
+              "x-itemsProp": "results",
+              "properties": {
+                "id": { "type": "string" },
+                "title": { "type": "string" },
+                "href": { "type": "string" },
+                "schema": { "type": "array" }
+              }
+            },
+            "fields": {
+              "title": "Champs à afficher",
+              "description": "Si vide, tous les champs seront affichés",
+              "type": "array",
+              "x-fromUrl": "{parent.value.dataset.href}/schema?calculated=false",
+              "x-itemTitle": "label",
+              "x-itemKey": "key",
+              "items": {
+                "type": "string"
+              }
+            },
+            "display": {
+              "type": "string",
+              "oneOf": [
+                {
+                  "const": "table",
+                  "title": "Tableau"
+                },
+                {
+                  "const": "table-dense",
+                  "title": "Tableau dense"
+                },
+                {
+                  "const": "list",
+                  "title": "Vignettes"
+                }
+              ],
+              "default": "table",
+              "title": "Affichage"
+            },
+            "noInteractions": {
+              "title": "Désactiver les interactions",
+              "type": "boolean",
+              "default": false
+            },
+            "valueMandatory": {
+              "title": "Nécessite une valeur dans des filtres",
+              "type": "boolean",
+              "default": false
+            },
+            "mandatoryFilters": {
+              "title": "Filtres requis",
+              "type": "array",
+              "x-if": "parent.value.valueMandatory",
+              "x-fromData": "filters",
+              "x-itemKey": "labelField",
+              "x-itemTitle": "labelField",
+              "items": {
+                "type": "string"
+              }
+            }
           }
         }
+      ],
+      "default": {
+        "source": "root"
       }
     },
     "application": {
       "title": "Visualisation",
       "properties": {
-        "type": { "const": "application", "title": "Type de l'élément" },
-        "application": {
-          "type": "object",
-          "x-fromUrl": "api/v1/applications?q={q}&{context.datasetFilter}&filterConcepts=true&select=id,title,baseApp",
-          "x-itemKey": "id",
-          "x-itemTitle": "title",
-          "x-itemsProp": "results",
+        "type": { "const": "application", "title": "Type de l'élément" }
+      },
+      "oneOf": [
+        {
+          "title": "Jeu de données des filtres",
           "properties": {
-            "id": { "type": "string" },
-            "title": { "type": "string" },
-            "baseApp": { "type": "object" }
+            "source": {
+              "const": "root",
+              "title": "Source des données de l'application"
+            },
+            "application": {
+              "type": "object",
+              "x-fromUrl": "api/v1/applications?q={q}&{context.datasetFilter}&dataset={datasets[0].id}&filterConcepts=true&select=id,title,baseApp&sort=createdAt:-1",
+              "x-itemKey": "id",
+              "x-itemTitle": "title",
+              "x-itemsProp": "results",
+              "properties": {
+                "id": { "type": "string" },
+                "title": { "type": "string" },
+                "baseApp": { "type": "object" }
+              }
+            },
+            "valueMandatory": {
+              "title": "Nécessite une valeur dans des filtres",
+              "type": "boolean",
+              "default": false
+            },
+            "mandatoryFilters": {
+              "title": "Filtres requis",
+              "type": "array",
+              "x-if": "parent.value.valueMandatory",
+              "x-fromData": "filters",
+              "x-itemKey": "labelField",
+              "x-itemTitle": "labelField",
+              "items": {
+                "type": "string"
+              }
+            }
           }
         },
-        "valueMandatory": {
-          "title": "Nécessite une valeur dans des filtres",
-          "type": "boolean",
-          "default": false
+        {
+          "title": "Autre jeu de données",
+          "properties": {
+            "source": {
+              "const": "external",
+              "title": "Source des données de l'application"
+            },
+            "application": {
+              "type": "object",
+              "x-fromUrl": "api/v1/applications?q={q}&{context.datasetFilter}&filterConcepts=true&select=id,title,baseApp",
+              "x-itemKey": "id",
+              "x-itemTitle": "title",
+              "x-itemsProp": "results",
+              "properties": {
+                "id": { "type": "string" },
+                "title": { "type": "string" },
+                "baseApp": { "type": "object" }
+              }
+            },
+            "valueMandatory": {
+              "title": "Nécessite une valeur dans des filtres",
+              "type": "boolean",
+              "default": false
+            },
+            "mandatoryFilters": {
+              "title": "Filtres requis",
+              "type": "array",
+              "x-if": "parent.value.valueMandatory",
+              "x-fromData": "filters",
+              "x-itemKey": "labelField",
+              "x-itemTitle": "labelField",
+              "items": {
+                "type": "string"
+              }
+            }
+          }
         }
+      ],
+      "default": {
+        "source": "root"
       }
     },
     "text": {

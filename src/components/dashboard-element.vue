@@ -38,7 +38,7 @@ const requiredFilter = computed(() => {
   </v-alert>
   <v-iframe
     v-else-if="element.type === 'tablePreview'"
-    :src="`/data-fair/embed/dataset/${accessKey ? (accessKey + '%3A') : ''}${element.dataset.id}/table?display=${element.display}&interaction=${!element.noInteractions}${element.fields.length ? ('&cols=' + element.fields.join(',')) : ''}`"
+    :src="`/data-fair/embed/dataset/${accessKey ? (accessKey + '%3A') : ''}${(element.dataset || config.datasets[0]).id}/table?display=${element.display}&interaction=${!element.noInteractions}${element.fields.length ? ('&cols=' + element.fields.join(',')) : ''}`"
     :query-params-extra="queryParamsExtra"
     :style="`height:${height>0 ? height+'px' : '100%'}`"
   />
