@@ -1,7 +1,7 @@
 <script setup>
 import { ofetch } from 'ofetch'
 import { ref } from 'vue'
-import reactiveSearchParams from '@data-fair/lib/vue/reactive-search-params-global.js'
+import reactiveSearchParams from '@data-fair/lib-vue/reactive-search-params-global.js'
 import 'iframe-resizer/js/iframeResizer'
 import dashboardFilters from './dashboard-filters.vue'
 import dashboardSection from './dashboard-section.vue'
@@ -103,9 +103,7 @@ if (incompleteConfiguration) {
           :value="i"
         >
           <template v-if="section.icon">
-            <v-icon>
-              mdi-{{ section.icon.name }}
-            </v-icon>
+            <v-icon :icon="section.icon.svgPath" />
             &nbsp;
           </template>
           {{ section.title }}
@@ -133,9 +131,7 @@ if (incompleteConfiguration) {
                 :height="sumTitleLength*15 >= $vuetify.display.width ? 36 : 48"
               >
                 <template v-if="section.icon">
-                  <v-icon>
-                    mdi-{{ section.icon.name }}
-                  </v-icon>
+                  <v-icon :icon="section.icon.svgPath" />
               &nbsp;
                 </template>
                 {{ section.title }}
@@ -174,9 +170,7 @@ if (incompleteConfiguration) {
         <v-expansion-panel-title class="bg-primary">
           <h3>
             <template v-if="section.icon">
-              <v-icon>
-                mdi-{{ section.icon.name }}
-              </v-icon>
+              <v-icon :icon="section.icon.svgPath" />
               &nbsp;
             </template>
             {{ section.title }}
@@ -199,9 +193,7 @@ if (incompleteConfiguration) {
       >
         <h2>
           <template v-if="section.icon">
-            <v-icon>
-              mdi-{{ section.icon.name }}
-            </v-icon>
+            <v-icon :icon="section.icon.svgPath" />
                 &nbsp;
           </template>
           {{ section.title }}

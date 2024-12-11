@@ -1,6 +1,6 @@
 <script setup>
 import vIframe from '@koumoul/v-iframe'
-import reactiveSearchParams from '@data-fair/lib/vue/reactive-search-params-global.js'
+import reactiveSearchParams from '@data-fair/lib-vue/reactive-search-params-global.js'
 import { computed } from 'vue'
 
 const props = defineProps({

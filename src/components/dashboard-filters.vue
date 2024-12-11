@@ -1,10 +1,9 @@
 <script setup>
 import { ofetch } from 'ofetch'
 import { ref, computed } from 'vue'
-import reactiveSearchParams from '@data-fair/lib/vue/reactive-search-params-global.js'
-import SearchAddress from '@data-fair/lib/vuetify/search-address.vue'
-import DateRangePicker from '@data-fair/lib/vuetify/date-range-picker.vue'
-import { escape } from '@data-fair/lib/filters.js'
+import reactiveSearchParams from '@data-fair/lib-vue/reactive-search-params-global.js'
+import SearchAddress from '@data-fair/lib-vuetify/search-address.vue'
+import DateRangePicker from '@data-fair/lib-vuetify/date-range-picker.vue'
 
 const props = defineProps({
   config: { type: Object, required: true }
@@ -42,6 +41,13 @@ const filters = props.config.filters.map(filter => {
       const params = Object.assign({
         finalizedAt: props.config.datasets[0].finalizedAt
       }, ...otherFilters.map(f => ({ [`${f.labelField}_in`]: `${reactiveSearchParams[datasetFilterPrefix + f.labelField + '_in']}` })))
+      props.config.staticFilters?.forEach(filter => {
+        if (filter.type === 'in') params[filter.field + '_in'] = filters.values.join(',')
+        else if (filter.type === 'interval') {
+          if (filter.minValue != null) params[filter.field + '_gte'] = filter.minValue
+          if (filter.maxValue != null) params[filter.field + '_lte'] = filter.maxValue
+        }
+      })
       if (!filter.showAllValues) {
         if (search != null) params.q = search + '*'
       } else {
@@ -78,6 +84,13 @@ const updateFilters = async (noFieldUpdate) => {
     const params = Object.assign({
       finalizedAt: props.config.datasets[0].finalizedAt
     }, ...activeFilters.map(f => ({ [`${f.labelField}_in`]: `${reactiveSearchParams[datasetFilterPrefix + f.labelField + '_in']}` })))
+    props.config.staticFilters?.forEach(filter => {
+      if (filter.type === 'in') params[filter.field + '_in'] = filters.values.join(',')
+      else if (filter.type === 'interval') {
+        if (filter.minValue != null) params[filter.field + '_gte'] = filter.minValue
+        if (filter.maxValue != null) params[filter.field + '_lte'] = filter.maxValue
+      }
+    })
     const res = await Promise.all(filterFields.map(f => ofetch(props.config.datasets[0].href + '/values/' + f, { params })))
     const values = Object.assign({}, ...filterFields.map((f, i) => ({ [f]: res[i] })))
     filtersValues = Object.assign({}, ...filterFields.map(f => {
@@ -96,6 +109,13 @@ const updateFilters = async (noFieldUpdate) => {
   if (props.config.addressFilter && address && reactiveSearchParams.radius) {
     filtersValues._c_geo_distance = address.lon + ',' + address.lat + ',' + reactiveSearchParams.radius * 1000
   }
+  props.config.staticFilters?.forEach(filter => {
+    if (filter.type === 'in') filtersValues[`${datasetFilterPrefix}${filter.field}_in`] = filters.values.join(',')
+    else if (filter.type === 'interval') {
+      if (filter.minValue != null) filtersValues[`${datasetFilterPrefix}${filter.field}_gte`] = filter.minValue
+      if (filter.maxValue != null) filtersValues[`${datasetFilterPrefix}${filter.field}_lte`] = filter.maxValue
+    }
+  })
   emit('update:model-value', filtersValues)
   filters.forEach(filter => {
     if (filter.labelField !== noFieldUpdate) filter.searchItems()

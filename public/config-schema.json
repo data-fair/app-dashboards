@@ -37,9 +37,12 @@
         }
       ]
     },
+    "staticFilters": {
+      "$ref": "#/definitions/filters"
+    },
     "filters": {
       "type": "array",
-      "title": "Filtres du tableau de bord",
+      "title": "Filtres dynamiques du tableau de bord",
       "items": {
         "type": "object",
         "required": ["labelField"],
@@ -138,10 +141,9 @@
         "properties": {
           "title": { "type": "string", "title": "Libellé" },
           "icon": {
-            "title": "Icône",
-            "description": "Il est possible de consulter plus facilement la liste des icones disponibles sur <a href=\"https://materialdesignicons.com\" target=\"_blank\">ce site</a>.",
             "type": "object",
-            "x-fromUrl": "https://koumoul.com/data-fair/api/v1/datasets/icons-mdi/lines?q={q}&size=10000",
+            "title": "Icone",
+            "x-fromUrl": "https://koumoul.com/data-fair/api/v1/datasets/icons-mdi-latest/lines?q={q}",
             "x-itemKey": "name",
             "x-itemTitle": "name",
             "x-itemIcon": "svg",
@@ -151,6 +153,9 @@
                 "type": "string"
               },
               "svg": {
+                "type": "string"
+              },
+              "svgPath": {
                 "type": "string"
               }
             }
@@ -415,7 +420,7 @@
             },
             "application": {
               "type": "object",
-              "x-fromUrl": "api/v1/applications?q={q}&{context.datasetFilter}&filterConcepts=true&select=id,title,baseApp",
+              "x-fromUrl": "api/v1/applications?q={q}&{context.datasetFilter}&filterConcepts=true&select=id,title,baseApp&sort=createdAt:-1",
               "x-itemKey": "id",
               "x-itemTitle": "title",
               "x-itemsProp": "results",
@@ -481,6 +486,74 @@
           }
         }
       }
+    },
+    "filters": {
+      "title": "Filtres prédéfinis",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "default": {
+          "type": "in"
+        },
+        "required": ["type"],
+        "oneOf": [
+          {
+            "title": "Restreindre à des valeurs",
+            "required": ["field"],
+            "properties": {
+              "type": {
+                "const": "in"
+              },
+              "field": {
+                "$ref": "#/definitions/filterField"
+              },
+              "values": {
+                "type": "array",
+                "title": "Valeurs",
+                "items": {
+                  "type": "string"
+                },
+                "x-fromUrl": "{datasets.0.href}/values/{parent.value.field}?q={q}&q_mode=complete&size=100&stringify=true"
+              }
+            }
+          },
+          {
+            "title": "Restreindre à un interval de valeurs",
+            "required": ["field"],
+            "properties": {
+              "type": {
+                "const": "interval"
+              },
+              "field": {
+                "$ref": "#/definitions/filterField"
+              },
+              "minValue": {
+                "type": "string",
+                "title": "Valeur min",
+                "x-fromUrl": "{datasets.0.href}/values_agg?field={parent.value.field}&sort={parent.value.field}&{parent.value.field}_gte={q}&stringify=true",
+                "x-itemsProp": "aggs",
+                "x-itemTitle": "value",
+                "x-itemKey": "value"
+              },
+              "maxValue": {
+                "type": "string",
+                "title": "Valeur max",
+                "x-fromUrl": "{datasets.0.href}/values_agg?field={parent.value.field}&sort=-{parent.value.field}&{parent.value.field}_lte={q}&stringify=true",
+                "x-itemsProp": "aggs",
+                "x-itemTitle": "value",
+                "x-itemKey": "value"
+              }
+            }
+          }
+        ]
+      }
+    },
+    "filterField": {
+      "type": "string",
+      "title": "Colonne de filtre",
+      "x-fromUrl": "{datasets.0.href}/schema?calculated=false",
+      "x-itemTitle": "label",
+      "x-itemKey": "key"
     }
   }
 }

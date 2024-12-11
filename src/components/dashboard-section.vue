@@ -44,9 +44,7 @@ for (const row of props.section.rows) {
     class="text-h5 mt-8"
   >
     <template v-if="section.icon">
-      <v-icon>
-        mdi-{{ section.icon.name }}
-      </v-icon>
+      <v-icon :icon="section.icon.svgPath" />
       &nbsp;
     </template>
     {{ section.title }}
