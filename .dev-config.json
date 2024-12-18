@@ -84,7 +84,7 @@
       }
     }
   ],
-  "sectionsGroup": "accordion",
+  "sectionsGroup": "tabs-button",
   "addressFilter": false,
   "periodFilter": false,
   "filters": [

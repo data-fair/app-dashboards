@@ -109,7 +109,7 @@ function updateSwitch (v) {
         <template v-else-if="config.sectionsGroup.includes('tabs')">
           <v-tabs
             v-if="config.sectionsGroup === 'tabs-tab'"
-            v-model="tab[i]"
+            v-model="tab[i].value"
             class="mb-3"
             color="primary"
             :fixed-tabs="maxTitleLength <= 30"
@@ -138,7 +138,7 @@ function updateSwitch (v) {
               >
                 <v-btn-toggle
 
-                  v-model="tab[i]"
+                  v-model="tab[i].value"
                   color="primary"
                   mandatory
                   :style="sumTitleLength*15 >= $vuetify.display.width ? `flex-direction: column;height:${config.sections.length*36}px`:''"
@@ -160,7 +160,7 @@ function updateSwitch (v) {
             </v-col>
             <v-spacer />
           </v-row>
-          <v-window v-model="tab[i]">
+          <v-window v-model="tab[i].value">
             <v-window-item
               v-for="(section, j) of (config.sections || [])"
               :key="j"
