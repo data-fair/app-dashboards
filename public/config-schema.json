@@ -109,6 +109,11 @@
       "title": "Introduction",
       "x-display": "textarea"
     },
+    "allowDuplicate": {
+      "title": "Mode comparaison disponible",
+      "type": "boolean",
+      "default": false
+    },
     "sectionsGroup": {
       "title": "Rendu des sections",
       "type": "string",

@@ -181,6 +181,7 @@
       "maxValue": "1998"
     }
   ],
+  "allowDuplicate": true,
   "applications": [
     {
       "id": "evolution-des-prenoms-a-la-naissance-en-france-de-1900-a-2107",

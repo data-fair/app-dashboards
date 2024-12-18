@@ -6,7 +6,8 @@ import SearchAddress from '@data-fair/lib-vuetify/search-address.vue'
 import DateRangePicker from '@data-fair/lib-vuetify/date-range-picker.vue'
 
 const props = defineProps({
-  config: { type: Object, required: true }
+  config: { type: Object, required: true },
+  prefix: { type: String, default: '' }
 })
 const emit = defineEmits(['update:model-value'])
 let address
@@ -20,27 +21,28 @@ const filters = props.config.filters.map(filter => {
     ...filter,
     value: computed({
       get () {
-        if (reactiveSearchParams[datasetFilterPrefix + filter.labelField + '_in']) {
-          return filter.multipleValues ? JSON.parse(`[${reactiveSearchParams[datasetFilterPrefix + filter.labelField + '_in']}]`) : reactiveSearchParams[datasetFilterPrefix + filter.labelField + '_in']
+        if (reactiveSearchParams[props.prefix + datasetFilterPrefix + filter.labelField + '_in']) {
+          return filter.multipleValues ? JSON.parse(`[${reactiveSearchParams[props.prefix + datasetFilterPrefix + filter.labelField + '_in']}]`) : reactiveSearchParams[props.prefix + datasetFilterPrefix + filter.labelField + '_in']
         } else {
           return filter.multipleValues ? [] : undefined
         }
       },
       set (val) {
         if (filter.multipleValues && val.length) {
-          reactiveSearchParams[datasetFilterPrefix + filter.labelField + '_in'] = JSON.stringify(val).slice(1, -1)
+          reactiveSearchParams[props.prefix + datasetFilterPrefix + filter.labelField + '_in'] = JSON.stringify(val).slice(1, -1)
         } else if (!filter.multipleValues && val) {
-          reactiveSearchParams[datasetFilterPrefix + filter.labelField + '_in'] = val
-        } else delete reactiveSearchParams[datasetFilterPrefix + filter.labelField + '_in']
+          reactiveSearchParams[props.prefix + datasetFilterPrefix + filter.labelField + '_in'] = val
+        } else delete reactiveSearchParams[props.prefix + datasetFilterPrefix + filter.labelField + '_in']
       }
     }),
     items,
     loading: ref(false),
     searchItems: async (search) => {
-      const otherFilters = props.config.filters.filter(f => f.labelField !== filter.labelField && reactiveSearchParams[datasetFilterPrefix + f.labelField + '_in'])
+      const otherFilters = props.config.filters.filter(f => f.labelField !== filter.labelField && reactiveSearchParams[props.prefix + datasetFilterPrefix + f.labelField + '_in'])
       const params = Object.assign({
-        finalizedAt: props.config.datasets[0].finalizedAt
-      }, ...otherFilters.map(f => ({ [`${f.labelField}_in`]: `${reactiveSearchParams[datasetFilterPrefix + f.labelField + '_in']}` })))
+        finalizedAt: props.config.datasets[0].finalizedAt,
+        stringify: true
+      }, ...otherFilters.map(f => ({ [`${f.labelField}_in`]: `${reactiveSearchParams[props.prefix + datasetFilterPrefix + f.labelField + '_in']}` })))
       props.config.staticFilters?.forEach(filter => {
         if (filter.type === 'in') params[filter.field + '_in'] = filters.values.join(',')
         else if (filter.type === 'interval') {
@@ -60,7 +62,7 @@ const filters = props.config.filters.map(filter => {
         params._c_geo_distance = address.lon + ',' + address.lat + ',' + reactiveSearchParams.radius * 1000
       }
       const values = await ofetch(props.config.datasets[0].href + '/values/' + filter.labelField, { params })
-      const filterValue = reactiveSearchParams[datasetFilterPrefix + filter.labelField + '_in']
+      const filterValue = reactiveSearchParams[props.prefix + datasetFilterPrefix + filter.labelField + '_in']
       if (filterValue && !values.includes(filterValue)) {
         values.unshift(filterValue)
       }
@@ -77,13 +79,13 @@ const updateValue = (filter, value) => {
 
 const updateFilters = async (noFieldUpdate) => {
   let filtersValues = {}
-  const fieldsWithFilter = filters.filter(f => reactiveSearchParams[datasetFilterPrefix + f.labelField + '_in'])
+  const fieldsWithFilter = filters.filter(f => reactiveSearchParams[props.prefix + datasetFilterPrefix + f.labelField + '_in'])
   if (fieldsWithFilter.length) {
     const filterFields = [].concat(...fieldsWithFilter.map(f => [].concat(f.values.length ? f.values : f.labelField))).filter((f, i, s) => s.indexOf(f) === i)
-    const activeFilters = props.config.filters.filter(f => reactiveSearchParams[datasetFilterPrefix + f.labelField + '_in'])
+    const activeFilters = props.config.filters.filter(f => reactiveSearchParams[props.prefix + datasetFilterPrefix + f.labelField + '_in'])
     const params = Object.assign({
       finalizedAt: props.config.datasets[0].finalizedAt
-    }, ...activeFilters.map(f => ({ [`${f.labelField}_in`]: `${reactiveSearchParams[datasetFilterPrefix + f.labelField + '_in']}` })))
+    }, ...activeFilters.map(f => ({ [`${f.labelField}_in`]: `${reactiveSearchParams[props.prefix + datasetFilterPrefix + f.labelField + '_in']}` })))
     props.config.staticFilters?.forEach(filter => {
       if (filter.type === 'in') params[filter.field + '_in'] = filters.values.join(',')
       else if (filter.type === 'interval') {
@@ -153,7 +155,7 @@ await updateFilters()
           :persistent-clear="!filter.forceOneValue"
           :multiple="filter.multipleValues"
           style="min-width:280px;"
-          @update:search="search => (search == null || search.length) && search !== reactiveSearchParams[datasetFilterPrefix + filter.labelField + '_in'] && !filter.showAllValues && filter.searchItems(search)"
+          @update:search="search => (search == null || search.length) && search !== reactiveSearchParams[props.prefix +datasetFilterPrefix + filter.labelField + '_in'] && !filter.showAllValues && filter.searchItems(search)"
           @update:model-value="updateValue(filter, $event)"
         />
       </v-col>

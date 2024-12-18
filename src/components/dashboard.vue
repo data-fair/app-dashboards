@@ -26,8 +26,8 @@ if (reactiveSearchParams.draft === 'true' && window.parent) {
   }
 }
 
-const filtersValues = ref({})
-const tab = ref(null)
+const filtersValues = [ref({}), ref({})]
+const tab = [ref(null), ref(null)]
 let maxTitleLength = 0
 let sumTitleLength = 0
 
@@ -58,6 +58,10 @@ if (incompleteConfiguration) {
   maxTitleLength = Math.max(...config.sections.map((/** @type{any} */s) => (s.title && s.title.length) || 0))
   sumTitleLength = config.sections.reduce((/** @type{any} */acc, /** @type{any} */s) => acc + ((s.title && s.title.length) || 0), 0)
 }
+function updateSwitch (v) {
+  if (v) reactiveSearchParams.view = 'compare'
+  else delete reactiveSearchParams.view
+}
 </script>
 
 <template>
@@ -78,132 +82,149 @@ if (incompleteConfiguration) {
     >
       {{ config.description }}
     </p>
-    <dashboard-filters
-      :config="config"
-      @update:model-value="value => filtersValues = value"
+    <v-switch
+      v-if="config.allowDuplicate"
+      label="Mode comparaison"
+      density="compact"
+      :model-value="reactiveSearchParams.view === 'compare'"
+      style="max-height:40px"
+      @update:model-value="updateSwitch"
     />
-    <dashboard-section
-      v-if="config.sections.length === 1"
-      :section="config.sections[0]"
-      :filters-values="filtersValues"
-    />
-    <template v-else-if="config.sectionsGroup.includes('tabs')">
-      <v-tabs
-        v-if="config.sectionsGroup === 'tabs-tab'"
-        v-model="tab"
-        class="mb-3"
-        color="primary"
-        :fixed-tabs="maxTitleLength <= 30"
-        :grow="maxTitleLength > 30 && sumTitleLength < 200"
-        :direction="sumTitleLength >= 200 ? 'vertical' : 'horizontal'"
+    <v-row>
+      <v-col
+        v-for="i in reactiveSearchParams.view === 'compare' ? [0, 1] : [0]"
+        :key="i"
+        :cols="reactiveSearchParams.view === 'compare' ? 6 : 12"
       >
-        <v-tab
-          v-for="(section, i) of (config.sections || [])"
-          :key="i"
-          :value="i"
-        >
-          <template v-if="section.icon">
-            <v-icon :icon="section.icon.svgPath" />
-            &nbsp;
-          </template>
-          {{ section.title }}
-        </v-tab>
-      </v-tabs>
-      <v-row v-else-if="config.sectionsGroup === 'tabs-button'">
-        <v-spacer />
-        <v-col
-          cols="auto"
-        >
-          <v-card
-            variant="outlined"
+        <dashboard-filters
+          :config="config"
+          :prefix="i ? 'c' : ''"
+          @update:model-value="value => filtersValues[i].value = value"
+        />
+        <dashboard-section
+          v-if="config.sections.length === 1"
+          :section="config.sections[0]"
+          :filters-values="filtersValues[i].value"
+        />
+        <template v-else-if="config.sectionsGroup.includes('tabs')">
+          <v-tabs
+            v-if="config.sectionsGroup === 'tabs-tab'"
+            v-model="tab[i]"
+            class="mb-3"
+            color="primary"
+            :fixed-tabs="maxTitleLength <= 30"
+            :grow="maxTitleLength > 30 && sumTitleLength < 200"
+            :direction="sumTitleLength >= 200 ? 'vertical' : 'horizontal'"
           >
-            <v-btn-toggle
-
-              v-model="tab"
-              color="primary"
-              mandatory
-              :style="sumTitleLength*15 >= $vuetify.display.width ? `flex-direction: column;height:${config.sections.length*36}px`:''"
+            <v-tab
+              v-for="(section, i) of (config.sections || [])"
+              :key="i"
+              :value="i"
             >
-              <v-btn
-                v-for="(section, i) of (config.sections || [])"
-                :key="i"
-                :value="i"
-                :height="sumTitleLength*15 >= $vuetify.display.width ? 36 : 48"
+              <template v-if="section.icon">
+                <v-icon :icon="section.icon.svgPath" />
+            &nbsp;
+              </template>
+              {{ section.title }}
+            </v-tab>
+          </v-tabs>
+          <v-row v-else-if="config.sectionsGroup === 'tabs-button'">
+            <v-spacer />
+            <v-col
+              cols="auto"
+            >
+              <v-card
+                variant="outlined"
               >
+                <v-btn-toggle
+
+                  v-model="tab[i]"
+                  color="primary"
+                  mandatory
+                  :style="sumTitleLength*15 >= $vuetify.display.width ? `flex-direction: column;height:${config.sections.length*36}px`:''"
+                >
+                  <v-btn
+                    v-for="(section, i) of (config.sections || [])"
+                    :key="i"
+                    :value="i"
+                    :height="sumTitleLength*15 >= $vuetify.display.width ? 36 : 48"
+                  >
+                    <template v-if="section.icon">
+                      <v-icon :icon="section.icon.svgPath" />
+              &nbsp;
+                    </template>
+                    {{ section.title }}
+                  </v-btn>
+                </v-btn-toggle>
+              </v-card>
+            </v-col>
+            <v-spacer />
+          </v-row>
+          <v-window v-model="tab[i]">
+            <v-window-item
+              v-for="(section, j) of (config.sections || [])"
+              :key="j"
+              :value="j"
+            >
+              <dashboard-section
+                :section="section"
+                :filters-values="filtersValues[i].value"
+                hide-title
+              />
+            </v-window-item>
+          </v-window>
+        </template>
+        <v-expansion-panels
+          v-else-if="config.sectionsGroup === 'accordion'"
+          multiple
+          variant="accordion"
+          :model-value="config.sections.map((s, j) => j)"
+        >
+          <v-expansion-panel
+            v-for="(section, j) of (config.sections || [])"
+            :key="j"
+            :value="j"
+            eager
+          >
+            <v-expansion-panel-title class="bg-primary">
+              <h3>
                 <template v-if="section.icon">
                   <v-icon :icon="section.icon.svgPath" />
               &nbsp;
                 </template>
                 {{ section.title }}
-              </v-btn>
-            </v-btn-toggle>
-          </v-card>
-        </v-col>
-        <v-spacer />
-      </v-row>
-      <v-window v-model="tab">
-        <v-window-item
-          v-for="(section, i) of (config.sections || [])"
-          :key="i"
-          :value="i"
-        >
-          <dashboard-section
-            :section="section"
-            :filters-values="filtersValues"
-            hide-title
-          />
-        </v-window-item>
-      </v-window>
-    </template>
-    <v-expansion-panels
-      v-else-if="config.sectionsGroup === 'accordion'"
-      multiple
-      variant="accordion"
-      :model-value="config.sections.map((s, i) => i)"
-    >
-      <v-expansion-panel
-        v-for="(section, i) of (config.sections || [])"
-        :key="i"
-        :value="i"
-        eager
-      >
-        <v-expansion-panel-title class="bg-primary">
-          <h3>
-            <template v-if="section.icon">
-              <v-icon :icon="section.icon.svgPath" />
-              &nbsp;
-            </template>
-            {{ section.title }}
-          </h3>
-        </v-expansion-panel-title>
-        <v-expansion-panel-text>
-          <dashboard-section
-            :section="section"
-            :filters-values="filtersValues"
-            hide-title
-          />
-        </v-expansion-panel-text>
-      </v-expansion-panel>
-    </v-expansion-panels>
-    <template v-else>
-      <div
-        v-for="(section, i) of (config.sections || [])"
-        :key="i"
-        class="my-6"
-      >
-        <h2>
-          <template v-if="section.icon">
-            <v-icon :icon="section.icon.svgPath" />
+              </h3>
+            </v-expansion-panel-title>
+            <v-expansion-panel-text>
+              <dashboard-section
+                :section="section"
+                :filters-values="filtersValues[i].value"
+                hide-title
+              />
+            </v-expansion-panel-text>
+          </v-expansion-panel>
+        </v-expansion-panels>
+        <template v-else>
+          <div
+            v-for="(section, j) of (config.sections || [])"
+            :key="j"
+            class="my-6"
+          >
+            <h2>
+              <template v-if="section.icon">
+                <v-icon :icon="section.icon.svgPath" />
                 &nbsp;
-          </template>
-          {{ section.title }}
-        </h2>
-        <dashboard-section
-          :section="section"
-          :filters-values="filtersValues"
-          hide-title
-        />
-      </div>
-    </template>
+              </template>
+              {{ section.title }}
+            </h2>
+            <dashboard-section
+              :section="section"
+              :filters-values="filtersValues[i].value"
+              hide-title
+            />
+          </div>
+        </template>
+      </v-col>
+    </v-row>
   </v-container>
 </template>
