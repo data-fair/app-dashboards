@@ -143,7 +143,7 @@ await updateFilters()
     <v-col
       v-for="(filter, i) in filters"
       :key="i"
-      :cols="Math.min(Math.max(1,Math.round(12*250/width)),12)"
+      :cols="Math.min(Math.max(1,Math.ceil(12*250/width)),12)"
     >
       <v-autocomplete
         v-model="filter.value.value"
