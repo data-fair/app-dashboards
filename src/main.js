@@ -18,6 +18,7 @@ options.icons = {
     mdi
   }
 }
+delete options.defaults
 
 const app = createApp(App)
 

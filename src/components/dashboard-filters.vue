@@ -4,12 +4,17 @@ import { ref, computed } from 'vue'
 import reactiveSearchParams from '@data-fair/lib-vue/reactive-search-params-global.js'
 import SearchAddress from '@data-fair/lib-vuetify/search-address.vue'
 import DateRangePicker from '@data-fair/lib-vuetify/date-range-picker.vue'
+import { useElementSize } from '@vueuse/core'
 
 const props = defineProps({
   config: { type: Object, required: true },
   prefix: { type: String, default: '' }
 })
 const emit = defineEmits(['update:model-value'])
+
+const root = ref(null)
+const { width } = useElementSize(root)
+
 let address
 
 const fields = Object.assign({}, ...props.config.datasets[0].schema.map(f => ({ [f.key]: f })))
@@ -113,6 +118,7 @@ const updateFilters = async (noFieldUpdate) => {
   }
   props.config.staticFilters?.forEach(filter => {
     if (filter.type === 'in') filtersValues[`${datasetFilterPrefix}${filter.field}_in`] = filters.values.join(',')
+    else if (filter.type === 'nin') filtersValues[`${datasetFilterPrefix}${filter.field}_nin`] = filters.values.join(',')
     else if (filter.type === 'interval') {
       if (filter.minValue != null) filtersValues[`${datasetFilterPrefix}${filter.field}_gte`] = filter.minValue
       if (filter.maxValue != null) filtersValues[`${datasetFilterPrefix}${filter.field}_lte`] = filter.maxValue
@@ -128,89 +134,87 @@ await updateFilters()
 </script>
 
 <template>
-  <v-card
-    flat
+  <v-row
+    ref="root"
+    justify="center"
+    align="center"
     class="py-3"
   >
-    <v-row
-      justify="center"
-      align="center"
+    <v-col
+      v-for="(filter, i) in filters"
+      :key="i"
+      :cols="Math.min(Math.max(1,Math.round(12*250/width)),12)"
     >
-      <v-col
-        v-for="(filter, i) in filters"
-        :key="i"
-        cols="auto"
+      <v-autocomplete
+        v-model="filter.value.value"
+        :loading="filter.loading.value"
+        :items="filter.items.value"
+        :item-title="v => fields[filter.labelField]['x-labels'] ? fields[filter.labelField]['x-labels'][v] : v"
+        :item-value="v => v"
+        variant="outlined"
+        hide-details
+        no-data-text="Aucun élément trouvé"
+        :label="fields[filter.labelField].label || fields[filter.labelField].title || fields[filter.labelField]['x-originalName'] || filter.labelField"
+        :clearable="!filter.forceOneValue"
+        :persistent-clear="!filter.forceOneValue"
+        :multiple="filter.multipleValues"
+        style="min-width:250px;"
+        density="comfortable"
+        @update:search="search => (search == null || search.length) && search !== reactiveSearchParams[props.prefix +datasetFilterPrefix + filter.labelField + '_in'] && !filter.showAllValues && filter.searchItems(search)"
+        @update:model-value="updateValue(filter, $event)"
+      />
+    </v-col>
+    <v-col
+      v-if="config.periodFilter"
+      :cols="Math.min(Math.max(1,Math.round(12*250/width)),12)"
+    >
+      <date-range-picker
+        v-model="reactiveSearchParams.period"
+        :min="config.datasets[0].timePeriod ? config.datasets[0].timePeriod.startDate.slice(0, 10) : undefined"
+        :max="config.datasets[0].timePeriod ? config.datasets[0].timePeriod.endDate.slice(0, 10) : undefined"
+        label="Période"
+        @update:model-value="updateFilters()"
+      />
+    </v-col>
+    <v-col
+      v-if="config.addressFilter"
+      cols="auto"
+    >
+      <v-card
+        variant="outlined"
+        class="px-1 py-2"
+        style="width:320px;border-color:#A0A0A0"
       >
-        <v-autocomplete
-          v-model="filter.value.value"
-          :loading="filter.loading.value"
-          :items="filter.items.value"
-          :item-title="v => fields[filter.labelField]['x-labels'] ? fields[filter.labelField]['x-labels'][v] : v"
-          :item-value="v => v"
-          variant="outlined"
-          hide-details
-          no-data-text="Aucun élément trouvé"
-          :label="fields[filter.labelField].label || fields[filter.labelField].title || fields[filter.labelField]['x-originalName'] || filter.labelField"
-          :clearable="!filter.forceOneValue"
-          :persistent-clear="!filter.forceOneValue"
-          :multiple="filter.multipleValues"
-          style="min-width:280px;"
-          @update:search="search => (search == null || search.length) && search !== reactiveSearchParams[props.prefix +datasetFilterPrefix + filter.labelField + '_in'] && !filter.showAllValues && filter.searchItems(search)"
-          @update:model-value="updateValue(filter, $event)"
-        />
-      </v-col>
-      <v-col
-        v-if="config.periodFilter"
-        cols="auto"
-      >
-        <date-range-picker
-          v-model="reactiveSearchParams.period"
-          :min="config.datasets[0].timePeriod ? config.datasets[0].timePeriod.startDate.slice(0, 10) : undefined"
-          :max="config.datasets[0].timePeriod ? config.datasets[0].timePeriod.endDate.slice(0, 10) : undefined"
-          label="Période"
-          @update:model-value="updateFilters()"
-        />
-      </v-col>
-      <v-col
-        v-if="config.addressFilter"
-        cols="auto"
-      >
-        <v-card
-          variant="outlined"
-          class="px-1 py-2"
-          style="width:320px;border-color:#A0A0A0"
-        >
-          <!-- <label
+        <!-- <label
             class="text-body-2 text-medium-emphasis ml-2"
           >Autour d'une adresse</label> -->
-          <v-row align="start">
-            <v-col
-              class="pr-0"
-              :cols="8"
-            >
-              <search-address
-                v-model="reactiveSearchParams.address"
-                variant="plain"
-                @selected="address = $event; updateFilters()"
-              />
-            </v-col>
-            <v-col
-              class="pl-0"
-              :cols="4"
-            >
-              <v-text-field
-                v-model="reactiveSearchParams.radius"
-                style="height:38px"
-                variant="plain"
-                type="number"
-                label="Rayon (km)"
-                density="compact"
-                @update:model-value="updateFilters()"
-              />
-            </v-col>
-          </v-row>
-        </v-card>
-      </v-col>
-    </v-row>
-  </v-card>
+        <v-row align="start">
+          <v-col
+            class="pr-0"
+            :cols="8"
+          >
+            <search-address
+              v-model="reactiveSearchParams.address"
+              variant="plain"
+              @selected="address = $event; updateFilters()"
+            />
+          </v-col>
+          <v-col
+            class="pl-0"
+            :cols="4"
+          >
+            <v-text-field
+              v-model="reactiveSearchParams.radius"
+              style="height:38px"
+              variant="plain"
+              type="number"
+              label="Rayon (km)"
+              density="compact"
+              @update:model-value="updateFilters()"
+            />
+          </v-col>
+        </v-row>
+      </v-card>
+    </v-col>
+  </v-row>
 </template>

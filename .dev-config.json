@@ -85,9 +85,30 @@
     }
   ],
   "sectionsGroup": "tabs-button",
-  "addressFilter": false,
-  "periodFilter": false,
+  "addressFilter": true,
+  "periodFilter": true,
   "filters": [
+    {
+      "showAllValues": true,
+      "forceOneValue": false,
+      "multipleValues": false,
+      "values": [],
+      "labelField": "preusuel"
+    },
+    {
+      "showAllValues": true,
+      "forceOneValue": false,
+      "multipleValues": false,
+      "values": [],
+      "labelField": "sexe"
+    },
+    {
+      "showAllValues": true,
+      "forceOneValue": false,
+      "multipleValues": false,
+      "values": [],
+      "labelField": "sexe"
+    },
     {
       "showAllValues": true,
       "forceOneValue": false,

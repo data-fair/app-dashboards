@@ -535,18 +535,32 @@
               "minValue": {
                 "type": "string",
                 "title": "Valeur min",
-                "x-fromUrl": "{datasets.0.href}/values_agg?field={parent.value.field}&sort={parent.value.field}&{parent.value.field}_gte={q}&stringify=true",
-                "x-itemsProp": "aggs",
-                "x-itemTitle": "value",
-                "x-itemKey": "value"
+                "x-fromUrl": "{datasets.0.href}/values/{parent.value.field}?sort=asc&{parent.value.field}_gte={q}&stringify=true"
               },
               "maxValue": {
                 "type": "string",
                 "title": "Valeur max",
-                "x-fromUrl": "{datasets.0.href}/values_agg?field={parent.value.field}&sort=-{parent.value.field}&{parent.value.field}_lte={q}&stringify=true",
-                "x-itemsProp": "aggs",
-                "x-itemTitle": "value",
-                "x-itemKey": "value"
+                "x-fromUrl": "{datasets.0.href}/values/{parent.value.field}?sort=desc&{parent.value.field}_lte={q}&stringify=true"
+              }
+            }
+          },
+          {
+            "title": "Exclure des valeurs",
+            "required": ["field"],
+            "properties": {
+              "type": {
+                "const": "nin"
+              },
+              "field": {
+                "$ref": "#/definitions/filterField"
+              },
+              "values": {
+                "type": "array",
+                "title": "Valeurs à exclure",
+                "items": {
+                  "type": "string"
+                },
+                "x-fromUrl": "{datasets.0.href}/values/{parent.value.field}?q={q}&q_mode=complete&size=100&stringify=true"
               }
             }
           }
