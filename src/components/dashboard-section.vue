@@ -72,7 +72,7 @@ for (const row of props.section.rows) {
     >
       <h4
         v-if="element.title"
-        class="text-h6 mt-4"
+        class="text-h6 text-center mt-4"
       >
         {{ element.title }}
       </h4>
