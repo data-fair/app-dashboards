@@ -15,7 +15,7 @@ const props = defineProps({
     v-if="element.type==='column'"
     :key="k"
     :element="el"
-    :height="height / element.elements.length"
+    :height="height*(el.height || 100) / element.elements.reduce((acc, el) => acc+(el.height||100), 0)"
     :filters-values="filtersValues"
   />
   <dashboard-element

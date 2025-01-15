@@ -42,6 +42,12 @@ const requiredFilter = computed(() => {
     :query-params-extra="queryParamsExtra"
     :style="`height:${height>0 ? height+'px' : '100%'}`"
   />
+  <v-iframe
+    v-else-if="element.type === 'form'"
+    :src="`/data-fair/embed/dataset/${accessKey ? (accessKey + '%3A') : ''}${element.dataset.id}/form`"
+    :query-params-extra="queryParamsExtra"
+    :style="`height:${height>0 ? height+'px' : '100%'}`"
+  />
   <div
     v-else
     :style="`overflow-y:auto;height:${height>0 ? height+'px' : '100%'}`"

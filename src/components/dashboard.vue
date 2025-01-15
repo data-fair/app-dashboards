@@ -20,7 +20,7 @@ if (reactiveSearchParams.draft === 'true' && window.parent) {
   if ((config.applications || []).map(a => a.id).join('-') !== applications.map(a => a.id).join('-')) window.parent.postMessage({ type: 'set-config', content: { field: 'applications', value: applications } }, '*')
   if (config.datasets && config.datasets.length) {
     const filtersDataset = config.datasets[0]
-    const datasets = elements.filter(e => e.type === 'tablePreview' && e.dataset).map(e => ({ id: e.dataset.id, title: e.dataset.title, href: e.dataset.href })).filter((d1, i, s) => d1.id !== filtersDataset.id && s.findIndex(d2 => d1.id === d2.id) === i)
+    const datasets = elements.filter(e => ['tablePreview', 'form'].includes(e.type) && e.dataset).map(e => ({ id: e.dataset.id, title: e.dataset.title, href: e.dataset.href })).filter((d1, i, s) => d1.id !== filtersDataset.id && s.findIndex(d2 => d1.id === d2.id) === i)
     datasets.unshift(filtersDataset)
     if ((config.datasets || []).map(d => d.id).join('-') !== datasets.map(d => d.id).join('-')) window.parent.postMessage({ type: 'set-config', content: { field: 'datasets', value: datasets } }, '*')
   }

@@ -47,9 +47,105 @@
                   ]
                 }
               }
+            },
+            {
+              "width": 2,
+              "elements": [
+                {
+                  "height": 200,
+                  "type": "application",
+                  "mandatoryFilters": [],
+                  "valueMandatory": false,
+                  "source": "root",
+                  "application": {
+                    "id": "nombre-de-prenoms-differents-par-annee",
+                    "title": "Nombre de prenoms differents par année",
+                    "baseApp": {
+                      "_id": "6630ecbb8db1ae5c07807879",
+                      "id": "https:cdn.jsdelivr.netnpm@data-fairapp-charts@1.1dist",
+                      "datasetsFilters": [
+                        {
+                          "field-type": [
+                            "integer",
+                            "number"
+                          ],
+                          "{context.datasetFilter}": [
+                            ""
+                          ]
+                        }
+                      ],
+                      "meta": {
+                        "title": "data-fair-chartsdata-fair-chartsdata-fair-charts",
+                        "description": "A simple charts application for data-fair.",
+                        "keywords": [
+                          "data-fair",
+                          "charts",
+                          "graphs"
+                        ],
+                        "charset": "UTF-8",
+                        "viewport": "width=device-width, initial-scale=1.0",
+                        "df:overflow": "false",
+                        "df:sync-state": "true",
+                        "df:filter-concepts": "true",
+                        "thumbnail": "thumbnail.png",
+                        "application-name": "Charts",
+                        "vocabulary-accept": "http://www.w3.org/2000/01/rdf-schema#label",
+                        "vocabulary-require": "http://www.w3.org/2003/01/geo/wgs84_pos#lat_long"
+                      },
+                      "url": "https://cdn.jsdelivr.net/npm/@data-fair/app-charts@1.1/dist/"
+                    }
+                  }
+                },
+                {
+                  "height": 100,
+                  "type": "application",
+                  "mandatoryFilters": [],
+                  "valueMandatory": false,
+                  "source": "root",
+                  "application": {
+                    "id": "nombre-de-prenoms-differents-par-annee",
+                    "title": "Nombre de prenoms differents par année",
+                    "baseApp": {
+                      "_id": "6630ecbb8db1ae5c07807879",
+                      "id": "https:cdn.jsdelivr.netnpm@data-fairapp-charts@1.1dist",
+                      "datasetsFilters": [
+                        {
+                          "field-type": [
+                            "integer",
+                            "number"
+                          ],
+                          "{context.datasetFilter}": [
+                            ""
+                          ]
+                        }
+                      ],
+                      "meta": {
+                        "title": "data-fair-chartsdata-fair-chartsdata-fair-charts",
+                        "description": "A simple charts application for data-fair.",
+                        "keywords": [
+                          "data-fair",
+                          "charts",
+                          "graphs"
+                        ],
+                        "charset": "UTF-8",
+                        "viewport": "width=device-width, initial-scale=1.0",
+                        "df:overflow": "false",
+                        "df:sync-state": "true",
+                        "df:filter-concepts": "true",
+                        "thumbnail": "thumbnail.png",
+                        "application-name": "Charts",
+                        "vocabulary-accept": "http://www.w3.org/2000/01/rdf-schema#label",
+                        "vocabulary-require": "http://www.w3.org/2003/01/geo/wgs84_pos#lat_long"
+                      },
+                      "url": "https://cdn.jsdelivr.net/npm/@data-fair/app-charts@1.1/dist/"
+                    }
+                  }
+                }
+              ],
+              "type": "column"
             }
           ],
-          "height": 400
+          "height": 600
         }
       ],
       "icon": {

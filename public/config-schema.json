@@ -216,6 +216,9 @@
                       },
                       {
                         "$ref": "#/definitions/column"
+                      },
+                      {
+                        "$ref": "#/definitions/form"
                       }
                     ]
                   }
@@ -469,6 +472,26 @@
         }
       }
     },
+    "form": {
+      "title": "Formulaire de saisie",
+      "properties": {
+        "type": { "const": "form", "title": "Type de l'élément" },
+        "dataset": {
+          "type": "object",
+          "title": "Jeu de données",
+          "x-fromUrl": "api/v1/datasets?q={q}&{context.datasetFilter}&rest=true&select=id,title,schema&sort=createdAt:-1",
+          "x-itemKey": "id",
+          "x-itemTitle": "title",
+          "x-itemsProp": "results",
+          "properties": {
+            "id": { "type": "string" },
+            "title": { "type": "string" },
+            "href": { "type": "string" },
+            "schema": { "type": "array" }
+          }
+        }
+      }
+    },
     "column": {
       "title": "Colonne",
       "properties": {
@@ -486,8 +509,18 @@
               },
               {
                 "$ref": "#/definitions/text"
+              },
+              {
+                "$ref": "#/definitions/form"
               }
-            ]
+            ],
+            "properties": {
+              "height": {
+                "title": "Hauteur (pondération)",
+                "type": "integer",
+                "default": 100
+              }
+            }
           }
         }
       }
