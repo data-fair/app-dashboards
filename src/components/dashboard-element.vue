@@ -60,6 +60,7 @@ const requiredFilter = computed(() => {
     />
     <div
       v-else-if="element.type === 'text'"
+      style="white-space: pre-wrap"
       class="mt-4"
     >
       {{ element.content }}
