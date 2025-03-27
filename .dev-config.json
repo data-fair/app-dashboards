@@ -191,7 +191,7 @@
   "periodFilter": true,
   "filters": [
     {
-      "showAllValues": true,
+      "showAllValues": false,
       "forceOneValue": false,
       "multipleValues": false,
       "values": [],

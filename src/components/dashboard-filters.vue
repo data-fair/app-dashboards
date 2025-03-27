@@ -49,7 +49,7 @@ const filters = props.config.filters.map(filter => {
         stringify: true
       }, ...otherFilters.map(f => ({ [`${f.labelField}_in`]: `${reactiveSearchParams[props.prefix + datasetFilterPrefix + f.labelField + '_in']}` })))
       props.config.staticFilters?.forEach(filter => {
-        if (filter.type === 'in') params[filter.field + '_in'] = filters.values.join(',')
+        if (filter.type === 'in') params[filter.field + '_in'] = filter.values.join(',')
         else if (filter.type === 'interval') {
           if (filter.minValue != null) params[filter.field + '_gte'] = filter.minValue
           if (filter.maxValue != null) params[filter.field + '_lte'] = filter.maxValue
@@ -92,7 +92,7 @@ const updateFilters = async (noFieldUpdate) => {
       finalizedAt: props.config.datasets[0].finalizedAt
     }, ...activeFilters.map(f => ({ [`${f.labelField}_in`]: `${reactiveSearchParams[props.prefix + datasetFilterPrefix + f.labelField + '_in']}` })))
     props.config.staticFilters?.forEach(filter => {
-      if (filter.type === 'in') params[filter.field + '_in'] = filters.values.join(',')
+      if (filter.type === 'in') params[filter.field + '_in'] = filter.values.join(',')
       else if (filter.type === 'interval') {
         if (filter.minValue != null) params[filter.field + '_gte'] = filter.minValue
         if (filter.maxValue != null) params[filter.field + '_lte'] = filter.maxValue
@@ -117,8 +117,8 @@ const updateFilters = async (noFieldUpdate) => {
     filtersValues._c_geo_distance = address.lon + ',' + address.lat + ',' + reactiveSearchParams.radius * 1000
   }
   props.config.staticFilters?.forEach(filter => {
-    if (filter.type === 'in') filtersValues[`${datasetFilterPrefix}${filter.field}_in`] = filters.values.join(',')
-    else if (filter.type === 'nin') filtersValues[`${datasetFilterPrefix}${filter.field}_nin`] = filters.values.join(',')
+    if (filter.type === 'in') filtersValues[`${datasetFilterPrefix}${filter.field}_in`] = filter.values.join(',')
+    else if (filter.type === 'nin') filtersValues[`${datasetFilterPrefix}${filter.field}_nin`] = filter.values.join(',')
     else if (filter.type === 'interval') {
       if (filter.minValue != null) filtersValues[`${datasetFilterPrefix}${filter.field}_gte`] = filter.minValue
       if (filter.maxValue != null) filtersValues[`${datasetFilterPrefix}${filter.field}_lte`] = filter.maxValue
