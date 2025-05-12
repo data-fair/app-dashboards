@@ -203,20 +203,6 @@
       "multipleValues": false,
       "values": [],
       "labelField": "sexe"
-    },
-    {
-      "showAllValues": true,
-      "forceOneValue": false,
-      "multipleValues": false,
-      "values": [],
-      "labelField": "sexe"
-    },
-    {
-      "showAllValues": true,
-      "forceOneValue": false,
-      "multipleValues": false,
-      "values": [],
-      "labelField": "sexe"
     }
   ],
   "datasets": [
