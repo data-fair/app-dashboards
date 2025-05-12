@@ -79,8 +79,7 @@
           "startValue": {
             "type": "string",
             "title": "Valeur initiale",
-            "x-fromUrl": "{datasets.0.href}/values/{parent.value.labelField}?q={q}&q_mode=complete&size=100&stringify=true",
-            "x-if": "parent.value.forceOneValue"
+            "x-fromUrl": "{datasets.0.href}/values/{parent.value.labelField}?q={q}&q_mode=complete&size=100&stringify=true"
           },
           "showAllValues": {
             "title": "Garder toutes les valeurs dans la liste",

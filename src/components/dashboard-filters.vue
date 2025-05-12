@@ -68,8 +68,9 @@ const filters = props.config.filters.map(filter => {
       }
       const values = await ofetch(props.config.datasets[0].href + '/values/' + filter.labelField, { params })
       const filterValue = reactiveSearchParams[props.prefix + datasetFilterPrefix + filter.labelField + '_in']
-      if (filterValue && !values.includes(filterValue)) {
-        values.unshift(filterValue)
+      if (filterValue) {
+        const fValues = filter.multipleValues ? JSON.parse(`[${filterValue}]`) : [filterValue]
+        fValues.filter(v => !values.includes(v)).forEach(v => values.unshift(v))
       }
       items.value = values
     }

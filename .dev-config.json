@@ -199,10 +199,11 @@
     },
     {
       "showAllValues": true,
-      "forceOneValue": false,
-      "multipleValues": false,
+      "forceOneValue": true,
+      "multipleValues": true,
       "values": [],
-      "labelField": "sexe"
+      "labelField": "sexe",
+      "startValue": "1"
     }
   ],
   "datasets": [

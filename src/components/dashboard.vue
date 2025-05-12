@@ -43,8 +43,8 @@ if (incompleteConfiguration) {
 
   const datasetFilterPrefix = '_d_' + config.datasets[0].id + '_'
   for (const filter of config.filters) {
-    if (!reactiveSearchParams[datasetFilterPrefix + filter.labelField + '_in'] && filter.forceOneValue && filter.startValue) {
-      reactiveSearchParams[datasetFilterPrefix + filter.labelField + '_in'] = filter.startValue
+    if (!reactiveSearchParams[datasetFilterPrefix + filter.labelField + '_in'] && filter.startValue) {
+      reactiveSearchParams[datasetFilterPrefix + filter.labelField + '_in'] = filter.multipleValues ? JSON.stringify([filter.startValue]).slice(1, -1) : filter.startValue
     }
   }
   if (config.periodFilter && !reactiveSearchParams.period) {
