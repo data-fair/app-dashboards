@@ -10,253 +10,533 @@
               "mandatoryFilters": [],
               "valueMandatory": false,
               "source": "root",
+              "description": "left",
               "application": {
-                "id": "evolution-des-prenoms-a-la-naissance-en-france-de-1900-a-2107",
-                "title": "Evolution des prénoms à la naissance en France de 1900 à 2021",
+                "id": "carte-des-installations-classees-pour-la-protection-de-lenvironnement",
+                "title": "Carte des installations classées pour la protection de l’environnement",
+                "href": "http://localhost:5888/data-fair/api/v1/applications/carte-des-installations-classees-pour-la-protection-de-lenvironnement",
                 "baseApp": {
-                  "id": "https:cdn.jsdelivr.netnpm@data-fairapp-charts@1.1dist",
-                  "url": "https://cdn.jsdelivr.net/npm/@data-fair/app-charts@1.1/dist/",
+                  "id": "https:koumoul.comappscarto-stats1.0",
+                  "url": "https://koumoul.com/apps/carto-stats/1.0/",
                   "meta": {
-                    "title": "data-fair-chartsdata-fair-chartsdata-fair-charts",
-                    "description": "A simple charts application for data-fair.",
+                    "title": "Carto stats",
+                    "description": "Cette application permet de visualiser un grand nombre d'informations spatiales",
                     "keywords": [
-                      "data-fair",
-                      "charts",
-                      "graphs"
+                      "cartographie",
+                      "statistiques"
                     ],
-                    "charset": "UTF-8",
-                    "viewport": "width=device-width, initial-scale=1.0",
+                    "charset": "utf-8",
+                    "viewport": "width=device-width,initial-scale=1",
+                    "x-capture": "trigger",
                     "df:overflow": "false",
                     "df:sync-state": "true",
                     "df:filter-concepts": "true",
+                    "application-name": "Carto stats",
                     "thumbnail": "thumbnail.png",
-                    "application-name": "Charts",
-                    "vocabulary-accept": "http://www.w3.org/2000/01/rdf-schema#label",
-                    "vocabulary-require": "http://www.w3.org/2003/01/geo/wgs84_pos#lat_long"
+                    "vocabulary-require": "https://schema.org/box"
                   },
                   "datasetsFilters": [
                     {
-                      "field-type": [
-                        "integer",
-                        "number"
+                      "bbox": [
+                        "true"
                       ],
-                      "{context.datasetFilter}": [
-                        ""
+                      "owner": [
+                        "{context.owner.type}:{context.owner.id}"
                       ]
                     }
                   ]
                 }
-              },
-              "title": "titre"
-            },
-            {
-              "width": 2,
-              "elements": [
-                {
-                  "height": 200,
-                  "type": "application",
-                  "mandatoryFilters": [],
-                  "valueMandatory": false,
-                  "source": "root",
-                  "application": {
-                    "id": "nombre-de-prenoms-differents-par-annee",
-                    "title": "Nombre de prenoms differents par année",
-                    "baseApp": {
-                      "_id": "6630ecbb8db1ae5c07807879",
-                      "id": "https:cdn.jsdelivr.netnpm@data-fairapp-charts@1.1dist",
-                      "datasetsFilters": [
-                        {
-                          "field-type": [
-                            "integer",
-                            "number"
-                          ],
-                          "{context.datasetFilter}": [
-                            ""
-                          ]
-                        }
-                      ],
-                      "meta": {
-                        "title": "data-fair-chartsdata-fair-chartsdata-fair-charts",
-                        "description": "A simple charts application for data-fair.",
-                        "keywords": [
-                          "data-fair",
-                          "charts",
-                          "graphs"
-                        ],
-                        "charset": "UTF-8",
-                        "viewport": "width=device-width, initial-scale=1.0",
-                        "df:overflow": "false",
-                        "df:sync-state": "true",
-                        "df:filter-concepts": "true",
-                        "thumbnail": "thumbnail.png",
-                        "application-name": "Charts",
-                        "vocabulary-accept": "http://www.w3.org/2000/01/rdf-schema#label",
-                        "vocabulary-require": "http://www.w3.org/2003/01/geo/wgs84_pos#lat_long"
-                      },
-                      "url": "https://cdn.jsdelivr.net/npm/@data-fair/app-charts@1.1/dist/"
-                    }
-                  }
-                },
-                {
-                  "height": 100,
-                  "type": "application",
-                  "mandatoryFilters": [],
-                  "valueMandatory": false,
-                  "source": "root",
-                  "application": {
-                    "id": "nombre-de-prenoms-differents-par-annee",
-                    "title": "Nombre de prenoms differents par année",
-                    "baseApp": {
-                      "_id": "6630ecbb8db1ae5c07807879",
-                      "id": "https:cdn.jsdelivr.netnpm@data-fairapp-charts@1.1dist",
-                      "datasetsFilters": [
-                        {
-                          "field-type": [
-                            "integer",
-                            "number"
-                          ],
-                          "{context.datasetFilter}": [
-                            ""
-                          ]
-                        }
-                      ],
-                      "meta": {
-                        "title": "data-fair-chartsdata-fair-chartsdata-fair-charts",
-                        "description": "A simple charts application for data-fair.",
-                        "keywords": [
-                          "data-fair",
-                          "charts",
-                          "graphs"
-                        ],
-                        "charset": "UTF-8",
-                        "viewport": "width=device-width, initial-scale=1.0",
-                        "df:overflow": "false",
-                        "df:sync-state": "true",
-                        "df:filter-concepts": "true",
-                        "thumbnail": "thumbnail.png",
-                        "application-name": "Charts",
-                        "vocabulary-accept": "http://www.w3.org/2000/01/rdf-schema#label",
-                        "vocabulary-require": "http://www.w3.org/2003/01/geo/wgs84_pos#lat_long"
-                      },
-                      "url": "https://cdn.jsdelivr.net/npm/@data-fair/app-charts@1.1/dist/"
-                    }
-                  }
-                }
-              ],
-              "type": "column"
-            },
-            {
-              "width": 2,
-              "type": "text",
-              "content": "The standard Lorem Ipsum passage, used since the 1500s\n\"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.\"\n\nSection 1.10.32 of \"de Finibus Bonorum et Malorum\", written by Cicero in 45 BC\n\n\n\n\"Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam quaerat voluptatem. Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam, nisi ut aliquid ex ea commodi consequatur? Quis autem vel eum iure reprehenderit qui in ea voluptate velit esse quam nihil molestiae consequatur, vel illum qui dolorem eum fugiat quo voluptas nulla pariatur?\""
-            }
-          ],
-          "height": 600
-        }
-      ],
-      "icon": {
-        "name": "zodiac-sagittarius",
-        "svg": "<?xml version=\"1.0\" encoding=\"UTF-8\"?><!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 1.1//EN\" \"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd\"><svg xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" version=\"1.1\" width=\"24\" height=\"24\" id=\"mdi-zodiac-sagittarius\" viewBox=\"0 0 24 24\"><path d=\"M22,2V12H20V5.41L10.41,15L12.71,17.29L11.29,18.71L9,16.41L3.71,21.71L2.29,20.29L7.59,15L5.29,12.71L6.71,11.29L9,13.59L18.59,4H12V2H22Z\" /></svg>",
-        "svgPath": "M22,2V12H20V5.41L10.41,15L12.71,17.29L11.29,18.71L9,16.41L3.71,21.71L2.29,20.29L7.59,15L5.29,12.71L6.71,11.29L9,13.59L18.59,4H12V2H22Z"
-      },
-      "title": "test"
-    },
-    {
-      "rows": [
-        {
-          "elements": [
-            {
-              "width": 2,
-              "type": "tablePreview",
-              "mandatoryFilters": [],
-              "valueMandatory": false,
-              "noInteractions": false,
-              "display": "table",
-              "fields": [],
-              "source": "root"
+              }
             }
           ],
           "height": 400
         }
-      ],
-      "icon": {
-        "name": "view-list",
-        "svg": "<?xml version=\"1.0\" encoding=\"UTF-8\"?><!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 1.1//EN\" \"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd\"><svg xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" version=\"1.1\" width=\"24\" height=\"24\" id=\"mdi-view-list\" viewBox=\"0 0 24 24\"><path d=\"M9,5V9H21V5M9,19H21V15H9M9,14H21V10H9M4,9H8V5H4M4,19H8V15H4M4,14H8V10H4V14Z\" /></svg>",
-        "svgPath": "M9,5V9H21V5M9,19H21V15H9M9,14H21V10H9M4,9H8V5H4M4,19H8V15H4M4,14H8V10H4V14Z"
-      }
+      ]
     }
   ],
-  "sectionsGroup": "tabs-button",
-  "addressFilter": true,
-  "periodFilter": true,
+  "sectionsGroup": "accordion",
+  "allowDuplicate": false,
+  "addressFilter": false,
+  "periodFilter": false,
   "filters": [
     {
-      "showAllValues": false,
-      "forceOneValue": false,
-      "multipleValues": false,
-      "values": [],
-      "labelField": "preusuel"
-    },
-    {
       "showAllValues": true,
-      "forceOneValue": true,
+      "forceOneValue": false,
       "multipleValues": true,
-      "values": [],
-      "labelField": "sexe",
-      "startValue": "1"
+      "values": [
+        "_infos_commune.code_region"
+      ],
+      "labelField": "_infos_commune.nom_region"
     }
   ],
+  "staticFilters": [],
   "datasets": [
     {
-      "href": "http://localhost:5888/data-fair/api/v1/datasets/prenom-france-1900-2017",
-      "title": "Prénoms attribués aux enfants nés en France entre 1900 et 2021",
-      "id": "prenom-france-1900-2017",
+      "href": "http://localhost:5888/data-fair/api/v1/datasets/icpe",
+      "title": "Installations Classées pour la Protection de l’Environnement",
+      "id": "icpe",
       "schema": [
         {
-          "key": "sexe",
+          "key": "code_aiot",
+          "x-originalName": "code_aiot",
           "type": "integer",
-          "x-originalName": "sexe",
-          "x-cardinality": 2,
-          "x-refersTo": null,
-          "title": "Sexe",
+          "x-cardinality": 128573,
+          "description": "",
+          "x-refersTo": "code-aiot",
+          "x-concept": {
+            "id": "code-aiot",
+            "title": "Code AIOT",
+            "primary": true
+          }
+        },
+        {
+          "key": "x",
+          "x-originalName": "x",
+          "type": "integer",
+          "x-cardinality": 101627,
+          "description": ""
+        },
+        {
+          "key": "y",
+          "x-originalName": "y",
+          "type": "integer",
+          "x-cardinality": 102747,
+          "description": ""
+        },
+        {
+          "key": "code_epsg",
+          "x-originalName": "code_epsg",
+          "type": "integer",
+          "x-cardinality": 6,
+          "description": "",
           "enum": [
-            2,
-            1
-          ],
-          "description": ""
+            2154,
+            2975,
+            4559,
+            2972,
+            4471,
+            2987
+          ]
         },
         {
-          "key": "preusuel",
+          "key": "nom_ets",
+          "x-originalName": "nom_ets",
           "type": "string",
-          "x-originalName": "preusuel",
-          "x-cardinality": 36271,
-          "x-refersTo": null,
-          "title": "Prénom usuel",
+          "x-cardinality": 112671,
+          "x-refersTo": "http://www.w3.org/2000/01/rdf-schema#label",
+          "description": "",
+          "x-concept": {
+            "id": "label",
+            "title": "Libellé",
+            "primary": true
+          },
+          "x-capabilities": {
+            "textAgg": true
+          }
+        },
+        {
+          "key": "num_dep",
+          "x-originalName": "num_dep",
+          "type": "string",
+          "x-cardinality": 104,
+          "description": "",
           "x-capabilities": {
             "textAgg": true
           },
-          "description": ""
+          "x-refersTo": "http://rdf.insee.fr/def/geo#codeDepartement",
+          "x-concept": {
+            "id": "codeDepartement",
+            "title": "Code département",
+            "primary": true
+          }
         },
         {
-          "key": "annais",
+          "key": "adresse",
+          "x-originalName": "adresse",
           "type": "string",
-          "x-originalName": "annais",
-          "x-cardinality": 123,
-          "x-refersTo": null,
-          "title": "Année de naissance",
+          "x-cardinality": 111122,
+          "description": "",
+          "x-capabilities": {
+            "textAgg": true
+          }
+        },
+        {
+          "key": "cd_insee",
+          "x-originalName": "cd_insee",
+          "type": "string",
+          "x-cardinality": 23953,
+          "description": "",
+          "x-refersTo": "http://rdf.insee.fr/def/geo#codeCommune",
+          "x-concept": {
+            "id": "codeCommune",
+            "title": "Code commune",
+            "primary": true
+          }
+        },
+        {
+          "key": "cd_postal",
+          "x-originalName": "cd_postal",
+          "type": "string",
+          "x-cardinality": 6682,
+          "title": "Code postal",
+          "description": "",
+          "x-refersTo": "http://schema.org/postalCode",
+          "x-concept": {
+            "id": "postalCode",
+            "title": "Code postal",
+            "primary": true
+          }
+        },
+        {
+          "key": "commune",
+          "x-originalName": "commune",
+          "type": "string",
+          "x-cardinality": 27216,
+          "description": "",
           "x-capabilities": {
             "textAgg": true
           },
-          "description": ""
+          "x-refersTo": "http://schema.org/City",
+          "x-concept": {
+            "id": "city",
+            "title": "Commune",
+            "primary": true
+          }
         },
         {
-          "key": "nombre",
+          "key": "code_naf",
+          "x-originalName": "code_naf",
           "type": "integer",
-          "x-originalName": "nombre",
-          "x-cardinality": 7282,
-          "x-refersTo": null,
-          "title": "Nombre de naissances",
+          "x-cardinality": 87,
           "description": ""
+        },
+        {
+          "key": "lib_naf",
+          "x-originalName": "lib_naf",
+          "type": "string",
+          "x-cardinality": 87,
+          "title": "Libellé NAF",
+          "description": "",
+          "x-capabilities": {
+            "textAgg": true
+          }
+        },
+        {
+          "key": "num_siret",
+          "x-originalName": "num_siret",
+          "type": "integer",
+          "x-cardinality": 104551,
+          "description": ""
+        },
+        {
+          "key": "seveso",
+          "x-originalName": "seveso",
+          "type": "string",
+          "x-cardinality": 3,
+          "description": "",
+          "x-labels": {
+            "1": "Seveso Haut",
+            "2": "Seveso Bas",
+            "3": "Non Seveso"
+          },
+          "title": "Seveso",
+          "x-capabilities": {
+            "textAgg": true
+          },
+          "x-transform": {
+            "type": "string"
+          },
+          "enum": [
+            "3",
+            "1",
+            "2"
+          ]
+        },
+        {
+          "key": "ied",
+          "x-originalName": "ied",
+          "type": "boolean",
+          "x-cardinality": 2,
+          "description": "",
+          "title": "Directive sur les émissions industrielles",
+          "x-labels": {
+            "false": "non",
+            "true": "oui"
+          },
+          "enum": [
+            "false",
+            "true"
+          ]
+        },
+        {
+          "key": "priorite_nationale",
+          "x-originalName": "priorite_nationale",
+          "type": "boolean",
+          "x-cardinality": 2,
+          "description": "",
+          "title": "Priorite nationale",
+          "x-labels": {
+            "false": "non",
+            "true": "oui"
+          },
+          "enum": [
+            "false",
+            "true"
+          ]
+        },
+        {
+          "key": "rubriques_autorisation",
+          "x-originalName": "rubriques_autorisation",
+          "type": "string",
+          "x-cardinality": 1936,
+          "description": ""
+        },
+        {
+          "key": "rubriques_enregistrement",
+          "x-originalName": "rubriques_enregistrement",
+          "type": "string",
+          "x-cardinality": 1135,
+          "description": ""
+        },
+        {
+          "key": "rubriques_declaration",
+          "x-originalName": "rubriques_declaration",
+          "type": "string",
+          "x-cardinality": 7238,
+          "description": ""
+        },
+        {
+          "key": "date_modification",
+          "x-originalName": "date_modification",
+          "type": "string",
+          "x-cardinality": 146,
+          "description": ""
+        },
+        {
+          "key": "derniere_inspection",
+          "x-originalName": "derniere_inspection",
+          "type": "string",
+          "x-cardinality": 6580,
+          "description": ""
+        },
+        {
+          "key": "url_fiche",
+          "x-originalName": "url_fiche",
+          "type": "string",
+          "x-cardinality": 131064,
+          "x-refersTo": "https://schema.org/WebPage",
+          "description": "",
+          "x-concept": {
+            "id": "webPage",
+            "title": "Page Web",
+            "primary": true
+          },
+          "x-capabilities": {
+            "textAgg": true
+          }
+        },
+        {
+          "key": "famille_ic",
+          "x-originalName": "famille_ic",
+          "type": "string",
+          "x-cardinality": 6,
+          "description": "",
+          "title": "Famille des installations",
+          "separator": "; ",
+          "x-capabilities": {
+            "textAgg": true
+          },
+          "enum": [
+            "industrie",
+            "porcs",
+            "carriere",
+            "bovins",
+            "eolienne",
+            "volailles"
+          ]
+        },
+        {
+          "key": "longitude",
+          "x-originalName": "longitude",
+          "type": "number",
+          "x-cardinality": 96500,
+          "description": "",
+          "x-refersTo": "http://schema.org/longitude",
+          "x-concept": {
+            "id": "longitude",
+            "title": "Longitude",
+            "primary": true
+          }
+        },
+        {
+          "key": "latitude",
+          "x-originalName": "latitude",
+          "type": "number",
+          "x-cardinality": 92659,
+          "description": "",
+          "x-refersTo": "http://schema.org/latitude",
+          "x-concept": {
+            "id": "latitude",
+            "title": "Latitude",
+            "primary": true
+          }
+        },
+        {
+          "key": "regime",
+          "x-originalName": "regime",
+          "type": "string",
+          "x-cardinality": 4,
+          "description": "",
+          "x-capabilities": {
+            "textAgg": true
+          },
+          "enum": [
+            "AUTRE",
+            "E",
+            "NEANT",
+            "A"
+          ]
+        },
+        {
+          "key": "_infos_commune.nom_departement",
+          "x-originalName": "_infos_commune.nom_departement",
+          "x-extension": "dataset:communes-de-france/masterData_bulkSearch_infos-commune",
+          "title": "Nom département",
+          "description": "Nom du département",
+          "type": "string",
+          "x-refersTo": "http://rdf.insee.fr/def/geo#Departement",
+          "x-concept": {
+            "id": "departement",
+            "title": "Département",
+            "primary": true
+          },
+          "x-cardinality": 101
+        },
+        {
+          "key": "_infos_commune.code_epci",
+          "x-originalName": "_infos_commune.code_epci",
+          "x-extension": "dataset:communes-de-france/masterData_bulkSearch_infos-commune",
+          "title": "Code EPCI",
+          "description": "Code de l'établissement public de coopération intercommunale",
+          "type": "string",
+          "x-refersTo": "http://rdf.insee.fr/def/geo#EtablissementPublicDeCooperationIntercommunale",
+          "x-capabilities": {
+            "textStandard": false,
+            "insensitive": false,
+            "text": false
+          },
+          "x-concept": {
+            "id": "codeEPCI",
+            "title": "Code EPCI",
+            "primary": true
+          },
+          "x-cardinality": 1255
+        },
+        {
+          "key": "_infos_commune.nom_epci",
+          "x-originalName": "_infos_commune.nom_epci",
+          "x-extension": "dataset:communes-de-france/masterData_bulkSearch_infos-commune",
+          "title": "Nom EPCI",
+          "description": "Nom de l'établissement public de coopération intercommunale",
+          "type": "string",
+          "x-cardinality": 1252
+        },
+        {
+          "key": "_infos_commune.code_region",
+          "x-originalName": "_infos_commune.code_region",
+          "x-extension": "dataset:communes-de-france/masterData_bulkSearch_infos-commune",
+          "title": "Code région",
+          "description": "Code de la région",
+          "type": "string",
+          "x-refersTo": "http://rdf.insee.fr/def/geo#codeRegion",
+          "x-capabilities": {
+            "textStandard": false,
+            "insensitive": false,
+            "text": false
+          },
+          "x-concept": {
+            "id": "codeRegion",
+            "title": "Code région",
+            "primary": true
+          },
+          "x-cardinality": 18,
+          "enum": [
+            "53",
+            "75",
+            "84",
+            "44",
+            "11",
+            "32",
+            "52",
+            "76",
+            "28",
+            "27",
+            "24",
+            "93",
+            "04",
+            "94",
+            "01",
+            "03",
+            "02",
+            "06"
+          ]
+        },
+        {
+          "key": "_infos_commune.nom_region",
+          "x-originalName": "_infos_commune.nom_region",
+          "x-extension": "dataset:communes-de-france/masterData_bulkSearch_infos-commune",
+          "title": "Nom région",
+          "description": "Nom de la région",
+          "type": "string",
+          "x-refersTo": "https://schema.org/addressRegion",
+          "x-concept": {
+            "id": "region",
+            "title": "Région",
+            "primary": true
+          },
+          "x-cardinality": 18,
+          "enum": [
+            "Bretagne",
+            "Nouvelle-Aquitaine",
+            "Auvergne-Rhône-Alpes",
+            "Grand Est",
+            "Île-de-France",
+            "Hauts-de-France",
+            "Pays de la Loire",
+            "Occitanie",
+            "Normandie",
+            "Bourgogne-Franche-Comté",
+            "Centre-Val de Loire",
+            "Provence-Alpes-Côte d'Azur",
+            "La Réunion",
+            "Corse",
+            "Guadeloupe",
+            "Guyane",
+            "Martinique",
+            "Mayotte"
+          ]
+        },
+        {
+          "key": "_infos_commune._error",
+          "type": "string",
+          "x-originalName": "_error",
+          "x-extension": "dataset:communes-de-france/masterData_bulkSearch_infos-commune",
+          "title": "Erreur de récupération de données de référence",
+          "description": "Une erreur lors de la récupération des informations depuis un service distant",
+          "x-calculated": true
+        },
+        {
+          "x-calculated": true,
+          "key": "_geopoint",
+          "type": "string",
+          "title": "Coordonnée géographique",
+          "description": "Centroïde au format \"lat,lon\"",
+          "x-refersTo": "http://www.w3.org/2003/01/geo/wgs84_pos#lat_long",
+          "x-concept": {
+            "id": "latLon",
+            "title": "Latitude / Longitude",
+            "primary": true
+          }
         },
         {
           "x-calculated": true,
@@ -280,22 +560,19 @@
           "title": "Nombre aléatoire",
           "description": "Un nombre aléatoire associé à la ligne qui permet d'obtenir un tri aléatoire par exemple"
         }
+      ],
+      "bbox": [
+        -151.53715004213154,
+        -89.57482004072517,
+        177.78408992104232,
+        59.63035998400301
       ]
     }
   ],
-  "staticFilters": [
-    {
-      "type": "interval",
-      "field": "annais",
-      "minValue": "1940",
-      "maxValue": "1998"
-    }
-  ],
-  "allowDuplicate": true,
   "applications": [
     {
-      "id": "evolution-des-prenoms-a-la-naissance-en-france-de-1900-a-2107",
-      "title": "Evolution des prénoms à la naissance en France de 1900 à 2021"
+      "id": "carte-des-installations-classees-pour-la-protection-de-lenvironnement",
+      "title": "Carte des installations classées pour la protection de l’environnement"
     }
   ]
 }

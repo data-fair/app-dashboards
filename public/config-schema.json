@@ -397,6 +397,7 @@
               "properties": {
                 "id": { "type": "string" },
                 "title": { "type": "string" },
+                "href": { "type": "string" },
                 "baseApp": { "type": "object" }
               }
             },
@@ -415,6 +416,25 @@
               "items": {
                 "type": "string"
               }
+            },
+            "description": {
+              "title": "Affichage de la description",
+              "type": "string",
+              "oneOf": [
+                {
+                  "const": "none",
+                  "title": "Aucun affichage"
+                },
+                {
+                  "const": "left",
+                  "title": "A gauche"
+                },
+                {
+                  "const": "right",
+                  "title": "A droite"
+                }
+              ],
+              "default": "none"
             }
           }
         },
