@@ -1,6 +1,6 @@
 {
   "name": "@data-fair/app-dashboards",
-  "version": "0.10.1",
+  "version": "0.10.2",
   "scripts": {
     "dev": "APP_URL=http://localhost:3000/app/ df-dev-server",
     "dev-src": "vite",
