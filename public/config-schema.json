@@ -7,7 +7,7 @@
         {
           "title": "Source des valeurs pour les filtres",
           "type": "object",
-          "x-fromUrl": "api/v1/datasets?status=finalized&q={q}&select=id,title,schema,timePeriod,bbox&{context.datasetFilter}&sort=createdAt:-1",
+          "x-fromUrl": "api/v1/datasets?status=finalized&q={q}&select=id,title,slug,schema,timePeriod,bbox&{context.datasetFilter}&sort=createdAt:-1",
           "x-itemsProp": "results",
           "x-itemTitle": "title",
           "x-itemKey": "href",
@@ -19,6 +19,9 @@
               "type": "string"
             },
             "id": {
+              "type": "string"
+            },
+            "slug": {
               "type": "string"
             },
             "schema": {
@@ -227,6 +230,21 @@
           }
         }
       }
+    },
+    "showSources": {
+      "title": "Afficher les liens vers les sources des données",
+      "type": "boolean",
+      "default": false
+    },
+    "showEmbed": {
+      "title": "Afficher le bouton d'intégration des visualisations",
+      "type": "boolean",
+      "default": false
+    },
+    "showCapture": {
+      "title": "Afficher le bouton d'export des visualisations",
+      "type": "boolean",
+      "default": false
     }
   },
   "definitions": {
@@ -306,12 +324,13 @@
             },
             "dataset": {
               "type": "object",
-              "x-fromUrl": "api/v1/datasets?q={q}&{context.datasetFilter}&select=id,title,schema&sort=createdAt:-1",
+              "x-fromUrl": "api/v1/datasets?q={q}&{context.datasetFilter}&select=id,title,slug,schema&sort=createdAt:-1",
               "x-itemKey": "id",
               "x-itemTitle": "title",
               "x-itemsProp": "results",
               "properties": {
                 "id": { "type": "string" },
+                "slug": { "type": "string" },
                 "title": { "type": "string" },
                 "href": { "type": "string" },
                 "schema": { "type": "array" }

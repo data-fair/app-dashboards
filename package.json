@@ -18,23 +18,22 @@
     "not ie 11"
   ],
   "dependencies": {
+    "@data-fair/frame": "^0.12.1",
     "@data-fair/lib-vue": "^1.13.10",
     "@data-fair/lib-vuetify": "^1.6.6",
-    "@koumoul/v-iframe": "^2.4.4",
     "@vueuse/core": "^12.0.0",
     "ofetch": "^1.3.3",
-    "unplugin-fonts": "^1.3.1",
     "vue": "^3.4.15",
     "vuetify": "^3.7.4"
   },
   "devDependencies": {
-    "@data-fair/dev-server": "^1.12.0",
-    "@types/node": "^20.9.1",
+    "@data-fair/dev-server": "^1.13.1",
     "@vitejs/plugin-vue": "^5.0.3",
     "eslint": "^8.49.0",
     "eslint-config-standard": "^17.1.0",
     "eslint-plugin-vue": "^9.17.0",
     "sass": "^1.71.0",
+    "unplugin-fonts": "^1.3.1",
     "vite": "^5.0.11",
     "vite-plugin-vuetify": "^2.0.1"
   }

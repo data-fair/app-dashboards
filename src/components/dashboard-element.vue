@@ -1,10 +1,11 @@
 <script setup>
-import vIframe from '@koumoul/v-iframe'
 import reactiveSearchParams from '@data-fair/lib-vue/reactive-search-params-global.js'
-import { computed } from 'vue'
-import { computedAsync } from '@vueuse/core'
+import { computed, ref } from 'vue'
+import { computedAsync, useElementSize } from '@vueuse/core'
 import { ofetch } from 'ofetch'
 import { mdiCodeTags, mdiCamera } from '@mdi/js'
+import { useConfig } from '@/composables/config'
+import { messageDisplay, messageType, messageContent } from '@/messages'
 
 const props = defineProps({
   element: { type: Object, required: true },
@@ -12,29 +13,57 @@ const props = defineProps({
   filtersValues: { type: [Object, null], required: true }
 })
 
-const config = window.APPLICATION.configuration
-const fields = Object.assign({}, ...config.datasets[0].schema.map(f => ({ [f.key]: f })))
+const { application, config, fields, accessKey, dFrameAdapter } = useConfig()
 
-const queryParamsExtra = computed(() => {
-  const qpe = { ...props.filtersValues }
-  if (reactiveSearchParams.primary) qpe.primary = reactiveSearchParams.primary
-  if (reactiveSearchParams.secondary) qpe.secondary = reactiveSearchParams.secondary
-  return qpe
-})
-
-const application = window.APPLICATION
-const last = application.exposedUrl.split('/').pop()
-const toks = last.split('%3A')
-const accessKey = (toks.length === 2) ? toks[0] : null
 const requiredFilter = computed(() => {
   return ((props.element.valueMandatory && props.element.mandatoryFilters) || []).filter(f => !props.filtersValues?.keys?.includes(f))
+})
+
+const actions = ref(null)
+const actionsHeight = useElementSize(actions).height
+
+const searchParams = computed(() => {
+  const searchParams = {
+    ...props.filtersValues,
+    'd-frame': true
+  }
+  if (reactiveSearchParams.primary) searchParams.primary = reactiveSearchParams.primary
+  if (reactiveSearchParams.secondary) searchParams.secondary = reactiveSearchParams.secondary
+  if (props.element.type === 'dataset-table') {
+    if (props.element.display !== 'auto') searchParams.display = props.element.display
+    searchParams.interaction = !props.element.noInteractions
+    if (props.element.fields.length) searchParams.cols = props.element.fields.join(',')
+  }
+  if (reactiveSearchParams.print === 'true') {
+    searchParams.interaction = false
+  }
+  return new URLSearchParams(searchParams)
 })
 
 const description = computedAsync(async () => {
   if (props.element.type !== 'application' || !props.element.description || props.element.description === 'none') return null
   const app = await ofetch(props.element.application.href, { params: { html: true } })
   return app.description
-}, null)
+}, null, {
+  onError: function (e) {
+    messageType.value = 'error'
+    messageContent.value = e.status + ' - ' + e.data
+    messageDisplay.value = true
+  }
+})
+
+const sources = computedAsync(async () => {
+  if (props.element.type === 'tablePreview') return [props.element.dataset || config.datasets[0]]
+  else if (props.element.type !== 'application') return []
+  const app = await ofetch(props.element.application.href + '/configuration')
+  return app.datasets
+}, null, {
+  onError: function (e) {
+    messageType.value = 'error'
+    messageContent.value = e.status + ' - ' + e.data
+    messageDisplay.value = true
+  }
+})
 
 const captureUrl = computed(() => {
   if (props.element.type !== 'application') return null
@@ -44,16 +73,23 @@ const captureUrl = computed(() => {
     height: meta['df:capture-height'] || 720,
     app_embed: true
   }
-  for (const [key, value] of Object.entries(queryParamsExtra.value)) {
+  for (const [key, value] of Object.entries(props.filtersValues)) {
     params['app_' + key] = value
   }
   return `${props.element.application.href}/capture?${new URLSearchParams(params).toString()}`
 })
 
-const embedCode = computed(() => {
-  if (props.element.type !== 'application') return null
-  return `&lt;iframe src="${`/data-fair/app/${accessKey ? (accessKey + '%3A') : ''}${props.element.application.id}`}?embed=true" width="100%" height="500px" style="background-color: transparent; border: none;"&gt;&lt;/iframe&gt;`
-})
+const embedCode = () => {
+  try {
+    navigator.clipboard.writeText(`<iframe src="${`${application.exposedUrl}/${accessKey ? (accessKey + '%3A') : ''}${props.element.application.id}`}?embed=true" width="100%" height="500px" style="background-color: transparent; border: none;"></iframe>`)
+    messageType.value = 'info'
+    messageContent.value = 'Le code d\'intégration a été mis dans votre presse-papier'
+  } catch (err) {
+    messageType.value = 'success'
+    messageContent.value = err
+  }
+  messageDisplay.value = true
+}
 
 </script>
 
@@ -65,17 +101,19 @@ const embedCode = computed(() => {
   >
     <h4>Veuillez sélectionner une valeur de {{ requiredFilter.map(f => fields[f].label || fields[f].title || fields[f]['x-originalName'] || f).join(', ') }}</h4>
   </v-alert>
-  <v-iframe
+  <d-frame
     v-else-if="element.type === 'tablePreview'"
-    :src="`/data-fair/embed/dataset/${accessKey ? (accessKey + '%3A') : ''}${(element.dataset || config.datasets[0]).id}/table?display=${element.display}&interaction=${!element.noInteractions}${element.fields.length ? ('&cols=' + element.fields.join(',')) : ''}`"
-    :query-params-extra="queryParamsExtra"
-    :style="`height:${height>0 ? height+'px' : '100%'}`"
+    :adapter="dFrameAdapter"
+    :src="`/data-fair/embed/dataset/${accessKey ? (accessKey + '%3A') : ''}${(element.dataset || config.datasets[0]).id}/table?${searchParams.toString()}`"
+    :iframe-title="(element.dataset || config.datasets[0]).title"
+    :style="`height:${height>0 ? (height - (actionsHeight || 0))+'px' : '100%'}`"
   />
-  <v-iframe
+  <d-frame
     v-else-if="element.type === 'form'"
-    :src="`/data-fair/embed/dataset/${accessKey ? (accessKey + '%3A') : ''}${element.dataset.id}/form`"
-    :query-params-extra="queryParamsExtra"
-    :style="`height:${height>0 ? height+'px' : '100%'}`"
+    :adapter="dFrameAdapter"
+    :src="`/data-fair/embed/dataset/${accessKey ? (accessKey + '%3A') : ''}${element.dataset.id}/form?${searchParams.toString()}`"
+    :iframe-title="(element.dataset || config.datasets[0]).title"
+    :style="`height:${height>0 ? (height - (actionsHeight || 0))+'px' : '100%'}`"
   />
   <div
     v-else
@@ -96,33 +134,18 @@ const embedCode = computed(() => {
         class="pa-0"
         :cols="!element.description || element.description === 'none' ? 12 : 6"
       >
-        <v-iframe
-          :src="`/data-fair/app/${accessKey ? (accessKey + '%3A') : ''}${element.application.id}`"
-          :query-params-extra="queryParamsExtra"
-          :style="element.application.baseApp.meta['df:overflow'] !== 'true' ? `height:${height>0 ? height+'px' : '100%'}` : ''"
+        <d-frame
+          :adapter="dFrameAdapter"
+          :src="`/data-fair/app/${accessKey ? (accessKey + '%3A') : ''}${element.application.id}?${searchParams.toString()}`"
+          :iframe-title="element.application.title"
+          :style="element.application.baseApp.meta['df:overflow'] !== 'true' ? `height:${height>0 ? (height - (actionsHeight || 0))+'px' : '100%'}` : ''"
         />
-        <v-card-actions>
-          <v-spacer />
-          <v-btn
-            size="small"
-            color="primary"
-          >
-            <v-icon
-              :icon="mdiCodeTags"
-            />&nbsp;Intégrer
-          </v-btn>
-          <v-spacer />
-          <v-btn
-            size="small"
-            color="primary"
-            :href="captureUrl"
-          >
-            <v-icon
-              :icon="mdiCamera"
-            />&nbsp;Télécharger
-          </v-btn>
-          <v-spacer />
-        </v-card-actions>
+      </v-col>
+      <v-col
+        v-if="element.description === 'right'"
+        :cols="6"
+      >
+        <div v-html="description" />
       </v-col>
     </v-row>
     <div
@@ -133,4 +156,47 @@ const embedCode = computed(() => {
       {{ element.content }}
     </div>
   </div>
+  <v-card-actions
+    v-if="(config.showSources && sources?.length) || (element.type === 'application' && (config.showEmbed || config.showCapture))"
+    ref="actions"
+  >
+    <template v-if="config.showEmbed && element.type === 'application'">
+      <v-spacer />
+      <v-btn
+        size="small"
+        color="primary"
+        @click="embedCode"
+      >
+        <v-icon
+          :icon="mdiCodeTags"
+        />&nbsp;Intégrer
+      </v-btn>
+    </template>
+    <template v-if="config.showCapture && element.type === 'application'">
+      <v-spacer />
+      <v-btn
+        size="small"
+        color="primary"
+        :href="captureUrl"
+      >
+        <v-icon
+          :icon="mdiCamera"
+        />&nbsp;Télécharger
+      </v-btn>
+    </template>
+    <v-spacer />
+    <template v-if="config.showSources && sources?.length">
+      Source{{ sources.length > 1 ? 's' : '' }}&nbsp;:&nbsp;
+
+      <template
+        v-for="source in sources"
+        :key="source.id"
+      >
+        <a
+          :href="`/datasets/${source.slug || source.id}`"
+        >{{ source.title }}</a>&nbsp;
+      </template>
+      <v-spacer />
+    </template>
+  </v-card-actions>
 </template>

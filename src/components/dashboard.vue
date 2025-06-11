@@ -1,63 +1,35 @@
 <script setup>
-import { ofetch } from 'ofetch'
 import { ref } from 'vue'
 import reactiveSearchParams from '@data-fair/lib-vue/reactive-search-params-global.js'
 import 'iframe-resizer/js/iframeResizer'
 import dashboardFilters from './dashboard-filters.vue'
 import dashboardSection from './dashboard-section.vue'
+import { useConfig } from '@/composables/config'
 
-// @ts-ignore
-const application = window.APPLICATION
-const config = application.configuration
-const setError = (/** @type{any} */error) => {
-  console.error(error)
-  ofetch(application.href + '/error', { method: 'POST', body: { message: error.message || error } })
-}
-
-if (reactiveSearchParams.draft === 'true' && window.parent) {
-  const elements = [].concat(...config.sections.map(s => [].concat(...s.rows.map(r => [].concat(...r.elements)))))
-  const applications = elements.filter(e => e.type === 'application' && e.application).map(e => ({ id: e.application.id, title: e.application.title })).filter((a1, i, s) => s.findIndex(a2 => a1.id === a2.id) === i)
-  if ((config.applications || []).map(a => a.id).join('-') !== applications.map(a => a.id).join('-')) window.parent.postMessage({ type: 'set-config', content: { field: 'applications', value: applications } }, '*')
-  if (config.datasets && config.datasets.length) {
-    const filtersDataset = config.datasets[0]
-    const datasets = elements.filter(e => ['tablePreview', 'form'].includes(e.type) && e.dataset).map(e => ({ id: e.dataset.id, title: e.dataset.title, href: e.dataset.href })).filter((d1, i, s) => d1.id !== filtersDataset.id && s.findIndex(d2 => d1.id === d2.id) === i)
-    datasets.unshift(filtersDataset)
-    if ((config.datasets || []).map(d => d.id).join('-') !== datasets.map(d => d.id).join('-')) window.parent.postMessage({ type: 'set-config', content: { field: 'datasets', value: datasets } }, '*')
-  }
-}
+const { config, dataset } = useConfig()
 
 const filtersValues = [ref({}), ref({})]
 const tab = [ref(null), ref(null)]
 let maxTitleLength = 0
 let sumTitleLength = 0
 
-const incompleteConfiguration = !config.datasets || !config.datasets.length
-if (incompleteConfiguration) {
-  setError('Veuillez choisir un source de données pour le filtre commun')
-} else if ((!config.filters || !config.filters.length) && !config.periodFilter && !config.addressFilter) {
-  setError('Veuillez configurer un filtre')
-} else {
-/** @type{any[]} */
-  // const conceptsFields = [].concat(...config.sections.map((/** @type{any} */s) => [].concat(...s.elements.filter((/** @type{any} */e) => e.concepts && e.concepts.length).map((/** @type{any} */e) => e.concepts)))).filter((/** @type{any} */e1, i, s) => s.findIndex((/** @type{any} */e2) => e1.key === e2.key) === i)
-  // TODO : set error if same concept is usesd in 2 filters
-
-  const datasetFilterPrefix = '_d_' + config.datasets[0].id + '_'
-  for (const filter of config.filters) {
-    if (!reactiveSearchParams[datasetFilterPrefix + filter.labelField + '_in'] && filter.startValue) {
-      reactiveSearchParams[datasetFilterPrefix + filter.labelField + '_in'] = filter.multipleValues ? JSON.stringify([filter.startValue]).slice(1, -1) : filter.startValue
-    }
+const datasetFilterPrefix = '_d_' + dataset.id + '_'
+for (const filter of config.filters) {
+  if (!reactiveSearchParams[datasetFilterPrefix + filter.labelField + '_in'] && filter.startValue) {
+    reactiveSearchParams[datasetFilterPrefix + filter.labelField + '_in'] = filter.multipleValues ? JSON.stringify([filter.startValue]).slice(1, -1) : filter.startValue
   }
-  if (config.periodFilter && !reactiveSearchParams.period) {
-    const start = (config.datasets[0].timePeriod ? config.datasets[0].timePeriod.startDate : new Date().toISOString()).slice(0, 10)
-    const end = (config.datasets[0].timePeriod ? config.datasets[0].timePeriod.endDate : new Date().toISOString()).slice(0, 10)
-    const period = [start]
-    if (start !== end) period.push(end)
-    reactiveSearchParams.period = period.join(',')
-  }
-
-  maxTitleLength = Math.max(...config.sections.map((/** @type{any} */s) => (s.title && s.title.length) || 0))
-  sumTitleLength = config.sections.reduce((/** @type{any} */acc, /** @type{any} */s) => acc + ((s.title && s.title.length) || 0), 0)
 }
+if (config.periodFilter && !reactiveSearchParams.period) {
+  const start = (dataset.timePeriod ? dataset.timePeriod.startDate : new Date().toISOString()).slice(0, 10)
+  const end = (dataset.timePeriod ? dataset.timePeriod.endDate : new Date().toISOString()).slice(0, 10)
+  const period = [start]
+  if (start !== end) period.push(end)
+  reactiveSearchParams.period = period.join(',')
+}
+
+maxTitleLength = Math.max(...config.sections.map((/** @type{any} */s) => (s.title && s.title.length) || 0))
+sumTitleLength = config.sections.reduce((/** @type{any} */acc, /** @type{any} */s) => acc + ((s.title && s.title.length) || 0), 0)
+
 function updateSwitch (v) {
   if (v) reactiveSearchParams.view = 'compare'
   else delete reactiveSearchParams.view
@@ -97,7 +69,6 @@ function updateSwitch (v) {
         :cols="reactiveSearchParams.view === 'compare' ? 6 : 12"
       >
         <dashboard-filters
-          :config="config"
           :prefix="i ? 'c' : ''"
           @update:model-value="value => filtersValues[i].value = value"
         />

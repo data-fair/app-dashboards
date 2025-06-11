@@ -9,7 +9,7 @@ export default defineConfig({
   base: process.env.PUBLIC_URL ?? '/app/',
   plugins: [
     vue({
-      template: { transformAssetUrls }
+      template: { transformAssetUrls, compilerOptions: { isCustomElement: tag => ['d-frame'].includes(tag) } }
     }),
     Unfonts({ google: { families: [{ name: 'Nunito', styles: 'ital,wght@0,200..1000;1,200..1000' }] } }),
     // https://github.com/vuetifyjs/vuetify-loader/tree/next/packages/vite-plugin

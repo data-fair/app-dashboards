@@ -7,46 +7,68 @@
             {
               "width": 2,
               "type": "application",
+              "description": "none",
               "mandatoryFilters": [],
               "valueMandatory": false,
               "source": "root",
-              "description": "left",
               "application": {
-                "id": "carte-des-installations-classees-pour-la-protection-de-lenvironnement",
-                "title": "Carte des installations classées pour la protection de l’environnement",
-                "href": "http://localhost:5888/data-fair/api/v1/applications/carte-des-installations-classees-pour-la-protection-de-lenvironnement",
+                "id": "YUH21wZQzL-kZu4eXdnQA",
+                "title": "Offre de transport du réseau Kicéo",
+                "href": "http://localhost:5888/data-fair/api/v1/applications/YUH21wZQzL-kZu4eXdnQA",
                 "baseApp": {
-                  "id": "https:koumoul.comappscarto-stats1.0",
-                  "url": "https://koumoul.com/apps/carto-stats/1.0/",
+                  "id": "https:koumoul.comappsatelier-carto1.5",
+                  "url": "https://koumoul.com/apps/atelier-carto/1.5/",
                   "meta": {
-                    "title": "Carto stats",
-                    "description": "Cette application permet de visualiser un grand nombre d'informations spatiales",
+                    "title": "Atelier cartographique",
+                    "description": "Cette application permet de visualiser sur une même carte plusieurs sources de données géographiques.",
                     "keywords": [
                       "cartographie",
-                      "statistiques"
+                      "calques",
+                      "couches"
                     ],
                     "charset": "utf-8",
-                    "viewport": "width=device-width,initial-scale=1",
+                    "viewport": "width=device-width,initial-scale=1.0",
                     "x-capture": "trigger",
                     "df:overflow": "false",
                     "df:sync-state": "true",
                     "df:filter-concepts": "true",
-                    "application-name": "Carto stats",
+                    "application-name": "atelier-carto",
                     "thumbnail": "thumbnail.png",
                     "vocabulary-require": "https://schema.org/box"
                   },
                   "datasetsFilters": [
                     {
+                      "select": [
+                        "id",
+                        "title",
+                        "schema",
+                        "bbox"
+                      ],
                       "bbox": [
                         "true"
                       ],
-                      "owner": [
-                        "{context.owner.type}:{context.owner.id}"
+                      "sort": [
+                        "createdAt:-1"
                       ]
                     }
                   ]
                 }
               }
+            }
+          ],
+          "height": 500
+        },
+        {
+          "elements": [
+            {
+              "width": 2,
+              "type": "tablePreview",
+              "mandatoryFilters": [],
+              "valueMandatory": false,
+              "noInteractions": false,
+              "display": "table",
+              "fields": [],
+              "source": "root"
             }
           ],
           "height": 400
@@ -60,470 +82,280 @@
   "periodFilter": false,
   "filters": [
     {
-      "showAllValues": true,
+      "showAllValues": false,
       "forceOneValue": false,
-      "multipleValues": true,
-      "values": [
-        "_infos_commune.code_region"
-      ],
-      "labelField": "_infos_commune.nom_region"
+      "multipleValues": false,
+      "values": [],
+      "labelField": "route_short_name"
     }
   ],
   "staticFilters": [],
   "datasets": [
     {
-      "href": "http://localhost:5888/data-fair/api/v1/datasets/icpe",
-      "title": "Installations Classées pour la Protection de l’Environnement",
-      "id": "icpe",
+      "href": "http://localhost:5888/data-fair/api/v1/datasets/offre-de-transport-du-reseau-kiceo-shapes",
+      "title": "Offre de transport du réseau Kicéo - shapes",
+      "id": "offre-de-transport-du-reseau-kiceo-shapes",
+      "slug": "offre-de-transport-du-reseau-kiceo-shapes",
       "schema": [
         {
-          "key": "code_aiot",
-          "x-originalName": "code_aiot",
-          "type": "integer",
-          "x-cardinality": 128573,
-          "description": "",
-          "x-refersTo": "code-aiot",
-          "x-concept": {
-            "id": "code-aiot",
-            "title": "Code AIOT",
-            "primary": true
-          }
-        },
-        {
-          "key": "x",
-          "x-originalName": "x",
-          "type": "integer",
-          "x-cardinality": 101627,
-          "description": ""
-        },
-        {
-          "key": "y",
-          "x-originalName": "y",
-          "type": "integer",
-          "x-cardinality": 102747,
-          "description": ""
-        },
-        {
-          "key": "code_epsg",
-          "x-originalName": "code_epsg",
-          "type": "integer",
-          "x-cardinality": 6,
-          "description": "",
-          "enum": [
-            2154,
-            2975,
-            4559,
-            2972,
-            4471,
-            2987
-          ]
-        },
-        {
-          "key": "nom_ets",
-          "x-originalName": "nom_ets",
+          "key": "geometry",
+          "title": "Géométrie",
+          "description": "Géométrie",
           "type": "string",
-          "x-cardinality": 112671,
-          "x-refersTo": "http://www.w3.org/2000/01/rdf-schema#label",
-          "description": "",
-          "x-concept": {
-            "id": "label",
-            "title": "Libellé",
-            "primary": true
+          "x-refersTo": "https://purl.org/geojson/vocab#geometry",
+          "x-capabilities": {
+            "textAgg": false
           },
-          "x-capabilities": {
-            "textAgg": true
-          }
-        },
-        {
-          "key": "num_dep",
-          "x-originalName": "num_dep",
-          "type": "string",
-          "x-cardinality": 104,
-          "description": "",
-          "x-capabilities": {
-            "textAgg": true
-          },
-          "x-refersTo": "http://rdf.insee.fr/def/geo#codeDepartement",
           "x-concept": {
-            "id": "codeDepartement",
-            "title": "Code département",
+            "id": "geometry",
+            "title": "Géométrie GeoJSON ou WKT",
             "primary": true
           }
         },
         {
-          "key": "adresse",
-          "x-originalName": "adresse",
+          "key": "shape_id",
+          "title": "Identifiant de la forme",
+          "description": "Identifiant de la forme",
           "type": "string",
-          "x-cardinality": 111122,
-          "description": "",
-          "x-capabilities": {
-            "textAgg": true
-          }
-        },
-        {
-          "key": "cd_insee",
-          "x-originalName": "cd_insee",
-          "type": "string",
-          "x-cardinality": 23953,
-          "description": "",
-          "x-refersTo": "http://rdf.insee.fr/def/geo#codeCommune",
-          "x-concept": {
-            "id": "codeCommune",
-            "title": "Code commune",
-            "primary": true
-          }
-        },
-        {
-          "key": "cd_postal",
-          "x-originalName": "cd_postal",
-          "type": "string",
-          "x-cardinality": 6682,
-          "title": "Code postal",
-          "description": "",
-          "x-refersTo": "http://schema.org/postalCode",
-          "x-concept": {
-            "id": "postalCode",
-            "title": "Code postal",
-            "primary": true
-          }
-        },
-        {
-          "key": "commune",
-          "x-originalName": "commune",
-          "type": "string",
-          "x-cardinality": 27216,
-          "description": "",
-          "x-capabilities": {
-            "textAgg": true
-          },
-          "x-refersTo": "http://schema.org/City",
-          "x-concept": {
-            "id": "city",
-            "title": "Commune",
-            "primary": true
-          }
-        },
-        {
-          "key": "code_naf",
-          "x-originalName": "code_naf",
-          "type": "integer",
-          "x-cardinality": 87,
-          "description": ""
-        },
-        {
-          "key": "lib_naf",
-          "x-originalName": "lib_naf",
-          "type": "string",
-          "x-cardinality": 87,
-          "title": "Libellé NAF",
-          "description": "",
-          "x-capabilities": {
-            "textAgg": true
-          }
-        },
-        {
-          "key": "num_siret",
-          "x-originalName": "num_siret",
-          "type": "integer",
-          "x-cardinality": 104551,
-          "description": ""
-        },
-        {
-          "key": "seveso",
-          "x-originalName": "seveso",
-          "type": "string",
-          "x-cardinality": 3,
-          "description": "",
-          "x-labels": {
-            "1": "Seveso Haut",
-            "2": "Seveso Bas",
-            "3": "Non Seveso"
-          },
-          "title": "Seveso",
-          "x-capabilities": {
-            "textAgg": true
-          },
+          "x-cardinality": 120,
           "x-transform": {
             "type": "string"
+          }
+        },
+        {
+          "key": "route_id",
+          "title": "Identifiant de la ligne",
+          "description": "Identifiant de la ligne",
+          "type": "string",
+          "x-cardinality": 25,
+          "enum": [
+            "17",
+            "6",
+            "8",
+            "5",
+            "3",
+            "7",
+            "9",
+            "20",
+            "10",
+            "19",
+            "338",
+            "11",
+            "12",
+            "13",
+            "14",
+            "15",
+            "16",
+            "18",
+            "21",
+            "22",
+            "23",
+            "24",
+            "25",
+            "332",
+            "4"
+          ],
+          "x-transform": {
+            "type": "string"
+          }
+        },
+        {
+          "key": "route_short_name",
+          "title": "Nom court de la ligne",
+          "description": "Nom court de la ligne",
+          "type": "string",
+          "x-cardinality": 25,
+          "x-refersTo": "ligne-de-bus",
+          "x-concept": {
+            "id": "ligne-de-bus",
+            "title": "Ligne de bus",
+            "primary": true
           },
           "enum": [
+            "24",
+            "4",
+            "7",
             "3",
             "1",
-            "2"
-          ]
-        },
-        {
-          "key": "ied",
-          "x-originalName": "ied",
-          "type": "boolean",
-          "x-cardinality": 2,
-          "description": "",
-          "title": "Directive sur les émissions industrielles",
-          "x-labels": {
-            "false": "non",
-            "true": "oui"
-          },
-          "enum": [
-            "false",
-            "true"
-          ]
-        },
-        {
-          "key": "priorite_nationale",
-          "x-originalName": "priorite_nationale",
-          "type": "boolean",
-          "x-cardinality": 2,
-          "description": "",
-          "title": "Priorite nationale",
-          "x-labels": {
-            "false": "non",
-            "true": "oui"
-          },
-          "enum": [
-            "false",
-            "true"
-          ]
-        },
-        {
-          "key": "rubriques_autorisation",
-          "x-originalName": "rubriques_autorisation",
-          "type": "string",
-          "x-cardinality": 1936,
-          "description": ""
-        },
-        {
-          "key": "rubriques_enregistrement",
-          "x-originalName": "rubriques_enregistrement",
-          "type": "string",
-          "x-cardinality": 1135,
-          "description": ""
-        },
-        {
-          "key": "rubriques_declaration",
-          "x-originalName": "rubriques_declaration",
-          "type": "string",
-          "x-cardinality": 7238,
-          "description": ""
-        },
-        {
-          "key": "date_modification",
-          "x-originalName": "date_modification",
-          "type": "string",
-          "x-cardinality": 146,
-          "description": ""
-        },
-        {
-          "key": "derniere_inspection",
-          "x-originalName": "derniere_inspection",
-          "type": "string",
-          "x-cardinality": 6580,
-          "description": ""
-        },
-        {
-          "key": "url_fiche",
-          "x-originalName": "url_fiche",
-          "type": "string",
-          "x-cardinality": 131064,
-          "x-refersTo": "https://schema.org/WebPage",
-          "description": "",
-          "x-concept": {
-            "id": "webPage",
-            "title": "Page Web",
-            "primary": true
-          },
-          "x-capabilities": {
-            "textAgg": true
-          }
-        },
-        {
-          "key": "famille_ic",
-          "x-originalName": "famille_ic",
-          "type": "string",
-          "x-cardinality": 6,
-          "description": "",
-          "title": "Famille des installations",
-          "separator": "; ",
-          "x-capabilities": {
-            "textAgg": true
-          },
-          "enum": [
-            "industrie",
-            "porcs",
-            "carriere",
-            "bovins",
-            "eolienne",
-            "volailles"
-          ]
-        },
-        {
-          "key": "longitude",
-          "x-originalName": "longitude",
-          "type": "number",
-          "x-cardinality": 96500,
-          "description": "",
-          "x-refersTo": "http://schema.org/longitude",
-          "x-concept": {
-            "id": "longitude",
-            "title": "Longitude",
-            "primary": true
-          }
-        },
-        {
-          "key": "latitude",
-          "x-originalName": "latitude",
-          "type": "number",
-          "x-cardinality": 92659,
-          "description": "",
-          "x-refersTo": "http://schema.org/latitude",
-          "x-concept": {
-            "id": "latitude",
-            "title": "Latitude",
-            "primary": true
-          }
-        },
-        {
-          "key": "regime",
-          "x-originalName": "regime",
-          "type": "string",
-          "x-cardinality": 4,
-          "description": "",
-          "x-capabilities": {
-            "textAgg": true
-          },
-          "enum": [
-            "AUTRE",
-            "E",
-            "NEANT",
-            "A"
-          ]
-        },
-        {
-          "key": "_infos_commune.nom_departement",
-          "x-originalName": "_infos_commune.nom_departement",
-          "x-extension": "dataset:communes-de-france/masterData_bulkSearch_infos-commune",
-          "title": "Nom département",
-          "description": "Nom du département",
-          "type": "string",
-          "x-refersTo": "http://rdf.insee.fr/def/geo#Departement",
-          "x-concept": {
-            "id": "departement",
-            "title": "Département",
-            "primary": true
-          },
-          "x-cardinality": 101
-        },
-        {
-          "key": "_infos_commune.code_epci",
-          "x-originalName": "_infos_commune.code_epci",
-          "x-extension": "dataset:communes-de-france/masterData_bulkSearch_infos-commune",
-          "title": "Code EPCI",
-          "description": "Code de l'établissement public de coopération intercommunale",
-          "type": "string",
-          "x-refersTo": "http://rdf.insee.fr/def/geo#EtablissementPublicDeCooperationIntercommunale",
-          "x-capabilities": {
-            "textStandard": false,
-            "insensitive": false,
-            "text": false
-          },
-          "x-concept": {
-            "id": "codeEPCI",
-            "title": "Code EPCI",
-            "primary": true
-          },
-          "x-cardinality": 1255
-        },
-        {
-          "key": "_infos_commune.nom_epci",
-          "x-originalName": "_infos_commune.nom_epci",
-          "x-extension": "dataset:communes-de-france/masterData_bulkSearch_infos-commune",
-          "title": "Nom EPCI",
-          "description": "Nom de l'établissement public de coopération intercommunale",
-          "type": "string",
-          "x-cardinality": 1252
-        },
-        {
-          "key": "_infos_commune.code_region",
-          "x-originalName": "_infos_commune.code_region",
-          "x-extension": "dataset:communes-de-france/masterData_bulkSearch_infos-commune",
-          "title": "Code région",
-          "description": "Code de la région",
-          "type": "string",
-          "x-refersTo": "http://rdf.insee.fr/def/geo#codeRegion",
-          "x-capabilities": {
-            "textStandard": false,
-            "insensitive": false,
-            "text": false
-          },
-          "x-concept": {
-            "id": "codeRegion",
-            "title": "Code région",
-            "primary": true
-          },
-          "x-cardinality": 18,
-          "enum": [
-            "53",
-            "75",
-            "84",
-            "44",
+            "5",
+            "8",
+            "6b",
+            "10",
+            "30",
+            "6a",
             "11",
-            "32",
-            "52",
-            "76",
-            "28",
-            "27",
-            "24",
-            "93",
-            "04",
-            "94",
-            "01",
-            "03",
-            "02",
-            "06"
+            "12",
+            "2",
+            "20",
+            "21",
+            "22",
+            "23",
+            "25",
+            "26",
+            "AFTB",
+            "D1",
+            "D2",
+            "D3",
+            "L"
           ]
         },
         {
-          "key": "_infos_commune.nom_region",
-          "x-originalName": "_infos_commune.nom_region",
-          "x-extension": "dataset:communes-de-france/masterData_bulkSearch_infos-commune",
-          "title": "Nom région",
-          "description": "Nom de la région",
+          "key": "route_long_name",
+          "title": "Nom long de la ligne",
+          "description": "Nom long de la ligne",
           "type": "string",
-          "x-refersTo": "https://schema.org/addressRegion",
+          "x-cardinality": 25,
+          "enum": [
+            "Port-Navalo - Arzon - Sarzeau - Vannes",
+            "Meucon - Saint-Avé Mairie - Gare SNCF - République - Arradon Médiathèque",
+            "Le Poteau - Saint-Avé Le Dôme - République - Séné Ajoncs",
+            "Kersec - Poulfanc - Delestraint - République - Sq. Morbihan - Conleau",
+            "Ténénio - Kerniol - République - Cliscouët - Cassard",
+            "Parissot - République - Poulfanc - Quais de Séné",
+            "Plescop - Vannes - Saint-Nolff",
+            "P+R Ouest - IUT - PIBS 2 - Gare SNCF - République - P+R Ouest",
+            "Ile d'Arz",
+            "P+R Ouest - République - Gare SNCF - PIBS 2 - IUT - P+R Ouest",
+            "Theix - Vannes",
+            "Afterbus",
+            "Elven - Kerboulard - Vannes",
+            "Grand-Champ - Vannes",
+            "Hôpital - Bir Hakeim - République - Maisons du Lac",
+            "Larmor Baden - Port-Blanc - Le Moustoir - Vannes",
+            "P+R Ouest - Madeleine - République - Marcellin - Petit Tohannic - Kersec",
+            "Parissot - Madeleine - Tohannic - Kersec",
+            "Ploeren - Fourchêne - Vannes",
+            "Plougoumelen - Le Bono - Baden - Vannes",
+            "Saint-Avé - Le Poteau - République",
+            "Surzur - Vannes",
+            "Séné - République",
+            "Theix - Sarzeau",
+            "Ténénio - Pont SNCF - République - Radieuse - Cliscouët - Conleau"
+          ]
+        },
+        {
+          "key": "route_desc",
+          "title": "Description de la ligne",
+          "description": "Description de la ligne",
+          "type": "string",
+          "x-cardinality": 0
+        },
+        {
+          "key": "route_type",
+          "title": "Type de la ligne",
+          "description": "Type de la ligne",
+          "type": "integer",
+          "x-labels": {
+            "0": "Tramway, métro, train léger sur rail",
+            "1": "Métro, subway, tout type de train urbain souterrain",
+            "2": "Rail",
+            "3": "Bus",
+            "4": "Ferry",
+            "5": "Tramway à câble",
+            "6": "Ascenseur aérien, téléphirique suspendu",
+            "7": "Funiculaire",
+            "11": "Trolleybus",
+            "12": "Monorail"
+          },
+          "x-cardinality": 1,
+          "enum": [
+            3
+          ]
+        },
+        {
+          "key": "route_color",
+          "title": "Couleur de la ligne",
+          "description": "Couleur de la ligne",
+          "type": "string",
+          "x-refersTo": "https://schema.org/color",
           "x-concept": {
-            "id": "region",
-            "title": "Région",
+            "id": "color",
+            "title": "Couleur",
             "primary": true
           },
-          "x-cardinality": 18,
+          "x-cardinality": 24,
           "enum": [
-            "Bretagne",
-            "Nouvelle-Aquitaine",
-            "Auvergne-Rhône-Alpes",
-            "Grand Est",
-            "Île-de-France",
-            "Hauts-de-France",
-            "Pays de la Loire",
-            "Occitanie",
-            "Normandie",
-            "Bourgogne-Franche-Comté",
-            "Centre-Val de Loire",
-            "Provence-Alpes-Côte d'Azur",
-            "La Réunion",
-            "Corse",
-            "Guadeloupe",
-            "Guyane",
-            "Martinique",
-            "Mayotte"
+            "#E094B7",
+            "#EE7F03",
+            "#00925B",
+            "#A3C654",
+            "#E75294",
+            "#E1071B",
+            "#9E4E86",
+            "#C19831",
+            "#006984",
+            "#162983",
+            "#008040",
+            "#009EE0",
+            "#2599D1",
+            "#3C5662",
+            "#3FB4D6",
+            "#53AD57",
+            "#622181",
+            "#635E62",
+            "#6CBB93",
+            "#800080",
+            "#9B9399",
+            "#D23E52",
+            "#E3004F",
+            "#FF8080"
           ]
         },
         {
-          "key": "_infos_commune._error",
+          "key": "wheelchair_boarding",
+          "title": "Accès fauteuil roulant",
+          "description": "Accès fauteuil roulant à l'emplacement",
           "type": "string",
-          "x-originalName": "_error",
-          "x-extension": "dataset:communes-de-france/masterData_bulkSearch_infos-commune",
-          "title": "Erreur de récupération de données de référence",
-          "description": "Une erreur lors de la récupération des informations depuis un service distant",
-          "x-calculated": true
+          "x-labels": {
+            "0": "Informations non disponibles",
+            "1": "Accès possible pour au moins un passager en fauteuil roulant",
+            "2": "Accès impossible",
+            "undefined": "Informations non disponibles"
+          },
+          "x-cardinality": 2,
+          "enum": [
+            "1",
+            "0"
+          ],
+          "x-transform": {
+            "type": "string"
+          }
+        },
+        {
+          "key": "bikes_allowed",
+          "title": "Accès vélo",
+          "description": "Accès vélo à l'emplacement",
+          "type": "string",
+          "x-labels": {
+            "0": "Informations non disponibles",
+            "1": "Accès possible pour au moins un passager en vélo",
+            "2": "Accès impossible",
+            "undefined": "Informations non disponibles"
+          },
+          "x-cardinality": 1,
+          "enum": [
+            "0"
+          ],
+          "x-transform": {
+            "type": "string"
+          }
+        },
+        {
+          "x-calculated": true,
+          "key": "_geoshape",
+          "type": "object",
+          "title": "Géométrie",
+          "description": "Au format d'une géométrie GeoJSON",
+          "x-capabilities": {
+            "textAgg": false
+          }
+        },
+        {
+          "x-calculated": true,
+          "key": "_geocorners",
+          "type": "array",
+          "title": "Boite englobante de la géométrie",
+          "description": "Sous forme d'un tableau de coordonnées au format \"lat,lon\""
         },
         {
           "x-calculated": true,
@@ -562,17 +394,20 @@
         }
       ],
       "bbox": [
-        -151.53715004213154,
-        -89.57482004072517,
-        177.78408992104232,
-        59.63035998400301
+        -2.9472400154918432,
+        47.50218995846808,
+        -2.5839200522750616,
+        47.761519965715706
       ]
     }
   ],
+  "showCapture": true,
+  "showEmbed": true,
+  "showSources": true,
   "applications": [
     {
-      "id": "carte-des-installations-classees-pour-la-protection-de-lenvironnement",
-      "title": "Carte des installations classées pour la protection de l’environnement"
+      "id": "YUH21wZQzL-kZu4eXdnQA",
+      "title": "Offre de transport du réseau Kicéo"
     }
   ]
 }
