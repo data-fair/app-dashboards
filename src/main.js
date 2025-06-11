@@ -13,6 +13,8 @@ window.iFrameResizer = {
   heightCalculationMethod: 'taggedElement'
 }
 
+window.vIframeOptions = { reactiveParams: reactiveSearchParams }
+
 const options = defaultOptions(reactiveSearchParams)
 options.icons = {
   defaultSet: 'mdi',
