@@ -6,18 +6,116 @@
           "elements": [
             {
               "width": 2,
+              "elements": [
+                {
+                  "height": 100,
+                  "type": "application",
+                  "valueMandatory": false,
+                  "description": "none",
+                  "mandatoryFilters": [],
+                  "source": "root",
+                  "application": {
+                    "id": "Kxb5rdHbLUoqOO2A6qUWI",
+                    "title": "Indicateurs d'encadrement H/E",
+                    "href": "http://localhost:5888/data-fair/api/v1/applications/Kxb5rdHbLUoqOO2A6qUWI",
+                    "baseApp": {
+                      "id": "https:cdn.jsdelivr.netnpm@data-fairapp-charts@1.1dist",
+                      "url": "https://cdn.jsdelivr.net/npm/@data-fair/app-charts@1.1/dist/",
+                      "meta": {
+                        "title": "data-fair-chartsdata-fair-chartsdata-fair-charts",
+                        "description": "A simple charts application for data-fair.",
+                        "keywords": [
+                          "data-fair",
+                          "charts",
+                          "graphs"
+                        ],
+                        "charset": "UTF-8",
+                        "viewport": "width=device-width, initial-scale=1.0",
+                        "df:overflow": "false",
+                        "df:sync-state": "true",
+                        "df:filter-concepts": "true",
+                        "thumbnail": "thumbnail.png",
+                        "application-name": "Charts",
+                        "vocabulary-accept": "http://www.w3.org/2000/01/rdf-schema#label",
+                        "vocabulary-require": "http://www.w3.org/2003/01/geo/wgs84_pos#lat_long"
+                      },
+                      "datasetsFilters": [
+                        {
+                          "field-type": [
+                            "integer",
+                            "number"
+                          ],
+                          "{context.datasetFilter}": [
+                            ""
+                          ]
+                        }
+                      ]
+                    }
+                  }
+                },
+                {
+                  "height": 100,
+                  "type": "application",
+                  "valueMandatory": false,
+                  "description": "none",
+                  "mandatoryFilters": [],
+                  "source": "root",
+                  "application": {
+                    "id": "acJm-ye9jk4XUhTUzNmFQ",
+                    "title": "Indicateurs d'encadrement E/S",
+                    "href": "http://localhost:5888/data-fair/api/v1/applications/acJm-ye9jk4XUhTUzNmFQ",
+                    "baseApp": {
+                      "id": "https:cdn.jsdelivr.netnpm@data-fairapp-charts@1.1dist",
+                      "url": "https://cdn.jsdelivr.net/npm/@data-fair/app-charts@1.1/dist/",
+                      "meta": {
+                        "title": "data-fair-chartsdata-fair-chartsdata-fair-charts",
+                        "description": "A simple charts application for data-fair.",
+                        "keywords": [
+                          "data-fair",
+                          "charts",
+                          "graphs"
+                        ],
+                        "charset": "UTF-8",
+                        "viewport": "width=device-width, initial-scale=1.0",
+                        "df:overflow": "false",
+                        "df:sync-state": "true",
+                        "df:filter-concepts": "true",
+                        "thumbnail": "thumbnail.png",
+                        "application-name": "Charts",
+                        "vocabulary-accept": "http://www.w3.org/2000/01/rdf-schema#label",
+                        "vocabulary-require": "http://www.w3.org/2003/01/geo/wgs84_pos#lat_long"
+                      },
+                      "datasetsFilters": [
+                        {
+                          "field-type": [
+                            "integer",
+                            "number"
+                          ],
+                          "{context.datasetFilter}": [
+                            ""
+                          ]
+                        }
+                      ]
+                    }
+                  }
+                }
+              ],
+              "type": "column"
+            },
+            {
+              "width": 2,
               "type": "application",
+              "valueMandatory": false,
               "description": "none",
               "mandatoryFilters": [],
-              "valueMandatory": false,
               "source": "root",
               "application": {
-                "id": "YUH21wZQzL-kZu4eXdnQA",
-                "title": "Offre de transport du réseau Kicéo",
-                "href": "http://localhost:5888/data-fair/api/v1/applications/YUH21wZQzL-kZu4eXdnQA",
+                "id": "D3WPPOCfG3yryilsCBIUB",
+                "title": "Carte des indicateurs d'encadrement H/E et E/S",
+                "href": "http://localhost:5888/data-fair/api/v1/applications/D3WPPOCfG3yryilsCBIUB",
                 "baseApp": {
                   "id": "https:koumoul.comappsatelier-carto1.5",
-                  "url": "https://koumoul.com/apps/atelier-carto/1.5/",
+                  "url": "http://localhost:5888/apps/atelier-carto/1.5/",
                   "meta": {
                     "title": "Atelier cartographique",
                     "description": "Cette application permet de visualiser sur une même carte plusieurs sources de données géographiques.",
@@ -56,319 +154,234 @@
               }
             }
           ],
-          "height": 500
-        },
-        {
-          "elements": [
-            {
-              "width": 2,
-              "type": "tablePreview",
-              "mandatoryFilters": [],
-              "valueMandatory": false,
-              "noInteractions": false,
-              "display": "table",
-              "fields": [],
-              "source": "root"
-            }
-          ],
-          "height": 400
+          "height": 700
         }
       ]
     }
   ],
   "sectionsGroup": "accordion",
-  "allowDuplicate": false,
-  "addressFilter": false,
+  "addressFilter": true,
   "periodFilter": false,
-  "filters": [
-    {
-      "showAllValues": false,
-      "forceOneValue": false,
-      "multipleValues": false,
-      "values": [],
-      "labelField": "route_short_name"
-    }
-  ],
-  "staticFilters": [],
   "datasets": [
     {
-      "href": "http://localhost:5888/data-fair/api/v1/datasets/offre-de-transport-du-reseau-kiceo-shapes",
-      "title": "Offre de transport du réseau Kicéo - shapes",
-      "id": "offre-de-transport-du-reseau-kiceo-shapes",
-      "slug": "offre-de-transport-du-reseau-kiceo-shapes",
+      "href": "http://localhost:5888/data-fair/api/v1/datasets/3lswn3uey2s-pq6-lc2utgbf",
+      "title": "Indicateurs d'encadrement H/E et E/S à la rentrée dans les secteurs privé et public",
+      "id": "3lswn3uey2s-pq6-lc2utgbf",
       "schema": [
         {
-          "key": "geometry",
-          "title": "Géométrie",
-          "description": "Géométrie",
+          "key": "statut",
+          "x-originalName": "statut",
           "type": "string",
-          "x-refersTo": "https://purl.org/geojson/vocab#geometry",
-          "x-capabilities": {
-            "textAgg": false
-          },
-          "x-concept": {
-            "id": "geometry",
-            "title": "Géométrie GeoJSON ou WKT",
-            "primary": true
-          }
-        },
-        {
-          "key": "shape_id",
-          "title": "Identifiant de la forme",
-          "description": "Identifiant de la forme",
-          "type": "string",
-          "x-cardinality": 120,
-          "x-transform": {
-            "type": "string"
-          }
-        },
-        {
-          "key": "route_id",
-          "title": "Identifiant de la ligne",
-          "description": "Identifiant de la ligne",
-          "type": "string",
-          "x-cardinality": 25,
-          "enum": [
-            "17",
-            "6",
-            "8",
-            "5",
-            "3",
-            "7",
-            "9",
-            "20",
-            "10",
-            "19",
-            "338",
-            "11",
-            "12",
-            "13",
-            "14",
-            "15",
-            "16",
-            "18",
-            "21",
-            "22",
-            "23",
-            "24",
-            "25",
-            "332",
-            "4"
-          ],
-          "x-transform": {
-            "type": "string"
-          }
-        },
-        {
-          "key": "route_short_name",
-          "title": "Nom court de la ligne",
-          "description": "Nom court de la ligne",
-          "type": "string",
-          "x-cardinality": 25,
-          "x-refersTo": "ligne-de-bus",
-          "x-concept": {
-            "id": "ligne-de-bus",
-            "title": "Ligne de bus",
-            "primary": true
-          },
-          "enum": [
-            "24",
-            "4",
-            "7",
-            "3",
-            "1",
-            "5",
-            "8",
-            "6b",
-            "10",
-            "30",
-            "6a",
-            "11",
-            "12",
-            "2",
-            "20",
-            "21",
-            "22",
-            "23",
-            "25",
-            "26",
-            "AFTB",
-            "D1",
-            "D2",
-            "D3",
-            "L"
-          ]
-        },
-        {
-          "key": "route_long_name",
-          "title": "Nom long de la ligne",
-          "description": "Nom long de la ligne",
-          "type": "string",
-          "x-cardinality": 25,
-          "enum": [
-            "Port-Navalo - Arzon - Sarzeau - Vannes",
-            "Meucon - Saint-Avé Mairie - Gare SNCF - République - Arradon Médiathèque",
-            "Le Poteau - Saint-Avé Le Dôme - République - Séné Ajoncs",
-            "Kersec - Poulfanc - Delestraint - République - Sq. Morbihan - Conleau",
-            "Ténénio - Kerniol - République - Cliscouët - Cassard",
-            "Parissot - République - Poulfanc - Quais de Séné",
-            "Plescop - Vannes - Saint-Nolff",
-            "P+R Ouest - IUT - PIBS 2 - Gare SNCF - République - P+R Ouest",
-            "Ile d'Arz",
-            "P+R Ouest - République - Gare SNCF - PIBS 2 - IUT - P+R Ouest",
-            "Theix - Vannes",
-            "Afterbus",
-            "Elven - Kerboulard - Vannes",
-            "Grand-Champ - Vannes",
-            "Hôpital - Bir Hakeim - République - Maisons du Lac",
-            "Larmor Baden - Port-Blanc - Le Moustoir - Vannes",
-            "P+R Ouest - Madeleine - République - Marcellin - Petit Tohannic - Kersec",
-            "Parissot - Madeleine - Tohannic - Kersec",
-            "Ploeren - Fourchêne - Vannes",
-            "Plougoumelen - Le Bono - Baden - Vannes",
-            "Saint-Avé - Le Poteau - République",
-            "Surzur - Vannes",
-            "Séné - République",
-            "Theix - Sarzeau",
-            "Ténénio - Pont SNCF - République - Radieuse - Cliscouët - Conleau"
-          ]
-        },
-        {
-          "key": "route_desc",
-          "title": "Description de la ligne",
-          "description": "Description de la ligne",
-          "type": "string",
-          "x-cardinality": 0
-        },
-        {
-          "key": "route_type",
-          "title": "Type de la ligne",
-          "description": "Type de la ligne",
-          "type": "integer",
-          "x-labels": {
-            "0": "Tramway, métro, train léger sur rail",
-            "1": "Métro, subway, tout type de train urbain souterrain",
-            "2": "Rail",
-            "3": "Bus",
-            "4": "Ferry",
-            "5": "Tramway à câble",
-            "6": "Ascenseur aérien, téléphirique suspendu",
-            "7": "Funiculaire",
-            "11": "Trolleybus",
-            "12": "Monorail"
-          },
-          "x-cardinality": 1,
-          "enum": [
-            3
-          ]
-        },
-        {
-          "key": "route_color",
-          "title": "Couleur de la ligne",
-          "description": "Couleur de la ligne",
-          "type": "string",
-          "x-refersTo": "https://schema.org/color",
-          "x-concept": {
-            "id": "color",
-            "title": "Couleur",
-            "primary": true
-          },
-          "x-cardinality": 24,
-          "enum": [
-            "#E094B7",
-            "#EE7F03",
-            "#00925B",
-            "#A3C654",
-            "#E75294",
-            "#E1071B",
-            "#9E4E86",
-            "#C19831",
-            "#006984",
-            "#162983",
-            "#008040",
-            "#009EE0",
-            "#2599D1",
-            "#3C5662",
-            "#3FB4D6",
-            "#53AD57",
-            "#622181",
-            "#635E62",
-            "#6CBB93",
-            "#800080",
-            "#9B9399",
-            "#D23E52",
-            "#E3004F",
-            "#FF8080"
-          ]
-        },
-        {
-          "key": "wheelchair_boarding",
-          "title": "Accès fauteuil roulant",
-          "description": "Accès fauteuil roulant à l'emplacement",
-          "type": "string",
-          "x-labels": {
-            "0": "Informations non disponibles",
-            "1": "Accès possible pour au moins un passager en fauteuil roulant",
-            "2": "Accès impossible",
-            "undefined": "Informations non disponibles"
-          },
           "x-cardinality": 2,
-          "enum": [
-            "1",
-            "0"
-          ],
-          "x-transform": {
-            "type": "string"
-          }
-        },
-        {
-          "key": "bikes_allowed",
-          "title": "Accès vélo",
-          "description": "Accès vélo à l'emplacement",
-          "type": "string",
-          "x-labels": {
-            "0": "Informations non disponibles",
-            "1": "Accès possible pour au moins un passager en vélo",
-            "2": "Accès impossible",
-            "undefined": "Informations non disponibles"
+          "description": "public ou privé",
+          "title": "Statut",
+          "x-refersTo": "statut",
+          "x-concept": {
+            "id": "statut",
+            "title": "Statut",
+            "primary": true
           },
-          "x-cardinality": 1,
           "enum": [
-            "0"
-          ],
-          "x-transform": {
-            "type": "string"
+            "public",
+            "privé"
+          ]
+        },
+        {
+          "key": "num_ligne",
+          "x-originalName": "num_ligne",
+          "type": "integer",
+          "x-cardinality": 12386,
+          "description": ""
+        },
+        {
+          "key": "annee",
+          "x-originalName": "annee",
+          "type": "integer",
+          "x-cardinality": 1,
+          "description": "",
+          "title": "Année",
+          "enum": [
+            2023
+          ]
+        },
+        {
+          "key": "periode_observation",
+          "x-originalName": "periode_observation",
+          "type": "string",
+          "x-cardinality": 1,
+          "description": "",
+          "title": "Période d'observation",
+          "enum": [
+            "Rentrée scolaire"
+          ]
+        },
+        {
+          "key": "uai",
+          "x-originalName": "uai",
+          "type": "string",
+          "x-cardinality": 10587,
+          "description": "",
+          "x-refersTo": "numero-uai",
+          "x-concept": {
+            "id": "numero-uai",
+            "title": "Numéro UAI",
+            "primary": true
+          },
+          "title": "UAI"
+        },
+        {
+          "key": "nom_etablissement",
+          "x-originalName": "nom_etablissement",
+          "type": "string",
+          "x-cardinality": 7218,
+          "description": "",
+          "title": "Nom de l'établissement",
+          "x-refersTo": "http://www.w3.org/2000/01/rdf-schema#label",
+          "x-concept": {
+            "id": "label",
+            "title": "Libellé",
+            "primary": true
           }
         },
         {
-          "x-calculated": true,
-          "key": "_geoshape",
-          "type": "object",
-          "title": "Géométrie",
-          "description": "Au format d'une géométrie GeoJSON",
-          "x-capabilities": {
-            "textAgg": false
-          }
+          "key": "academie",
+          "x-originalName": "academie",
+          "type": "string",
+          "x-cardinality": 30,
+          "description": "",
+          "title": "Académie",
+          "enum": [
+            "VERSAILLES",
+            "LILLE",
+            "CRETEIL",
+            "NANTES",
+            "NORMANDIE",
+            "RENNES",
+            "BORDEAUX",
+            "TOULOUSE",
+            "GRENOBLE",
+            "LYON",
+            "AIX-MARSEILLE",
+            "ORLEANS-TOURS",
+            "MONTPELLIER",
+            "NANCY-METZ",
+            "AMIENS",
+            "PARIS",
+            "POITIERS",
+            "STRASBOURG",
+            "DIJON",
+            "NICE",
+            "CLERMONT-FERRAND",
+            "REIMS",
+            "BESANCON",
+            "LA REUNION",
+            "LIMOGES",
+            "GUADELOUPE",
+            "MARTINIQUE",
+            "GUYANE",
+            "CORSE",
+            "MAYOTTE"
+          ]
         },
         {
-          "x-calculated": true,
-          "key": "_geocorners",
-          "type": "array",
-          "title": "Boite englobante de la géométrie",
-          "description": "Sous forme d'un tableau de coordonnées au format \"lat,lon\""
+          "key": "code_departement",
+          "x-originalName": "code_departement",
+          "type": "string",
+          "x-cardinality": 103,
+          "description": "",
+          "x-refersTo": "http://rdf.insee.fr/def/geo#codeDepartement",
+          "x-concept": {
+            "id": "codeDepartement",
+            "title": "Code département",
+            "primary": true
+          },
+          "title": "Code département"
+        },
+        {
+          "key": "libelle_departement",
+          "x-originalName": "libelle_departement",
+          "type": "string",
+          "x-cardinality": 103,
+          "description": "",
+          "title": "Libellé departement"
+        },
+        {
+          "key": "niveau",
+          "x-originalName": "niveau",
+          "type": "string",
+          "x-cardinality": 7,
+          "description": "",
+          "title": "Niveau",
+          "x-refersTo": "niveau",
+          "x-concept": {
+            "id": "niveau",
+            "title": "Niveau",
+            "primary": true
+          },
+          "enum": [
+            "Collège",
+            "Lycée général et technologique",
+            "Lycée professionnel",
+            "STS",
+            "Segpa",
+            "CPGE",
+            "Établissement régional d'enseignement adapté"
+          ]
+        },
+        {
+          "key": "numerateur_h_e_nb_heures_enseignement_hebdo_devant_eleves",
+          "x-originalName": "numerateur_h_e_nb_heures_enseignement_hebdo_devant_eleves",
+          "type": "number",
+          "x-cardinality": 5812,
+          "description": "",
+          "title": "Numérateur H/E : nombre d’heures d’enseignement hebdomadaire devant élèves."
+        },
+        {
+          "key": "denominateur_h_e_somme_eleves_en_division",
+          "x-originalName": "denominateur_h_e_somme_eleves_en_division",
+          "type": "integer",
+          "x-cardinality": 1355,
+          "description": "",
+          "title": "Dénominateur H/E : somme des élèves en division."
+        },
+        {
+          "key": "h_e",
+          "x-originalName": "h_e",
+          "type": "number",
+          "x-cardinality": 450,
+          "description": "",
+          "title": "H/E"
+        },
+        {
+          "key": "numerateur_e_s_nb_eleves_structure_pondere_nb_heures_enseignement_structure",
+          "x-originalName": "numerateur_e_s_nb_eleves_structure_pondere_nb_heures_enseignement_structure",
+          "type": "number",
+          "x-cardinality": 14667,
+          "description": "",
+          "title": "Numérateur E/S : nombre d’élèves d’une structure pondéré par le nombre d’heures d’enseignement dans cette structure"
+        },
+        {
+          "key": "denominateur_e_s_nb_heures_enseignement_hebdo_devant_eleves",
+          "x-originalName": "denominateur_e_s_nb_heures_enseignement_hebdo_devant_eleves",
+          "type": "number",
+          "x-cardinality": 5848,
+          "description": "",
+          "title": "Dénominateur E/S : nombre d’heures d’enseignement hebdomadaire devant élèves."
+        },
+        {
+          "key": "e_s",
+          "x-originalName": "e_s",
+          "type": "number",
+          "x-cardinality": 2425,
+          "description": "",
+          "title": "E/S"
         },
         {
           "x-calculated": true,
           "key": "_geopoint",
           "type": "string",
           "title": "Coordonnée géographique",
-          "description": "Centroïde au format \"lat,lon\"",
-          "x-refersTo": "http://www.w3.org/2003/01/geo/wgs84_pos#lat_long",
-          "x-concept": {
-            "id": "latLon",
-            "title": "Latitude / Longitude",
-            "primary": true
-          }
+          "description": "Centroïde au format \"lat,lon\""
         },
         {
           "x-calculated": true,
@@ -391,23 +404,127 @@
           "type": "integer",
           "title": "Nombre aléatoire",
           "description": "Un nombre aléatoire associé à la ligne qui permet d'obtenir un tri aléatoire par exemple"
+        },
+        {
+          "key": "_adresse_et-geolocalisation-des-etablissements-denseignement-du-premier-et-second-degres.code_region",
+          "x-originalName": "_adresse_et-geolocalisation-des-etablissements-denseignement-du-premier-et-second-degres.code_region",
+          "x-extension": "dataset:0u-s6zvfpg5978puwbc0dxgk/masterData_bulkSearch_adresse-et-geolocalisation-des-etablissements-denseignement-du-premier-et-second-degres",
+          "title": "code_region",
+          "description": "",
+          "type": "string",
+          "x-refersTo": "http://rdf.insee.fr/def/geo#codeRegion",
+          "x-concept": {
+            "id": "codeRegion",
+            "title": "Code région",
+            "primary": true
+          },
+          "x-cardinality": 19,
+          "enum": [
+            "11",
+            "84",
+            "32",
+            "75",
+            "44",
+            "76",
+            "93",
+            "52",
+            "28",
+            "53",
+            "27",
+            "24",
+            "04",
+            "02",
+            "01",
+            "03",
+            "94",
+            "06",
+            "00"
+          ]
+        },
+        {
+          "key": "_adresse_et-geolocalisation-des-etablissements-denseignement-du-premier-et-second-degres.code_commune",
+          "x-originalName": "_adresse_et-geolocalisation-des-etablissements-denseignement-du-premier-et-second-degres.code_commune",
+          "x-extension": "dataset:0u-s6zvfpg5978puwbc0dxgk/masterData_bulkSearch_adresse-et-geolocalisation-des-etablissements-denseignement-du-premier-et-second-degres",
+          "title": "code_commune",
+          "description": "",
+          "type": "string",
+          "x-refersTo": "http://rdf.insee.fr/def/geo#codeCommune",
+          "x-concept": {
+            "id": "codeCommune",
+            "title": "Code commune",
+            "primary": true
+          },
+          "x-cardinality": 3879
+        },
+        {
+          "key": "_adresse_et-geolocalisation-des-etablissements-denseignement-du-premier-et-second-degres.position",
+          "x-originalName": "_adresse_et-geolocalisation-des-etablissements-denseignement-du-premier-et-second-degres.position",
+          "x-extension": "dataset:0u-s6zvfpg5978puwbc0dxgk/masterData_bulkSearch_adresse-et-geolocalisation-des-etablissements-denseignement-du-premier-et-second-degres",
+          "title": "position",
+          "description": "",
+          "type": "string",
+          "x-refersTo": "http://www.w3.org/2003/01/geo/wgs84_pos#lat_long",
+          "x-concept": {
+            "id": "latLon",
+            "title": "Latitude / Longitude",
+            "primary": true
+          },
+          "x-cardinality": 9962
+        },
+        {
+          "key": "_adresse_et-geolocalisation-des-etablissements-denseignement-du-premier-et-second-degres._error",
+          "type": "string",
+          "x-originalName": "_error",
+          "x-extension": "dataset:0u-s6zvfpg5978puwbc0dxgk/masterData_bulkSearch_adresse-et-geolocalisation-des-etablissements-denseignement-du-premier-et-second-degres",
+          "title": "Erreur de récupération de données de référence",
+          "description": "Une erreur lors de la récupération des informations depuis un service distant",
+          "x-calculated": true
         }
       ],
       "bbox": [
-        -2.9472400154918432,
-        47.50218995846808,
-        -2.5839200522750616,
-        47.761519965715706
-      ]
+        -63.07941989041865,
+        -21.381414863280952,
+        55.82546406425536,
+        51.07081616297364
+      ],
+      "finalizedAt": "2024-09-30T16:09:25.077Z",
+      "slug": "indicateurs-dencadrement-he-et-es-a-la-rentree-dans-les-secteurs-prive-et-public"
     }
   ],
-  "showCapture": true,
-  "showEmbed": true,
-  "showSources": true,
+  "showCapture": false,
+  "showEmbed": false,
+  "showSources": false,
+  "allowDuplicate": false,
+  "filters": [
+    {
+      "showAllValues": true,
+      "forceOneValue": false,
+      "multipleValues": false,
+      "values": [],
+      "labelField": "statut"
+    },
+    {
+      "showAllValues": true,
+      "forceOneValue": true,
+      "multipleValues": false,
+      "values": [],
+      "labelField": "niveau",
+      "startValue": "Collège"
+    }
+  ],
+  "staticFilters": [],
   "applications": [
     {
-      "id": "YUH21wZQzL-kZu4eXdnQA",
-      "title": "Offre de transport du réseau Kicéo"
+      "id": "Kxb5rdHbLUoqOO2A6qUWI",
+      "title": "Indicateurs d'encadrement H/E"
+    },
+    {
+      "id": "acJm-ye9jk4XUhTUzNmFQ",
+      "title": "Indicateurs d'encadrement E/S"
+    },
+    {
+      "id": "D3WPPOCfG3yryilsCBIUB",
+      "title": "Carte des indicateurs d'encadrement H/E et E/S"
     }
   ]
 }

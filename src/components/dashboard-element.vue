@@ -53,6 +53,7 @@ const description = computedAsync(async () => {
 })
 
 const sources = computedAsync(async () => {
+  if (!config.showSources) return []
   if (props.element.type === 'tablePreview') return [props.element.dataset || config.datasets[0]]
   else if (props.element.type !== 'application') return []
   const app = await ofetch(props.element.application.href + '/configuration')
