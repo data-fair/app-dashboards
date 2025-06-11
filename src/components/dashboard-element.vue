@@ -194,6 +194,7 @@ const embedCode = () => {
       >
         <a
           :href="`/datasets/${source.slug || source.id}`"
+          target="_blank"
         >{{ source.title }}</a>&nbsp;
       </template>
       <v-spacer />
