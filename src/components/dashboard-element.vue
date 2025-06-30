@@ -82,7 +82,7 @@ const captureUrl = computed(() => {
 
 const embedCode = () => {
   try {
-    navigator.clipboard.writeText(`<iframe src="${`${application.exposedUrl}/${accessKey ? (accessKey + '%3A') : ''}${props.element.application.id}`}?embed=true" width="100%" height="500px" style="background-color: transparent; border: none;"></iframe>`)
+    navigator.clipboard.writeText(`<iframe src="${`${application.exposedUrl.split('data-fair')[0]}data-fair/app/${accessKey ? (accessKey + '%3A') : ''}${props.element.application.id}`}?embed=true" width="100%" height="500px" style="background-color: transparent; border: none;"></iframe>`)
     messageType.value = 'info'
     messageContent.value = 'Le code d\'intégration a été mis dans votre presse-papier'
   } catch (err) {

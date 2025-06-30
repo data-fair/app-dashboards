@@ -13,7 +13,6 @@ export function createConfig () {
   const schema = dataset.schema
   if (!schema) throw new Error('La source de données n\'a pas de schéma')
   const fields = schema.reduce((a, b) => { a[b.key] = b; return a }, {})
-  // const datasetUrl = config.datasets?.[0]?.href
 
   const last = application.exposedUrl.split('/').pop()
   const toks = last.split('%3A')
