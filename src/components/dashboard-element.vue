@@ -29,7 +29,7 @@ const searchParams = computed(() => {
   }
   if (reactiveSearchParams.primary) searchParams.primary = reactiveSearchParams.primary
   if (reactiveSearchParams.secondary) searchParams.secondary = reactiveSearchParams.secondary
-  if (props.element.type === 'dataset-table') {
+  if (props.element.type === 'tablePreview') {
     if (props.element.display !== 'auto') searchParams.display = props.element.display
     searchParams.interaction = !props.element.noInteractions
     if (props.element.fields.length) searchParams.cols = props.element.fields.join(',')

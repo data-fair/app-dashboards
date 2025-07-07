@@ -9,45 +9,16 @@
           "elements": [
             {
               "width": 2,
-              "type": "application",
-              "description": "none",
+              "type": "tablePreview",
               "mandatoryFilters": [],
               "valueMandatory": false,
               "source": "root",
-              "application": {
-                "id": "imJtdtyJ3g8m4d3HHdnVB",
-                "title": "Horaires d'ouverture des commerces",
-                "href": "http://localhost:5888/data-fair/api/v1/applications/imJtdtyJ3g8m4d3HHdnVB",
-                "baseApp": {
-                  "id": "https:koumoul.comappslist-details1.4",
-                  "url": "https://koumoul.com/apps/list-details/1.4/",
-                  "meta": {
-                    "title": "Liste et fiches",
-                    "description": "Cette application permet de configurer un petit moteur de recherche multicritère et d\\'avoir une fiche détaillée pour chaque élément.",
-                    "keywords": [],
-                    "charset": "UTF-8",
-                    "viewport": "width=device-width, initial-scale=1.0",
-                    "df:overflow": "true",
-                    "df:sync-state": "true",
-                    "df:filter-concepts": "true",
-                    "application-name": "Liste et fiches"
-                  },
-                  "datasetsFilters": [
-                    {
-                      "select": [
-                        "id",
-                        "title",
-                        "schema",
-                        "attachmentsAsImage",
-                        "count"
-                      ],
-                      "sort": [
-                        "createdAt:-1"
-                      ]
-                    }
-                  ]
-                }
-              }
+              "noInteractions": false,
+              "display": "table",
+              "fields": [
+                "type",
+                "name"
+              ]
             }
           ],
           "height": 400
@@ -57,7 +28,7 @@
   ],
   "sectionsGroup": "accordion",
   "allowDuplicate": false,
-  "addressFilter": true,
+  "addressFilter": false,
   "periodFilter": false,
   "filters": [],
   "staticFilters": [],
@@ -367,12 +338,6 @@
         168.08429583907127,
         51.0877622757107
       ]
-    }
-  ],
-  "applications": [
-    {
-      "id": "imJtdtyJ3g8m4d3HHdnVB",
-      "title": "Horaires d'ouverture des commerces"
     }
   ]
 }

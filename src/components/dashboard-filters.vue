@@ -22,7 +22,7 @@ let address
 const fields = Object.assign({}, ...dataset.schema.map(f => ({ [f.key]: f })))
 const datasetFilterPrefix = '_d_' + dataset.id + '_'
 
-const filters = config.filters.map(filter => {
+const filters = (config.filters || []).map(filter => {
   const items = ref([])
   return {
     ...filter,
@@ -45,7 +45,7 @@ const filters = config.filters.map(filter => {
     items,
     loading: ref(false),
     searchItems: async (search) => {
-      const otherFilters = config.filters.filter(f => f.labelField !== filter.labelField && reactiveSearchParams[props.prefix + datasetFilterPrefix + f.labelField + '_in'])
+      const otherFilters = (config.filters || []).filter(f => f.labelField !== filter.labelField && reactiveSearchParams[props.prefix + datasetFilterPrefix + f.labelField + '_in'])
       const params = Object.assign({
         finalizedAt: dataset.finalizedAt,
         stringify: true
@@ -96,7 +96,7 @@ const updateFilters = async (noFieldUpdate) => {
   const fieldsWithFilter = filters.filter(f => reactiveSearchParams[props.prefix + datasetFilterPrefix + f.labelField + '_in'])
   if (fieldsWithFilter.length) {
     const filterFields = [].concat(...fieldsWithFilter.map(f => [].concat(f.values.length ? f.values : f.labelField))).filter((f, i, s) => s.indexOf(f) === i)
-    const activeFilters = config.filters.filter(f => reactiveSearchParams[props.prefix + datasetFilterPrefix + f.labelField + '_in'])
+    const activeFilters = (config.filters || []).filter(f => reactiveSearchParams[props.prefix + datasetFilterPrefix + f.labelField + '_in'])
     const params = Object.assign({
       finalizedAt: dataset.finalizedAt
     }, ...activeFilters.map(f => ({ [`${f.labelField}_in`]: `${reactiveSearchParams[props.prefix + datasetFilterPrefix + f.labelField + '_in']}` })))

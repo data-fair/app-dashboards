@@ -14,7 +14,7 @@ let maxTitleLength = 0
 let sumTitleLength = 0
 
 const datasetFilterPrefix = '_d_' + dataset.id + '_'
-for (const filter of config.filters) {
+for (const filter of (config.filters || [])) {
   if (!reactiveSearchParams[datasetFilterPrefix + filter.labelField + '_in'] && filter.startValue) {
     reactiveSearchParams[datasetFilterPrefix + filter.labelField + '_in'] = filter.multipleValues ? JSON.stringify([filter.startValue]).slice(1, -1) : filter.startValue
   }
@@ -38,7 +38,6 @@ function updateSwitch (v) {
 
 <template>
   <v-container
-    v-if="config.filters?.length || config.periodFilter || config.addressFilter"
     fluid
     data-iframe-height
   >

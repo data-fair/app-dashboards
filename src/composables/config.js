@@ -9,7 +9,6 @@ export function createConfig () {
   if (!config) throw new Error('Il n\'y a pas de configuration définie')
   const dataset = config.datasets?.[0]
   if (!dataset) throw new Error('Veuillez choisir un source de données pour le filtre commun')
-  if ((!config.filters || !config.filters.length) && !config.periodFilter && !config.addressFilter) throw new Error('Veuillez configurer un filtre')
   const schema = dataset.schema
   if (!schema) throw new Error('La source de données n\'a pas de schéma')
   const fields = schema.reduce((a, b) => { a[b.key] = b; return a }, {})
