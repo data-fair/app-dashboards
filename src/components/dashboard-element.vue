@@ -32,7 +32,7 @@ const searchParams = computed(() => {
   if (props.element.type === 'tablePreview') {
     if (props.element.display !== 'auto') searchParams.display = props.element.display
     searchParams.interaction = !props.element.noInteractions
-    if (props.element.fields.length) searchParams.cols = props.element.fields.join(',')
+    if (props.element.fields?.length) searchParams.cols = props.element.fields.join(',')
   }
   if (reactiveSearchParams.print === 'true') {
     searchParams.interaction = false

@@ -25,7 +25,6 @@ export function createConfig () {
         application,
         config,
         dataset,
-        // datasetUrl,
         fields,
         accessKey,
         dFrameAdapter

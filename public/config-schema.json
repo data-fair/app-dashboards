@@ -9,8 +9,8 @@
           "items": [
             {
               "type": "object",
-                "title": "Source des valeurs pour les filtres",
-                "properties": {
+              "title": "Source des valeurs pour les filtres",
+              "properties": {
                 "href": {
                   "type": "string"
                 },
@@ -39,11 +39,14 @@
         "filters": {
           "type": "array",
           "title": "Filtres dynamiques du tableau de bord",
+          "layout": {
+            "messages": {
+              "addItem": "ajouter un filtre dynamique"
+            }
+          },
           "items": {
             "type": "object",
-            "required": [
-              "labelField"
-            ],
+            "required": ["labelField"],
             "properties": {
               "labelField": {
                 "title": "Colonne de libellé du filtre",
@@ -97,8 +100,7 @@
                 "default": false
               }
             }
-          },
-          "layout": "list"
+          }
         },
         "periodFilter": {
           "title": "Ajouter un filtre sur la période",
@@ -113,62 +115,45 @@
       }
     },
     {
-      "title": "Général",
-      "properties":{
-        "title": {
-          "type": "string",
-          "title": "Titre"
-        },
-        "description": {
-          "type": "string",
-          "title": "Introduction",
-          "layout": "textarea"
-        },
-        "allowDuplicate": {
-          "title": "Mode comparaison disponible",
-          "type": "boolean",
-          "default": false
-        },
-        "sectionsGroup": {
-          "title": "Rendu des sections",
-          "type": "string",
-          "oneOf": [
-            {
-              "const": "accordion",
-              "title": "En accordéon"
-            },
-            {
-              "const": "tabs-tab",
-              "title": "Dans des onglets"
-            },
-            {
-              "const": "tabs-button",
-              "title": "Dans des onglets (sélection par boutton)"
-            },
-            {
-              "const": "flow",
-              "title": "Les unes à la suite des autres"
-            }
-          ],
-          "default": "accordion"
-        }
-      }
-    },
-    {
       "title": "Sections",
-      "properties":{
+      "properties": {
         "sections": {
           "title": "Sections",
           "type": "array",
-          "x-options": {
-            "editMode": "inline"
+          "layout": {
+            "itemTitle": "data.title + ' - ' + ([].concat(...(data.rows||[]).map(r => [].concat(...(r.elements||[])))).length || 0) + ' éléments'",
+            "itemCopy": "{...item, uuid: crypto.randomUUID()}",
+            "messages": {
+              "addItem": "ajouter une section"
+            }
           },
           "items": {
             "type": "object",
+            "layout": {
+              "switch": [
+                {
+                  "if": "!summary",
+                  "children": [
+                    {
+                      "children": ["title", "icon", "rows"]
+                    }
+                  ]
+                },
+                {
+                  "children": []
+                }
+              ],
+              "getDefaultData": "{ uuid: crypto.randomUUID(), title: 'Section ' + parent.parent.data.sections.length }"
+            },
+            "required": ["title"],
             "properties": {
               "title": {
                 "type": "string",
                 "title": "Libellé"
+              },
+              "uuid": {
+                "type": "string",
+                "layout": "none"
               },
               "icon": {
                 "type": "object",
@@ -198,8 +183,29 @@
               "rows": {
                 "title": "Lignes",
                 "type": "array",
+                "layout": {
+                  "itemTitle": "'Hauteur : '+data.height",
+                  "messages": {
+                    "addItem": "ajouter une ligne"
+                  }
+                },
                 "items": {
                   "type": "object",
+                  "layout": {
+                    "switch": [
+                      {
+                        "if": "!summary",
+                        "children": [
+                          {
+                            "children": ["height", "elements"]
+                          }
+                        ]
+                      },
+                      {
+                        "children": ["elements"]
+                      }
+                    ]
+                  },
                   "properties": {
                     "height": {
                       "title": "Hauteur (px)",
@@ -210,8 +216,21 @@
                     "elements": {
                       "title": "Éléments",
                       "type": "array",
+                      "layout": {
+                        "itemTitle": "data.title || {tablePreview: ('Vue table - ' + (data.source === 'root' ? rootData.datasets[0].title : (data.dataset?.title || 'Jeu de données non défini'))), application: ('Visualisation - ' +  (data.application?.title || 'Visualisation non définie')),text: 'Texte libre', form: ('Formulaire - '+(data.dataset?.title || 'Jeu de données non défini')), column:('Colonne - '+(data.elements?.length||0)+' éléments')}[data.type]"
+                      },
                       "items": {
                         "type": "object",
+                        "layout": {
+                          "switch": [
+                            {
+                              "if": "!summary"
+                            },
+                            {
+                              "children": []
+                            }
+                          ]
+                        },
                         "properties": {
                           "title": {
                             "type": "string",
@@ -254,22 +273,36 @@
                             "$ref": "#/definitions/form"
                           }
                         ]
-                      },
-                      "layout": {
-                        "comp": "list",
-                        "itemTitle": "data.title"
                       }
                     }
                   }
-                },
-                "layout": "list"
+                }
               }
             }
-          },
-          "layout": {
-            "comp": "list",
-            "itemTitle": "data.title"
           }
+        },
+        "sectionsGroup": {
+          "title": "Rendu des sections",
+          "type": "string",
+          "oneOf": [
+            {
+              "const": "accordion",
+              "title": "En accordéon"
+            },
+            {
+              "const": "tabs-tab",
+              "title": "Dans des onglets"
+            },
+            {
+              "const": "tabs-button",
+              "title": "Dans des onglets (sélection par boutton)"
+            },
+            {
+              "const": "flow",
+              "title": "Les unes à la suite des autres"
+            }
+          ],
+          "default": "accordion"
         },
         "showSources": {
           "title": "Afficher les liens vers les sources des données",
@@ -283,6 +316,25 @@
         },
         "showCapture": {
           "title": "Afficher le bouton d'export des visualisations",
+          "type": "boolean",
+          "default": false
+        }
+      }
+    },
+    {
+      "title": "Autres",
+      "properties": {
+        "title": {
+          "type": "string",
+          "title": "Titre"
+        },
+        "description": {
+          "type": "string",
+          "title": "Introduction",
+          "layout": "textarea"
+        },
+        "allowDuplicate": {
+          "title": "Mode comparaison disponible",
           "type": "boolean",
           "default": false
         }
@@ -316,7 +368,7 @@
               },
               "layout": {
                 "getItems": {
-                  "url": "${datasets[0].href}/schema?calculated=false",
+                  "url": "${rootData.datasets[0].href}/schema?calculated=false",
                   "itemKey": "data.key",
                   "itemTitle": "data.label"
                 }
@@ -370,6 +422,15 @@
         },
         {
           "title": "Autre jeu de données",
+          "layout": {
+            "switch": [
+              {
+                "if": "!data.dataset",
+                "children": ["dataset"]
+              }
+            ],
+            "getDefaultData": "{ uuid: crypto.randomUUID() }"
+          },
           "properties": {
             "source": {
               "const": "external",
@@ -506,7 +567,7 @@
               },
               "layout": {
                 "getItems": {
-                  "url": "api/v1/applications?q={q}&${context.datasetFilter}&dataset=${datasets[0].id}&filterConcepts=true&select=id,title,baseApp&sort=createdAt:-1",
+                  "url": "api/v1/applications?q={q}&${context.datasetFilter}&dataset=${rootData.datasets[0].id}&filterConcepts=true&select=id,title,baseApp&sort=createdAt:-1",
                   "itemKey": "data.id",
                   "itemTitle": "data.title",
                   "itemsResults": "data.results"
@@ -674,8 +735,21 @@
         },
         "elements": {
           "type": "array",
+          "layout": {
+            "itemTitle": "data.title || {tablePreview: ('Vue table - ' + (data.source === 'root' ? rootData.datasets[0].title : (data.dataset?.title || 'Jeu de données non défini'))), application: ('Visualisation - ' +  (data.application?.title || 'Visualisation non définie')),text: 'Texte libre', form: ('Formulaire - '+(data.dataset?.title || 'Jeu de données non défini')), column:('Colonne - '+(data.elements?.length||0)+' éléments')}[data.type]"
+          },
           "items": {
             "type": "object",
+            "layout": {
+              "switch": [
+                {
+                  "if": "!summary"
+                },
+                {
+                  "children": []
+                }
+              ]
+            },
             "oneOf": [
               {
                 "$ref": "#/definitions/table"
@@ -697,14 +771,18 @@
                 "default": 100
               }
             }
-          },
-          "layout": "list"
+          }
         }
       }
     },
     "filters": {
       "title": "Filtres prédéfinis",
       "type": "array",
+      "layout": {
+        "messages": {
+          "addItem": "ajouter un filtre"
+        }
+      },
       "items": {
         "type": "object",
         "default": {
@@ -714,9 +792,8 @@
         "oneOf": [
           {
             "title": "Restreindre à des valeurs",
-            "required": [
-              "field"
-            ],
+            "required": ["field", "values"],
+            "additionalProperties": false,
             "properties": {
               "type": {
                 "const": "in"
@@ -732,7 +809,9 @@
                 },
                 "layout": {
                   "getItems": {
-                    "url": "${rootData.datasets[0].href}/values/${parent.data.field}?q={q}&q_mode=complete&size=100&stringify=true"
+                    "url": "${rootData.datasets[0].href}/values-labels/${parent.data.field}?q={q}&q_mode=complete&size=1000&stringify=true",
+                    "itemKey": "data.value",
+                    "itemTitle": "data.label"
                   }
                 }
               }
@@ -740,9 +819,8 @@
           },
           {
             "title": "Restreindre à un interval de valeurs",
-            "required": [
-              "field"
-            ],
+            "required": ["field"],
+            "additionalProperties": false,
             "properties": {
               "type": {
                 "const": "interval"
@@ -755,7 +833,9 @@
                 "title": "Valeur min",
                 "layout": {
                   "getItems": {
-                    "url": "${rootData.datasets[0].href}/values/$${parent.data.field}?sort=asc&{parent.data.field}_gte={q}&stringify=true"
+                    "url": "${rootData.datasets[0].href}/values-labels/$${parent.data.field}?sort=asc&{parent.data.field}_gte={q}&stringify=true",
+                    "itemKey": "data.value",
+                    "itemTitle": "data.label"
                   }
                 }
               },
@@ -764,7 +844,9 @@
                 "title": "Valeur max",
                 "layout": {
                   "getItems": {
-                    "url": "${rootData.datasets[0].href}/values/$${parent.data.field}?sort=desc&{parent.data.field}_lte={q}&stringify=true"
+                    "url": "${rootData.datasets[0].href}/values-labels/$${parent.data.field}?sort=desc&{parent.data.field}_lte={q}&stringify=true",
+                    "itemKey": "data.value",
+                    "itemTitle": "data.label"
                   }
                 }
               }
@@ -772,9 +854,8 @@
           },
           {
             "title": "Exclure des valeurs",
-            "required": [
-              "field"
-            ],
+            "required": ["field"],
+            "additionalProperties": false,
             "properties": {
               "type": {
                 "const": "nin"
@@ -790,15 +871,16 @@
                 },
                 "layout": {
                   "getItems": {
-                    "url": "${rootData.datasets[0].href}/values/${parent.data.field}?q={q}&q_mode=complete&size=100&stringify=true"
+                    "url": "${rootData.datasets[0].href}/values-labels/${parent.data.field}?q={q}&q_mode=complete&size=1000&stringify=true",
+                    "itemKey": "data.value",
+                    "itemTitle": "data.label"
                   }
                 }
               }
             }
           }
         ]
-      },
-      "layout": "list"
+      }
     },
     "filterField": {
       "type": "string",
