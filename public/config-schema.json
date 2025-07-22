@@ -1,258 +1,303 @@
 {
   "type": "object",
-  "properties": {
-    "datasets": {
-      "type": "array",
-      "items": [
-        {
-          "title": "Source des valeurs pour les filtres",
-          "type": "object",
-          "x-fromUrl": "api/v1/datasets?status=finalized&q={q}&select=id,title,slug,schema,timePeriod,bbox&{context.datasetFilter}&sort=createdAt:-1",
-          "x-itemsProp": "results",
-          "x-itemTitle": "title",
-          "x-itemKey": "href",
-          "properties": {
-            "href": {
-              "type": "string"
-            },
-            "title": {
-              "type": "string"
-            },
-            "id": {
-              "type": "string"
-            },
-            "slug": {
-              "type": "string"
-            },
-            "schema": {
-              "type": "array"
-            },
-            "timePeriod": {
-              "type": "object"
-            },
-            "bbox": {
-              "type": "array"
-            },
-            "finalizedAt": {
-              "type": "string"
-            }
-          }
-        }
-      ]
-    },
-    "staticFilters": {
-      "$ref": "#/definitions/filters"
-    },
-    "filters": {
-      "type": "array",
-      "title": "Filtres dynamiques du tableau de bord",
-      "items": {
-        "type": "object",
-        "required": ["labelField"],
-        "properties": {
-          "labelField": {
-            "title": "Colonne de libellé du filtre",
-            "type": "string",
-            "x-fromUrl": "{datasets.0.href}/schema?calculated=false&separator=false",
-            "x-itemTitle": "label",
-            "x-itemKey": "key"
-          },
-          "values": {
-            "title": "Valeurs Associées",
-            "description": "Si vide utilise la valeur du libellé",
-            "type": "array",
-            "x-fromUrl": "{datasets.0.href}/schema?calculated=false&separator=false",
-            "x-itemKey": "key",
-            "x-itemTitle": "label",
-            "items": {
-              "title": "Colonnes pour les valeurs du filtre",
-              "type": "string"
-            }
-          },
-          "multipleValues": {
-            "title": "Permettre de filtrer par plusieurs valeur",
-            "type": "boolean",
-            "default": false
-          },
-          "forceOneValue": {
-            "title": "Toujours filtrer par une valeur",
-            "type": "boolean",
-            "default": false
-          },
-          "startValue": {
-            "type": "string",
-            "title": "Valeur initiale",
-            "x-fromUrl": "{datasets.0.href}/values/{parent.value.labelField}?q={q}&q_mode=complete&size=100&stringify=true"
-          },
-          "showAllValues": {
-            "title": "Garder toutes les valeurs dans la liste",
-            "type": "boolean",
-            "default": false
-          }
-        }
-      }
-    },
-    "periodFilter": {
-      "title": "Ajouter un filtre sur la période",
-      "type": "boolean",
-      "default": false
-    },
-    "addressFilter": {
-      "title": "Ajouter un filtre par adresse",
-      "type": "boolean",
-      "default": false
-    },
-    "title": {
-      "type": "string",
-      "title": "Titre"
-    },
-    "description": {
-      "type": "string",
-      "title": "Introduction",
-      "x-display": "textarea"
-    },
-    "allowDuplicate": {
-      "title": "Mode comparaison disponible",
-      "type": "boolean",
-      "default": false
-    },
-    "sectionsGroup": {
-      "title": "Rendu des sections",
-      "type": "string",
-      "oneOf": [
-        {
-          "const": "accordion",
-          "title": "En accordéon"
-        },
-        {
-          "const": "tabs-tab",
-          "title": "Dans des onglets"
-        },
-        {
-          "const": "tabs-button",
-          "title": "Dans des onglets (sélection par boutton)"
-        },
-        {
-          "const": "flow",
-          "title": "Les unes à la suite des autres"
-        }
-      ],
-      "default": "accordion"
-    },
-    "sections": {
-      "title": "Sections",
-      "type": "array",
-      "x-options": { "editMode": "inline" },
-      "items": {
-        "type": "object",
-        "properties": {
-          "title": { "type": "string", "title": "Libellé" },
-          "icon": {
-            "type": "object",
-            "title": "Icone",
-            "x-fromUrl": "https://koumoul.com/data-fair/api/v1/datasets/icons-mdi-latest/lines?q={q}",
-            "x-itemKey": "name",
-            "x-itemTitle": "name",
-            "x-itemIcon": "svg",
-            "x-itemsProp": "results",
-            "properties": {
-              "name": {
-                "type": "string"
-              },
-              "svg": {
-                "type": "string"
-              },
-              "svgPath": {
-                "type": "string"
-              }
-            }
-          },
-          "rows": {
-            "title": "Lignes",
-            "type": "array",
-            "items": {
+  "allOf": [
+    {
+      "title": "Filtres",
+      "properties": {
+        "datasets": {
+          "type": "array",
+          "items": [
+            {
               "type": "object",
-              "properties": {
-                "height": {
-                  "title": "Hauteur (px)",
-                  "description": "Mettez une valeur négative pour un redimensionnement automatique",
-                  "type": "integer",
-                  "default": 400
+                "title": "Source des valeurs pour les filtres",
+                "properties": {
+                "href": {
+                  "type": "string"
                 },
-                "elements": {
-                  "title": "Éléments",
-                  "type": "array",
-                  "items": {
-                    "type": "object",
-                    "properties": {
-                      "title": { "type": "string", "title": "Titre" },
-                      "width": {
-                        "title": "Largeur",
-                        "type": "integer",
-                        "oneOf": [
-                          {
-                            "const": 1,
-                            "title": "Fin"
-                          },
-                          {
-                            "const": 2,
-                            "title": "Moyen"
-                          },
-                          {
-                            "const": 3,
-                            "title": "Large"
-                          }
-                        ],
-                        "default": 2
-                      }
-                    },
-                    "oneOf": [
-                      {
-                        "$ref": "#/definitions/table"
-                      },
-                      {
-                        "$ref": "#/definitions/application"
-                      },
-                      {
-                        "$ref": "#/definitions/text"
-                      },
-                      {
-                        "$ref": "#/definitions/column"
-                      },
-                      {
-                        "$ref": "#/definitions/form"
-                      }
-                    ]
-                  }
+                "title": { "type": "string" },
+                "id": { "type": "string" },
+                "slug": { "type": "string" },
+                "schema": { "type": "array" },
+                "timePeriod": { "type": "object" },
+                "bbox": { "type": "array" },
+                "finalizedAt": { "type": "string" }
+              },
+              "layout": {
+                "getItems": {
+                  "url": "api/v1/datasets?status=finalized&q={q}&select=id,title,slug,schema,timePeriod,bbox&${context.datasetFilter}&sort=createdAt:-1",
+                  "itemKey": "data.href",
+                  "itemTitle": "data.title",
+                  "itemsResults": "data.results"
                 }
               }
             }
-          }
+          ]
+        },
+        "staticFilters": {
+          "$ref": "#/definitions/filters"
+        },
+        "filters": {
+          "type": "array",
+          "title": "Filtres dynamiques du tableau de bord",
+          "items": {
+            "type": "object",
+            "required": [
+              "labelField"
+            ],
+            "properties": {
+              "labelField": {
+                "title": "Colonne de libellé du filtre",
+                "type": "string",
+                "layout": {
+                  "getItems": {
+                    "url": "${rootData.datasets[0].href}/schema?calculated=false&separator=false",
+                    "itemKey": "data.key",
+                    "itemTitle": "data.label"
+                  }
+                }
+              },
+              "values": {
+                "title": "Valeurs Associées",
+                "description": "Si vide utilise la valeur du libellé",
+                "type": "array",
+                "items": {
+                  "title": "Colonnes pour les valeurs du filtre",
+                  "type": "string"
+                },
+                "layout": {
+                  "getItems": {
+                    "url": "${rootData.datasets[0].href}/schema?calculated=false&separator=false",
+                    "itemKey": "data.key",
+                    "itemTitle": "data.label"
+                  }
+                }
+              },
+              "multipleValues": {
+                "title": "Permettre de filtrer par plusieurs valeur",
+                "type": "boolean",
+                "default": false
+              },
+              "forceOneValue": {
+                "title": "Toujours filtrer par une valeur",
+                "type": "boolean",
+                "default": false
+              },
+              "startValue": {
+                "type": "string",
+                "title": "Valeur initiale",
+                "layout": {
+                  "getItems": {
+                    "url": "${rootData.datasets[0].href}/values/${parent.data.labelField}?q={q}&q_mode=complete&size=100&stringify=true"
+                  }
+                }
+              },
+              "showAllValues": {
+                "title": "Garder toutes les valeurs dans la liste",
+                "type": "boolean",
+                "default": false
+              }
+            }
+          },
+          "layout": "list"
+        },
+        "periodFilter": {
+          "title": "Ajouter un filtre sur la période",
+          "type": "boolean",
+          "default": false
+        },
+        "addressFilter": {
+          "title": "Ajouter un filtre par adresse",
+          "type": "boolean",
+          "default": false
         }
       }
     },
-    "showSources": {
-      "title": "Afficher les liens vers les sources des données",
-      "type": "boolean",
-      "default": false
+    {
+      "title": "Général",
+      "properties":{
+        "title": {
+          "type": "string",
+          "title": "Titre"
+        },
+        "description": {
+          "type": "string",
+          "title": "Introduction",
+          "layout": "textarea"
+        },
+        "allowDuplicate": {
+          "title": "Mode comparaison disponible",
+          "type": "boolean",
+          "default": false
+        },
+        "sectionsGroup": {
+          "title": "Rendu des sections",
+          "type": "string",
+          "oneOf": [
+            {
+              "const": "accordion",
+              "title": "En accordéon"
+            },
+            {
+              "const": "tabs-tab",
+              "title": "Dans des onglets"
+            },
+            {
+              "const": "tabs-button",
+              "title": "Dans des onglets (sélection par boutton)"
+            },
+            {
+              "const": "flow",
+              "title": "Les unes à la suite des autres"
+            }
+          ],
+          "default": "accordion"
+        }
+      }
     },
-    "showEmbed": {
-      "title": "Afficher le bouton d'intégration des visualisations",
-      "type": "boolean",
-      "default": false
-    },
-    "showCapture": {
-      "title": "Afficher le bouton d'export des visualisations",
-      "type": "boolean",
-      "default": false
+    {
+      "title": "Sections",
+      "properties":{
+        "sections": {
+          "title": "Sections",
+          "type": "array",
+          "x-options": {
+            "editMode": "inline"
+          },
+          "items": {
+            "type": "object",
+            "properties": {
+              "title": {
+                "type": "string",
+                "title": "Libellé"
+              },
+              "icon": {
+                "type": "object",
+                "title": "Icone",
+                "x-itemIcon": "svg",
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "svg": {
+                    "type": "string"
+                  },
+                  "svgPath": {
+                    "type": "string"
+                  }
+                },
+                "layout": {
+                  "getItems": {
+                    "url": "https://koumoul.com/data-fair/api/v1/datasets/icons-mdi-latest/lines?q={q}",
+                    "itemKey": "data.name",
+                    "itemTitle": "data.name",
+                    "itemIcon": "data.svg",
+                    "itemsResults": "data.results"
+                  }
+                }
+              },
+              "rows": {
+                "title": "Lignes",
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "height": {
+                      "title": "Hauteur (px)",
+                      "description": "Mettez une valeur négative pour un redimensionnement automatique",
+                      "type": "integer",
+                      "default": 400
+                    },
+                    "elements": {
+                      "title": "Éléments",
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "title": {
+                            "type": "string",
+                            "title": "Titre"
+                          },
+                          "width": {
+                            "title": "Largeur",
+                            "type": "integer",
+                            "oneOf": [
+                              {
+                                "const": 1,
+                                "title": "Fin"
+                              },
+                              {
+                                "const": 2,
+                                "title": "Moyen"
+                              },
+                              {
+                                "const": 3,
+                                "title": "Large"
+                              }
+                            ],
+                            "default": 2
+                          }
+                        },
+                        "oneOf": [
+                          {
+                            "$ref": "#/definitions/table"
+                          },
+                          {
+                            "$ref": "#/definitions/application"
+                          },
+                          {
+                            "$ref": "#/definitions/text"
+                          },
+                          {
+                            "$ref": "#/definitions/column"
+                          },
+                          {
+                            "$ref": "#/definitions/form"
+                          }
+                        ]
+                      },
+                      "layout": {
+                        "comp": "list",
+                        "itemTitle": "data.title"
+                      }
+                    }
+                  }
+                },
+                "layout": "list"
+              }
+            }
+          },
+          "layout": {
+            "comp": "list",
+            "itemTitle": "data.title"
+          }
+        },
+        "showSources": {
+          "title": "Afficher les liens vers les sources des données",
+          "type": "boolean",
+          "default": false
+        },
+        "showEmbed": {
+          "title": "Afficher le bouton d'intégration des visualisations",
+          "type": "boolean",
+          "default": false
+        },
+        "showCapture": {
+          "title": "Afficher le bouton d'export des visualisations",
+          "type": "boolean",
+          "default": false
+        }
+      }
     }
-  },
+  ],
   "definitions": {
     "table": {
       "title": "Prévisualisation table",
       "type": "object",
       "properties": {
-        "type": { "const": "tablePreview", "title": "Type de l'élément" }
+        "type": {
+          "const": "tablePreview",
+          "title": "Type de l'élément"
+        }
       },
       "oneOf": [
         {
@@ -266,11 +311,15 @@
               "title": "Champs à afficher",
               "description": "Si vide, tous les champs seront affichés",
               "type": "array",
-              "x-fromUrl": "{datasets[0].href}/schema?calculated=false",
-              "x-itemTitle": "label",
-              "x-itemKey": "key",
               "items": {
                 "type": "string"
+              },
+              "layout": {
+                "getItems": {
+                  "url": "${datasets[0].href}/schema?calculated=false",
+                  "itemKey": "data.key",
+                  "itemTitle": "data.label"
+                }
               }
             },
             "display": {
@@ -305,12 +354,16 @@
             "mandatoryFilters": {
               "title": "Filtres requis",
               "type": "array",
-              "x-if": "parent.value.valueMandatory",
-              "x-fromData": "filters",
-              "x-itemKey": "labelField",
-              "x-itemTitle": "labelField",
               "items": {
                 "type": "string"
+              },
+              "layout": {
+                "getItems": {
+                  "expr": "rootData.filters",
+                  "itemKey": "data.labelField",
+                  "itemTitle": "data.labelField"
+                },
+                "if": "parent.data.valueMandatory"
               }
             }
           }
@@ -324,27 +377,45 @@
             },
             "dataset": {
               "type": "object",
-              "x-fromUrl": "api/v1/datasets?q={q}&{context.datasetFilter}&select=id,title,slug,schema&sort=createdAt:-1",
-              "x-itemKey": "id",
-              "x-itemTitle": "title",
-              "x-itemsProp": "results",
               "properties": {
-                "id": { "type": "string" },
-                "slug": { "type": "string" },
-                "title": { "type": "string" },
-                "href": { "type": "string" },
-                "schema": { "type": "array" }
+                "id": {
+                  "type": "string"
+                },
+                "slug": {
+                  "type": "string"
+                },
+                "title": {
+                  "type": "string"
+                },
+                "href": {
+                  "type": "string"
+                },
+                "schema": {
+                  "type": "array"
+                }
+              },
+              "layout": {
+                "getItems": {
+                  "url": "api/v1/datasets?q={q}&${context.datasetFilter}&select=id,title,slug,schema&sort=createdAt:-1",
+                  "itemKey": "data.id",
+                  "itemTitle": "data.title",
+                  "itemsResults": "data.results"
+                }
               }
             },
             "fields": {
               "title": "Champs à afficher",
               "description": "Si vide, tous les champs seront affichés",
               "type": "array",
-              "x-fromUrl": "{parent.value.dataset.href}/schema?calculated=false",
-              "x-itemTitle": "label",
-              "x-itemKey": "key",
               "items": {
                 "type": "string"
+              },
+              "layout": {
+                "getItems": {
+                  "url": "${parent.data.dataset.href}/schema?calculated=false",
+                  "itemKey": "data.key",
+                  "itemTitle": "data.label"
+                }
               }
             },
             "display": {
@@ -379,12 +450,16 @@
             "mandatoryFilters": {
               "title": "Filtres requis",
               "type": "array",
-              "x-if": "parent.value.valueMandatory",
-              "x-fromData": "filters",
-              "x-itemKey": "labelField",
-              "x-itemTitle": "labelField",
               "items": {
                 "type": "string"
+              },
+              "layout": {
+                "getItems": {
+                  "expr": "rootData.filters",
+                  "itemKey": "data.labelField",
+                  "itemTitle": "data.labelField"
+                },
+                "if": "parent.data.valueMandatory"
               }
             }
           }
@@ -392,12 +467,18 @@
       ],
       "default": {
         "source": "root"
+      },
+      "oneOfLayout": {
+        "label": "Source des données"
       }
     },
     "application": {
       "title": "Visualisation",
       "properties": {
-        "type": { "const": "application", "title": "Type de l'élément" }
+        "type": {
+          "const": "application",
+          "title": "Type de l'élément"
+        }
       },
       "oneOf": [
         {
@@ -409,15 +490,27 @@
             },
             "application": {
               "type": "object",
-              "x-fromUrl": "api/v1/applications?q={q}&{context.datasetFilter}&dataset={datasets[0].id}&filterConcepts=true&select=id,title,baseApp&sort=createdAt:-1",
-              "x-itemKey": "id",
-              "x-itemTitle": "title",
-              "x-itemsProp": "results",
               "properties": {
-                "id": { "type": "string" },
-                "title": { "type": "string" },
-                "href": { "type": "string" },
-                "baseApp": { "type": "object" }
+                "id": {
+                  "type": "string"
+                },
+                "title": {
+                  "type": "string"
+                },
+                "href": {
+                  "type": "string"
+                },
+                "baseApp": {
+                  "type": "object"
+                }
+              },
+              "layout": {
+                "getItems": {
+                  "url": "api/v1/applications?q={q}&${context.datasetFilter}&dataset=${datasets[0].id}&filterConcepts=true&select=id,title,baseApp&sort=createdAt:-1",
+                  "itemKey": "data.id",
+                  "itemTitle": "data.title",
+                  "itemsResults": "data.results"
+                }
               }
             },
             "valueMandatory": {
@@ -428,12 +521,16 @@
             "mandatoryFilters": {
               "title": "Filtres requis",
               "type": "array",
-              "x-if": "parent.value.valueMandatory",
-              "x-fromData": "filters",
-              "x-itemKey": "labelField",
-              "x-itemTitle": "labelField",
               "items": {
                 "type": "string"
+              },
+              "layout": {
+                "getItems": {
+                  "expr": "rootData.filters",
+                  "itemKey": "data.labelField",
+                  "itemTitle": "data.labelField"
+                },
+                "if": "parent.data.valueMandatory"
               }
             },
             "description": {
@@ -466,15 +563,27 @@
             },
             "application": {
               "type": "object",
-              "x-fromUrl": "api/v1/applications?q={q}&{context.datasetFilter}&filterConcepts=true&select=id,title,baseApp&sort=createdAt:-1",
-              "x-itemKey": "id",
-              "x-itemTitle": "title",
-              "x-itemsProp": "results",
               "properties": {
-                "id": { "type": "string" },
-                "title": { "type": "string" },
-                "href": { "type": "string" },
-                "baseApp": { "type": "object" }
+                "id": {
+                  "type": "string"
+                },
+                "title": {
+                  "type": "string"
+                },
+                "href": {
+                  "type": "string"
+                },
+                "baseApp": {
+                  "type": "object"
+                }
+              },
+              "layout": {
+                "getItems": {
+                  "url": "api/v1/applications?q={q}&${context.datasetFilter}&filterConcepts=true&select=id,title,baseApp&sort=createdAt:-1",
+                  "itemKey": "data.id",
+                  "itemTitle": "data.title",
+                  "itemsResults": "data.results"
+                }
               }
             },
             "valueMandatory": {
@@ -485,12 +594,16 @@
             "mandatoryFilters": {
               "title": "Filtres requis",
               "type": "array",
-              "x-if": "parent.value.valueMandatory",
-              "x-fromData": "filters",
-              "x-itemKey": "labelField",
-              "x-itemTitle": "labelField",
               "items": {
                 "type": "string"
+              },
+              "layout": {
+                "getItems": {
+                  "expr": "rootData.filters",
+                  "itemKey": "data.labelField",
+                  "itemTitle": "data.labelField"
+                },
+                "if": "parent.data.valueMandatory"
               }
             }
           }
@@ -498,35 +611,56 @@
       ],
       "default": {
         "source": "root"
+      },
+      "oneOfLayout": {
+        "label": "Source des données de l'application"
       }
     },
     "text": {
       "title": "Texte",
       "properties": {
-        "type": { "const": "text", "title": "Type de l'élément" },
+        "type": {
+          "const": "text",
+          "title": "Type de l'élément"
+        },
         "content": {
           "type": "string",
-          "x-display": "textarea",
-          "title": "Contenu"
+          "title": "Contenu",
+          "layout": "textarea"
         }
       }
     },
     "form": {
       "title": "Formulaire de saisie",
       "properties": {
-        "type": { "const": "form", "title": "Type de l'élément" },
+        "type": {
+          "const": "form",
+          "title": "Type de l'élément"
+        },
         "dataset": {
           "type": "object",
           "title": "Jeu de données",
-          "x-fromUrl": "api/v1/datasets?q={q}&{context.datasetFilter}&rest=true&select=id,title,schema&sort=createdAt:-1",
-          "x-itemKey": "id",
-          "x-itemTitle": "title",
-          "x-itemsProp": "results",
           "properties": {
-            "id": { "type": "string" },
-            "title": { "type": "string" },
-            "href": { "type": "string" },
-            "schema": { "type": "array" }
+            "id": {
+              "type": "string"
+            },
+            "title": {
+              "type": "string"
+            },
+            "href": {
+              "type": "string"
+            },
+            "schema": {
+              "type": "array"
+            }
+          },
+          "layout": {
+            "getItems": {
+              "url": "api/v1/datasets?q={q}&${context.datasetFilter}&rest=true&select=id,title,schema&sort=createdAt:-1",
+              "itemKey": "data.id",
+              "itemTitle": "data.title",
+              "itemsResults": "data.results"
+            }
           }
         }
       }
@@ -534,7 +668,10 @@
     "column": {
       "title": "Colonne",
       "properties": {
-        "type": { "const": "column", "title": "Type de l'élément" },
+        "type": {
+          "const": "column",
+          "title": "Type de l'élément"
+        },
         "elements": {
           "type": "array",
           "items": {
@@ -560,7 +697,8 @@
                 "default": 100
               }
             }
-          }
+          },
+          "layout": "list"
         }
       }
     },
@@ -572,11 +710,13 @@
         "default": {
           "type": "in"
         },
-        "required": ["type"],
+        "required": [],
         "oneOf": [
           {
             "title": "Restreindre à des valeurs",
-            "required": ["field"],
+            "required": [
+              "field"
+            ],
             "properties": {
               "type": {
                 "const": "in"
@@ -590,13 +730,19 @@
                 "items": {
                   "type": "string"
                 },
-                "x-fromUrl": "{datasets.0.href}/values/{parent.value.field}?q={q}&q_mode=complete&size=100&stringify=true"
+                "layout": {
+                  "getItems": {
+                    "url": "${rootData.datasets[0].href}/values/${parent.data.field}?q={q}&q_mode=complete&size=100&stringify=true"
+                  }
+                }
               }
             }
           },
           {
             "title": "Restreindre à un interval de valeurs",
-            "required": ["field"],
+            "required": [
+              "field"
+            ],
             "properties": {
               "type": {
                 "const": "interval"
@@ -607,18 +753,28 @@
               "minValue": {
                 "type": "string",
                 "title": "Valeur min",
-                "x-fromUrl": "{datasets.0.href}/values/{parent.value.field}?sort=asc&{parent.value.field}_gte={q}&stringify=true"
+                "layout": {
+                  "getItems": {
+                    "url": "${rootData.datasets[0].href}/values/$${parent.data.field}?sort=asc&{parent.data.field}_gte={q}&stringify=true"
+                  }
+                }
               },
               "maxValue": {
                 "type": "string",
                 "title": "Valeur max",
-                "x-fromUrl": "{datasets.0.href}/values/{parent.value.field}?sort=desc&{parent.value.field}_lte={q}&stringify=true"
+                "layout": {
+                  "getItems": {
+                    "url": "${rootData.datasets[0].href}/values/$${parent.data.field}?sort=desc&{parent.data.field}_lte={q}&stringify=true"
+                  }
+                }
               }
             }
           },
           {
             "title": "Exclure des valeurs",
-            "required": ["field"],
+            "required": [
+              "field"
+            ],
             "properties": {
               "type": {
                 "const": "nin"
@@ -632,19 +788,28 @@
                 "items": {
                   "type": "string"
                 },
-                "x-fromUrl": "{datasets.0.href}/values/{parent.value.field}?q={q}&q_mode=complete&size=100&stringify=true"
+                "layout": {
+                  "getItems": {
+                    "url": "${rootData.datasets[0].href}/values/${parent.data.field}?q={q}&q_mode=complete&size=100&stringify=true"
+                  }
+                }
               }
             }
           }
         ]
-      }
+      },
+      "layout": "list"
     },
     "filterField": {
       "type": "string",
       "title": "Colonne de filtre",
-      "x-fromUrl": "{datasets.0.href}/schema?calculated=false",
-      "x-itemTitle": "label",
-      "x-itemKey": "key"
+      "layout": {
+        "getItems": {
+          "url": "${rootData.datasets[0].href}/schema?calculated=false",
+          "itemKey": "data.key",
+          "itemTitle": "data.label"
+        }
+      }
     }
   }
 }

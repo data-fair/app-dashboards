@@ -30,8 +30,6 @@
   "allowDuplicate": false,
   "addressFilter": false,
   "periodFilter": false,
-  "filters": [],
-  "staticFilters": [],
   "datasets": [
     {
       "href": "http://localhost:5888/data-fair/api/v1/datasets/skhn9yvc0np-8k7n3u9jdng8",
