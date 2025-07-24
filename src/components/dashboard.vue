@@ -12,22 +12,22 @@ const tab = [ref(null), ref(null)]
 let maxTitleLength = 0
 let sumTitleLength = 0
 
-const datasetFilterPrefix = '_d_' + dataset.id + '_'
-for (const filter of (config.filters || [])) {
+const datasetFilterPrefix = '_d_' + dataset.value.id + '_'
+for (const filter of (config.value.filters || [])) {
   if (!reactiveSearchParams[datasetFilterPrefix + filter.labelField + '_in'] && filter.startValue) {
     reactiveSearchParams[datasetFilterPrefix + filter.labelField + '_in'] = filter.multipleValues ? JSON.stringify([filter.startValue]).slice(1, -1) : filter.startValue
   }
 }
-if (config.periodFilter && !reactiveSearchParams.period) {
-  const start = (dataset.timePeriod ? dataset.timePeriod.startDate : new Date().toISOString()).slice(0, 10)
-  const end = (dataset.timePeriod ? dataset.timePeriod.endDate : new Date().toISOString()).slice(0, 10)
+if (config.value.periodFilter && !reactiveSearchParams.period) {
+  const start = (dataset.value.timePeriod ? dataset.value.timePeriod.startDate : new Date().toISOString()).slice(0, 10)
+  const end = (dataset.value.timePeriod ? dataset.value.timePeriod.endDate : new Date().toISOString()).slice(0, 10)
   const period = [start]
   if (start !== end) period.push(end)
   reactiveSearchParams.period = period.join(',')
 }
 
-maxTitleLength = Math.max(...config.sections.map((/** @type{any} */s) => (s.title && s.title.length) || 0))
-sumTitleLength = config.sections.reduce((/** @type{any} */acc, /** @type{any} */s) => acc + ((s.title && s.title.length) || 0), 0)
+maxTitleLength = Math.max(...config.value.sections.map((/** @type{any} */s) => (s.title && s.title.length) || 0))
+sumTitleLength = config.value.sections.reduce((/** @type{any} */acc, /** @type{any} */s) => acc + ((s.title && s.title.length) || 0), 0)
 
 function updateSwitch (v) {
   if (v) reactiveSearchParams.view = 'compare'

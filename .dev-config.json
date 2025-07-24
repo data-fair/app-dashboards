@@ -1,37 +1,133 @@
 {
-  "showCapture": false,
-  "showEmbed": false,
-  "showSources": false,
   "sections": [
     {
       "rows": [
         {
           "elements": [
             {
+              "width": 1,
+              "type": "application",
+              "mandatoryFilters": [],
+              "valueMandatory": false,
+              "source": "root",
+              "application": {
+                "id": "I1pTNUb4bClralFly-xGj",
+                "title": "Métriques France 2030",
+                "baseApp": {
+                  "_id": "673e1a828db1ae5c0738ab51",
+                  "id": "https:koumoul.comappsmetrics1.1",
+                  "datasetsFilters": [
+                    {
+                      "select": [
+                        "id",
+                        "title",
+                        "schema"
+                      ],
+                      "sort": [
+                        "createdAt:-1"
+                      ]
+                    }
+                  ],
+                  "meta": {
+                    "title": "Métriques",
+                    "description": "Visualiser des métriques de haut niveau sur un jeu de données.",
+                    "keywords": [
+                      "indicateurs",
+                      "kpi",
+                      "icp",
+                      "métriques"
+                    ],
+                    "charset": "UTF-8",
+                    "viewport": "width=device-width, initial-scale=1.0",
+                    "x-capture": "trigger",
+                    "df:overflow": "true",
+                    "df:sync-state": "true",
+                    "df:filter-concepts": "true",
+                    "{VERSION}": "trigger",
+                    "application-name": "Métriques",
+                    "thumbnail": "thumbnail.png"
+                  },
+                  "url": "https://koumoul.com/apps/metrics/1.1/"
+                }
+              },
+              "description": "none",
+              "ignoreFilters": true
+            },
+            {
               "width": 2,
               "type": "application",
               "mandatoryFilters": [],
               "valueMandatory": false,
-              "source": "external",
-              "noInteractions": false,
-              "display": "table",
-              "fields": [
-                "type",
-                "name"
-              ],
-              "description": "none",
+              "source": "root",
               "application": {
-                "owner": {
-                  "type": "organization",
-                  "id": "5a5dc47163ebd4a6f438589b",
-                  "name": "Koumoul",
-                  "department": "data",
-                  "departmentName": "Données de référence"
-                },
-                "title": "Pyramide des âges - France",
+                "id": "rpaqZ_FU3K7-fg03qr78R",
+                "title": "Métriques France 2030 - Actifs - Clos",
                 "baseApp": {
+                  "_id": "673e1a828db1ae5c0738ab51",
+                  "id": "https:koumoul.comappsmetrics1.1",
+                  "datasetsFilters": [
+                    {
+                      "select": [
+                        "id",
+                        "title",
+                        "schema"
+                      ],
+                      "sort": [
+                        "createdAt:-1"
+                      ]
+                    }
+                  ],
+                  "meta": {
+                    "title": "Métriques",
+                    "description": "Visualiser des métriques de haut niveau sur un jeu de données.",
+                    "keywords": [
+                      "indicateurs",
+                      "kpi",
+                      "icp",
+                      "métriques"
+                    ],
+                    "charset": "UTF-8",
+                    "viewport": "width=device-width, initial-scale=1.0",
+                    "x-capture": "trigger",
+                    "df:overflow": "true",
+                    "df:sync-state": "true",
+                    "df:filter-concepts": "true",
+                    "{VERSION}": "trigger",
+                    "application-name": "Métriques",
+                    "thumbnail": "thumbnail.png"
+                  },
+                  "url": "https://koumoul.com/apps/metrics/1.1/"
+                }
+              },
+              "description": "none"
+            },
+            {
+              "width": 1,
+              "type": "application",
+              "mandatoryFilters": [],
+              "valueMandatory": false,
+              "source": "root",
+              "application": {
+                "id": "jl5gvInt2R6bqqn7WmAiQ",
+                "title": "Charts - Montants - france2030 projets",
+                "baseApp": {
+                  "_id": "670e68b78db1ae5c073859f4",
                   "id": "https:cdn.jsdelivr.netnpm@data-fairapp-charts@1.2dist",
-                  "url": "https://cdn.jsdelivr.net/npm/@data-fair/app-charts@1.2/dist/",
+                  "datasetsFilters": [
+                    {
+                      "field-type": [
+                        "integer",
+                        "number"
+                      ],
+                      "select": [
+                        "id",
+                        "title"
+                      ],
+                      "sort": [
+                        "createdAt:-1"
+                      ]
+                    }
+                  ],
                   "meta": {
                     "title": "Graphiques diversdata-fair-chartsdata-fair-charts",
                     "description": "A simple charts application for data-fair.",
@@ -50,8 +146,190 @@
                     "vocabulary-accept": "http://www.w3.org/2000/01/rdf-schema#label",
                     "vocabulary-require": "http://www.w3.org/2003/01/geo/wgs84_pos#lat_long"
                   },
+                  "url": "https://cdn.jsdelivr.net/npm/@data-fair/app-charts@1.2/dist/"
+                }
+              }
+            },
+            {
+              "width": 1,
+              "type": "application",
+              "mandatoryFilters": [],
+              "valueMandatory": false,
+              "source": "root",
+              "application": {
+                "id": "kJRuVWMbyBSa-aIzc3dzc",
+                "title": "Charts - Nombre de projets par année de contractualisation",
+                "baseApp": {
+                  "_id": "670e68b78db1ae5c073859f4",
+                  "id": "https:cdn.jsdelivr.netnpm@data-fairapp-charts@1.2dist",
                   "datasetsFilters": [
                     {
+                      "field-type": [
+                        "integer",
+                        "number"
+                      ],
+                      "select": [
+                        "id",
+                        "title"
+                      ],
+                      "sort": [
+                        "createdAt:-1"
+                      ]
+                    }
+                  ],
+                  "meta": {
+                    "title": "Graphiques diversdata-fair-chartsdata-fair-charts",
+                    "description": "A simple charts application for data-fair.",
+                    "keywords": [
+                      "data-fair",
+                      "charts",
+                      "graphs"
+                    ],
+                    "charset": "UTF-8",
+                    "viewport": "width=device-width, initial-scale=1.0",
+                    "df:overflow": "false",
+                    "df:sync-state": "true",
+                    "df:filter-concepts": "true",
+                    "thumbnail": "thumbnail.png",
+                    "application-name": "Charts",
+                    "vocabulary-accept": "http://www.w3.org/2000/01/rdf-schema#label",
+                    "vocabulary-require": "http://www.w3.org/2003/01/geo/wgs84_pos#lat_long"
+                  },
+                  "url": "https://cdn.jsdelivr.net/npm/@data-fair/app-charts@1.2/dist/"
+                }
+              }
+            }
+          ],
+          "height": 360
+        }
+      ],
+      "uuid": "9dc26b09-e8db-4f4d-bcba-287d2883a21a",
+      "title": ""
+    },
+    {
+      "rows": [
+        {
+          "elements": [
+            {
+              "width": 2,
+              "type": "column",
+              "elements": [
+                {
+                  "type": "application",
+                  "mandatoryFilters": [],
+                  "valueMandatory": false,
+                  "source": "root",
+                  "application": {
+                    "id": "uNxf33szf240vfrN5bnT4",
+                    "title": "Nombre de projets par famille d'action",
+                    "baseApp": {
+                      "_id": "670e68b78db1ae5c073859f4",
+                      "id": "https:cdn.jsdelivr.netnpm@data-fairapp-charts@1.2dist",
+                      "datasetsFilters": [
+                        {
+                          "field-type": [
+                            "integer",
+                            "number"
+                          ],
+                          "select": [
+                            "id",
+                            "title"
+                          ],
+                          "sort": [
+                            "createdAt:-1"
+                          ]
+                        }
+                      ],
+                      "meta": {
+                        "title": "Graphiques diversdata-fair-chartsdata-fair-charts",
+                        "description": "A simple charts application for data-fair.",
+                        "keywords": [
+                          "data-fair",
+                          "charts",
+                          "graphs"
+                        ],
+                        "charset": "UTF-8",
+                        "viewport": "width=device-width, initial-scale=1.0",
+                        "df:overflow": "false",
+                        "df:sync-state": "true",
+                        "df:filter-concepts": "true",
+                        "thumbnail": "thumbnail.png",
+                        "application-name": "Charts",
+                        "vocabulary-accept": "http://www.w3.org/2000/01/rdf-schema#label",
+                        "vocabulary-require": "http://www.w3.org/2003/01/geo/wgs84_pos#lat_long"
+                      },
+                      "url": "https://cdn.jsdelivr.net/npm/@data-fair/app-charts@1.2/dist/"
+                    }
+                  }
+                },
+                {
+                  "type": "application",
+                  "mandatoryFilters": [],
+                  "valueMandatory": false,
+                  "source": "root",
+                  "application": {
+                    "id": "sJeXGFaMrN4t8XzeX0h1i",
+                    "title": "Montant conventionné (€) Par famille d'action",
+                    "baseApp": {
+                      "_id": "670e68b78db1ae5c073859f4",
+                      "id": "https:cdn.jsdelivr.netnpm@data-fairapp-charts@1.2dist",
+                      "datasetsFilters": [
+                        {
+                          "field-type": [
+                            "integer",
+                            "number"
+                          ],
+                          "select": [
+                            "id",
+                            "title"
+                          ],
+                          "sort": [
+                            "createdAt:-1"
+                          ]
+                        }
+                      ],
+                      "meta": {
+                        "title": "Graphiques diversdata-fair-chartsdata-fair-charts",
+                        "description": "A simple charts application for data-fair.",
+                        "keywords": [
+                          "data-fair",
+                          "charts",
+                          "graphs"
+                        ],
+                        "charset": "UTF-8",
+                        "viewport": "width=device-width, initial-scale=1.0",
+                        "df:overflow": "false",
+                        "df:sync-state": "true",
+                        "df:filter-concepts": "true",
+                        "thumbnail": "thumbnail.png",
+                        "application-name": "Charts",
+                        "vocabulary-accept": "http://www.w3.org/2000/01/rdf-schema#label",
+                        "vocabulary-require": "http://www.w3.org/2003/01/geo/wgs84_pos#lat_long"
+                      },
+                      "url": "https://cdn.jsdelivr.net/npm/@data-fair/app-charts@1.2/dist/"
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              "width": 3,
+              "type": "application",
+              "mandatoryFilters": [],
+              "valueMandatory": false,
+              "source": "root",
+              "application": {
+                "id": "TR4Plsa5mKsMjoy4193dK",
+                "title": "Tree - Montant conventionné par action (€)",
+                "baseApp": {
+                  "_id": "6745c5688db1ae5c074a738f",
+                  "id": "https:koumoul.comappsapp-treemap1.1",
+                  "datasetsFilters": [
+                    {
+                      "field-type": [
+                        "integer",
+                        "number"
+                      ],
                       "select": [
                         "id",
                         "title",
@@ -59,2136 +337,309 @@
                       ],
                       "sort": [
                         "createdAt:-1"
-                      ],
-                      "fromUrl": "api/v1/datasets?status=finalized&q={q}&select=id,title,schema&{context.datasetFilter}&sort=createdAt:-1",
-                      "properties": {
-                        "href": {
-                          "type": "string"
-                        },
-                        "title": {
-                          "type": "string"
-                        },
-                        "id": {
-                          "type": "string"
-                        },
-                        "schema": {
-                          "type": "array"
-                        },
-                        "finalizedAt": {
-                          "type": "string"
-                        }
-                      }
+                      ]
                     }
-                  ]
-                },
-                "id": "X92dhFrbAQrneNOwo0iF0",
-                "slug": "pyramide-des-ages-france",
-                "userPermissions": [
-                  "list",
-                  "readDescription",
-                  "readConfig",
-                  "readApiDoc",
-                  "readBaseApp",
-                  "readCapture",
-                  "readPrint",
-                  "downloadAttachment"
-                ],
-                "public": true,
-                "visibility": "public",
-                "href": "http://localhost:5888/data-fair/api/v1/applications/X92dhFrbAQrneNOwo0iF0",
-                "page": "http://localhost:5888/data-fair/application/X92dhFrbAQrneNOwo0iF0",
-                "exposedUrl": "http://localhost:5888/data-fair/app/X92dhFrbAQrneNOwo0iF0"
-              }
-            },
-            {
-              "width": 2,
-              "type": "text",
-              "title": "texte"
-            },
-            {
-              "width": 2,
-              "type": "tablePreview",
-              "source": "external",
-              "display": "table",
-              "noInteractions": false,
-              "valueMandatory": false,
-              "dataset": {
-                "title": "Base Permanente des Equipements - 2023",
-                "owner": {
-                  "type": "organization",
-                  "id": "5a5dc47163ebd4a6f438589b",
-                  "name": "Koumoul",
-                  "department": "data",
-                  "departmentName": "Données de référence"
-                },
-                "schema": [
-                  {
-                    "key": "an",
-                    "x-originalName": "AN",
-                    "type": "integer",
-                    "title": "Millésime de la base",
-                    "x-cardinality": 1,
-                    "description": "",
-                    "enum": [
-                      2023
-                    ]
-                  },
-                  {
-                    "key": "nomrs",
-                    "x-originalName": "NOMRS",
-                    "type": "string",
-                    "x-refersTo": "http://www.w3.org/2000/01/rdf-schema#label",
-                    "title": "Nom ou raison sociale",
-                    "x-concept": {
-                      "id": "label",
-                      "title": "Libellé",
-                      "primary": true
-                    },
-                    "x-cardinality": 2078332,
-                    "description": ""
-                  },
-                  {
-                    "key": "cnomrs",
-                    "x-originalName": "CNOMRS",
-                    "type": "string",
-                    "title": "Complément du nom",
-                    "x-cardinality": 513977,
-                    "description": ""
-                  },
-                  {
-                    "key": "numvoie",
-                    "x-originalName": "NUMVOIE",
-                    "type": "string",
-                    "x-refersTo": "http://www.ontotext.com/proton/protonext#StreetNumber",
-                    "title": "Numéro de voie",
-                    "x-concept": {
-                      "id": "streetNumber",
-                      "title": "Numéro de rue",
-                      "primary": true
-                    },
-                    "x-cardinality": 5018,
-                    "description": ""
-                  },
-                  {
-                    "key": "indrep",
-                    "x-originalName": "INDREP",
-                    "type": "string",
-                    "title": "Indice de répétition du numéro de voie",
-                    "x-cardinality": 8,
-                    "description": ""
-                  },
-                  {
-                    "key": "typvoie",
-                    "x-originalName": "TYPVOIE",
-                    "type": "string",
-                    "title": "Type de voie",
-                    "x-cardinality": 186,
-                    "description": ""
-                  },
-                  {
-                    "key": "libvoie",
-                    "x-originalName": "LIBVOIE",
-                    "type": "string",
-                    "x-refersTo": "http://schema.org/streetAddress",
-                    "title": "Libellé de la voie",
-                    "x-concept": {
-                      "id": "streetAddress",
-                      "title": "Rue ou lieu-dit",
-                      "primary": true
-                    },
-                    "x-cardinality": 376911,
-                    "description": ""
-                  },
-                  {
-                    "key": "cadr",
-                    "x-originalName": "CADR",
-                    "type": "string",
-                    "title": "Complément d'adresse",
-                    "x-cardinality": 256307,
-                    "description": ""
-                  },
-                  {
-                    "key": "libcom",
-                    "x-originalName": "LIBCOM",
-                    "type": "string",
-                    "x-refersTo": "http://schema.org/City",
-                    "title": "Commune",
-                    "x-concept": {
-                      "id": "city",
-                      "title": "Commune",
-                      "primary": true
-                    },
-                    "x-cardinality": 32318,
-                    "description": ""
-                  },
-                  {
-                    "key": "codpos",
-                    "x-originalName": "CODPOS",
-                    "type": "string",
-                    "x-refersTo": "http://schema.org/postalCode",
-                    "title": "Code postal",
-                    "x-concept": {
-                      "id": "postalCode",
-                      "title": "Code postal",
-                      "primary": true
-                    },
-                    "x-cardinality": 10494,
-                    "description": ""
-                  },
-                  {
-                    "key": "depcom",
-                    "x-originalName": "DEPCOM",
-                    "type": "string",
-                    "x-refersTo": "http://rdf.insee.fr/def/geo#codeCommune",
-                    "x-capabilities": {
-                      "textAgg": true
-                    },
-                    "title": "Code commune",
-                    "x-concept": {
-                      "id": "codeCommune",
-                      "title": "Code commune",
-                      "primary": true
-                    },
-                    "x-cardinality": 34928,
-                    "description": ""
-                  },
-                  {
-                    "key": "dep",
-                    "x-originalName": "DEP",
-                    "type": "string",
-                    "x-refersTo": "http://rdf.insee.fr/def/geo#codeDepartement",
-                    "title": "Code département",
-                    "x-concept": {
-                      "id": "codeDepartement",
-                      "title": "Code département",
-                      "primary": true
-                    },
-                    "x-cardinality": 101,
-                    "description": ""
-                  },
-                  {
-                    "key": "reg",
-                    "x-originalName": "REG",
-                    "type": "string",
-                    "x-refersTo": "http://rdf.insee.fr/def/geo#codeRegion",
-                    "title": "Région",
-                    "x-labels": {
-                      "11": "Ile-de-France",
-                      "24": "Centre-Val de Loire",
-                      "27": "Bourgogne-Franche-Comté",
-                      "28": "Normandie",
-                      "32": "Hauts-de-France",
-                      "44": "Grand Est",
-                      "52": "Pays de la Loire",
-                      "53": "Bretagne",
-                      "75": "Nouvelle-Aquitaine",
-                      "76": "Occitanie",
-                      "84": "Auvergne-Rhône-Alpes",
-                      "93": "Provence-Alpes-Côte d'Azur",
-                      "94": "Corse",
-                      "01": "Guadeloupe",
-                      "02": "Martinique",
-                      "03": "Guyane",
-                      "04": "La Réunion",
-                      "06": "Mayotte"
-                    },
-                    "x-concept": {
-                      "id": "codeRegion",
-                      "title": "Code région",
-                      "primary": true
-                    },
-                    "x-cardinality": 18,
-                    "description": "",
-                    "enum": [
-                      "11",
-                      "84",
-                      "76",
-                      "93",
-                      "75",
-                      "44",
-                      "32",
-                      "52",
-                      "53",
-                      "28",
-                      "27",
-                      "24",
-                      "04",
-                      "94",
-                      "01",
-                      "02",
-                      "03",
-                      "06"
-                    ]
-                  },
-                  {
-                    "key": "dom",
-                    "x-originalName": "DOM",
-                    "type": "string",
-                    "title": "Domaine d'appartenance",
-                    "x-labels": {
-                      "A": "Services aux particuliers",
-                      "B": "Commerces",
-                      "C": "Enseignement",
-                      "D": "Santé et action sociale",
-                      "E": "Transports et déplacements",
-                      "F": "Sports, loisirs et culture",
-                      "G": "Tourisme"
-                    },
-                    "x-cardinality": 7,
-                    "description": "",
-                    "enum": [
-                      "A",
-                      "D",
-                      "B",
-                      "F",
-                      "E",
-                      "C",
-                      "G"
-                    ]
-                  },
-                  {
-                    "key": "sdom",
-                    "x-originalName": "SDOM",
-                    "type": "string",
-                    "title": "Sous-domaine d'appartenance",
-                    "x-labels": {
-                      "A1": "Services publics",
-                      "A2": "Services généraux",
-                      "A3": "Services automobiles",
-                      "A4": "Artisanat du bâtiment",
-                      "A5": "Autres services à la population",
-                      "B1": "Grandes surfaces",
-                      "B2": "Commerces alimentaires",
-                      "B3": "Commerces spécialisés non-alimentaires",
-                      "C1": "Enseignement du premier degré",
-                      "C2": "Enseignement du second degré - premier cycle",
-                      "C3": "Enseignement du second degré - second cycle",
-                      "C4": "Enseignement supérieur non-universitaire",
-                      "C5": "Enseignement supérieur universitaire",
-                      "C6": "Formation continue",
-                      "C7": "Autres services de l'éducation",
-                      "D1": "Etablissements et services de santé",
-                      "D2": "Fonctions médicales et paramédicales (à titre libéral)",
-                      "D3": "Autres établissements et services à caractère sanitaire",
-                      "D4": "Action sociale pour personnes âgées",
-                      "D5": "Action sociale pour enfants en bas-âge",
-                      "D6": "Action sociale pour handicapés",
-                      "D7": "Autres services d'action sociale",
-                      "E1": "Infrastructures de transports",
-                      "F1": "Equipements sportifs",
-                      "F2": "Equipements de loisirs",
-                      "F3": "Equipements culturels et socioculturels",
-                      "G1": "Tourisme"
-                    },
-                    "x-cardinality": 27,
-                    "description": "",
-                    "enum": [
-                      "A4",
-                      "A5",
-                      "D2",
-                      "B3",
-                      "F1",
-                      "B2",
-                      "A3",
-                      "E1",
-                      "D5",
-                      "A1",
-                      "C1",
-                      "A2",
-                      "G1",
-                      "D3",
-                      "F2",
-                      "F3",
-                      "D6",
-                      "D4",
-                      "B1",
-                      "D1",
-                      "D7",
-                      "C2",
-                      "C6",
-                      "C3",
-                      "C4",
-                      "C5",
-                      "C7"
-                    ]
-                  },
-                  {
-                    "key": "typequ",
-                    "x-originalName": "TYPEQU",
-                    "type": "string",
-                    "title": "Type d'équipement",
-                    "x-labels": {
-                      "A101": "POLICE-",
-                      "A104": "GENDARMERIE",
-                      "A105": "COUR D'APPEL (CA)",
-                      "A108": "CONSEIL DE PRUD'HOMMES (CPH)",
-                      "A109": "TRIBUNAL DE COMMERCE (TCO)",
-                      "A120": "DRFIP (DIRECTION RÉGIONALE DES FINANCES PUBLIQUES)",
-                      "A121": "DDFIP (DIRECTION DÉPARTEMENTALE DES FINANCES PUBLIQUES)",
-                      "A122": "RÉSEAU DE PROXIMITÉ PÔLE EMPLOI",
-                      "A124": "MAISON DE JUSTICE ET DU DROIT",
-                      "A125": "ANTENNE DE JUSTICE",
-                      "A126": "CONSEIL DÉPARTEMENTAL D'ACCÈS AU DROIT (CDAD)",
-                      "A128": "IMPLANTATIONS FRANCE SERVICES (IFS)",
-                      "A129": "MAIRIE",
-                      "A130": "BUREAU D'AIDE JURIDICTIONNELLE (BAJ)",
-                      "A131": "TRIBUNAL JUDICIAIRE (TJ)",
-                      "A132": "TRIBUNAL DE PROXIMITÉ (TPRX)",
-                      "A133": "DÉCHÈTERIE",
-                      "A203": "BANQUE, CAISSE D'ÉPARGNE",
-                      "A205": "SERVICES FUNÉRAIRES",
-                      "A206": "BUREAU DE POSTE",
-                      "A207": "RELAIS POSTE",
-                      "A208": "AGENCE POSTALE",
-                      "A301": "RÉPARATION AUTOMOBILE ET DE MATÉRIEL AGRICOLE",
-                      "A302": "CONTRÔLE TECHNIQUE AUTOMOBILE",
-                      "A303": "LOCATION AUTO-UTILITAIRES LÉGERS",
-                      "A304": "ÉCOLE DE CONDUITE",
-                      "A401": "MAÇON",
-                      "A402": "PLÂTRIER PEINTRE",
-                      "A403": "MENUISIER CHARPENTIER SERRURIER",
-                      "A404": "PLOMBIER COUVREUR CHAUFFAGISTE",
-                      "A405": "ÉLECTRICIEN",
-                      "A406": "ENTREPRISE GÉNÉRALE DU BÂTIMENT",
-                      "A501": "COIFFURE",
-                      "A502": "VÉTÉRINAIRE",
-                      "A503": "AGENCE DE TRAVAIL TEMPORAIRE",
-                      "A504": "RESTAURANT- RESTAURATION RAPIDE",
-                      "A505": "AGENCE IMMOBILIÈRE",
-                      "A506": "PRESSING-LAVERIE AUTOMATIQUE",
-                      "A507": "INSTITUT DE BEAUTÉ-ONGLERIE",
-                      "B103": "GRANDE SURFACE DE BRICOLAGE",
-                      "B104": "HYPERMARCHÉ ET GRAND MAGASIN",
-                      "B105": "SUPERMARCHÉ ET MAGASIN MULTI-COMMERCE",
-                      "B201": "SUPÉRETTE",
-                      "B202": "ÉPICERIE",
-                      "B204": "BOUCHERIE CHARCUTERIE",
-                      "B205": "PRODUITS SURGELÉS",
-                      "B206": "POISSONNERIE",
-                      "B207": "BOULANGERIE-PÂTISSERIE",
-                      "B208": "COMMERCE SPÉCIALISÉ EN FRUITS ET LÉGUMES",
-                      "B209": "COMMERCE DE BOISSONS",
-                      "B210": "AUTRES COMMERCES ALIMENTAIRES",
-                      "B302": "MAGASIN DE VÊTEMENTS",
-                      "B303": "MAGASIN D'ÉQUIPEMENTS DU FOYER",
-                      "B304": "MAGASIN DE CHAUSSURES",
-                      "B306": "MAGASIN DE MEUBLES",
-                      "B307": "MAGASIN D'ARTICLES DE SPORTS ET DE LOISIRS",
-                      "B308": "MAGASIN DE REVÊTEMENTS MURS ET SOLS",
-                      "B309": "DROGUERIE QUINCAILLERIE BRICOLAGE",
-                      "B310": "PARFUMERIE-COSMÉTIQUE",
-                      "B311": "HORLOGERIE-BIJOUTERIE",
-                      "B312": "FLEURISTE-JARDINERIE-ANIMALERIE",
-                      "B313": "MAGASIN D'OPTIQUE",
-                      "B315": "MAGASIN DE MATÉRIEL MÉDICAL ET ORTHOPÉDIQUE",
-                      "B316": "STATION-SERVICE",
-                      "B317": "COMMERCE DE TISSUS ET MERCERIE",
-                      "B318": "COMMERCE DE JEUX ET JOUETS",
-                      "B319": "MAROQUINERIE ET ARTICLES DE VOYAGE",
-                      "B320": "COMMERCE DE COMBUSTIBLES DOMESTIQUES",
-                      "B321": "MAGASIN ÉLECTROMÉNAGER, MATÉRIEL AUDIO VIDÉO INFORMATIQUE",
-                      "B322": "MAGASIN DE MATÉRIELS DE TÉLÉCOMMUNICATION",
-                      "B323": "COMMERCE DE BIENS D’OCCASION",
-                      "B324": "LIBRAIRIE",
-                      "B325": "PAPETERIE ET PRESSE",
-                      "C107": "ÉCOLE MATERNELLE",
-                      "C108": "ÉCOLE PRIMAIRE",
-                      "C109": "ÉCOLE ÉLÉMENTAIRE",
-                      "C201": "COLLÈGE",
-                      "C301": "LYCÉE D'ENSEIGNEMENT GÉNÉRAL ET/OU TECHNOLOGIQUE",
-                      "C302": "LYCÉE D'ENSEIGNEMENT PROFESSIONNEl",
-                      "C303": "LYCÉE D'ENSEIGNEMENT TECHNIQUE ET/OU PROFESSIONNEL AGRICOLE",
-                      "C304": "SGT SECTION D'ENSEIGNEMENT GÉNÉRAL ET TECHNOLOGIQUE",
-                      "C305": "SEP SECTION D'ENSEIGNEMENT PROFESSIONNEl",
-                      "C401": "STS SECTION TECHNICIEN SUPÉRIEUR, CPGE CLASSE PRÉPARATOIRE AUX GRANDES ÉCOLES",
-                      "C402": "FORMATION SANTÉ",
-                      "C403": "FORMATION COMMERCE",
-                      "C409": "AUTRE FORMATION POST BAC NON UNIVERSITAIRE",
-                      "C501": "UFR",
-                      "C502": "INSTITUT UNIVERSITAIRE",
-                      "C503": "ÉCOLE D'INGÉNIEURS",
-                      "C504": "ENSEIGNEMENT GÉNÉRAL SUPÉRIEUR PRIVÉ",
-                      "C505": "ÉCOLE D'ENSEIGNEMENT SUPÉRIEUR AGRICOLE",
-                      "C509": "AUTRE ENSEIGNEMENT SUPÉRIEUR",
-                      "C601": "CENTRE DE FORMATION D'APPRENTIS HORS AGRICULTURE",
-                      "C602": "GRETA",
-                      "C603": "CENTRE DISPENSANT DE LA FORMATION CONTINUE AGRICOLE",
-                      "C604": "FORMATION AUX MÉTIERS DU SPORT",
-                      "C605": "CENTRE DISPENSANT DES FORMATIONS D'APPRENTISSAGE AGRICOLE",
-                      "C609": "AUTRE FORMATION CONTINUE",
-                      "C701": "RÉSIDENCE UNIVERSITAIRE",
-                      "C702": "RESTAURANT UNIVERSITAIRE",
-                      "D101": "ÉTABLISSEMENT SANTÉ COURT SÉJOUR",
-                      "D102": "ÉTABLISSEMENT SANTÉ MOYEN SÉJOUR",
-                      "D103": "ÉTABLISSEMENT SANTÉ LONG SÉJOUR",
-                      "D104": "ÉTABLISSEMENT PSYCHIATRIQUE",
-                      "D105": "CENTRE LUTTE CANCER",
-                      "D106": "URGENCES",
-                      "D107": "MATERNITÉ",
-                      "D108": "CENTRE DE SANTÉ",
-                      "D109": "STRUCTURE PSYCHIATRIQUE EN AMBULATOIRE",
-                      "D110": "CENTRE MÉDECINE PRÉVENTIVE",
-                      "D111": "DIALYSE",
-                      "D112": "HOSPITALISATION À DOMICILE",
-                      "D113": "MAISON DE SANTÉ PLURIDISCIPLINAIRE",
-                      "D201": "MÉDECIN GÉNÉRALISTE",
-                      "D202": "SPÉCIALISTE EN CARDIOLOGIE",
-                      "D203": "SPÉCIALISTE EN DERMATOLOGIE VÉNÉRÉOLOGIE",
-                      "D206": "SPÉCIALISTE EN GASTRO-ENTÉROLOGIE HÉPATOLOGIE",
-                      "D207": "SPÉCIALISTE EN PSYCHIATRIE",
-                      "D208": "SPÉCIALISTE EN OPHTALMOLOGIE",
-                      "D209": "SPÉCIALISTE EN OTO-RHINO-LARYNGOLOGIE",
-                      "D210": "SPÉCIALISTE EN PÉDIATRIE",
-                      "D211": "SPÉCIALISTE EN PNEUMOLOGIE",
-                      "D212": "SPÉCIALISTE EN RADIODIAGNOSTIC ET IMAGERIE MÉDICALE",
-                      "D213": "SPÉCIALISTE EN STOMATOLOGIE",
-                      "D214": "SPÉCIALISTE EN GYNÉCOLOGIE (MÉDICALE ET/OU OBSTÉTRIQUE)",
-                      "D221": "CHIRURGIEN DENTISTE",
-                      "D231": "SAGE-FEMME",
-                      "D233": "MASSEUR KINÉSITHÉRAPEUTE",
-                      "D235": "ORTHOPHONISTE",
-                      "D236": "ORTHOPTISTE",
-                      "D237": "PÉDICURE-PODOLOGUE",
-                      "D238": "AUDIO PROTHÉSISTE",
-                      "D239": "ERGOTHÉRAPEUTE",
-                      "D240": "PSYCHOMOTRICIEN",
-                      "D242": "DIÉTÉTICIEN",
-                      "D243": "PSYCHOLOGUE",
-                      "D244": "INFIRMIER",
-                      "D302": "LABORATOIRE D ANALYSES ET DE BIOLOGIE MÉDICALE",
-                      "D303": "AMBULANCE",
-                      "D304": "TRANSFUSION SANGUINE",
-                      "D305": "ÉTABLISSEMENT THERMAl",
-                      "D307": "PHARMACIE",
-                      "D401": "PERSONNES ÂGÉES : HÉBERGEMENT",
-                      "D402": "PERSONNES ÂGÉES : SOINS À DOMICILE",
-                      "D403": "PERSONNES ÂGÉES : SERVICES D'AIDE",
-                      "D502": "ÉTABLISSEMENT D'ACCUEIL DU JEUNE ENFANT (EAJE)",
-                      "D503": "LIEUX D'ACCUEIL ENFANT-PARENT (LAEP)",
-                      "D504": "RELAIS PETITE ENFANCE",
-                      "D505": "ACCUEIL DE LOISIR SANS HÉBERGEMENT (ALSH)",
-                      "D506": "CENTRES SOCIAUX",
-                      "D507": "MÉDIATION FAMILIALE",
-                      "D601": "ENFANTS HANDICAPÉS : HÉBERGEMENT",
-                      "D602": "ENFANTS HANDICAPÉS : SERVICES À DOMICILE OU AMBULATOIRES",
-                      "D603": "ADULTES HANDICAPÉS : ACCUEIL/HÉBERGEMENT",
-                      "D604": "ADULTES HANDICAPÉS : SERVICES D'AIDE",
-                      "D605": "TRAVAIL PROTÉGÉ",
-                      "D606": "ADULTES HANDICAPÉS : SERVICES DE SOINS À DOMICILE",
-                      "D701": "PROTECTION DE L'ENFANCE - HÉBERGEMENT",
-                      "D702": "PROTECTION DE L'ENFANCE - ACTION ÉDUCATIVE",
-                      "D703": "CHRS : CENTRE D'HÉBERGEMENT ET DE RÉINSERTION SOCIALE",
-                      "D704": "CENTRE PROVISOIRE D'HÉBERGEMENT",
-                      "D705": "CENTRE ACCUEIL DEMANDEUR D'ASILE",
-                      "D709": "AUTRES ÉTABLISSEMENTS POUR ADULTES ET FAMILLES EN DIFFICULTÉ",
-                      "E101": "TAXI-VTC",
-                      "E102": "AÉROPORT",
-                      "E107": "GARE DE VOYAGEURS D'INTÉRÊT NATIONAl",
-                      "E108": "GARE DE VOYAGEURS D'INTÉRÊT RÉGIONAl",
-                      "E109": "GARE DE VOYAGEURS D'INTÉRÊT LOCAl",
-                      "F101": "BASSIN DE NATATION",
-                      "F102": "BOULODROME",
-                      "F103": "TENNIS",
-                      "F104": "ÉQUIPEMENT DE CYCLISME",
-                      "F105": "DOMAINE SKIABLE",
-                      "F106": "CENTRE ÉQUESTRE",
-                      "F107": "ATHLÉTISME",
-                      "F108": "TERRAIN DE GOLF",
-                      "F109": "PARCOURS SPORTIF/SANTÉ",
-                      "F110": "SPORTS DE GLACE",
-                      "F111": "PLATEAUX ET TERRAINS DE JEUX EXTÉRIEURS",
-                      "F112": "SALLES SPÉCIALISÉES",
-                      "F113": "TERRAINS DE GRANDS JEUX",
-                      "F114": "SALLES DE COMBAT",
-                      "F116": "SALLES NON SPÉCIALISÉES",
-                      "F117": "ROLLER-SKATE-VÉLO BICROSS OU FREESTYLE",
-                      "F118": "SPORTS NAUTIQUES",
-                      "F119": "BOWLING",
-                      "F120": "SALLES DE REMISE EN FORME",
-                      "F121": "SALLES MULTISPORTS (GYMNASES)",
-                      "F122": "CIRCUIT / PISTE DE SPORTS MÉCANIQUES",
-                      "F123": "MUR ET FRONTON",
-                      "F124": "PAS DE TIR",
-                      "F125": "SITE D'ACTIVITÉS AÉRIENNES",
-                      "F126": "SITE DE MODÉLISME",
-                      "F201": "BAIGNADE AMENAGÉE",
-                      "F202": "PORT DE PLAISANCE – MOUILLAGE",
-                      "F203": "BOUCLE DE RANDONNÉE",
-                      "F204": "ÉQUIPEMENTS DE SPORTS DE NATURE",
-                      "F303": "CINÉMA",
-                      "F305": "CONSERVATOIRE",
-                      "F307": "BIBLIOTHÈQUE",
-                      "F312": "EXPOSITION ET MEDIATION CULTURELLE",
-                      "F313": "ESPACE REMARQUABLE ET PATRIMOINE",
-                      "F314": "ARCHIVES",
-                      "F315": "ARTS DU SPECTACLE",
-                      "G101": "AGENCE DE VOYAGE",
-                      "G102": "HÔTEl",
-                      "G103": "CAMPING",
-                      "G104": "INFORMATION TOURISTIQUE",
-                      "G105": "AUTRES HÉBERGEMENTS COLLECTIFS TOURISTIQUES (AHCT)"
-                    },
-                    "x-cardinality": 209,
-                    "description": ""
-                  },
-                  {
-                    "key": "siret",
-                    "x-originalName": "SIRET",
-                    "type": "string",
-                    "x-refersTo": "http://www.datatourisme.fr/ontology/core/1.0/#siret",
-                    "title": "Numéro SIRET",
-                    "x-concept": {
-                      "id": "siret",
-                      "title": "SIRET",
-                      "primary": true
-                    },
-                    "x-cardinality": 1989728,
-                    "description": ""
-                  },
-                  {
-                    "key": "statut_diffusion",
-                    "x-originalName": "STATUT_DIFFUSION",
-                    "type": "string",
-                    "x-labels": {
-                      "O": "Diffusion totale",
-                      "P": "Diffusion partielle",
-                      "_Z": "Sans objet"
-                    },
-                    "title": "Statut de diffusion Sirene",
-                    "x-cardinality": 3,
-                    "description": "",
-                    "enum": [
-                      "O",
-                      "_Z",
-                      "P"
-                    ]
-                  },
-                  {
-                    "key": "cantine",
-                    "x-originalName": "CANTINE",
-                    "type": "string",
-                    "x-labels": {
-                      "0": "Absence",
-                      "1": "Présence",
-                      "_U": "Indéterminé",
-                      "_Z": "Sans objet"
-                    },
-                    "title": "Présence ou absence d'une cantine",
-                    "x-cardinality": 4,
-                    "description": "",
-                    "enum": [
-                      "_Z",
-                      "1",
-                      "0",
-                      "_U"
-                    ]
-                  },
-                  {
-                    "key": "internat",
-                    "x-originalName": "INTERNAT",
-                    "type": "string",
-                    "x-labels": {
-                      "0": "Absence",
-                      "1": "Présence",
-                      "_U": "Indéterminé",
-                      "_Z": "Sans objet"
-                    },
-                    "title": "Présence ou absence d'un internat",
-                    "x-cardinality": 4,
-                    "description": "",
-                    "enum": [
-                      "_Z",
-                      "0",
-                      "1",
-                      "_U"
-                    ]
-                  },
-                  {
-                    "key": "rpi",
-                    "x-originalName": "RPI",
-                    "type": "string",
-                    "x-labels": {
-                      "C": "RPI concentré",
-                      "D": "RPI dispersé",
-                      "_Z": "Sans objet"
-                    },
-                    "title": "Type de regroupement pédagogique intercommunal",
-                    "x-cardinality": 3,
-                    "description": "",
-                    "enum": [
-                      "_Z",
-                      "D",
-                      "C"
-                    ]
-                  },
-                  {
-                    "key": "ep",
-                    "x-originalName": "EP",
-                    "type": "string",
-                    "x-labels": {
-                      "0": "Absence",
-                      "1": "Présence",
-                      "_U": "Indéterminé",
-                      "_Z": "Sans objet"
-                    },
-                    "title": "Présence ou absence d'un dispositif d'éducation prioritaire",
-                    "x-cardinality": 3,
-                    "description": "",
-                    "enum": [
-                      "_Z",
-                      "0",
-                      "1"
-                    ]
-                  },
-                  {
-                    "key": "cl_pge",
-                    "x-originalName": "CL_PGE",
-                    "type": "string",
-                    "x-labels": {
-                      "0": "Absence",
-                      "1": "Présence",
-                      "_U": "Indéterminé",
-                      "_Z": "Sans objet"
-                    },
-                    "title": "Présence ou absence d'une classe préparatoire aux grandes écoles en lycée",
-                    "x-cardinality": 3,
-                    "description": "",
-                    "enum": [
-                      "_Z",
-                      "0",
-                      "1"
-                    ]
-                  },
-                  {
-                    "key": "sect",
-                    "x-originalName": "SECT",
-                    "type": "string",
-                    "x-labels": {
-                      "PR": "Secteur privé",
-                      "PU": "Secteur public",
-                      "_U": "Indéterminé",
-                      "_Z": "Sans objet"
-                    },
-                    "title": "Appartenance au secteur public ou privé d'enseignement",
-                    "x-cardinality": 3,
-                    "description": "",
-                    "enum": [
-                      "_Z",
-                      "PU",
-                      "PR"
-                    ]
-                  },
-                  {
-                    "key": "acces_aire_pratique",
-                    "x-originalName": "ACCES_AIRE_PRATIQUE",
-                    "type": "string",
-                    "x-labels": {
-                      "0": "Absence",
-                      "1": "Présence",
-                      "_U": "Indéterminé",
-                      "_Z": "Sans objet"
-                    },
-                    "title": "Aménagement permettant l'accessibilité",
-                    "x-cardinality": 4,
-                    "description": "",
-                    "enum": [
-                      "_Z",
-                      "1",
-                      "0",
-                      "_U"
-                    ]
-                  },
-                  {
-                    "key": "acces_libre",
-                    "x-originalName": "ACCES_LIBRE",
-                    "type": "string",
-                    "x-labels": {
-                      "0": "Absence",
-                      "1": "Présence",
-                      "_U": "Indéterminé",
-                      "_Z": "Sans objet"
-                    },
-                    "title": "Accès libre permanent",
-                    "x-cardinality": 4,
-                    "description": "",
-                    "enum": [
-                      "_Z",
-                      "0",
-                      "1",
-                      "_U"
-                    ]
-                  },
-                  {
-                    "key": "acces_sanitaire",
-                    "x-originalName": "ACCES_SANITAIRE",
-                    "type": "string",
-                    "x-labels": {
-                      "0": "Absence",
-                      "1": "Présence",
-                      "_U": "Indéterminé",
-                      "_Z": "Sans objet"
-                    },
-                    "title": "Accessibilité des sanitaires",
-                    "x-cardinality": 4,
-                    "description": "",
-                    "enum": [
-                      "_Z",
-                      "0",
-                      "1",
-                      "_U"
-                    ]
-                  },
-                  {
-                    "key": "acces_vestiaire",
-                    "x-originalName": "ACCES_VESTIAIRE",
-                    "type": "string",
-                    "x-labels": {
-                      "0": "Absence",
-                      "1": "Présence",
-                      "_U": "Indéterminé",
-                      "_Z": "Sans objet"
-                    },
-                    "title": "Accessibilité des vestiaires",
-                    "x-cardinality": 4,
-                    "description": "",
-                    "enum": [
-                      "_Z",
-                      "0",
-                      "_U",
-                      "1"
-                    ]
-                  },
-                  {
-                    "key": "capacite_d_accueil",
-                    "x-originalName": "CAPACITE_D_ACCUEIL",
-                    "type": "string",
-                    "x-labels": {
-                      "1": "Au-dessus de 1500 personnes",
-                      "2": "De 701 à 1500 personnes",
-                      "3": "De 301 à 700 Personnes",
-                      "4": "De 101 à 300 personnes",
-                      "5": "Inférieur ou égal à 100 personnes",
-                      "_U": "Indéterminé",
-                      "_Z": "Sans objet"
-                    },
-                    "title": "Catégorie d’ERP",
-                    "x-cardinality": 7,
-                    "description": "",
-                    "enum": [
-                      "_Z",
-                      "_U",
-                      "5",
-                      "3",
-                      "4",
-                      "2",
-                      "1"
-                    ]
-                  },
-                  {
-                    "key": "pres_douche",
-                    "x-originalName": "PRES_DOUCHE",
-                    "type": "string",
-                    "x-labels": {
-                      "0": "Absence",
-                      "1": "Présence",
-                      "_U": "Indéterminé",
-                      "_Z": "Sans objet"
-                    },
-                    "title": "Présence de douches",
-                    "x-cardinality": 4,
-                    "description": "",
-                    "enum": [
-                      "_Z",
-                      "0",
-                      "1",
-                      "_U"
-                    ]
-                  },
-                  {
-                    "key": "pres_sanitaire",
-                    "x-originalName": "PRES_SANITAIRE",
-                    "type": "string",
-                    "x-labels": {
-                      "0": "Absence",
-                      "1": "Présence",
-                      "_U": "Indéterminé",
-                      "_Z": "Sans objet"
-                    },
-                    "title": "Présence de sanitaires",
-                    "x-cardinality": 4,
-                    "description": "",
-                    "enum": [
-                      "_Z",
-                      "1",
-                      "0",
-                      "_U"
-                    ]
-                  },
-                  {
-                    "key": "saisonnier",
-                    "x-originalName": "SAISONNIER",
-                    "type": "string",
-                    "x-labels": {
-                      "0": "Absence",
-                      "1": "Présence",
-                      "_U": "Indéterminé",
-                      "_Z": "Sans objet"
-                    },
-                    "title": "Ouverture exclusivement saisonnière",
-                    "x-cardinality": 4,
-                    "description": "",
-                    "enum": [
-                      "_Z",
-                      "0",
-                      "1",
-                      "_U"
-                    ]
-                  },
-                  {
-                    "key": "couvert",
-                    "x-originalName": "COUVERT",
-                    "type": "string",
-                    "x-labels": {
-                      "0": "Absence",
-                      "1": "Présence",
-                      "_U": "Indéterminé",
-                      "_Z": "Sans objet"
-                    },
-                    "title": "Partie couverte",
-                    "x-cardinality": 4,
-                    "description": "",
-                    "enum": [
-                      "_Z",
-                      "0",
-                      "1",
-                      "_U"
-                    ]
-                  },
-                  {
-                    "key": "eclaire",
-                    "x-originalName": "ECLAIRE",
-                    "type": "string",
-                    "x-labels": {
-                      "0": "Absence",
-                      "1": "Présence",
-                      "_U": "Indéterminé",
-                      "_Z": "Sans objet"
-                    },
-                    "title": "Partie éclairée",
-                    "x-cardinality": 4,
-                    "description": "",
-                    "enum": [
-                      "_Z",
-                      "1",
-                      "0",
-                      "_U"
-                    ]
-                  },
-                  {
-                    "key": "categorie",
-                    "x-originalName": "CATEGORIE",
-                    "type": "string",
-                    "title": "Catégorie d'équipement culturel",
-                    "x-cardinality": 43,
-                    "description": "",
-                    "enum": [
-                      "_Z",
-                      "TYPE 3",
-                      "TYPE 1",
-                      "TYPE 2",
-                      "ART ET ESSAI",
-                      "MUSÉE DE FRANCE",
-                      "ARCHIVES COMMUNALES",
-                      "THÉÂTRE DE VILLE",
-                      "JARDIN REMARQUABLE",
-                      "MICROFOLIE",
-                      "MAISON DES ILLUSTRES",
-                      "CONSERVATOIRE À RAYONNEMENT COMMUNAL",
-                      "COMPAGNIE AVEC LIEU",
-                      "ARCHIVES DÉPARTEMENTALES",
-                      "SCÈNE NATIONALE",
-                      "SCÈNE CONVENTIONNÉE D’INTÉRÊT NATIONAL",
-                      "CONSERVATOIRE À RAYONNEMENT DÉPARTEMENTAL",
-                      "SCÈNE DE MUSIQUES ACTUELLES",
-                      "CONSERVATOIRE À RAYONNEMENT INTERCOMMUNAL",
-                      "MONUMENT NATIONAL",
-                      "THÉÂTRE HORS LABEL",
-                      "THÉÂTRE PRIVÉ",
-                      "CONSERVATOIRE À RAYONNEMENT RÉGIONAL",
-                      "CENTRE D’ART CONTEMPORAIN D’INTÉRÊT NATIONAL",
-                      "CENTRE DRAMATIQUE NATIONAL",
-                      "FONDS RÉGIONAL D'ART CONTEMPORAIN",
-                      "ARCHIVES RÉGIONALES",
-                      "CENTRE CULTUREL DE RENCONTRE",
-                      "CENTRE CHORÉGRAPHIQUE NATIONAL",
-                      "ZÉNITH",
-                      "CENTRE D'ART CONTEMPORAIN HORS LABEL",
-                      "ORCHESTRE NATIONAL EN RÉGION",
-                      "CENTRE DE DÉVELOPPEMENT CHORÉGRAPHIQUE NATIONAL",
-                      "CENTRE NATIONAL DES ARTS DE LA RUE ET DE L’ESPACE PUBLIC",
-                      "PÔLE NATIONAL CIRQUE",
-                      "THÉÂTRE NATIONAL",
-                      "CENTRE NATIONAL DE CRÉATION MUSICALE",
-                      "OPÉRA NATIONAL EN RÉGION",
-                      "CENTRE NATIONAL DE LA MARIONNETTE",
-                      "ARCHIVES NATIONALES",
-                      "THÉATRE LYRIQUE D'INTÉRÊT NATIONAL",
-                      "OPÉRA NATIONAL",
-                      "ETABLISSEMENT PUBLIC NATIONAL"
-                    ]
-                  },
-                  {
-                    "key": "multiplexe",
-                    "x-originalName": "MULTIPLEXE",
-                    "type": "string",
-                    "x-labels": {
-                      "0": "Absence",
-                      "1": "Présence",
-                      "_U": "Indéterminé",
-                      "_Z": "Sans objet"
-                    },
-                    "title": "Présence d’un cinéma multiplexe",
-                    "x-cardinality": 3,
-                    "description": "",
-                    "enum": [
-                      "_Z",
-                      "0",
-                      "1"
-                    ]
-                  },
-                  {
-                    "key": "accueil",
-                    "x-originalName": "ACCUEIL",
-                    "type": "string",
-                    "title": "Type d'accueil",
-                    "x-cardinality": 18,
-                    "description": "",
-                    "enum": [
-                      "_Z",
-                      "PÉRISCOLAIRE HORS TAP",
-                      "EXTRASCOLAIRE",
-                      "MULTI ACCUEIL COLLECTIF",
-                      "PÉRISCOLAIRE TAP ET PÉRISCOLAIRE HORS TAP",
-                      "DÉCLARÉ ALSH",
-                      "CRÈCHE COLLECTIVE",
-                      "MICRO CRÈCHE",
-                      "HALTE GARDERIE COLLECTIVE",
-                      "CRÈCHE FAMILIALE",
-                      "CONVENTIONNÉ ACCUEIL DE JEUNES",
-                      "DÉCLARÉ ALSH ET CONVENTIONNÉ ACCUEIL DE JEUNES",
-                      "PÉRISCOLAIRE TAP",
-                      "JARDIN D'ENFANTS",
-                      "CRÈCHE PARENTALE",
-                      "MULTI ACCUEIL COLLECTIF ET FAMILIAL",
-                      "MULTI ACCUEIL PARENTAL",
-                      "HALTE GARDERIE PARENTALE"
-                    ]
-                  },
-                  {
-                    "key": "itinerance",
-                    "x-originalName": "ITINERANCE",
-                    "type": "string",
-                    "x-labels": {
-                      "0": "Absence",
-                      "1": "Présence",
-                      "_U": "Indéterminé",
-                      "_Z": "Sans objet"
-                    },
-                    "title": "Présence d’une structure itinérante",
-                    "x-cardinality": 3,
-                    "description": "",
-                    "enum": [
-                      "_Z",
-                      "0",
-                      "1"
-                    ]
-                  },
-                  {
-                    "key": "mode_gestion",
-                    "x-originalName": "MODE_GESTION",
-                    "type": "string",
-                    "x-labels": {
-                      "ENTRE": "Marché de prestation de service",
-                      "GESDE": "Délégation de service public",
-                      "PRIVE": "Gestion privée",
-                      "REGIE": "Régie",
-                      "_U": "Indéterminé",
-                      "_Z": "Sans objet"
-                    },
-                    "title": "Mode de gestion",
-                    "x-cardinality": 6,
-                    "description": "",
-                    "enum": [
-                      "_Z",
-                      "REGIE",
-                      "ENTRE",
-                      "GESDE",
-                      "PRIVE",
-                      "_U"
-                    ]
-                  },
-                  {
-                    "key": "sstypheb",
-                    "x-originalName": "SSTYPHEB",
-                    "type": "string",
-                    "x-labels": {
-                      "AH": "Autres hébergements",
-                      "RT": "Résidence de tourisme",
-                      "VV": "Village vacances",
-                      "_Z": "Sans objet"
-                    },
-                    "title": "Sous-type d'hébergement",
-                    "x-cardinality": 4,
-                    "description": "",
-                    "enum": [
-                      "_Z",
-                      "RT",
-                      "VV",
-                      "AH"
-                    ]
-                  },
-                  {
-                    "key": "type",
-                    "x-originalName": "TYPE",
-                    "type": "string",
-                    "x-labels": {
-                      "ANT": "Antenne",
-                      "LF": "Lieu fixe",
-                      "MO": "Mobile",
-                      "MS": "Multi-sites",
-                      "_U": "Indéterminé",
-                      "_Z": "Sans objet"
-                    },
-                    "title": "Type de lieux",
-                    "x-cardinality": 5,
-                    "description": "",
-                    "enum": [
-                      "_Z",
-                      "LF",
-                      "MS",
-                      "ANT",
-                      "MO"
-                    ]
-                  },
-                  {
-                    "key": "capacite",
-                    "x-originalName": "CAPACITE",
-                    "type": "integer",
-                    "title": "Capacité",
-                    "x-cardinality": 1938,
-                    "description": ""
-                  },
-                  {
-                    "key": "indic_capa",
-                    "x-originalName": "INDIC_CAPA",
-                    "type": "boolean",
-                    "title": "Concerné par la capacité",
-                    "x-cardinality": 2,
-                    "description": "",
-                    "enum": [
-                      "false",
-                      "true"
-                    ]
-                  },
-                  {
-                    "key": "nbequident",
-                    "x-originalName": "NBEQUIDENT",
-                    "type": "integer",
-                    "title": "Nombre d'équipements identiques",
-                    "x-cardinality": 43,
-                    "description": ""
-                  },
-                  {
-                    "key": "indic_nbequident",
-                    "x-originalName": "INDIC_NBEQUIDENT",
-                    "type": "boolean",
-                    "title": "Concerné par le nombre d'infrastructures",
-                    "x-cardinality": 2,
-                    "description": "",
-                    "enum": [
-                      "false",
-                      "true"
-                    ]
-                  },
-                  {
-                    "key": "nbsalles",
-                    "x-originalName": "NBSALLES",
-                    "type": "integer",
-                    "title": "Nombre de salles",
-                    "x-cardinality": 5,
-                    "description": ""
-                  },
-                  {
-                    "key": "indic_nbsalles",
-                    "x-originalName": "INDIC_NBSALLES",
-                    "type": "boolean",
-                    "title": "Concerné par le nombre de salles",
-                    "x-cardinality": 2,
-                    "description": "",
-                    "enum": [
-                      "false",
-                      "true"
-                    ]
-                  },
-                  {
-                    "key": "nblieux",
-                    "x-originalName": "NBLIEUX",
-                    "type": "integer",
-                    "title": "Nombre de lieux",
-                    "x-cardinality": 14,
-                    "description": ""
-                  },
-                  {
-                    "key": "indic_nblieux",
-                    "x-originalName": "INDIC_NBLIEUX",
-                    "type": "boolean",
-                    "title": "Concerné par le nombre de lieux",
-                    "x-cardinality": 2,
-                    "description": "",
-                    "enum": [
-                      "false",
-                      "true"
-                    ]
-                  },
-                  {
-                    "key": "lambert_x",
-                    "x-originalName": "LAMBERT_X",
-                    "type": "number",
-                    "x-refersTo": "http://data.ign.fr/def/geometrie#coordX",
-                    "title": "Coordonnée X de l'équipement",
-                    "x-concept": {
-                      "id": "coordX",
-                      "title": "Coordonnée X",
-                      "primary": true
-                    },
-                    "x-cardinality": 1572792,
-                    "description": ""
-                  },
-                  {
-                    "key": "lambert_y",
-                    "x-originalName": "LAMBERT_Y",
-                    "type": "number",
-                    "x-refersTo": "http://data.ign.fr/def/geometrie#coordY",
-                    "title": "Coordonnée Y de l'équipement",
-                    "x-concept": {
-                      "id": "coordY",
-                      "title": "Coordonnée Y (projection libre)",
-                      "primary": true
-                    },
-                    "x-cardinality": 1557537,
-                    "description": ""
-                  },
-                  {
-                    "key": "longitude",
-                    "x-originalName": "LONGITUDE",
-                    "type": "number",
-                    "x-refersTo": "http://schema.org/longitude",
-                    "title": "Longitude",
-                    "x-concept": {
-                      "id": "longitude",
-                      "title": "Longitude",
-                      "primary": true
-                    },
-                    "description": ""
-                  },
-                  {
-                    "key": "latitude",
-                    "x-originalName": "LATITUDE",
-                    "type": "number",
-                    "x-refersTo": "http://schema.org/latitude",
-                    "title": "Latitude",
-                    "x-concept": {
-                      "id": "latitude",
-                      "title": "Latitude",
-                      "primary": true
-                    },
-                    "description": ""
-                  },
-                  {
-                    "key": "qualite_xy",
-                    "x-originalName": "QUALITE_XY",
-                    "type": "string",
-                    "title": "Qualité de géolocalisation",
-                    "x-labels": {
-                      "B": "Bonne",
-                      "A": "Acceptable",
-                      "M": "Mauvaise",
-                      "_Z": "Non-géolocalisé",
-                      "_U": "Indéterminée"
-                    },
-                    "x-cardinality": 5,
-                    "description": "",
-                    "enum": [
-                      "B",
-                      "_U",
-                      "M",
-                      "A",
-                      "_Z"
-                    ]
-                  },
-                  {
-                    "key": "epsg",
-                    "x-originalName": "EPSG",
-                    "type": "integer",
-                    "title": "Code EPSG du système de coordonnées",
-                    "x-labels": {
-                      "2154": "Lambert 93",
-                      "2972": "UTM 22 Nord",
-                      "2975": "UTM 40 Sud",
-                      "4471": "UTM 38 Sud",
-                      "5490": "UTM 20 Nord"
-                    },
-                    "x-cardinality": 5,
-                    "description": "",
-                    "enum": [
-                      2154,
-                      5490,
-                      2975,
-                      2972,
-                      4471
-                    ]
-                  },
-                  {
-                    "key": "qualite_geoloc",
-                    "x-originalName": "QUALITE_GEOLOC",
-                    "type": "string",
-                    "title": "Précision du repérage par l’adresse",
-                    "x-labels": {
-                      "11": "Voie sûre, Numéro trouvé",
-                      "12": "Voie sûre, Position aléatoire dans la voie",
-                      "21": "Voie probable, Numéro trouvé",
-                      "22": "Voie probable, Position aléatoire dans la voie",
-                      "33": "Voie inconnue, Position aléatoire dans la commune",
-                      "_U": "Indéterminé",
-                      "_Z": "Sans objet"
-                    },
-                    "x-cardinality": 7,
-                    "description": "",
-                    "enum": [
-                      "11",
-                      "_Z",
-                      "12",
-                      "_U",
-                      "33",
-                      "21",
-                      "22"
-                    ]
-                  },
-                  {
-                    "key": "tr_dist_precision",
-                    "x-originalName": "TR_DIST_PRECISION",
-                    "type": "string",
-                    "x-labels": {
-                      "< 100": "Moins de 100 mètres",
-                      ">= 500": "500 mètres ou plus",
-                      "[100 - 500[": "De 100 à moins de 500 mètres",
-                      "_U": "Indéterminé",
-                      "_Z": "Sans objet"
-                    },
-                    "title": "Erreur maximum de positionnement dans la voie ou le lieu-dit",
-                    "x-cardinality": 5,
-                    "description": "",
-                    "enum": [
-                      "< 100",
-                      "_U",
-                      "[100 - 500[",
-                      ">= 500",
-                      "_Z"
-                    ]
-                  },
-                  {
-                    "key": "dciris",
-                    "x-originalName": "DCIRIS",
-                    "type": "string",
-                    "title": "Code IRIS d'implantation",
-                    "x-refersTo": "http://rdf.insee.fr/def/geo#codeIRIS",
-                    "x-concept": {
-                      "id": "codeIRIS",
-                      "title": "Code IRIS",
-                      "primary": true
-                    },
-                    "x-cardinality": 51095,
-                    "description": ""
-                  },
-                  {
-                    "key": "quali_iris",
-                    "x-originalName": "QUALI_IRIS",
-                    "type": "string",
-                    "title": "Indicateur de qualité du géoréférencement dans l'iris",
-                    "x-labels": {
-                      "1": "Appartenance sûre au zonage",
-                      "2": "Appartenance probable au zonage",
-                      "3": "Appartenance aléatoire ou indéterminée au zonage",
-                      "X": "Non concerné par le zonage"
-                    },
-                    "x-cardinality": 4,
-                    "description": "",
-                    "enum": [
-                      "1",
-                      "_Z",
-                      "3",
-                      "2"
-                    ]
-                  },
-                  {
-                    "key": "irisee",
-                    "x-originalName": "IRISEE",
-                    "type": "boolean",
-                    "title": "Irisation de la commune",
-                    "x-cardinality": 2,
-                    "description": "",
-                    "enum": [
-                      "true",
-                      "false"
-                    ]
-                  },
-                  {
-                    "key": "qp2015",
-                    "x-originalName": "QP2015",
-                    "type": "string",
-                    "title": "Quartier prioritaire de la politique de la ville 2015",
-                    "x-cardinality": 1403,
-                    "description": ""
-                  },
-                  {
-                    "key": "quali_qp2015",
-                    "x-originalName": "QUALI_QP2015",
-                    "type": "string",
-                    "x-labels": {
-                      "1": "Appartenance sûre au zonage",
-                      "2": "Appartenance probable au zonage",
-                      "3": "Appartenance aléatoire ou indéterminée au zonage",
-                      "_Z": "Sans objet"
-                    },
-                    "title": "Qualité du géoréférencement dans le quartier prioritaire 2015",
-                    "x-cardinality": 4,
-                    "description": "",
-                    "enum": [
-                      "_Z",
-                      "1",
-                      "3",
-                      "2"
-                    ]
-                  },
-                  {
-                    "key": "qp",
-                    "x-originalName": "QP",
-                    "type": "string",
-                    "x-refersTo": "https://sig.ville.gouv.fr/qpv",
-                    "title": "Quartier prioritaire de la politique de la ville",
-                    "x-concept": {
-                      "id": "qpv",
-                      "title": "Quartier prioritaire (QPV)",
-                      "primary": true
-                    },
-                    "x-cardinality": 1365,
-                    "description": ""
-                  },
-                  {
-                    "key": "quali_qp",
-                    "x-originalName": "QUALI_QP",
-                    "type": "string",
-                    "title": "Qualité du géoréférencement dans le quartier prioritaire",
-                    "x-labels": {
-                      "1": "Appartenance sûre au zonage",
-                      "2": "Appartenance probable au zonage",
-                      "3": "Appartenance aléatoire ou indéterminée au zonage",
-                      "_Z": "Sans objet"
-                    },
-                    "x-cardinality": 4,
-                    "description": "",
-                    "enum": [
-                      "_Z",
-                      "1",
-                      "3",
-                      "2"
-                    ]
-                  },
-                  {
-                    "key": "qva",
-                    "x-originalName": "QVA",
-                    "type": "string",
-                    "title": "Quartier de veille active",
-                    "x-cardinality": 799,
-                    "description": ""
-                  },
-                  {
-                    "key": "quali_qva",
-                    "x-originalName": "QUALI_QVA",
-                    "type": "string",
-                    "title": "Qualité du géoréférencement dans le quartier de veille active",
-                    "x-labels": {
-                      "1": "Appartenance sûre au zonage",
-                      "2": "Appartenance probable au zonage",
-                      "3": "Appartenance aléatoire ou indéterminée au zonage",
-                      "_Z": "Sans objet"
-                    },
-                    "x-cardinality": 4,
-                    "description": "",
-                    "enum": [
-                      "_Z",
-                      "1",
-                      "3",
-                      "2"
-                    ]
-                  },
-                  {
-                    "key": "zus",
-                    "x-originalName": "ZUS",
-                    "type": "string",
-                    "title": "Zone urbaine sensible",
-                    "x-cardinality": 751,
-                    "description": ""
-                  },
-                  {
-                    "key": "quali_zus",
-                    "x-originalName": "QUALI_ZUS",
-                    "type": "string",
-                    "title": "Qualité du géoréférencement dans la zone urbaine sensible",
-                    "x-labels": {
-                      "1": "Appartenance sûre au zonage",
-                      "2": "Appartenance probable au zonage",
-                      "3": "Appartenance aléatoire ou indéterminée au zonage",
-                      "_Z": "Sans objet"
-                    },
-                    "x-cardinality": 4,
-                    "description": "",
-                    "enum": [
-                      "_Z",
-                      "1",
-                      "3",
-                      "2"
-                    ]
-                  },
-                  {
-                    "key": "epci",
-                    "x-originalName": "EPCI",
-                    "type": "string",
-                    "x-refersTo": "http://rdf.insee.fr/def/geo#EtablissementPublicDeCooperationIntercommunale",
-                    "title": "Etablissement public de coopération intercommunal",
-                    "x-concept": {
-                      "id": "codeEPCI",
-                      "title": "Code EPCI",
-                      "primary": true
-                    },
-                    "x-cardinality": 1256,
-                    "description": ""
-                  },
-                  {
-                    "key": "uu2020",
-                    "x-originalName": "UU2020",
-                    "type": "string",
-                    "x-refersTo": "http://rdf.insee.fr/def/geo#UniteUrbaine2020",
-                    "title": "Unité urbaine 2020",
-                    "x-concept": {
-                      "id": "uniteUrbaine2020",
-                      "title": "Code unité urbaine 2020",
-                      "primary": true
-                    },
-                    "x-cardinality": 2470,
-                    "description": ""
-                  },
-                  {
-                    "key": "bv2022",
-                    "x-originalName": "BV2022",
-                    "type": "integer",
-                    "title": "Bassin de vie 2022",
-                    "x-cardinality": 1691,
-                    "description": ""
-                  },
-                  {
-                    "key": "aav2020",
-                    "x-originalName": "AAV2020",
-                    "type": "string",
-                    "title": "Zonage en aire d'attraction des villes 2020",
-                    "x-cardinality": 700,
-                    "description": ""
-                  },
-                  {
-                    "key": "dens3",
-                    "x-originalName": "DENS3",
-                    "type": "integer",
-                    "x-labels": {
-                      "1": "Communes densément peuplées",
-                      "2": "Communes de densité intermédiaire",
-                      "3": "Communes rurales"
-                    },
-                    "title": "Grille communale de densité à 3 niveaux",
-                    "x-cardinality": 3,
-                    "description": "",
-                    "enum": [
-                      1,
-                      3,
-                      2
-                    ]
-                  },
-                  {
-                    "key": "dens7",
-                    "x-originalName": "DENS7",
-                    "type": "integer",
-                    "x-labels": {
-                      "1": "Grands centres urbains",
-                      "2": "Centres urbains intermédiaires",
-                      "3": "Petites villes",
-                      "4": "Ceintures urbaines",
-                      "5": "Bourgs ruraux",
-                      "6": "Rural à habitat dispersé",
-                      "7": "Rural à habitat très dispersé"
-                    },
-                    "title": "Grille communale de densité à 3 niveaux",
-                    "x-cardinality": 7,
-                    "description": "",
-                    "enum": [
-                      1,
-                      5,
-                      2,
-                      6,
-                      4,
-                      3,
-                      7
-                    ]
-                  },
-                  {
-                    "key": "_infos_commune.nom_departement",
-                    "x-originalName": "_infos_commune.nom_departement",
-                    "x-extension": "dataset:communes-de-france/masterData_bulkSearch_infos-commune",
-                    "title": "Nom département",
-                    "description": "Nom du département",
-                    "type": "string",
-                    "x-refersTo": "http://rdf.insee.fr/def/geo#Departement",
-                    "x-concept": {
-                      "id": "departement",
-                      "title": "Département",
-                      "primary": true
-                    },
-                    "x-cardinality": 101
-                  },
-                  {
-                    "key": "_infos_commune.nom_epci",
-                    "x-originalName": "_infos_commune.nom_epci",
-                    "x-extension": "dataset:communes-de-france/masterData_bulkSearch_infos-commune",
-                    "title": "Nom EPCI",
-                    "description": "Nom de l'établissement public de coopération intercommunale",
-                    "type": "string",
-                    "x-cardinality": 1252
-                  },
-                  {
-                    "key": "_infos_commune._error",
-                    "type": "string",
-                    "x-originalName": "_error",
-                    "x-extension": "dataset:communes-de-france/masterData_bulkSearch_infos-commune",
-                    "title": "Erreur de récupération de données de référence",
-                    "description": "Une erreur lors de la récupération des informations depuis un service distant",
-                    "x-calculated": true
-                  },
-                  {
-                    "x-calculated": true,
-                    "key": "_geopoint",
-                    "type": "string",
-                    "title": "Coordonnée géographique",
-                    "description": "Centroïde au format \"lat,lon\"",
-                    "x-refersTo": "http://www.w3.org/2003/01/geo/wgs84_pos#lat_long",
-                    "x-concept": {
-                      "id": "latLon",
-                      "title": "Latitude / Longitude",
-                      "primary": true
-                    }
-                  },
-                  {
-                    "x-calculated": true,
-                    "key": "_id",
-                    "type": "string",
-                    "format": "uri-reference",
-                    "title": "Identifiant",
-                    "description": "Identifiant unique parmi toutes les lignes du jeu de données"
-                  },
-                  {
-                    "x-calculated": true,
-                    "key": "_i",
-                    "type": "integer",
-                    "title": "Numéro de ligne",
-                    "description": "Indice de la ligne dans le fichier d'origine"
-                  },
-                  {
-                    "x-calculated": true,
-                    "key": "_rand",
-                    "type": "integer",
-                    "title": "Nombre aléatoire",
-                    "description": "Un nombre aléatoire associé à la ligne qui permet d'obtenir un tri aléatoire par exemple"
-                  }
-                ],
-                "id": "im3-1xqdhf1nxtfzuhtz2--l",
-                "slug": "base-permanente-des-equipements",
-                "userPermissions": [
-                  "list",
-                  "readDescription",
-                  "readSchema",
-                  "readSafeSchema",
-                  "readLines",
-                  "getGeoAgg",
-                  "getValuesAgg",
-                  "getValues",
-                  "getMetricAgg",
-                  "getSimpleMetricsAgg",
-                  "getWordsAgg",
-                  "getMinAgg",
-                  "getMaxAgg",
-                  "downloadOriginalData",
-                  "downloadFullData",
-                  "readApiDoc",
-                  "realtime-transactions",
-                  "readLine",
-                  "readLineRevisions",
-                  "readRevisions",
-                  "bulkSearch",
-                  "listDataFiles",
-                  "downloadDataFile",
-                  "downloadMetadataAttachment",
-                  "downloadAttachment",
-                  "getReadApiKey",
-                  "readCompatODSRecords"
-                ],
-                "public": true,
-                "visibility": "public",
-                "previews": [
-                  {
-                    "id": "table",
-                    "title": "Tableau",
-                    "href": "http://localhost:5888/data-fair/embed/dataset/im3-1xqdhf1nxtfzuhtz2--l/table"
-                  }
-                ],
-                "href": "http://localhost:5888/data-fair/api/v1/datasets/im3-1xqdhf1nxtfzuhtz2--l",
-                "page": "http://localhost:5888/data-fair/dataset/im3-1xqdhf1nxtfzuhtz2--l"
-              }
-            },
-            {
-              "width": 2,
-              "type": "form",
-              "dataset": {
-                "title": "Schéma - Lieux de covoiturage",
-                "schema": [
-                  {
-                    "key": "id_local",
-                    "x-originalName": "id_local",
-                    "type": "string",
-                    "title": "Identifiant du lieu de covoiturage",
-                    "icon": "mdi-text-short",
-                    "x-capabilities": {
-                      "textAgg": false
-                    },
-                    "description": "Description : Identifiant du lieu de covoiturage fixé par le producteur de la donnée pour son propre usage\n\nExemple : 23X01",
-                    "x-required": true,
-                    "x-cardinality": 0
-                  },
-                  {
-                    "key": "nom_lieu",
-                    "x-originalName": "nom_lieu",
-                    "type": "string",
-                    "title": "Nom du lieu de covoiturage",
-                    "icon": "mdi-text-short",
-                    "x-capabilities": {
-                      "textAgg": false
-                    },
-                    "description": "Description : Le nom du lieu de covoiturage. Recommandation : inutile de répéter la nature du type de covoiturage\n\nExemple : Les Romains",
-                    "x-required": true,
-                    "x-cardinality": 0
-                  },
-                  {
-                    "key": "ad_lieu",
-                    "x-originalName": "ad_lieu",
-                    "type": "string",
-                    "title": "Adresse du lieu",
-                    "icon": "mdi-text-short",
-                    "x-capabilities": {
-                      "textAgg": false
-                    },
-                    "description": "Description : L'adresse du lieu compréhensible par le grand public pour assurer la coordination entre le passager et le conducteur. Exemple : \"3, rue de la gare\" ; pour les lieux proches des sorties d'autoroute ou de nationale : \"A11 sortie 7 Le Mans Nord\" ; pour les zones rurales sans adresse : \"croisement de route 1 - route 2\" ou \"le long de route X après le passage à niveau\"\n\nExemple : 3, rue de la Gare",
-                    "x-cardinality": 0
-                  },
-                  {
-                    "key": "com_lieu",
-                    "x-originalName": "com_lieu",
-                    "type": "string",
-                    "title": "Commune",
-                    "icon": "mdi-text-short",
-                    "x-capabilities": {
-                      "textAgg": false
-                    },
-                    "description": "Description : La commune / le lieu-dit du covoiturage\n\nExemple : Rouen",
-                    "x-cardinality": 0
-                  },
-                  {
-                    "key": "insee",
-                    "x-originalName": "insee",
-                    "type": "string",
-                    "title": "Code INSEE ",
-                    "icon": "mdi-text-short",
-                    "x-capabilities": {
-                      "textAgg": false
-                    },
-                    "description": "Description : Le code INSEE de la commune d'implantation\n\nExemple : 76540",
-                    "x-required": true,
-                    "pattern": "^([013-9]\\d|2[AB1-9])\\d{3}$",
-                    "x-cardinality": 0
-                  },
-                  {
-                    "key": "type",
-                    "x-originalName": "type",
-                    "type": "string",
-                    "title": "Type de lieu de covoiturage",
-                    "icon": "mdi-text-short",
-                    "x-capabilities": {
-                      "textAgg": false
-                    },
-                    "x-required": true,
-                    "description": "Description : Le type de lieu de covoiturage\n\nExemple : Parking\n\nValeurs autorisées :\n* Aire de covoiturage\n* Sortie d'autoroute\n* Parking\n* Supermarché\n* Parking relais\n* Délaissé routier\n* Auto-stop",
-                    "x-cardinality": 0,
-                    "x-labels": {
-                      "Aire de covoiturage": "Aire de covoiturage",
-                      "Sortie d'autoroute": "Sortie d'autoroute",
-                      "Parking": "Parking",
-                      "Supermarché": "Supermarché",
-                      "Parking relais": "Parking relais",
-                      "Délaissé routier": "Délaissé routier",
-                      "Auto-stop": "Auto-stop"
-                    }
-                  },
-                  {
-                    "key": "date_maj",
-                    "x-originalName": "date_maj",
-                    "type": "string",
-                    "format": "date",
-                    "title": "Date de dernière mise à jour des données",
-                    "icon": "mdi-calendar",
-                    "description": "Description : Date de dernière mise à jour des données. Notation ISO 8601, format AAAA-MM-DD\nExemple : 2016-10-31",
-                    "x-cardinality": 0
-                  },
-                  {
-                    "key": "ouvert",
-                    "x-originalName": "ouvert",
-                    "type": "boolean",
-                    "title": "Le lieu est-il actuellement accessible",
-                    "icon": "mdi-checkbox-marked-circle-outline",
-                    "description": "Description : Le lieu est-il actuellement accessible (actif ou inactif)\n\nExemple : true",
-                    "x-cardinality": 0
-                  },
-                  {
-                    "key": "source",
-                    "x-originalName": "source",
-                    "type": "string",
-                    "title": "SIREN de l'entité ayant fourni la donnée",
-                    "icon": "mdi-text-short",
-                    "x-capabilities": {
-                      "textAgg": false
-                    },
-                    "description": "Description : SIREN de l'entité ayant fourni la donnée\n\nExemple : 225300011",
-                    "pattern": "^\\d{9}$",
-                    "x-cardinality": 0
-                  },
-                  {
-                    "key": "xlong",
-                    "x-originalName": "Xlong",
-                    "type": "number",
-                    "title": "Longitude",
-                    "icon": "mdi-numeric",
-                    "description": "Description : La longitude en degrés décimaux (point comme séparateur décimal, avec au moins 4 chiffres après le point décimal) de la localisation de l’entrée du lieu de covoiturage exprimée dans le système de coordonnées WGS84\n\nExemple : 1.452323",
-                    "x-refersTo": "http://schema.org/longitude",
-                    "x-concept": {
-                      "id": "longitude",
-                      "title": "Longitude",
-                      "primary": true
-                    }
-                  },
-                  {
-                    "key": "ylat",
-                    "x-originalName": "Ylat",
-                    "type": "number",
-                    "title": "Latitude ",
-                    "icon": "mdi-numeric",
-                    "description": "Description : La latitude en degrés décimaux (point comme séparateur décimal, avec au moins 4 chiffres après le point décimal) de la localisation de l’entrée du lieu de covoiturage exprimée dans le système de coordonnées WGS84\n\nExemple : 46.59698",
-                    "x-refersTo": "http://schema.org/latitude",
-                    "x-concept": {
-                      "id": "latitude",
-                      "title": "Latitude",
-                      "primary": true
-                    }
-                  },
-                  {
-                    "key": "nbre_pl",
-                    "x-originalName": "nbre_pl",
-                    "type": "integer",
-                    "title": "Le nombre de places réservées au stationnement disponibles",
-                    "icon": "mdi-numeric",
-                    "description": "Description : Le nombre de places réservées au stationnement disponibles\n\nExemple : 42",
-                    "x-cardinality": 0
-                  },
-                  {
-                    "key": "nbre_pmr",
-                    "x-originalName": "nbre_pmr",
-                    "type": "integer",
-                    "title": "Le nombre de places PMR disponibles",
-                    "icon": "mdi-numeric",
-                    "description": "Description : Le nombre de places PMR disponibles\n\nExemple : 3",
-                    "x-cardinality": 0
-                  },
-                  {
-                    "key": "duree",
-                    "x-originalName": "duree",
-                    "type": "integer",
-                    "title": "Durée de stationnement autorisée",
-                    "icon": "mdi-numeric",
-                    "description": "Description : S'il existe une restriction sur la durée de stationnement autorisée, la durée maximale de stationnement autorisée exprimée en minutes\n\nExemple : 60",
-                    "x-cardinality": 0
-                  },
-                  {
-                    "key": "horaires",
-                    "x-originalName": "horaires",
-                    "type": "string",
-                    "title": "Jours et horaires d'ouverture de l'équipement",
-                    "icon": "mdi-text-short",
-                    "x-capabilities": {
-                      "textAgg": false
-                    },
-                    "description": "Description : Ce champ permet de renseigner, si l'information est connue, les jours et horaires d'ouverture de l'équipement. Le format attendu doit respecter celui proposé par OSM pour le champ [opening_hours](https://wiki.openstreetmap.org/wiki/FR:Key:opening_hours)\n\nExemple : Mo-Fr 08:00-20:00",
-                    "x-cardinality": 0
-                  },
-                  {
-                    "key": "proprio",
-                    "x-originalName": "proprio",
-                    "type": "string",
-                    "title": "Nom de l'aménageur",
-                    "icon": "mdi-text-short",
-                    "x-capabilities": {
-                      "textAgg": false
-                    },
-                    "description": "Description : Le nom de l'aménageur, c'est-à-dire de l'entité publique ou privée propriétaire des infrastructures\n\nExemple : Département",
-                    "x-cardinality": 0
-                  },
-                  {
-                    "key": "lumiere",
-                    "x-originalName": "lumiere",
-                    "type": "boolean",
-                    "title": "Éclairage nocturne est-il présent",
-                    "icon": "mdi-checkbox-marked-circle-outline",
-                    "x-cardinality": 0,
-                    "description": "Description : Un éclairage nocturne est-il présent"
-                  },
-                  {
-                    "key": "comm",
-                    "x-originalName": "comm",
-                    "type": "string",
-                    "title": "Commentaires",
-                    "icon": "mdi-text-short",
-                    "x-capabilities": {
-                      "textAgg": false
-                    },
-                    "description": "Description : Commentaires éventuels sur les commodités mises à disposition du grand public comme : le numéro de téléphone unique qui indique les services disponibles au moment de l'arrivée sur l'aire pour réaliser le dernier kilomètre ; la présence de prises 220V ou USB ; accès à du réseau (télécom, WiFi) ; sanitaires ; intermodalité en transports\n\nExemple : Présence de sanitaires et accès à de l'eau courante",
-                    "x-cardinality": 0
-                  },
-                  {
-                    "x-calculated": true,
-                    "key": "_geopoint",
-                    "type": "string",
-                    "title": "Coordonnée géographique",
-                    "description": "Centroïde au format \"lat,lon\"",
-                    "x-refersTo": "http://www.w3.org/2003/01/geo/wgs84_pos#lat_long",
-                    "x-concept": {
-                      "id": "latLon",
-                      "title": "Latitude / Longitude",
-                      "primary": true
-                    }
-                  },
-                  {
-                    "x-calculated": true,
-                    "key": "_updatedAt",
-                    "type": "string",
-                    "format": "date-time",
-                    "title": "Date de mise à jour",
-                    "description": "Date de dernière mise à jour de la ligne du jeu de données"
-                  },
-                  {
-                    "x-calculated": true,
-                    "key": "_id",
-                    "type": "string",
-                    "format": "uri-reference",
-                    "title": "Identifiant",
-                    "description": "Identifiant unique parmi toutes les lignes du jeu de données"
-                  },
-                  {
-                    "x-calculated": true,
-                    "key": "_i",
-                    "type": "integer",
-                    "title": "Numéro de ligne",
-                    "description": "Indice de la ligne dans le fichier d'origine"
-                  },
-                  {
-                    "x-calculated": true,
-                    "key": "_rand",
-                    "type": "integer",
-                    "title": "Nombre aléatoire",
-                    "description": "Un nombre aléatoire associé à la ligne qui permet d'obtenir un tri aléatoire par exemple"
-                  }
-                ],
-                "owner": {
-                  "type": "organization",
-                  "id": "5a5dc47163ebd4a6f438589b",
-                  "name": "Koumoul",
-                  "department": "data",
-                  "departmentName": "Données de référence"
-                },
-                "id": "56yvurmnqzzbh2vszd0t99en",
-                "slug": "schema-lieux-de-covoiturage",
-                "userPermissions": [
-                  "list",
-                  "readDescription",
-                  "readSchema",
-                  "readSafeSchema",
-                  "readLines",
-                  "getGeoAgg",
-                  "getValuesAgg",
-                  "getValues",
-                  "getMetricAgg",
-                  "getSimpleMetricsAgg",
-                  "getWordsAgg",
-                  "getMinAgg",
-                  "getMaxAgg",
-                  "downloadOriginalData",
-                  "downloadFullData",
-                  "readApiDoc",
-                  "realtime-transactions",
-                  "readLine",
-                  "readLineRevisions",
-                  "readRevisions",
-                  "bulkSearch",
-                  "listDataFiles",
-                  "downloadDataFile",
-                  "downloadMetadataAttachment",
-                  "downloadAttachment",
-                  "getReadApiKey",
-                  "readCompatODSRecords"
-                ],
-                "public": true,
-                "visibility": "public",
-                "previews": [
-                  {
-                    "id": "table",
-                    "title": "Tableau",
-                    "href": "http://localhost:5888/data-fair/embed/dataset/56yvurmnqzzbh2vszd0t99en/table"
-                  }
-                ],
-                "href": "http://localhost:5888/data-fair/api/v1/datasets/56yvurmnqzzbh2vszd0t99en",
-                "page": "http://localhost:5888/data-fair/dataset/56yvurmnqzzbh2vszd0t99en"
-              }
-            },
-            {
-              "width": 2,
-              "type": "column",
-              "elements": [
-                {
-                  "type": "tablePreview",
-                  "height": 100,
-                  "source": "root",
-                  "display": "table",
-                  "noInteractions": false,
-                  "valueMandatory": false
+                  ],
+                  "meta": {
+                    "title": "Treemap",
+                    "description": "Cette application permet de générer des treemap pour voir les informations hierachiques",
+                    "keywords": [],
+                    "charset": "utf-8",
+                    "viewport": "width=device-width,initial-scale=1.0",
+                    "df:overflow": "false",
+                    "df:sync-state": "true",
+                    "df:filter-concepts": "true",
+                    "application-name": "app-treemap",
+                    "thumbnail": "thumbnail.png"
+                  },
+                  "url": "https://koumoul.com/apps/app-treemap/1.1/"
                 }
-              ]
+              }
             }
           ],
-          "height": 800
+          "height": 600
         }
       ],
-      "title": "Ma section"
+      "uuid": "4f903eb0-306c-4b7d-adb8-4fda95fa3dd7",
+      "title": ""
+    },
+    {
+      "rows": [
+        {
+          "elements": [
+            {
+              "width": 2,
+              "type": "application",
+              "mandatoryFilters": [],
+              "valueMandatory": false,
+              "source": "root",
+              "application": {
+                "id": "G7IDgu9zHdMSu3FbgiNSK",
+                "title": "Etat des projets à date",
+                "baseApp": {
+                  "_id": "670e68b78db1ae5c073859f4",
+                  "id": "https:cdn.jsdelivr.netnpm@data-fairapp-charts@1.2dist",
+                  "datasetsFilters": [
+                    {
+                      "field-type": [
+                        "integer",
+                        "number"
+                      ],
+                      "select": [
+                        "id",
+                        "title"
+                      ],
+                      "sort": [
+                        "createdAt:-1"
+                      ]
+                    }
+                  ],
+                  "meta": {
+                    "title": "Graphiques diversdata-fair-chartsdata-fair-charts",
+                    "description": "A simple charts application for data-fair.",
+                    "keywords": [
+                      "data-fair",
+                      "charts",
+                      "graphs"
+                    ],
+                    "charset": "UTF-8",
+                    "viewport": "width=device-width, initial-scale=1.0",
+                    "df:overflow": "false",
+                    "df:sync-state": "true",
+                    "df:filter-concepts": "true",
+                    "thumbnail": "thumbnail.png",
+                    "application-name": "Charts",
+                    "vocabulary-accept": "http://www.w3.org/2000/01/rdf-schema#label",
+                    "vocabulary-require": "http://www.w3.org/2003/01/geo/wgs84_pos#lat_long"
+                  },
+                  "url": "https://cdn.jsdelivr.net/npm/@data-fair/app-charts@1.2/dist/"
+                }
+              }
+            },
+            {
+              "width": 2,
+              "type": "application",
+              "mandatoryFilters": [],
+              "valueMandatory": false,
+              "source": "root",
+              "application": {
+                "id": "5mvHxGU3fIJuEvbARkvx7",
+                "title": "Thématiques des projets",
+                "baseApp": {
+                  "_id": "670e68b78db1ae5c073859f4",
+                  "id": "https:cdn.jsdelivr.netnpm@data-fairapp-charts@1.2dist",
+                  "datasetsFilters": [
+                    {
+                      "field-type": [
+                        "integer",
+                        "number"
+                      ],
+                      "select": [
+                        "id",
+                        "title"
+                      ],
+                      "sort": [
+                        "createdAt:-1"
+                      ]
+                    }
+                  ],
+                  "meta": {
+                    "title": "Graphiques diversdata-fair-chartsdata-fair-charts",
+                    "description": "A simple charts application for data-fair.",
+                    "keywords": [
+                      "data-fair",
+                      "charts",
+                      "graphs"
+                    ],
+                    "charset": "UTF-8",
+                    "viewport": "width=device-width, initial-scale=1.0",
+                    "df:overflow": "false",
+                    "df:sync-state": "true",
+                    "df:filter-concepts": "true",
+                    "thumbnail": "thumbnail.png",
+                    "application-name": "Charts",
+                    "vocabulary-accept": "http://www.w3.org/2000/01/rdf-schema#label",
+                    "vocabulary-require": "http://www.w3.org/2003/01/geo/wgs84_pos#lat_long"
+                  },
+                  "url": "https://cdn.jsdelivr.net/npm/@data-fair/app-charts@1.2/dist/"
+                }
+              }
+            }
+          ],
+          "height": 400
+        }
+      ],
+      "uuid": "6046b654-9bd6-419a-be6c-9249e30e4f97",
+      "title": ""
+    },
+    {
+      "rows": [
+        {
+          "elements": [
+            {
+              "width": 2,
+              "type": "application",
+              "mandatoryFilters": [],
+              "valueMandatory": false,
+              "source": "root",
+              "application": {
+                "id": "ttCD573NwdCNelZonSy_E",
+                "title": "Carte nombre de projets",
+                "baseApp": {
+                  "_id": "669fc96c8db1ae5c074537d4",
+                  "id": "https:koumoul.comappsinfos-territoires1.1",
+                  "datasetsFilters": [
+                    {
+                      "select": [
+                        "id",
+                        "title",
+                        "schema",
+                        "bbox"
+                      ],
+                      "concepts": [
+                        "https://purl.org/geojson/vocab#geometry",
+                        "http://data.ign.fr/def/geometrie#Geometry"
+                      ]
+                    }
+                  ],
+                  "meta": {
+                    "title": "Infos territoires",
+                    "description": "Cette application permet de visualiser sur une même carte des informations sur les territoires provenant de plusieurs sources de données.",
+                    "keywords": [
+                      "cartographie",
+                      "territoires"
+                    ],
+                    "charset": "utf-8",
+                    "viewport": "width=device-width,initial-scale=1.0",
+                    "x-capture": "trigger",
+                    "df:overflow": "false",
+                    "df:sync-state": "true",
+                    "df:filter-concepts": "true",
+                    "application-name": "infos-territoires",
+                    "thumbnail": "thumbnail.png"
+                  },
+                  "url": "https://koumoul.com/apps/infos-territoires/1.1/"
+                }
+              }
+            },
+            {
+              "width": 2,
+              "type": "application",
+              "mandatoryFilters": [],
+              "valueMandatory": false,
+              "source": "root",
+              "application": {
+                "id": "F117bkN4g7FhjdyxkGCpk",
+                "title": "Durée des projets",
+                "baseApp": {
+                  "_id": "670fe4038db1ae5c07b1f5fd",
+                  "id": "https:koumoul.comappstimelines-chart0.3",
+                  "datasetsFilters": [
+                    {
+                      "concepts": [
+                        "https://schema.org/endDate",
+                        "https://schema.org/startDate"
+                      ],
+                      "select": [
+                        "id",
+                        "title",
+                        "schema"
+                      ],
+                      "sort": [
+                        "createdAt:-1"
+                      ]
+                    }
+                  ],
+                  "meta": {
+                    "title": "Diagramme Timeline",
+                    "description": "Cette application permet de visualiser des informations temporelles.",
+                    "keywords": [],
+                    "charset": "utf-8",
+                    "viewport": "width=device-width,initial-scale=1",
+                    "df:capture-width": "1400",
+                    "df:capture-height": "auto",
+                    "df:overflow": "false",
+                    "df:sync-state": "true",
+                    "df:filter-concepts": "true",
+                    "application-name": "Diagramme Timeline",
+                    "version": "development"
+                  },
+                  "url": "https://koumoul.com/apps/timelines-chart/0.3/"
+                }
+              }
+            }
+          ],
+          "height": 600
+        }
+      ],
+      "uuid": "397e7e10-93c8-49ae-a6f1-160c4fb56968",
+      "title": ""
     }
   ],
-  "sectionsGroup": "accordion",
-  "allowDuplicate": false,
+  "sectionsGroup": "flow",
   "addressFilter": false,
-  "periodFilter": false,
+  "periodFilter": true,
+  "filters": [
+    {
+      "showAllValues": false,
+      "forceOneValue": false,
+      "multipleValues": false,
+      "values": [
+        "etat"
+      ],
+      "labelField": "etat"
+    },
+    {
+      "showAllValues": false,
+      "forceOneValue": false,
+      "multipleValues": true,
+      "values": [
+        "thematique"
+      ],
+      "labelField": "thematique"
+    },
+    {
+      "showAllValues": false,
+      "forceOneValue": false,
+      "multipleValues": true,
+      "values": [
+        "region_du_projet"
+      ],
+      "labelField": "region_du_projet"
+    },
+    {
+      "showAllValues": false,
+      "forceOneValue": false,
+      "multipleValues": false,
+      "values": [
+        "action_nom"
+      ],
+      "labelField": "action_nom"
+    }
+  ],
   "datasets": [
     {
-      "href": "http://localhost:5888/data-fair/api/v1/datasets/skhn9yvc0np-8k7n3u9jdng8",
-      "title": "Base Nationale des Commerces Ouverte - BANCO",
-      "id": "skhn9yvc0np-8k7n3u9jdng8",
-      "slug": "base-nationale-des-commerces-ouverte-banco",
+      "href": "http://localhost:5888/data-fair/api/v1/datasets/1tdtt1aw6dg08h78iuu13lp5",
+      "title": "France2030-Projets",
+      "id": "1tdtt1aw6dg08h78iuu13lp5",
       "schema": [
         {
-          "key": "x",
-          "x-originalName": "X",
-          "type": "number",
-          "x-cardinality": 100,
-          "description": "",
-          "x-refersTo": "http://schema.org/longitude",
-          "x-concept": {
-            "id": "longitude",
-            "title": "Longitude",
-            "primary": true
-          }
-        },
-        {
-          "key": "y",
-          "x-originalName": "Y",
-          "type": "number",
-          "x-cardinality": 100,
-          "description": "",
-          "x-refersTo": "http://schema.org/latitude",
-          "x-concept": {
-            "id": "latitude",
-            "title": "Latitude",
-            "primary": true
-          }
-        },
-        {
-          "key": "osm_id",
-          "x-originalName": "osm_id",
+          "key": "eotp_projet",
+          "x-originalName": "Eotp Projet",
           "type": "string",
-          "x-cardinality": 666415,
+          "x-cardinality": 1725,
           "description": ""
         },
         {
-          "key": "type",
-          "x-originalName": "type",
+          "key": "acronyme",
+          "x-originalName": "Acronyme",
           "type": "string",
-          "x-cardinality": 1708,
+          "x-cardinality": 1725,
           "description": ""
         },
         {
-          "key": "name",
-          "x-originalName": "name",
-          "type": "string",
-          "x-cardinality": 367174,
-          "description": "",
-          "x-refersTo": "http://www.w3.org/2000/01/rdf-schema#label",
-          "x-concept": {
-            "id": "label",
-            "title": "Libellé",
-            "primary": true
-          }
-        },
-        {
-          "key": "brand",
-          "x-originalName": "brand",
-          "type": "string",
-          "x-cardinality": 4854,
-          "description": ""
-        },
-        {
-          "key": "operator",
-          "x-originalName": "operator",
-          "type": "string",
-          "x-cardinality": 17381,
-          "description": ""
-        },
-        {
-          "key": "wheelchair",
-          "x-originalName": "wheelchair",
-          "type": "string",
-          "x-cardinality": 22,
-          "description": ""
-        },
-        {
-          "key": "opening_hours",
-          "x-originalName": "opening_hours",
+          "key": "resume",
+          "x-originalName": "Résumé",
           "type": "string",
           "x-display": "textarea",
           "x-capabilities": {
@@ -2196,187 +647,235 @@
             "values": false,
             "insensitive": false
           },
-          "description": "",
-          "x-refersTo": "https://schema.org/openingHours",
-          "x-concept": {
-            "id": "openingHours",
-            "title": "Horaires d'ouverture",
-            "primary": true
-          }
-        },
-        {
-          "key": "level",
-          "x-originalName": "level",
-          "type": "string",
-          "x-cardinality": 71,
           "description": ""
         },
         {
-          "key": "siret",
-          "x-originalName": "siret",
+          "key": "thematique",
+          "x-originalName": "Thématique",
           "type": "string",
-          "x-cardinality": 99099,
+          "x-cardinality": 9,
           "description": "",
-          "x-refersTo": "http://www.datatourisme.fr/ontology/core/1.0/#siret",
-          "x-concept": {
-            "id": "siret",
-            "title": "SIRET",
-            "primary": true
-          }
+          "enum": [
+            "5 - Bio Med",
+            "2 - SMI",
+            "7 - Multi-thématiques et autres",
+            "8 - Formation",
+            "4 - Agro Eco",
+            "1 - Math Info",
+            "3 - STUE",
+            "6 - SHS",
+            "Divers"
+          ]
         },
         {
-          "key": "profession_ref",
-          "x-originalName": "profession_ref",
+          "key": "pia",
+          "x-originalName": "PIA",
           "type": "string",
-          "x-cardinality": 47353,
+          "x-cardinality": 5,
+          "description": "",
+          "enum": [
+            "4",
+            "1",
+            "3",
+            "FR30",
+            "2"
+          ]
+        },
+        {
+          "key": "cd_action_historique",
+          "x-originalName": "CD Action historique",
+          "type": "string",
+          "x-cardinality": 120,
           "description": ""
         },
         {
-          "key": "wikidata",
-          "x-originalName": "wikidata",
+          "key": "action_nom",
+          "x-originalName": "Action Nom",
           "type": "string",
-          "x-cardinality": 3031,
+          "x-display": "textarea",
+          "x-capabilities": {
+            "index": false,
+            "values": false,
+            "insensitive": false
+          },
           "description": ""
         },
         {
-          "key": "website",
-          "x-originalName": "website",
-          "type": "string",
-          "x-cardinality": 145559,
-          "description": "",
-          "x-refersTo": "https://schema.org/WebPage",
-          "x-concept": {
-            "id": "webPage",
-            "title": "Page Web",
-            "primary": true
-          }
-        },
-        {
-          "key": "phone",
-          "x-originalName": "phone",
-          "type": "string",
-          "x-cardinality": 199908,
-          "description": "",
-          "x-refersTo": "https://www.w3.org/2006/vcard/ns#tel",
-          "x-concept": {
-            "id": "tel",
-            "title": "N° de téléphone",
-            "primary": true
-          }
-        },
-        {
-          "key": "email",
-          "x-originalName": "email",
-          "type": "string",
-          "x-cardinality": 30841,
-          "description": "",
-          "x-refersTo": "https://www.w3.org/2006/vcard/ns#email",
-          "x-concept": {
-            "id": "email",
-            "title": "Adresse e-mail",
-            "primary": true
-          }
-        },
-        {
-          "key": "facebook",
-          "x-originalName": "facebook",
-          "type": "string",
-          "x-cardinality": 24367,
-          "description": ""
-        },
-        {
-          "key": "address",
-          "x-originalName": "address",
-          "type": "string",
-          "x-cardinality": 155396,
-          "description": ""
-        },
-        {
-          "key": "com_insee",
-          "x-originalName": "com_insee",
-          "type": "string",
-          "x-cardinality": 21907,
-          "description": "",
-          "x-refersTo": "http://rdf.insee.fr/def/geo#codeCommune",
-          "x-concept": {
-            "id": "codeCommune",
-            "title": "Code commune",
-            "primary": true
-          }
-        },
-        {
-          "key": "com_nom",
-          "x-originalName": "com_nom",
-          "type": "string",
-          "x-cardinality": 21129,
-          "description": "",
-          "x-refersTo": "http://schema.org/City",
-          "x-concept": {
-            "id": "city",
-            "title": "Commune",
-            "primary": true
-          }
-        },
-        {
-          "key": "last_update",
-          "x-originalName": "last_update",
+          "key": "date_contract",
+          "x-originalName": "Date Contract.",
           "type": "string",
           "format": "date",
-          "x-cardinality": 5762,
+          "x-cardinality": 655,
           "description": ""
         },
         {
-          "key": "date_debut",
-          "x-originalName": "date_debut",
+          "key": "total_conventionne",
+          "x-originalName": "Total Conventionné",
+          "type": "number",
+          "x-cardinality": 1342,
+          "description": ""
+        },
+        {
+          "key": "etat",
+          "x-originalName": "Etat",
+          "type": "string",
+          "x-cardinality": 2,
+          "description": "",
+          "enum": [
+            "Actif",
+            "Clôturé"
+          ]
+        },
+        {
+          "key": "region_du_projet",
+          "x-originalName": "Region du projet",
+          "type": "string",
+          "x-cardinality": 19,
+          "description": "",
+          "enum": [
+            "Île-de-France",
+            "Auvergne-Rhône-Alpes",
+            "Occitanie",
+            "Nouvelle-Aquitaine",
+            "Grand Est",
+            "Provence-Alpes-Côte d'Azur",
+            "Bretagne",
+            "Hauts-de-France",
+            "Pays de la Loire",
+            "Bourgogne-Franche-Comté",
+            "Centre-Val de Loire",
+            "Normandie",
+            "Nouvelle-Calédonie",
+            "Guyane",
+            "Corse",
+            "Guadeloupe",
+            "La Réunion",
+            "Mayotte",
+            "Polynésie Française"
+          ]
+        },
+        {
+          "key": "date_init",
+          "x-originalName": "Date Init",
           "type": "string",
           "format": "date",
-          "title": "",
-          "icon": "mdi-calendar",
-          "x-extension": "date_debut",
-          "x-cardinality": 1,
+          "x-cardinality": 656,
+          "description": ""
+        },
+        {
+          "key": "date_debut_projet",
+          "x-originalName": "Date Début Projet",
+          "type": "string",
+          "format": "date",
+          "x-cardinality": 345,
           "description": "",
           "x-refersTo": "https://schema.org/startDate",
           "x-concept": {
             "id": "startDate",
             "title": "Date de début",
             "primary": true
-          },
-          "enum": [
-            "2000-01-01T00:00:00.000Z"
-          ]
+          }
         },
         {
           "key": "date_fin",
-          "x-originalName": "date_fin",
+          "x-originalName": "Date Fin",
           "type": "string",
           "format": "date",
-          "title": "",
-          "icon": "mdi-calendar",
-          "x-extension": "date_fin",
-          "x-cardinality": 1,
+          "x-cardinality": 363,
           "description": "",
           "x-refersTo": "https://schema.org/endDate",
           "x-concept": {
             "id": "endDate",
             "title": "Date de fin",
             "primary": true
+          }
+        },
+        {
+          "key": "code_region_tg",
+          "x-originalName": "Code_Region_TG",
+          "type": "string",
+          "x-cardinality": 18,
+          "description": "",
+          "x-refersTo": "http://rdf.insee.fr/def/geo#codeRegion",
+          "x-concept": {
+            "id": "codeRegion",
+            "title": "Code région",
+            "primary": true
           },
           "enum": [
-            "2100-01-01T00:00:00.000Z"
+            "11",
+            "84",
+            "76",
+            "75",
+            "44",
+            "93",
+            "53",
+            "32",
+            "52",
+            "27",
+            "24",
+            "28",
+            "988",
+            "03",
+            "01",
+            "04",
+            "06",
+            "94"
           ]
         },
         {
-          "x-calculated": true,
-          "key": "_geopoint",
+          "key": "annee_contract",
+          "x-originalName": "annee_contract",
+          "type": "integer",
+          "x-cardinality": 14,
+          "description": "",
+          "enum": [
+            2023,
+            2024,
+            2012,
+            2022,
+            2021,
+            2013,
+            2018,
+            2020,
+            2011,
+            2017,
+            2019,
+            2016,
+            2014,
+            2015
+          ]
+        },
+        {
+          "key": "action_nom_long",
+          "x-originalName": "action_nom_long",
           "type": "string",
-          "title": "Coordonnée géographique",
-          "description": "Centroïde au format \"lat,lon\"",
-          "x-refersTo": "http://www.w3.org/2003/01/geo/wgs84_pos#lat_long",
-          "x-concept": {
-            "id": "latLon",
-            "title": "Latitude / Longitude",
-            "primary": true
-          }
+          "x-cardinality": 99,
+          "description": ""
+        },
+        {
+          "key": "type_daction",
+          "x-originalName": "Type d'Action",
+          "type": "string",
+          "x-cardinality": 5,
+          "description": "",
+          "enum": [
+            "Recherche",
+            "Formation",
+            "Structuration",
+            "Equipement",
+            "Valorisation"
+          ]
+        },
+        {
+          "key": "duree",
+          "x-originalName": "duree",
+          "type": "number",
+          "title": "",
+          "icon": "mdi-numeric",
+          "x-extension": "duree",
+          "x-cardinality": 370,
+          "description": ""
         },
         {
           "x-calculated": true,
@@ -2402,31 +901,63 @@
         }
       ],
       "timePeriod": {
-        "startDate": "2000-01-01T00:00:00.000Z",
-        "endDate": "2100-01-01T00:00:00.000Z"
+        "startDate": "2011-02-09T00:00:00.000Z",
+        "endDate": "2034-08-31T00:00:00.000Z"
       },
-      "bbox": [
-        -178.17886926233768,
-        -23.884785287082195,
-        168.08429583907127,
-        51.0877622757107
-      ]
-    },
-    {
-      "id": "im3-1xqdhf1nxtfzuhtz2--l",
-      "title": "Base Permanente des Equipements - 2023",
-      "href": "http://localhost:5888/data-fair/api/v1/datasets/im3-1xqdhf1nxtfzuhtz2--l"
-    },
-    {
-      "id": "56yvurmnqzzbh2vszd0t99en",
-      "title": "Schéma - Lieux de covoiturage",
-      "href": "http://localhost:5888/data-fair/api/v1/datasets/56yvurmnqzzbh2vszd0t99en"
+      "finalizedAt": "2024-10-16T13:19:16.112Z",
+      "slug": "france-2030-projets"
     }
   ],
+  "title": "",
+  "staticFilters": [],
   "applications": [
     {
-      "id": "X92dhFrbAQrneNOwo0iF0",
-      "title": "Pyramide des âges - France"
+      "id": "I1pTNUb4bClralFly-xGj",
+      "title": "Métriques France 2030"
+    },
+    {
+      "id": "rpaqZ_FU3K7-fg03qr78R",
+      "title": "Métriques France 2030 - Actifs - Clos"
+    },
+    {
+      "id": "jl5gvInt2R6bqqn7WmAiQ",
+      "title": "Charts - Montants - france2030 projets"
+    },
+    {
+      "id": "kJRuVWMbyBSa-aIzc3dzc",
+      "title": "Charts - Nombre de projets par année de contractualisation"
+    },
+    {
+      "id": "uNxf33szf240vfrN5bnT4",
+      "title": "Nombre de projets par famille d'action"
+    },
+    {
+      "id": "sJeXGFaMrN4t8XzeX0h1i",
+      "title": "Montant conventionné (€) Par famille d'action"
+    },
+    {
+      "id": "TR4Plsa5mKsMjoy4193dK",
+      "title": "Tree - Montant conventionné par action (€)"
+    },
+    {
+      "id": "G7IDgu9zHdMSu3FbgiNSK",
+      "title": "Etat des projets à date"
+    },
+    {
+      "id": "5mvHxGU3fIJuEvbARkvx7",
+      "title": "Thématiques des projets"
+    },
+    {
+      "id": "ttCD573NwdCNelZonSy_E",
+      "title": "Carte nombre de projets"
+    },
+    {
+      "id": "F117bkN4g7FhjdyxkGCpk",
+      "title": "Durée des projets"
     }
-  ]
+  ],
+  "showSources": false,
+  "showEmbed": false,
+  "showCapture": false,
+  "allowDuplicate": false
 }

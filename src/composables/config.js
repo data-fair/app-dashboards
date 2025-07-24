@@ -1,34 +1,43 @@
-import { inject } from 'vue'
-
-import reactiveSearchParams from '@data-fair/lib-vue/reactive-search-params-global.js'
+import { inject, ref, computed } from 'vue'
 import createDFrameAdapter from '@data-fair/frame/lib/vue-reactive/state-change-adapter.js'
+import reactiveSearchParams from '@data-fair/lib-vue/reactive-search-params-global.js'
+
+const dFrameAdapter = createDFrameAdapter(reactiveSearchParams)
 
 export function createConfig () {
-  const application = window.APPLICATION
-  const config = application.configuration
-  if (!config) throw new Error('Il n\'y a pas de configuration définie')
-  const dataset = config.datasets?.[0]
-  if (!dataset) throw new Error('Veuillez choisir un source de données pour le filtre commun')
-  const schema = dataset.schema
-  if (!schema) throw new Error('La source de données n\'a pas de schéma')
-  const fields = schema.reduce((a, b) => { a[b.key] = b; return a }, {})
+  const config = ref(window.APPLICATION?.configuration)
+  if (reactiveSearchParams.draft === 'true') {
+    window.addEventListener('message', msg => {
+      if (msg.data.type === 'set-config') {
+        config.value = msg.data.content
+      }
+    })
+  }
 
-  const last = application.exposedUrl.split('/').pop()
-  const toks = last.split('%3A')
-  const accessKey = (toks.length === 2) ? toks[0] : null
+  const last = window.APPLICATION?.exposedUrl?.split('/').pop()
+  const toks = last?.split('%3A')
+  const accessKey = (toks?.length === 2) ? toks[0] : null
 
-  const dFrameAdapter = createDFrameAdapter(reactiveSearchParams)
-
+  const error = computed(() => {
+    if (!config.value) return 'Il n\'y a pas de configuration définie'
+    if (!config.value.datasets?.length) return 'Veuillez choisir une source de données pour le filtre commun'
+    if (!config.value.datasets?.[0]?.schema) return 'La source de données n\'a pas de schéma'
+    return null
+  })
   return {
     install (app) {
-      app.provide('data-fair-app-config', {
-        application,
+      const rConfig = {
+        application: window.APPLICATION,
         config,
-        dataset,
-        fields,
+        filters: computed(() => config.value?.filters),
+        dataset: computed(() => config.value?.datasets?.[0]),
+        sections: computed(() => config.value?.sections),
+        fields: computed(() => config.value?.datasets?.[0]?.schema.reduce((a, b) => { a[b.key] = b; return a }, {})),
         accessKey,
-        dFrameAdapter
-      })
+        dFrameAdapter,
+        error
+      }
+      app.provide('data-fair-app-config', rConfig)
     }
   }
 }

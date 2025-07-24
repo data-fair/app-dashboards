@@ -40,6 +40,7 @@
           "type": "array",
           "title": "Filtres dynamiques du tableau de bord",
           "layout": {
+            "itemTitle": "(data.multipleValues ? 'Contient ' : 'Egal à ') + data.labelField",
             "messages": {
               "addItem": "ajouter un filtre dynamique"
             }
@@ -47,6 +48,14 @@
           "items": {
             "type": "object",
             "required": ["labelField"],
+            "layout": {
+              "switch": [
+                {
+                  "if": "summary",
+                  "children": []
+                }
+              ]
+            },
             "properties": {
               "labelField": {
                 "title": "Colonne de libellé du filtre",
@@ -121,8 +130,7 @@
           "title": "Sections",
           "type": "array",
           "layout": {
-            "itemTitle": "data.title + ' - ' + ([].concat(...(data.rows||[]).map(r => [].concat(...(r.elements||[])))).length || 0) + ' éléments'",
-            "itemCopy": "{...item, uuid: crypto.randomUUID()}",
+            "itemTitle": "(data.title || 'Section') + ' - ' + ([].concat(...(data.rows||[]).map(r => [].concat(...(r.elements||[])))).length || 0) + ' éléments'",
             "messages": {
               "addItem": "ajouter une section"
             }
@@ -142,18 +150,12 @@
                 {
                   "children": []
                 }
-              ],
-              "getDefaultData": "{ uuid: crypto.randomUUID(), title: 'Section ' + parent.parent.data.sections.length }"
+              ]
             },
-            "required": ["title"],
             "properties": {
               "title": {
                 "type": "string",
                 "title": "Libellé"
-              },
-              "uuid": {
-                "type": "string",
-                "layout": "none"
               },
               "icon": {
                 "type": "object",
@@ -398,10 +400,18 @@
               "type": "boolean",
               "default": false
             },
+            "ignoreFilters": {
+              "title": "Ignorer les filtres",
+              "type": "boolean",
+              "default": false
+            },
             "valueMandatory": {
               "title": "Nécessite une valeur dans des filtres",
               "type": "boolean",
-              "default": false
+              "default": false,
+              "layout": {
+                "if": "!parent.data.ignoreFilters"
+              }
             },
             "mandatoryFilters": {
               "title": "Filtres requis",
@@ -428,8 +438,7 @@
                 "if": "!data.dataset",
                 "children": ["dataset"]
               }
-            ],
-            "getDefaultData": "{ uuid: crypto.randomUUID() }"
+            ]
           },
           "properties": {
             "source": {
@@ -503,10 +512,18 @@
               "type": "boolean",
               "default": false
             },
+            "ignoreFilters": {
+              "title": "Ignorer les filtres",
+              "type": "boolean",
+              "default": false
+            },
             "valueMandatory": {
               "title": "Nécessite une valeur dans des filtres",
               "type": "boolean",
-              "default": false
+              "default": false,
+              "layout": {
+                "if": "!parent.data.ignoreFilters"
+              }
             },
             "mandatoryFilters": {
               "title": "Filtres requis",
@@ -574,10 +591,18 @@
                 }
               }
             },
+            "ignoreFilters": {
+              "title": "Ignorer les filtres",
+              "type": "boolean",
+              "default": false
+            },
             "valueMandatory": {
               "title": "Nécessite une valeur dans des filtres",
               "type": "boolean",
-              "default": false
+              "default": false,
+              "layout": {
+                "if": "!parent.data.ignoreFilters"
+              }
             },
             "mandatoryFilters": {
               "title": "Filtres requis",
@@ -647,10 +672,18 @@
                 }
               }
             },
+            "ignoreFilters": {
+              "title": "Ignorer les filtres",
+              "type": "boolean",
+              "default": false
+            },
             "valueMandatory": {
               "title": "Nécessite une valeur dans des filtres",
               "type": "boolean",
-              "default": false
+              "default": false,
+              "layout": {
+                "if": "!parent.data.ignoreFilters"
+              }
             },
             "mandatoryFilters": {
               "title": "Filtres requis",
