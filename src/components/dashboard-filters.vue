@@ -73,7 +73,7 @@ watch(filters, (newFilters) => {
             const fValues = filter.multipleValues ? JSON.parse(`[${filterValue}]`) : [filterValue]
             fValues.filter(v => !values.includes(v)).forEach(v => values.unshift(v))
           }
-          filtersState[filter.labelField].items.value = values
+          filtersState[filter.labelField].items.value = values.sort((a, b) => a.localeCompare(b, 'fr', { sensitivity: 'base' }))
         } catch (e) {
           messageType.value = 'error'
           messageContent.value = e.status + ' - ' + e.data

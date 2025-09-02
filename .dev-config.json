@@ -599,7 +599,7 @@
       "labelField": "thematique"
     },
     {
-      "showAllValues": false,
+      "showAllValues": true,
       "forceOneValue": false,
       "multipleValues": true,
       "values": [
