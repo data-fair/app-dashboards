@@ -77,7 +77,7 @@ const captureUrl = computed(() => {
   for (const [key, value] of Object.entries(props.filtersValues)) {
     params['app_' + key] = value
   }
-  return `${props.element.application.href}/capture?${new URLSearchParams(params).toString()}`
+  return `/data-fair/${props.element.application.href.split('/data-fair/').pop()}/capture?${new URLSearchParams(params).toString()}`
 })
 
 const embedCode = () => {
