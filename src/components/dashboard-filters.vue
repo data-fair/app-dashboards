@@ -22,8 +22,8 @@ let address
 const filtersState = {}
 
 watch(filters, (newFilters) => {
-  const datasetFilterPrefix = '_d_' + dataset.value.id + '_'
-  newFilters.forEach(filter => {
+  const datasetFilterPrefix = '_d_' + dataset.value?.id + '_';
+  (newFilters || []).forEach(filter => {
     if (!filtersState[filter.labelField]) {
       filtersState[filter.labelField] = { items: ref([]), loading: ref(false) }
       filtersState[filter.labelField].value = computed({
@@ -94,8 +94,8 @@ const updateValue = (filter, value) => {
 async function updateFilters (noFieldUpdate) {
   const datasetFilterPrefix = '_d_' + dataset.value.id + '_'
   let filtersValues = {}
-  const fieldsWithFilter = filters.value.filter(f => reactiveSearchParams[props.prefix + datasetFilterPrefix + f.labelField + '_in'])
-  if (fieldsWithFilter.length) {
+  const fieldsWithFilter = filters.value?.filter(f => reactiveSearchParams[props.prefix + datasetFilterPrefix + f.labelField + '_in'])
+  if (fieldsWithFilter?.length) {
     const filterFields = [].concat(...fieldsWithFilter.map(f => [].concat(f.values?.length ? f.values : f.labelField))).filter((f, i, s) => s.indexOf(f) === i)
     const activeFilters = (config.value.filters || []).filter(f => reactiveSearchParams[props.prefix + datasetFilterPrefix + f.labelField + '_in'])
     const params = Object.assign({
@@ -141,7 +141,7 @@ async function updateFilters (noFieldUpdate) {
     }
   })
   emit('update:model-value', filtersValues)
-  filters.value.forEach(filter => {
+  filters.value?.forEach(filter => {
     if (filter.labelField !== noFieldUpdate) filtersState[filter.labelField].searchItems()
   })
 }

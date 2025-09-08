@@ -19,7 +19,7 @@
     "not ie 11"
   ],
   "dependencies": {
-    "@data-fair/frame": "^0.12.1",
+    "@data-fair/frame": "^0.13.1",
     "@data-fair/lib-vue": "^1.23.0",
     "@data-fair/lib-vuetify": "^1.10.1",
     "@vueuse/core": "^12.0.0",
@@ -28,7 +28,7 @@
     "vuetify": "^3.7.4"
   },
   "devDependencies": {
-    "@data-fair/dev-server": "^2.0.19",
+    "@data-fair/dev-server": "^2.0.20",
     "@vitejs/plugin-vue": "^5.0.3",
     "eslint": "^8.49.0",
     "eslint-config-standard": "^17.1.0",

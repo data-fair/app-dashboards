@@ -12,7 +12,7 @@ const tab = [ref(null), ref(null)]
 let maxTitleLength = 0
 let sumTitleLength = 0
 
-const datasetFilterPrefix = '_d_' + dataset.value.id + '_'
+const datasetFilterPrefix = '_d_' + dataset.value?.id + '_'
 for (const filter of (config.value.filters || [])) {
   if (!reactiveSearchParams[datasetFilterPrefix + filter.labelField + '_in'] && filter.startValue) {
     reactiveSearchParams[datasetFilterPrefix + filter.labelField + '_in'] = filter.multipleValues ? JSON.stringify([filter.startValue]).slice(1, -1) : filter.startValue
@@ -26,8 +26,8 @@ if (config.value.periodFilter && !reactiveSearchParams.period) {
   reactiveSearchParams.period = period.join(',')
 }
 
-maxTitleLength = Math.max(...config.value.sections.map((/** @type{any} */s) => (s.title && s.title.length) || 0))
-sumTitleLength = config.value.sections.reduce((/** @type{any} */acc, /** @type{any} */s) => acc + ((s.title && s.title.length) || 0), 0)
+maxTitleLength = Math.max(...(config.value.sections?.map((/** @type{any} */s) => (s.title && s.title.length) || 0) || []))
+sumTitleLength = config.value.sections?.reduce((/** @type{any} */acc, /** @type{any} */s) => acc + ((s.title && s.title.length) || 0), 0)
 
 function updateSwitch (v) {
   if (v) reactiveSearchParams.view = 'compare'
@@ -71,11 +71,11 @@ function updateSwitch (v) {
           @update:model-value="value => filtersValues[i].value = value"
         />
         <dashboard-section
-          v-if="config.sections.length === 1"
+          v-if="config.sections?.length === 1"
           :section="config.sections[0]"
           :filters-values="filtersValues[i].value"
         />
-        <template v-else-if="config.sectionsGroup.includes('tabs')">
+        <template v-else-if="(config.sectionsGroup || []).includes('tabs')">
           <v-tabs
             v-if="config.sectionsGroup === 'tabs-tab'"
             v-model="tab[i].value"
@@ -147,7 +147,7 @@ function updateSwitch (v) {
           v-else-if="config.sectionsGroup === 'accordion'"
           multiple
           variant="accordion"
-          :model-value="config.sections.map((s, j) => j)"
+          :model-value="(config.sections || []).map((s, j) => j)"
         >
           <v-expansion-panel
             v-for="(section, j) of (config.sections || [])"

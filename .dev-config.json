@@ -1,800 +1,160 @@
 {
-  "sections": [
-    {
-      "rows": [
-        {
-          "elements": [
-            {
-              "width": 1,
-              "type": "application",
-              "mandatoryFilters": [],
-              "valueMandatory": false,
-              "source": "root",
-              "application": {
-                "id": "I1pTNUb4bClralFly-xGj",
-                "title": "Métriques France 2030",
-                "baseApp": {
-                  "_id": "673e1a828db1ae5c0738ab51",
-                  "id": "https:koumoul.comappsmetrics1.1",
-                  "datasetsFilters": [
-                    {
-                      "select": [
-                        "id",
-                        "title",
-                        "schema"
-                      ],
-                      "sort": [
-                        "createdAt:-1"
-                      ]
-                    }
-                  ],
-                  "meta": {
-                    "title": "Métriques",
-                    "description": "Visualiser des métriques de haut niveau sur un jeu de données.",
-                    "keywords": [
-                      "indicateurs",
-                      "kpi",
-                      "icp",
-                      "métriques"
-                    ],
-                    "charset": "UTF-8",
-                    "viewport": "width=device-width, initial-scale=1.0",
-                    "x-capture": "trigger",
-                    "df:overflow": "true",
-                    "df:sync-state": "true",
-                    "df:filter-concepts": "true",
-                    "{VERSION}": "trigger",
-                    "application-name": "Métriques",
-                    "thumbnail": "thumbnail.png"
-                  },
-                  "url": "https://koumoul.com/apps/metrics/1.1/"
-                }
-              },
-              "description": "none",
-              "ignoreFilters": true
-            },
-            {
-              "width": 2,
-              "type": "application",
-              "mandatoryFilters": [],
-              "valueMandatory": false,
-              "source": "root",
-              "application": {
-                "id": "rpaqZ_FU3K7-fg03qr78R",
-                "title": "Métriques France 2030 - Actifs - Clos",
-                "baseApp": {
-                  "_id": "673e1a828db1ae5c0738ab51",
-                  "id": "https:koumoul.comappsmetrics1.1",
-                  "datasetsFilters": [
-                    {
-                      "select": [
-                        "id",
-                        "title",
-                        "schema"
-                      ],
-                      "sort": [
-                        "createdAt:-1"
-                      ]
-                    }
-                  ],
-                  "meta": {
-                    "title": "Métriques",
-                    "description": "Visualiser des métriques de haut niveau sur un jeu de données.",
-                    "keywords": [
-                      "indicateurs",
-                      "kpi",
-                      "icp",
-                      "métriques"
-                    ],
-                    "charset": "UTF-8",
-                    "viewport": "width=device-width, initial-scale=1.0",
-                    "x-capture": "trigger",
-                    "df:overflow": "true",
-                    "df:sync-state": "true",
-                    "df:filter-concepts": "true",
-                    "{VERSION}": "trigger",
-                    "application-name": "Métriques",
-                    "thumbnail": "thumbnail.png"
-                  },
-                  "url": "https://koumoul.com/apps/metrics/1.1/"
-                }
-              },
-              "description": "none"
-            },
-            {
-              "width": 1,
-              "type": "application",
-              "mandatoryFilters": [],
-              "valueMandatory": false,
-              "source": "root",
-              "application": {
-                "id": "jl5gvInt2R6bqqn7WmAiQ",
-                "title": "Charts - Montants - france2030 projets",
-                "baseApp": {
-                  "_id": "670e68b78db1ae5c073859f4",
-                  "id": "https:cdn.jsdelivr.netnpm@data-fairapp-charts@1.2dist",
-                  "datasetsFilters": [
-                    {
-                      "field-type": [
-                        "integer",
-                        "number"
-                      ],
-                      "select": [
-                        "id",
-                        "title"
-                      ],
-                      "sort": [
-                        "createdAt:-1"
-                      ]
-                    }
-                  ],
-                  "meta": {
-                    "title": "Graphiques diversdata-fair-chartsdata-fair-charts",
-                    "description": "A simple charts application for data-fair.",
-                    "keywords": [
-                      "data-fair",
-                      "charts",
-                      "graphs"
-                    ],
-                    "charset": "UTF-8",
-                    "viewport": "width=device-width, initial-scale=1.0",
-                    "df:overflow": "false",
-                    "df:sync-state": "true",
-                    "df:filter-concepts": "true",
-                    "thumbnail": "thumbnail.png",
-                    "application-name": "Charts",
-                    "vocabulary-accept": "http://www.w3.org/2000/01/rdf-schema#label",
-                    "vocabulary-require": "http://www.w3.org/2003/01/geo/wgs84_pos#lat_long"
-                  },
-                  "url": "https://cdn.jsdelivr.net/npm/@data-fair/app-charts@1.2/dist/"
-                }
-              }
-            },
-            {
-              "width": 1,
-              "type": "application",
-              "mandatoryFilters": [],
-              "valueMandatory": false,
-              "source": "root",
-              "application": {
-                "id": "kJRuVWMbyBSa-aIzc3dzc",
-                "title": "Charts - Nombre de projets par année de contractualisation",
-                "baseApp": {
-                  "_id": "670e68b78db1ae5c073859f4",
-                  "id": "https:cdn.jsdelivr.netnpm@data-fairapp-charts@1.2dist",
-                  "datasetsFilters": [
-                    {
-                      "field-type": [
-                        "integer",
-                        "number"
-                      ],
-                      "select": [
-                        "id",
-                        "title"
-                      ],
-                      "sort": [
-                        "createdAt:-1"
-                      ]
-                    }
-                  ],
-                  "meta": {
-                    "title": "Graphiques diversdata-fair-chartsdata-fair-charts",
-                    "description": "A simple charts application for data-fair.",
-                    "keywords": [
-                      "data-fair",
-                      "charts",
-                      "graphs"
-                    ],
-                    "charset": "UTF-8",
-                    "viewport": "width=device-width, initial-scale=1.0",
-                    "df:overflow": "false",
-                    "df:sync-state": "true",
-                    "df:filter-concepts": "true",
-                    "thumbnail": "thumbnail.png",
-                    "application-name": "Charts",
-                    "vocabulary-accept": "http://www.w3.org/2000/01/rdf-schema#label",
-                    "vocabulary-require": "http://www.w3.org/2003/01/geo/wgs84_pos#lat_long"
-                  },
-                  "url": "https://cdn.jsdelivr.net/npm/@data-fair/app-charts@1.2/dist/"
-                }
-              }
-            }
-          ],
-          "height": 360
-        }
-      ],
-      "uuid": "9dc26b09-e8db-4f4d-bcba-287d2883a21a",
-      "title": ""
-    },
-    {
-      "rows": [
-        {
-          "elements": [
-            {
-              "width": 2,
-              "type": "column",
-              "elements": [
-                {
-                  "type": "application",
-                  "mandatoryFilters": [],
-                  "valueMandatory": false,
-                  "source": "root",
-                  "application": {
-                    "id": "uNxf33szf240vfrN5bnT4",
-                    "title": "Nombre de projets par famille d'action",
-                    "baseApp": {
-                      "_id": "670e68b78db1ae5c073859f4",
-                      "id": "https:cdn.jsdelivr.netnpm@data-fairapp-charts@1.2dist",
-                      "datasetsFilters": [
-                        {
-                          "field-type": [
-                            "integer",
-                            "number"
-                          ],
-                          "select": [
-                            "id",
-                            "title"
-                          ],
-                          "sort": [
-                            "createdAt:-1"
-                          ]
-                        }
-                      ],
-                      "meta": {
-                        "title": "Graphiques diversdata-fair-chartsdata-fair-charts",
-                        "description": "A simple charts application for data-fair.",
-                        "keywords": [
-                          "data-fair",
-                          "charts",
-                          "graphs"
-                        ],
-                        "charset": "UTF-8",
-                        "viewport": "width=device-width, initial-scale=1.0",
-                        "df:overflow": "false",
-                        "df:sync-state": "true",
-                        "df:filter-concepts": "true",
-                        "thumbnail": "thumbnail.png",
-                        "application-name": "Charts",
-                        "vocabulary-accept": "http://www.w3.org/2000/01/rdf-schema#label",
-                        "vocabulary-require": "http://www.w3.org/2003/01/geo/wgs84_pos#lat_long"
-                      },
-                      "url": "https://cdn.jsdelivr.net/npm/@data-fair/app-charts@1.2/dist/"
-                    }
-                  }
-                },
-                {
-                  "type": "application",
-                  "mandatoryFilters": [],
-                  "valueMandatory": false,
-                  "source": "root",
-                  "application": {
-                    "id": "sJeXGFaMrN4t8XzeX0h1i",
-                    "title": "Montant conventionné (€) Par famille d'action",
-                    "baseApp": {
-                      "_id": "670e68b78db1ae5c073859f4",
-                      "id": "https:cdn.jsdelivr.netnpm@data-fairapp-charts@1.2dist",
-                      "datasetsFilters": [
-                        {
-                          "field-type": [
-                            "integer",
-                            "number"
-                          ],
-                          "select": [
-                            "id",
-                            "title"
-                          ],
-                          "sort": [
-                            "createdAt:-1"
-                          ]
-                        }
-                      ],
-                      "meta": {
-                        "title": "Graphiques diversdata-fair-chartsdata-fair-charts",
-                        "description": "A simple charts application for data-fair.",
-                        "keywords": [
-                          "data-fair",
-                          "charts",
-                          "graphs"
-                        ],
-                        "charset": "UTF-8",
-                        "viewport": "width=device-width, initial-scale=1.0",
-                        "df:overflow": "false",
-                        "df:sync-state": "true",
-                        "df:filter-concepts": "true",
-                        "thumbnail": "thumbnail.png",
-                        "application-name": "Charts",
-                        "vocabulary-accept": "http://www.w3.org/2000/01/rdf-schema#label",
-                        "vocabulary-require": "http://www.w3.org/2003/01/geo/wgs84_pos#lat_long"
-                      },
-                      "url": "https://cdn.jsdelivr.net/npm/@data-fair/app-charts@1.2/dist/"
-                    }
-                  }
-                }
-              ]
-            },
-            {
-              "width": 3,
-              "type": "application",
-              "mandatoryFilters": [],
-              "valueMandatory": false,
-              "source": "root",
-              "application": {
-                "id": "TR4Plsa5mKsMjoy4193dK",
-                "title": "Tree - Montant conventionné par action (€)",
-                "baseApp": {
-                  "_id": "6745c5688db1ae5c074a738f",
-                  "id": "https:koumoul.comappsapp-treemap1.1",
-                  "datasetsFilters": [
-                    {
-                      "field-type": [
-                        "integer",
-                        "number"
-                      ],
-                      "select": [
-                        "id",
-                        "title",
-                        "schema"
-                      ],
-                      "sort": [
-                        "createdAt:-1"
-                      ]
-                    }
-                  ],
-                  "meta": {
-                    "title": "Treemap",
-                    "description": "Cette application permet de générer des treemap pour voir les informations hierachiques",
-                    "keywords": [],
-                    "charset": "utf-8",
-                    "viewport": "width=device-width,initial-scale=1.0",
-                    "df:overflow": "false",
-                    "df:sync-state": "true",
-                    "df:filter-concepts": "true",
-                    "application-name": "app-treemap",
-                    "thumbnail": "thumbnail.png"
-                  },
-                  "url": "https://koumoul.com/apps/app-treemap/1.1/"
-                }
-              }
-            }
-          ],
-          "height": 600
-        }
-      ],
-      "uuid": "4f903eb0-306c-4b7d-adb8-4fda95fa3dd7",
-      "title": ""
-    },
-    {
-      "rows": [
-        {
-          "elements": [
-            {
-              "width": 2,
-              "type": "application",
-              "mandatoryFilters": [],
-              "valueMandatory": false,
-              "source": "root",
-              "application": {
-                "id": "G7IDgu9zHdMSu3FbgiNSK",
-                "title": "Etat des projets à date",
-                "baseApp": {
-                  "_id": "670e68b78db1ae5c073859f4",
-                  "id": "https:cdn.jsdelivr.netnpm@data-fairapp-charts@1.2dist",
-                  "datasetsFilters": [
-                    {
-                      "field-type": [
-                        "integer",
-                        "number"
-                      ],
-                      "select": [
-                        "id",
-                        "title"
-                      ],
-                      "sort": [
-                        "createdAt:-1"
-                      ]
-                    }
-                  ],
-                  "meta": {
-                    "title": "Graphiques diversdata-fair-chartsdata-fair-charts",
-                    "description": "A simple charts application for data-fair.",
-                    "keywords": [
-                      "data-fair",
-                      "charts",
-                      "graphs"
-                    ],
-                    "charset": "UTF-8",
-                    "viewport": "width=device-width, initial-scale=1.0",
-                    "df:overflow": "false",
-                    "df:sync-state": "true",
-                    "df:filter-concepts": "true",
-                    "thumbnail": "thumbnail.png",
-                    "application-name": "Charts",
-                    "vocabulary-accept": "http://www.w3.org/2000/01/rdf-schema#label",
-                    "vocabulary-require": "http://www.w3.org/2003/01/geo/wgs84_pos#lat_long"
-                  },
-                  "url": "https://cdn.jsdelivr.net/npm/@data-fair/app-charts@1.2/dist/"
-                }
-              }
-            },
-            {
-              "width": 2,
-              "type": "application",
-              "mandatoryFilters": [],
-              "valueMandatory": false,
-              "source": "root",
-              "application": {
-                "id": "5mvHxGU3fIJuEvbARkvx7",
-                "title": "Thématiques des projets",
-                "baseApp": {
-                  "_id": "670e68b78db1ae5c073859f4",
-                  "id": "https:cdn.jsdelivr.netnpm@data-fairapp-charts@1.2dist",
-                  "datasetsFilters": [
-                    {
-                      "field-type": [
-                        "integer",
-                        "number"
-                      ],
-                      "select": [
-                        "id",
-                        "title"
-                      ],
-                      "sort": [
-                        "createdAt:-1"
-                      ]
-                    }
-                  ],
-                  "meta": {
-                    "title": "Graphiques diversdata-fair-chartsdata-fair-charts",
-                    "description": "A simple charts application for data-fair.",
-                    "keywords": [
-                      "data-fair",
-                      "charts",
-                      "graphs"
-                    ],
-                    "charset": "UTF-8",
-                    "viewport": "width=device-width, initial-scale=1.0",
-                    "df:overflow": "false",
-                    "df:sync-state": "true",
-                    "df:filter-concepts": "true",
-                    "thumbnail": "thumbnail.png",
-                    "application-name": "Charts",
-                    "vocabulary-accept": "http://www.w3.org/2000/01/rdf-schema#label",
-                    "vocabulary-require": "http://www.w3.org/2003/01/geo/wgs84_pos#lat_long"
-                  },
-                  "url": "https://cdn.jsdelivr.net/npm/@data-fair/app-charts@1.2/dist/"
-                }
-              }
-            }
-          ],
-          "height": 400
-        }
-      ],
-      "uuid": "6046b654-9bd6-419a-be6c-9249e30e4f97",
-      "title": ""
-    },
-    {
-      "rows": [
-        {
-          "elements": [
-            {
-              "width": 2,
-              "type": "application",
-              "mandatoryFilters": [],
-              "valueMandatory": false,
-              "source": "root",
-              "application": {
-                "id": "ttCD573NwdCNelZonSy_E",
-                "title": "Carte nombre de projets",
-                "baseApp": {
-                  "_id": "669fc96c8db1ae5c074537d4",
-                  "id": "https:koumoul.comappsinfos-territoires1.1",
-                  "datasetsFilters": [
-                    {
-                      "select": [
-                        "id",
-                        "title",
-                        "schema",
-                        "bbox"
-                      ],
-                      "concepts": [
-                        "https://purl.org/geojson/vocab#geometry",
-                        "http://data.ign.fr/def/geometrie#Geometry"
-                      ]
-                    }
-                  ],
-                  "meta": {
-                    "title": "Infos territoires",
-                    "description": "Cette application permet de visualiser sur une même carte des informations sur les territoires provenant de plusieurs sources de données.",
-                    "keywords": [
-                      "cartographie",
-                      "territoires"
-                    ],
-                    "charset": "utf-8",
-                    "viewport": "width=device-width,initial-scale=1.0",
-                    "x-capture": "trigger",
-                    "df:overflow": "false",
-                    "df:sync-state": "true",
-                    "df:filter-concepts": "true",
-                    "application-name": "infos-territoires",
-                    "thumbnail": "thumbnail.png"
-                  },
-                  "url": "https://koumoul.com/apps/infos-territoires/1.1/"
-                }
-              }
-            },
-            {
-              "width": 2,
-              "type": "application",
-              "mandatoryFilters": [],
-              "valueMandatory": false,
-              "source": "root",
-              "application": {
-                "id": "F117bkN4g7FhjdyxkGCpk",
-                "title": "Durée des projets",
-                "baseApp": {
-                  "_id": "670fe4038db1ae5c07b1f5fd",
-                  "id": "https:koumoul.comappstimelines-chart0.3",
-                  "datasetsFilters": [
-                    {
-                      "concepts": [
-                        "https://schema.org/endDate",
-                        "https://schema.org/startDate"
-                      ],
-                      "select": [
-                        "id",
-                        "title",
-                        "schema"
-                      ],
-                      "sort": [
-                        "createdAt:-1"
-                      ]
-                    }
-                  ],
-                  "meta": {
-                    "title": "Diagramme Timeline",
-                    "description": "Cette application permet de visualiser des informations temporelles.",
-                    "keywords": [],
-                    "charset": "utf-8",
-                    "viewport": "width=device-width,initial-scale=1",
-                    "df:capture-width": "1400",
-                    "df:capture-height": "auto",
-                    "df:overflow": "false",
-                    "df:sync-state": "true",
-                    "df:filter-concepts": "true",
-                    "application-name": "Diagramme Timeline",
-                    "version": "development"
-                  },
-                  "url": "https://koumoul.com/apps/timelines-chart/0.3/"
-                }
-              }
-            }
-          ],
-          "height": 600
-        }
-      ],
-      "uuid": "397e7e10-93c8-49ae-a6f1-160c4fb56968",
-      "title": ""
-    }
-  ],
-  "sectionsGroup": "flow",
+  "periodFilter": false,
   "addressFilter": false,
-  "periodFilter": true,
-  "filters": [
-    {
-      "showAllValues": false,
-      "forceOneValue": false,
-      "multipleValues": false,
-      "values": [
-        "etat"
-      ],
-      "labelField": "etat"
-    },
-    {
-      "showAllValues": false,
-      "forceOneValue": false,
-      "multipleValues": true,
-      "values": [
-        "thematique"
-      ],
-      "labelField": "thematique"
-    },
-    {
-      "showAllValues": true,
-      "forceOneValue": false,
-      "multipleValues": true,
-      "values": [
-        "region_du_projet"
-      ],
-      "labelField": "region_du_projet"
-    },
-    {
-      "showAllValues": false,
-      "forceOneValue": false,
-      "multipleValues": false,
-      "values": [
-        "action_nom"
-      ],
-      "labelField": "action_nom"
-    }
-  ],
+  "sectionsGroup": "accordion",
+  "showSources": false,
+  "showEmbed": false,
+  "showCapture": false,
+  "allowDuplicate": false,
   "datasets": [
     {
-      "href": "http://localhost:5888/data-fair/api/v1/datasets/1tdtt1aw6dg08h78iuu13lp5",
-      "title": "France2030-Projets",
-      "id": "1tdtt1aw6dg08h78iuu13lp5",
+      "owner": {
+        "type": "organization",
+        "id": "5a5dc47163ebd4a6f438589b",
+        "name": "Koumoul",
+        "department": "data",
+        "departmentName": "Données de référence"
+      },
       "schema": [
         {
-          "key": "eotp_projet",
-          "x-originalName": "Eotp Projet",
           "type": "string",
-          "x-cardinality": 1725,
-          "description": ""
-        },
-        {
-          "key": "acronyme",
-          "x-originalName": "Acronyme",
-          "type": "string",
-          "x-cardinality": 1725,
-          "description": ""
-        },
-        {
-          "key": "resume",
-          "x-originalName": "Résumé",
-          "type": "string",
-          "x-display": "textarea",
-          "x-capabilities": {
-            "index": false,
-            "values": false,
-            "insensitive": false
+          "key": "geometry",
+          "x-originalName": "geometry",
+          "x-refersTo": "https://purl.org/geojson/vocab#geometry",
+          "x-concept": {
+            "id": "geometry",
+            "title": "Géométrie GeoJSON ou WKT",
+            "primary": true
           },
+          "x-cardinality": 0,
+          "description": "",
+          "x-capabilities": {
+            "vtPrepare": true
+          }
+        },
+        {
+          "key": "cleabs",
+          "x-originalName": "cleabs",
+          "type": "string",
+          "x-cardinality": 34815,
           "description": ""
         },
         {
-          "key": "thematique",
-          "x-originalName": "Thématique",
+          "key": "nom_officiel",
+          "x-originalName": "nom_officiel",
           "type": "string",
-          "x-cardinality": 9,
+          "x-cardinality": 32644,
           "description": "",
-          "enum": [
-            "5 - Bio Med",
-            "2 - SMI",
-            "7 - Multi-thématiques et autres",
-            "8 - Formation",
-            "4 - Agro Eco",
-            "1 - Math Info",
-            "3 - STUE",
-            "6 - SHS",
-            "Divers"
-          ]
+          "x-refersTo": "http://schema.org/City",
+          "x-concept": {
+            "id": "city",
+            "title": "Commune",
+            "primary": true
+          }
         },
         {
-          "key": "pia",
-          "x-originalName": "PIA",
+          "key": "nom_officiel_en_majuscules",
+          "x-originalName": "nom_officiel_en_majuscules",
+          "type": "string",
+          "x-cardinality": 32413,
+          "description": ""
+        },
+        {
+          "key": "statut",
+          "x-originalName": "statut",
           "type": "string",
           "x-cardinality": 5,
           "description": "",
           "enum": [
-            "4",
-            "1",
-            "3",
-            "FR30",
-            "2"
+            "Commune simple",
+            "Sous-préfecture",
+            "Préfecture",
+            "Pr��fecture de région",
+            "Capitale d'Etat"
           ]
         },
         {
-          "key": "cd_action_historique",
-          "x-originalName": "CD Action historique",
+          "key": "code_insee",
+          "x-originalName": "code_insee",
           "type": "string",
-          "x-cardinality": 120,
-          "description": ""
-        },
-        {
-          "key": "action_nom",
-          "x-originalName": "Action Nom",
-          "type": "string",
-          "x-display": "textarea",
-          "x-capabilities": {
-            "index": false,
-            "values": false,
-            "insensitive": false
+          "x-cardinality": 34790,
+          "description": "",
+          "x-refersTo": "http://rdf.insee.fr/def/geo#codeCommune",
+          "x-transform": {
+            "expr": "",
+            "examples": [
+              ""
+            ],
+            "type": "string"
           },
+          "x-concept": {
+            "id": "codeCommune",
+            "title": "Code commune",
+            "primary": true
+          }
+        },
+        {
+          "key": "population",
+          "x-originalName": "population",
+          "type": "integer",
+          "x-cardinality": 5858,
           "description": ""
         },
         {
-          "key": "date_contract",
-          "x-originalName": "Date Contract.",
+          "key": "date_du_recensement",
+          "x-originalName": "date_du_recensement",
           "type": "string",
           "format": "date",
-          "x-cardinality": 655,
-          "description": ""
-        },
-        {
-          "key": "total_conventionne",
-          "x-originalName": "Total Conventionné",
-          "type": "number",
-          "x-cardinality": 1342,
-          "description": ""
-        },
-        {
-          "key": "etat",
-          "x-originalName": "Etat",
-          "type": "string",
-          "x-cardinality": 2,
+          "x-cardinality": 3,
           "description": "",
           "enum": [
-            "Actif",
-            "Clôturé"
+            "2022-01-01T00:00:00.000Z",
+            "2017-01-01T00:00:00.000Z",
+            "2021-01-01T00:00:00.000Z"
           ]
         },
         {
-          "key": "region_du_projet",
-          "x-originalName": "Region du projet",
+          "key": "organisme_recenseur",
+          "x-originalName": "organisme_recenseur",
+          "type": "string",
+          "x-cardinality": 1,
+          "description": "",
+          "enum": [
+            "INSEE"
+          ]
+        },
+        {
+          "key": "code_insee_du_canton",
+          "x-originalName": "code_insee_du_canton",
+          "type": "string",
+          "x-cardinality": 2041,
+          "description": ""
+        },
+        {
+          "key": "code_insee_de_l_arrondissement",
+          "x-originalName": "code_insee_de_l_arrondissement",
+          "type": "string",
+          "x-cardinality": 334,
+          "description": ""
+        },
+        {
+          "key": "code_insee_du_departement",
+          "x-originalName": "code_insee_du_departement",
+          "type": "string",
+          "x-cardinality": 102,
+          "description": "",
+          "x-refersTo": "http://rdf.insee.fr/def/geo#codeDepartement",
+          "x-concept": {
+            "id": "codeDepartement",
+            "title": "Code département",
+            "primary": true
+          }
+        },
+        {
+          "key": "code_insee_de_la_region",
+          "x-originalName": "code_insee_de_la_region",
           "type": "string",
           "x-cardinality": 19,
-          "description": "",
-          "enum": [
-            "Île-de-France",
-            "Auvergne-Rhône-Alpes",
-            "Occitanie",
-            "Nouvelle-Aquitaine",
-            "Grand Est",
-            "Provence-Alpes-Côte d'Azur",
-            "Bretagne",
-            "Hauts-de-France",
-            "Pays de la Loire",
-            "Bourgogne-Franche-Comté",
-            "Centre-Val de Loire",
-            "Normandie",
-            "Nouvelle-Calédonie",
-            "Guyane",
-            "Corse",
-            "Guadeloupe",
-            "La Réunion",
-            "Mayotte",
-            "Polynésie Française"
-          ]
-        },
-        {
-          "key": "date_init",
-          "x-originalName": "Date Init",
-          "type": "string",
-          "format": "date",
-          "x-cardinality": 656,
-          "description": ""
-        },
-        {
-          "key": "date_debut_projet",
-          "x-originalName": "Date Début Projet",
-          "type": "string",
-          "format": "date",
-          "x-cardinality": 345,
-          "description": "",
-          "x-refersTo": "https://schema.org/startDate",
-          "x-concept": {
-            "id": "startDate",
-            "title": "Date de début",
-            "primary": true
-          }
-        },
-        {
-          "key": "date_fin",
-          "x-originalName": "Date Fin",
-          "type": "string",
-          "format": "date",
-          "x-cardinality": 363,
-          "description": "",
-          "x-refersTo": "https://schema.org/endDate",
-          "x-concept": {
-            "id": "endDate",
-            "title": "Date de fin",
-            "primary": true
-          }
-        },
-        {
-          "key": "code_region_tg",
-          "x-originalName": "Code_Region_TG",
-          "type": "string",
-          "x-cardinality": 18,
           "description": "",
           "x-refersTo": "http://rdf.insee.fr/def/geo#codeRegion",
           "x-concept": {
@@ -803,79 +163,96 @@
             "primary": true
           },
           "enum": [
-            "11",
-            "84",
+            "44",
             "76",
             "75",
-            "44",
-            "93",
-            "53",
+            "84",
             "32",
-            "52",
             "27",
-            "24",
             "28",
-            "988",
-            "03",
+            "24",
+            "11",
+            "52",
+            "53",
+            "93",
+            "94",
+            "02",
             "01",
             "04",
+            "03",
             "06",
-            "94"
+            "NR"
           ]
         },
         {
-          "key": "annee_contract",
-          "x-originalName": "annee_contract",
+          "key": "codes_siren_des_epci",
+          "x-originalName": "codes_siren_des_epci",
+          "type": "string",
+          "x-cardinality": 1267,
+          "description": "",
+          "x-refersTo": "http://rdf.insee.fr/def/geo#EtablissementPublicDeCooperationIntercommunale",
+          "x-concept": {
+            "id": "codeEPCI",
+            "title": "Code EPCI",
+            "primary": true
+          }
+        },
+        {
+          "key": "code_postal",
+          "x-originalName": "code_postal",
+          "type": "string",
+          "x-cardinality": 6046,
+          "description": "",
+          "x-refersTo": "http://schema.org/postalCode",
+          "x-transform": {
+            "expr": "",
+            "examples": [
+              ""
+            ],
+            "type": "string"
+          },
+          "x-concept": {
+            "id": "postalCode",
+            "title": "Code postal",
+            "primary": true
+          }
+        },
+        {
+          "key": "superficie_cadastrale",
+          "x-originalName": "superficie_cadastrale",
           "type": "integer",
-          "x-cardinality": 14,
-          "description": "",
-          "enum": [
-            2023,
-            2024,
-            2012,
-            2022,
-            2021,
-            2013,
-            2018,
-            2020,
-            2011,
-            2017,
-            2019,
-            2016,
-            2014,
-            2015
-          ]
-        },
-        {
-          "key": "action_nom_long",
-          "x-originalName": "action_nom_long",
-          "type": "string",
-          "x-cardinality": 99,
+          "x-cardinality": 1106,
           "description": ""
         },
         {
-          "key": "type_daction",
-          "x-originalName": "Type d'Action",
-          "type": "string",
-          "x-cardinality": 5,
-          "description": "",
-          "enum": [
-            "Recherche",
-            "Formation",
-            "Structuration",
-            "Equipement",
-            "Valorisation"
-          ]
+          "x-calculated": true,
+          "key": "_geoshape",
+          "type": "object",
+          "title": "Géométrie",
+          "description": "Au format d'une géométrie GeoJSON",
+          "x-capabilities": {
+            "vtPrepare": true
+          }
         },
         {
-          "key": "duree",
-          "x-originalName": "duree",
-          "type": "number",
-          "title": "",
-          "icon": "mdi-numeric",
-          "x-extension": "duree",
-          "x-cardinality": 370,
-          "description": ""
+          "x-calculated": true,
+          "key": "_geocorners",
+          "type": "array",
+          "title": "Boite englobante de la géométrie",
+          "description": "Sous forme d'un tableau de coordonnées au format \"lat,lon\""
+        },
+        {
+          "x-calculated": true,
+          "key": "_geopoint",
+          "type": "string",
+          "title": "Coordonnée géographique",
+          "description": "Centroïde au format \"lat,lon\"",
+          "x-refersTo": "http://www.w3.org/2003/01/geo/wgs84_pos#lat_long",
+          "x-concept": {
+            "id": "latLon",
+            "title": "Latitude / Longitude",
+            "primary": true
+          }
         },
         {
           "x-calculated": true,
@@ -900,64 +277,158 @@
           "description": "Un nombre aléatoire associé à la ligne qui permet d'obtenir un tri aléatoire par exemple"
         }
       ],
-      "timePeriod": {
-        "startDate": "2011-02-09T00:00:00.000Z",
-        "endDate": "2034-08-31T00:00:00.000Z"
-      },
-      "finalizedAt": "2024-10-16T13:19:16.112Z",
-      "slug": "france-2030-projets"
+      "title": "Contours des communes 2025 - petite échelle",
+      "id": "b12diyniw4go69vhpmohj8df",
+      "slug": "contours-communes-pe",
+      "bbox": [
+        -61.805893052369356,
+        -21.387119544669986,
+        55.83458407782018,
+        51.08915212098509
+      ],
+      "userPermissions": [
+        "list",
+        "readDescription",
+        "readSchema",
+        "readSafeSchema",
+        "readLines",
+        "getGeoAgg",
+        "getValuesAgg",
+        "getValues",
+        "getMetricAgg",
+        "getSimpleMetricsAgg",
+        "getWordsAgg",
+        "getMinAgg",
+        "getMaxAgg",
+        "downloadOriginalData",
+        "downloadFullData",
+        "readApiDoc",
+        "realtime-transactions",
+        "readLine",
+        "readLineRevisions",
+        "readRevisions",
+        "bulkSearch",
+        "listDataFiles",
+        "downloadDataFile",
+        "downloadMetadataAttachment",
+        "downloadAttachment",
+        "getReadApiKey",
+        "readCompatODSRecords"
+      ],
+      "public": true,
+      "visibility": "public",
+      "previews": [
+        {
+          "id": "table",
+          "title": "Tableau",
+          "href": "http://localhost:5888/data-fair/embed/dataset/b12diyniw4go69vhpmohj8df/table"
+        },
+        {
+          "id": "map",
+          "title": "Carte",
+          "href": "http://localhost:5888/data-fair/embed/dataset/b12diyniw4go69vhpmohj8df/map"
+        },
+        {
+          "id": "map-bounds",
+          "title": "Enveloppe géographique",
+          "href": "http://localhost:5888/data-fair/embed/dataset/b12diyniw4go69vhpmohj8df/map-bounds"
+        }
+      ],
+      "href": "http://localhost:5888/data-fair/api/v1/datasets/b12diyniw4go69vhpmohj8df",
+      "page": "http://localhost:5888/data-fair/dataset/b12diyniw4go69vhpmohj8df"
     }
   ],
-  "title": "",
-  "staticFilters": [],
+  "filters": [
+    {
+      "multipleValues": false,
+      "forceOneValue": false,
+      "showAllValues": false,
+      "labelField": "nom_officiel",
+      "values": [
+        "code_insee"
+      ]
+    }
+  ],
+  "sections": [
+    {
+      "rows": [
+        {
+          "height": 400,
+          "elements": [
+            {
+              "width": 2,
+              "type": "application",
+              "source": "external",
+              "ignoreFilters": false,
+              "valueMandatory": false,
+              "description": "none",
+              "application": {
+                "title": "Véhicules impliqués dans des accidents avec les vélos",
+                "owner": {
+                  "type": "organization",
+                  "id": "5a5dc47163ebd4a6f438589b",
+                  "name": "Koumoul",
+                  "department": "data",
+                  "departmentName": "Données de référence"
+                },
+                "id": "vehicules-impliques-dans-des-accidents-avec-les-velos",
+                "baseApp": {
+                  "_id": "61434bbbe66872aae0a123f0",
+                  "id": "https:koumoul.comappssankey0.6",
+                  "datasetsFilters": [
+                    {
+                      "field-type": [
+                        "integer",
+                        "number"
+                      ],
+                      "select": [
+                        "id",
+                        "title"
+                      ]
+                    }
+                  ],
+                  "meta": {
+                    "title": "Diagramme de Sankey",
+                    "description": "Cette application permet de visualiser des informations de flux.",
+                    "keywords": [],
+                    "charset": "utf-8",
+                    "viewport": "width=device-width,initial-scale=1",
+                    "application-name": "Diagramme de Sankey",
+                    "df:capture-width": "800",
+                    "df:capture-height": "600",
+                    "df:overflow": "false",
+                    "df:sync-state": "true",
+                    "df:filter-concepts": "true"
+                  },
+                  "url": "https://koumoul.com/apps/sankey/0.6/"
+                },
+                "slug": "vehicules-impliques-dans-des-accidents-avec-les-velos",
+                "userPermissions": [
+                  "list",
+                  "readDescription",
+                  "readConfig",
+                  "readApiDoc",
+                  "readBaseApp",
+                  "readCapture",
+                  "readPrint",
+                  "downloadAttachment"
+                ],
+                "public": true,
+                "visibility": "public",
+                "href": "http://localhost:5888/data-fair/api/v1/applications/vehicules-impliques-dans-des-accidents-avec-les-velos",
+                "page": "http://localhost:5888/data-fair/application/vehicules-impliques-dans-des-accidents-avec-les-velos",
+                "exposedUrl": "http://localhost:5888/data-fair/app/vehicules-impliques-dans-des-accidents-avec-les-velos"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
   "applications": [
     {
-      "id": "I1pTNUb4bClralFly-xGj",
-      "title": "Métriques France 2030"
-    },
-    {
-      "id": "rpaqZ_FU3K7-fg03qr78R",
-      "title": "Métriques France 2030 - Actifs - Clos"
-    },
-    {
-      "id": "jl5gvInt2R6bqqn7WmAiQ",
-      "title": "Charts - Montants - france2030 projets"
-    },
-    {
-      "id": "kJRuVWMbyBSa-aIzc3dzc",
-      "title": "Charts - Nombre de projets par année de contractualisation"
-    },
-    {
-      "id": "uNxf33szf240vfrN5bnT4",
-      "title": "Nombre de projets par famille d'action"
-    },
-    {
-      "id": "sJeXGFaMrN4t8XzeX0h1i",
-      "title": "Montant conventionné (€) Par famille d'action"
-    },
-    {
-      "id": "TR4Plsa5mKsMjoy4193dK",
-      "title": "Tree - Montant conventionné par action (€)"
-    },
-    {
-      "id": "G7IDgu9zHdMSu3FbgiNSK",
-      "title": "Etat des projets à date"
-    },
-    {
-      "id": "5mvHxGU3fIJuEvbARkvx7",
-      "title": "Thématiques des projets"
-    },
-    {
-      "id": "ttCD573NwdCNelZonSy_E",
-      "title": "Carte nombre de projets"
-    },
-    {
-      "id": "F117bkN4g7FhjdyxkGCpk",
-      "title": "Durée des projets"
+      "id": "vehicules-impliques-dans-des-accidents-avec-les-velos",
+      "title": "Véhicules impliqués dans des accidents avec les vélos"
     }
-  ],
-  "showSources": false,
-  "showEmbed": false,
-  "showCapture": false,
-  "allowDuplicate": false
+  ]
 }
