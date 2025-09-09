@@ -2,9 +2,9 @@
   "periodFilter": false,
   "addressFilter": false,
   "sectionsGroup": "accordion",
-  "showSources": false,
-  "showEmbed": false,
-  "showCapture": false,
+  "showSources": true,
+  "showEmbed": true,
+  "showCapture": true,
   "allowDuplicate": false,
   "datasets": [
     {

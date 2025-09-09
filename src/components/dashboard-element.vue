@@ -40,9 +40,14 @@ const searchParams = computed(() => {
   return new URLSearchParams(searchParams)
 })
 
+const applicationUrl = computed(() => {
+  if (props.element.type !== 'application') return null
+  return `${application.href.split('/data-fair/')[0]}/data-fair/${props.element.application.href.split('/data-fair/').pop()}`
+})
+
 const description = computedAsync(async () => {
   if (props.element.type !== 'application' || !props.element.description || props.element.description === 'none') return null
-  const app = await ofetch(props.element.application.href, { params: { html: true } })
+  const app = await ofetch(applicationUrl.value, { params: { html: true } })
   return app.description
 }, null, {
   onError: function (e) {
@@ -53,10 +58,10 @@ const description = computedAsync(async () => {
 })
 
 const sources = computedAsync(async () => {
-  if (!config.showSources) return []
-  if (props.element.type === 'tablePreview') return [props.element.dataset || config.datasets[0]]
+  if (!config.value.showSources) return []
+  if (props.element.type === 'tablePreview') return [props.element.dataset || config.value.datasets[0]]
   else if (props.element.type !== 'application') return []
-  const app = await ofetch(props.element.application.href + '/configuration')
+  const app = await ofetch(`${applicationUrl.value}/configuration`)
   return app.datasets
 }, null, {
   onError: function (e) {
@@ -77,7 +82,7 @@ const captureUrl = computed(() => {
   for (const [key, value] of Object.entries(props.filtersValues)) {
     params['app_' + key] = value
   }
-  return `/data-fair/${props.element.application.href.split('/data-fair/').pop()}/capture?${new URLSearchParams(params).toString()}`
+  return `${applicationUrl.value}/capture?${new URLSearchParams(params).toString()}`
 })
 
 const embedCode = () => {
@@ -86,7 +91,7 @@ const embedCode = () => {
     messageType.value = 'info'
     messageContent.value = 'Le code d\'intégration a été mis dans votre presse-papier'
   } catch (err) {
-    messageType.value = 'success'
+    messageType.value = 'error'
     messageContent.value = err
   }
   messageDisplay.value = true
