@@ -114,8 +114,7 @@ async function updateFilters (noFieldUpdate) {
       filtersValues = Object.assign({}, ...filterFields.map(f => {
         if (fields.value[f]['x-concept']) return { [`_c_${fields.value[f]['x-concept'].id}_in`]: JSON.stringify(values[f]).slice(1, -1) }
         else {
-          if (values[f].length > 1) return { [`${datasetFilterPrefix}${f}_in`]: JSON.stringify(values[f]).slice(1, -1) }
-          else return { [`${datasetFilterPrefix}${f}_eq`]: values[f][0] }
+          return { [`${datasetFilterPrefix}${f}_in`]: JSON.stringify(values[f]).slice(1, -1) }
         }
       }))
       filtersValues.keys = fieldsWithFilter.map(f => f.labelField)
@@ -174,6 +173,7 @@ async function updateFilters (noFieldUpdate) {
         :multiple="filter.multipleValues"
         style="min-width:250px;"
         density="comfortable"
+        autocomplete="off"
         @update:search="search => (search == null || search.length) && search !== reactiveSearchParams[props.prefix +datasetFilterPrefix + filter.labelField + '_in'] && !filter.showAllValues && filtersState[filter.labelField].searchItems(search)"
         @update:model-value="updateValue(filter, $event)"
       />
