@@ -62,7 +62,7 @@
                 "type": "string",
                 "layout": {
                   "getItems": {
-                    "url": "${rootData.datasets[0].href}/schema?calculated=false&separator=false",
+                    "url": "${rootData.datasets[0].href}/schema?calculated=false",
                     "itemKey": "data.key",
                     "itemTitle": "data.label"
                   }
@@ -78,7 +78,7 @@
                 },
                 "layout": {
                   "getItems": {
-                    "url": "${rootData.datasets[0].href}/schema?calculated=false&separator=false",
+                    "url": "${rootData.datasets[0].href}/schema?calculated=false",
                     "itemKey": "data.key",
                     "itemTitle": "data.label"
                   }
