@@ -109,7 +109,13 @@ async function updateFilters (noFieldUpdate) {
       }
     })
     try {
-      const res = await Promise.all(filterFields.map(f => ofetch(dataset.value.href + '/values/' + f, { params })))
+      const res = await Promise.all(filterFields.map(f => {
+        if (fieldsWithFilter.find(fwf => fwf.labelField === f)?.values?.length) {
+          return ofetch(dataset.value.href + '/values/' + f, { params })
+        } else {
+          return JSON.parse(`[${reactiveSearchParams[props.prefix + datasetFilterPrefix + f + '_in']}]`)
+        }
+      }))
       const values = Object.assign({}, ...filterFields.map((f, i) => ({ [f]: res[i] })))
       filtersValues = Object.assign({}, ...filterFields.map(f => {
         if (fields.value[f]['x-concept']) return { [`_c_${fields.value[f]['x-concept'].id}_in`]: JSON.stringify(values[f]).slice(1, -1) }
