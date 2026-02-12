@@ -25,9 +25,7 @@
           "label": "Identifiant accident ",
           "x-transform": {
             "expr": "",
-            "examples": [
-              ""
-            ],
+            "examples": [""],
             "type": "string"
           },
           "x-originalName": "Num_Acc"
@@ -68,25 +66,8 @@
           "label": "Année de l'accident",
           "x-cardinality": 19,
           "enum": [
-            2007,
-            2005,
-            2006,
-            2008,
-            2011,
-            2017,
-            2009,
-            2014,
-            2015,
-            2016,
-            2010,
-            2012,
-            2013,
-            2022,
-            2021,
-            2019,
-            2020,
-            2018,
-            2023
+            2007, 2005, 2006, 2008, 2011, 2017, 2009, 2014, 2015, 2016, 2010,
+            2012, 2013, 2022, 2021, 2019, 2020, 2018, 2023
           ],
           "x-originalName": "an"
         },
@@ -284,10 +265,7 @@
           "x-group": "Informations sur l'accident' ",
           "label": "agglomération",
           "x-cardinality": 2,
-          "enum": [
-            2,
-            1
-          ],
+          "enum": [2, 1],
           "x-originalName": "agg"
         },
         {
@@ -317,18 +295,7 @@
           "x-group": "Informations sur l'accident ",
           "label": "Type d'intersection ",
           "x-cardinality": 10,
-          "enum": [
-            1,
-            2,
-            3,
-            6,
-            4,
-            9,
-            5,
-            7,
-            8,
-            0
-          ],
+          "enum": [1, 2, 3, 6, 4, 9, 5, 7, 8, 0],
           "x-originalName": "int"
         },
         {
@@ -356,16 +323,7 @@
           "x-group": "Informations sur l'accident ",
           "label": "Type de collision ",
           "x-cardinality": 8,
-          "enum": [
-            3,
-            6,
-            1,
-            2,
-            7,
-            5,
-            4,
-            -1
-          ],
+          "enum": [3, 6, 1, 2, 7, 5, 4, -1],
           "x-originalName": "col"
         },
         {
@@ -386,14 +344,7 @@
           "x-group": "Informations sur l'accident ",
           "label": "Luminosité ",
           "x-cardinality": 6,
-          "enum": [
-            1,
-            5,
-            2,
-            3,
-            4,
-            -1
-          ],
+          "enum": [1, 5, 2, 3, 4, -1],
           "x-originalName": "lum"
         },
         {
@@ -423,18 +374,7 @@
           "x-group": "Informations sur l'accident ",
           "label": "Conditions atmosphériques ",
           "x-cardinality": 10,
-          "enum": [
-            1,
-            2,
-            8,
-            7,
-            3,
-            9,
-            5,
-            6,
-            4,
-            -1
-          ],
+          "enum": [1, 2, 8, 7, 3, 9, 5, 6, 4, -1],
           "x-originalName": "atm"
         },
         {
@@ -462,16 +402,7 @@
           "x-group": "Informations sur l'accident ",
           "label": "Catégorie route ",
           "x-cardinality": 8,
-          "enum": [
-            4,
-            3,
-            2,
-            9,
-            6,
-            7,
-            5,
-            1
-          ],
+          "enum": [4, 3, 2, 9, 6, 7, 5, 1],
           "x-originalName": "catr"
         },
         {
@@ -496,13 +427,7 @@
           "x-group": "Informations sur l'accident ",
           "label": "Circulation ",
           "x-cardinality": 5,
-          "enum": [
-            2,
-            1,
-            -1,
-            3,
-            4
-          ],
+          "enum": [2, 1, -1, 3, 4],
           "x-originalName": "circ"
         },
         {
@@ -577,13 +502,7 @@
           "x-group": "Informations sur l'accident ",
           "label": "Profil en long ",
           "x-cardinality": 5,
-          "enum": [
-            1,
-            2,
-            -1,
-            4,
-            3
-          ],
+          "enum": [1, 2, -1, 4, 3],
           "x-originalName": "prof"
         },
         {
@@ -608,13 +527,7 @@
           "x-group": "Informations sur l'accident ",
           "label": "Tracé en plan ",
           "x-cardinality": 5,
-          "enum": [
-            1,
-            -1,
-            2,
-            3,
-            4
-          ],
+          "enum": [1, -1, 2, 3, 4],
           "x-originalName": "plan"
         },
         {
@@ -683,18 +596,7 @@
           "x-group": "Informations sur l'accident ",
           "label": "Etat de la surface ",
           "x-cardinality": 10,
-          "enum": [
-            1,
-            2,
-            -1,
-            9,
-            7,
-            5,
-            8,
-            3,
-            6,
-            4
-          ],
+          "enum": [1, 2, -1, 9, 7, 5, 8, 3, 6, 4],
           "x-originalName": "surf"
         },
         {
@@ -725,19 +627,7 @@
           "x-group": "Informations sur l'accident ",
           "label": "Aménagement - Infrastructure ",
           "x-cardinality": 11,
-          "enum": [
-            0,
-            5,
-            -1,
-            2,
-            6,
-            9,
-            4,
-            3,
-            1,
-            8,
-            7
-          ],
+          "enum": [0, 5, -1, 2, 6, 9, 4, 3, 1, 8, 7],
           "x-originalName": "infra"
         },
         {
@@ -766,17 +656,7 @@
           "x-group": "Informations sur l'accident ",
           "label": "Situation ",
           "x-cardinality": 9,
-          "enum": [
-            1,
-            5,
-            0,
-            4,
-            3,
-            6,
-            8,
-            2,
-            -1
-          ],
+          "enum": [1, 5, 0, 4, 3, 6, 8, 2, -1],
           "x-originalName": "situ"
         },
         {
@@ -799,13 +679,7 @@
           "x-transform": {
             "type": "string"
           },
-          "enum": [
-            "4",
-            "3",
-            "1",
-            "2",
-            "-1"
-          ],
+          "enum": ["4", "3", "1", "2", "-1"],
           "x-originalName": "grav"
         },
         {
@@ -823,11 +697,7 @@
           "x-group": "Informations sur la victime ",
           "label": "Sexe ",
           "x-cardinality": 3,
-          "enum": [
-            1,
-            2,
-            -1
-          ],
+          "enum": [1, 2, -1],
           "x-originalName": "sexe"
         },
         {
@@ -864,16 +734,7 @@
           "x-group": "Informations sur la victime ",
           "label": "Motif de déplacement ",
           "x-cardinality": 8,
-          "enum": [
-            5,
-            0,
-            1,
-            9,
-            2,
-            4,
-            3,
-            -1
-          ],
+          "enum": [5, 0, 1, 9, 2, 4, 3, -1],
           "x-originalName": "trajet"
         },
         {
@@ -892,12 +753,7 @@
           "x-group": "Informations sur la victime ",
           "label": "Usage de sécurité",
           "x-cardinality": 4,
-          "enum": [
-            3,
-            1,
-            2,
-            0
-          ],
+          "enum": [3, 1, 2, 0],
           "x-originalName": "secuexist"
         },
         {
@@ -929,18 +785,7 @@
           "label": "Equipement ",
           "separator": " / ",
           "x-cardinality": 10,
-          "enum": [
-            "2",
-            "9",
-            "4",
-            "0",
-            "1",
-            "8",
-            "6",
-            "3",
-            "5",
-            "7"
-          ],
+          "enum": ["2", "9", "4", "0", "1", "8", "6", "3", "5", "7"],
           "x-originalName": "equipement"
         },
         {
@@ -980,25 +825,7 @@
           "label": "Obstacle fixe heurté",
           "x-cardinality": 19,
           "enum": [
-            0,
-            1,
-            12,
-            14,
-            16,
-            13,
-            8,
-            6,
-            15,
-            9,
-            2,
-            11,
-            3,
-            10,
-            4,
-            5,
-            7,
-            -1,
-            17
+            0, 1, 12, 14, 16, 13, 8, 6, 15, 9, 2, 11, 3, 10, 4, 5, 7, -1, 17
           ],
           "x-originalName": "obs"
         },
@@ -1028,16 +855,7 @@
           "x-group": "Informations sur l'accident ",
           "label": "Obstacle mobile heurté",
           "x-cardinality": 8,
-          "enum": [
-            2,
-            0,
-            1,
-            9,
-            4,
-            5,
-            6,
-            -1
-          ],
+          "enum": [2, 0, 1, 9, 4, 5, 6, -1],
           "x-originalName": "obsm"
         },
         {
@@ -1068,19 +886,7 @@
           "x-group": "Informations sur l'accident ",
           "label": "Choc subi",
           "x-cardinality": 11,
-          "enum": [
-            1,
-            0,
-            8,
-            4,
-            7,
-            3,
-            2,
-            6,
-            5,
-            9,
-            -1
-          ],
+          "enum": [1, 0, 8, 4, 7, 3, 2, 6, 5, 9, -1],
           "x-originalName": "choc"
         },
         {
@@ -1129,34 +935,8 @@
           "label": "Manoeuvre avant l'accident",
           "x-cardinality": 28,
           "enum": [
-            1,
-            0,
-            2,
-            19,
-            15,
-            13,
-            5,
-            9,
-            16,
-            17,
-            21,
-            7,
-            18,
-            14,
-            11,
-            23,
-            26,
-            12,
-            10,
-            25,
-            3,
-            6,
-            8,
-            24,
-            22,
-            20,
-            -1,
-            4
+            1, 0, 2, 19, 15, 13, 5, 9, 16, 17, 21, 7, 18, 14, 11, 23, 26, 12,
+            10, 25, 3, 6, 8, 24, 22, 20, -1, 4
           ],
           "x-originalName": "manv"
         },
@@ -1369,13 +1149,7 @@
           "x-group": "Informations sur les autres véhicules liés à l'accident ",
           "label": "Nombre d'autres véhicules",
           "x-cardinality": 5,
-          "enum": [
-            1,
-            2,
-            3,
-            4,
-            5
-          ],
+          "enum": [1, 2, 3, 4, 5],
           "x-originalName": "numVehicules"
         },
         {
@@ -1440,9 +1214,7 @@
       "id": "accidents-velos",
       "title": "Accidents de vélo",
       "bbox": [
-        -151.76500000990927,
-        -23.868998014368117,
-        167.1284599788487,
+        -151.76500000990927, -23.868998014368117, 167.1284599788487,
         51.06892197858542
       ],
       "slug": "accidents-velos",
@@ -1474,14 +1246,8 @@
                   "id": "https:koumoul.comappssankey0.6",
                   "datasetsFilters": [
                     {
-                      "field-type": [
-                        "integer",
-                        "number"
-                      ],
-                      "select": [
-                        "id",
-                        "title"
-                      ]
+                      "field-type": ["integer", "number"],
+                      "select": ["id", "title"]
                     }
                   ],
                   "meta": {
@@ -1519,9 +1285,7 @@
       "forceOneValue": false,
       "showAllValues": false,
       "labelField": "int",
-      "values": [
-        "int"
-      ]
+      "values": ["int"]
     },
     {
       "multipleValues": false,

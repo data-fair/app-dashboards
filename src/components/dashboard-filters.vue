@@ -110,7 +110,7 @@ async function updateFilters (noFieldUpdate) {
     })
     try {
       const res = await Promise.all(filterFields.map(f => {
-        const filter = fieldsWithFilter.find(fwf => fwf.labelField === f)
+        const filter = fieldsWithFilter.find(fwf => fwf.labelField === f || fwf.values?.includes(f))
         if (filter?.values?.length) {
           return ofetch(dataset.value.href + '/values/' + f, { params })
         } else {
