@@ -1,102 +1,98 @@
-<script setup>
-import reactiveSearchParams from '@data-fair/lib-vue/reactive-search-params-global.js'
+<script setup lang="ts">
 import { computed, ref } from 'vue'
-import { computedAsync, useElementSize } from '@vueuse/core'
-import { ofetch } from 'ofetch'
+import reactiveSearchParams from '@data-fair/lib-vue/reactive-search-params-global.js'
+import { useFetch } from '@data-fair/lib-vue/fetch.js'
+import { useElementSize } from '@vueuse/core'
 import { mdiCodeTags, mdiCamera } from '@mdi/js'
 import { useConfig } from '@/composables/config'
-import { messageDisplay, messageType, messageContent } from '@/messages'
+import { useUiNotif } from '@data-fair/lib-vue/ui-notif.js'
+import type { DashboardElement } from '@/config'
 
-const props = defineProps({
-  element: { type: Object, required: true },
-  height: { type: Number, default: 400 },
-  filtersValues: { type: [Object, null], required: true }
-})
+const props = defineProps<{
+  element: DashboardElement
+  height?: number
+  filtersValues: Record<string, any> | null
+}>()
 
 const { application, config, fields, accessKey, dFrameAdapter } = useConfig()
+const { sendUiNotif } = useUiNotif()
 
 const requiredFilter = computed(() => {
-  return ((props.element.valueMandatory && props.element.mandatoryFilters) || []).filter(f => !props.filtersValues?.keys?.includes(f))
+  return ((props.element.valueMandatory && props.element.mandatoryFilters) || [])
+    .filter((f: string) => !props.filtersValues?.keys?.includes(f))
 })
 
-const actions = ref(null)
-const actionsHeight = useElementSize(actions).height
+const actionsRef = ref<HTMLElement | null>(null)
+const actionsHeight = useElementSize(actionsRef).height
 
 const searchParams = computed(() => {
-  const searchParams = {
+  const params: Record<string, any> = {
     ...(props.element.ignoreFilters ? {} : props.filtersValues),
     'd-frame': true
   }
-  if (reactiveSearchParams.primary) searchParams.primary = reactiveSearchParams.primary
-  if (reactiveSearchParams.secondary) searchParams.secondary = reactiveSearchParams.secondary
+  if (reactiveSearchParams.primary) params.primary = reactiveSearchParams.primary
+  if (reactiveSearchParams.secondary) params.secondary = reactiveSearchParams.secondary
   if (props.element.type === 'tablePreview') {
-    if (props.element.display !== 'auto') searchParams.display = props.element.display
-    searchParams.interaction = !props.element.noInteractions
-    if (props.element.fields?.length) searchParams.cols = props.element.fields.join(',')
+    if (props.element.display !== 'auto') params.display = props.element.display
+    params.interaction = !props.element.noInteractions
+    if (props.element.fields?.length) params.cols = props.element.fields.join(',')
   }
   if (reactiveSearchParams.print === 'true') {
-    searchParams.interaction = false
+    params.interaction = false
   }
-  return new URLSearchParams(searchParams)
+  return new URLSearchParams(params)
 })
 
 const applicationUrl = computed(() => {
-  if (props.element.type !== 'application') return null
+  if (props.element.type !== 'application' || !props.element.application) return undefined
   return `${application.href.split('/data-fair/')[0]}/data-fair/${props.element.application.href.split('/data-fair/').pop()}`
 })
 
-const description = computedAsync(async () => {
-  if (props.element.type !== 'application' || !props.element.description || props.element.description === 'none') return null
-  const app = await ofetch(applicationUrl.value, { params: { html: true } })
-  return app.description
-}, null, {
-  onError: function (e) {
-    messageType.value = 'error'
-    messageContent.value = e.status + ' - ' + e.data
-    messageDisplay.value = true
-  }
+const descriptionUrl = computed(() => {
+  if (props.element.type !== 'application' || !props.element.description || props.element.description === 'none') return undefined
+  return applicationUrl.value
 })
 
-const sources = computedAsync(async () => {
-  if (!config.value.showSources) return []
-  if (props.element.type === 'tablePreview') return [props.element.dataset || config.value.datasets[0]]
-  else if (props.element.type !== 'application') return []
-  const app = await ofetch(`${applicationUrl.value}/configuration`)
-  return app.datasets
-}, null, {
-  onError: function (e) {
-    messageType.value = 'error'
-    messageContent.value = e.status + ' - ' + e.data
-    messageDisplay.value = true
-  }
+const { data: appData } = useFetch(() => descriptionUrl.value ? `${descriptionUrl.value}?html=true` : null, { immediate: true })
+const description = computed(() => (appData.value as any)?.description || null)
+
+const sourcesUrl = computed(() => {
+  if (!config.value.showSources) return undefined
+  if (props.element.type === 'tablePreview') return undefined
+  if (props.element.type !== 'application') return undefined
+  return `${applicationUrl.value}/configuration`
+})
+
+const { data: sourcesData } = useFetch(() => sourcesUrl.value, { immediate: true })
+const sources = computed(() => {
+  if (props.element.type === 'tablePreview') return [props.element.dataset || config.value.datasets?.[0]]
+  return (sourcesData.value as any)?.datasets || []
 })
 
 const captureUrl = computed(() => {
-  if (props.element.type !== 'application') return null
-  const meta = props.element.application.baseApp.meta
-  const params = {
-    width: meta['df:capture-width'] || 1280,
-    height: meta['df:capture-height'] || 720,
+  if (props.element.type !== 'application' || !props.element.application) return undefined
+  const meta = props.element.application.baseApp.meta as Record<string, any>
+  const params: Record<string, any> = {
+    width: meta?.['df:capture-width'] || 1280,
+    height: meta?.['df:capture-height'] || 720,
     app_embed: true
   }
-  for (const [key, value] of Object.entries(props.filtersValues)) {
+  for (const [key, value] of Object.entries(props.filtersValues || {})) {
     params['app_' + key] = value
   }
   return `${applicationUrl.value}/capture?${new URLSearchParams(params).toString()}`
 })
 
-const embedCode = () => {
+const embedCode = async () => {
   try {
-    navigator.clipboard.writeText(`<iframe src="${`${application.exposedUrl.split('data-fair')[0]}data-fair/app/${accessKey.value ? (accessKey.value + '%3A') : ''}${props.element.application.id}`}?embed=true" width="100%" height="500px" style="background-color: transparent; border: none;"></iframe>`)
-    messageType.value = 'info'
-    messageContent.value = 'Le code d\'intégration a été mis dans votre presse-papier'
-  } catch (err) {
-    messageType.value = 'error'
-    messageContent.value = err
+    const key = accessKey.value ? (accessKey.value + '%3A') : ''
+    const url = `${application.exposedUrl.split('data-fair')[0]}data-fair/app/${key}${props.element.application?.id}?embed=true`
+    await navigator.clipboard.writeText(`<iframe src="${url}" width="100%" height="500px" style="background-color: transparent; border: none;"></iframe>`)
+    sendUiNotif({ msg: 'Le code d\'intégration a été mis dans votre presse-papier', type: 'info' })
+  } catch (err: any) {
+    sendUiNotif({ msg: err.message || err, type: 'error' })
   }
-  messageDisplay.value = true
 }
-
 </script>
 
 <template>
@@ -105,25 +101,25 @@ const embedCode = () => {
     type="info"
     variant="outlined"
   >
-    <h4>Veuillez sélectionner une valeur de {{ requiredFilter.map(f => fields[f].label || fields[f].title || fields[f]['x-originalName'] || f).join(', ') }}</h4>
+    <h4>Veuillez sélectionner une valeur de {{ requiredFilter.map((f: string) => fields[f]?.label || fields[f]?.title || fields[f]?.['x-originalName'] || f).join(', ') }}</h4>
   </v-alert>
   <d-frame
     v-else-if="element.type === 'tablePreview'"
     :adapter="dFrameAdapter"
-    :src="`/data-fair/embed/dataset/${accessKey ? (accessKey + '%3A') : ''}${(element.dataset || config.datasets[0]).id}/table?${searchParams.toString()}`"
-    :iframe-title="(element.dataset || config.datasets[0]).title"
-    :style="`height:${height>0 ? (height - (actionsHeight || 0))+'px' : '100%'}`"
+    :src="`/data-fair/embed/dataset/${accessKey ? (accessKey + '%3A') : ''}${(element.dataset || (config.datasets || [])[0]).id}/table?${searchParams.toString()}`"
+    :iframe-title="(element.dataset || (config.datasets || [])[0]).title"
+    :style="`height:${height && height > 0 ? (height - (actionsHeight || 0)) + 'px' : '100%'}`"
   />
   <d-frame
     v-else-if="element.type === 'form'"
     :adapter="dFrameAdapter"
-    :src="`/data-fair/embed/dataset/${accessKey ? (accessKey + '%3A') : ''}${element.dataset.id}/form?${searchParams.toString()}`"
-    :iframe-title="(element.dataset || config.datasets[0]).title"
-    :style="`height:${height>0 ? (height - (actionsHeight || 0))+'px' : '100%'}`"
+    :src="`/data-fair/embed/dataset/${accessKey ? (accessKey + '%3A') : ''}${element.dataset?.id}/form?${searchParams.toString()}`"
+    :iframe-title="(element.dataset || (config.datasets || [])[0])?.title"
+    :style="`height:${height && height > 0 ? (height - (actionsHeight || 0)) + 'px' : '100%'}`"
   />
   <div
     v-else
-    :style="`overflow-y:auto;height:${height>0 ? height+'px' : '100%'}`"
+    :style="`overflow-y:auto;height:${height && height > 0 ? height + 'px' : '100%'}`"
   >
     <v-row
       v-if="element.type === 'application'"
@@ -142,9 +138,9 @@ const embedCode = () => {
       >
         <d-frame
           :adapter="dFrameAdapter"
-          :src="`/data-fair/app/${accessKey ? (accessKey + '%3A') : ''}${element.application.id}?${searchParams.toString()}`"
-          :iframe-title="element.application.title"
-          :style="element.application.baseApp.meta['df:overflow'] !== 'true' ? `height:${height>0 ? (height - (actionsHeight || 0))+'px' : '100%'}` : ''"
+          :src="`/data-fair/app/${accessKey ? (accessKey + '%3A') : ''}${element.application?.id}?${searchParams.toString()}`"
+          :iframe-title="element.application?.title"
+          :style="element.application?.baseApp.meta && element.application.baseApp.meta['df:overflow'] !== 'true' ? `height:${height && height > 0 ? (height - (actionsHeight || 0)) + 'px' : '100%'}` : ''"
         />
       </v-col>
       <v-col
@@ -164,7 +160,7 @@ const embedCode = () => {
   </div>
   <v-card-actions
     v-if="(config.showSources && sources?.length) || (element.type === 'application' && (config.showEmbed || config.showCapture))"
-    ref="actions"
+    ref="actionsRef"
   >
     <template v-if="config.showEmbed && element.type === 'application'">
       <v-spacer />
@@ -173,9 +169,7 @@ const embedCode = () => {
         color="primary"
         @click="embedCode"
       >
-        <v-icon
-          :icon="mdiCodeTags"
-        />&nbsp;Intégrer
+        <v-icon :icon="mdiCodeTags" />&nbsp;Intégrer
       </v-btn>
     </template>
     <template v-if="config.showCapture && element.type === 'application'">
@@ -185,15 +179,12 @@ const embedCode = () => {
         color="primary"
         :href="captureUrl"
       >
-        <v-icon
-          :icon="mdiCamera"
-        />&nbsp;Télécharger
+        <v-icon :icon="mdiCamera" />&nbsp;Télécharger
       </v-btn>
     </template>
     <v-spacer />
     <template v-if="config.showSources && sources?.length">
       Source{{ sources.length > 1 ? 's' : '' }}&nbsp;:&nbsp;
-
       <template
         v-for="source in sources"
         :key="source.id"

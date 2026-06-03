@@ -1,157 +1,209 @@
-<script setup>
+<script setup lang="ts">
+import { computed, ref, watch, effectScope, type Ref } from 'vue'
 import { ofetch } from 'ofetch'
-import { ref, computed, watch } from 'vue'
+import { useAsyncAction } from '@data-fair/lib-vue/async-action.js'
+import { useFetch } from '@data-fair/lib-vue/fetch.js'
 import reactiveSearchParams from '@data-fair/lib-vue/reactive-search-params-global.js'
 import SearchAddress from '@data-fair/lib-vuetify/search-address.vue'
 import DateRangePicker from '@data-fair/lib-vuetify/date-range-picker.vue'
 import { useElementSize } from '@vueuse/core'
 import { useConfig } from '@/composables/config'
-import { messageDisplay, messageType, messageContent } from '@/messages'
 
-const props = defineProps({
-  prefix: { type: String, default: '' }
-})
-const emit = defineEmits(['update:model-value'])
+const props = defineProps<{
+  prefix?: string
+}>()
 
-const root = ref(null)
+const emit = defineEmits<{
+  'update:modelValue': [value: Record<string, any>]
+}>()
+
+const root = ref<HTMLElement | null>(null)
 const { width } = useElementSize(root)
 const { config, filters, dataset, fields } = useConfig()
 
-let address
+let address: { lon: number; lat: number } | undefined
 
-const filtersState = {}
+interface FilterState {
+  items: Ref<string[]>
+  loading: Ref<boolean>
+  value: Ref<string | string[] | undefined>
+  searchItems: (search?: string) => void
+}
+
+const filtersState = ref<Record<string, FilterState>>({})
+const filtersScope = effectScope()
 
 watch(filters, (newFilters) => {
-  const datasetFilterPrefix = '_d_' + dataset.value?.id + '_';
-  (newFilters || []).forEach(filter => {
-    if (!filtersState[filter.labelField]) {
-      filtersState[filter.labelField] = { items: ref([]), loading: ref(false) }
-      filtersState[filter.labelField].value = computed({
-        get () {
-          if (reactiveSearchParams[props.prefix + datasetFilterPrefix + filter.labelField + '_in']) {
-            return filter.multipleValues ? JSON.parse(`[${reactiveSearchParams[props.prefix + datasetFilterPrefix + filter.labelField + '_in']}]`) : reactiveSearchParams[props.prefix + datasetFilterPrefix + filter.labelField + '_in']
-          } else {
-            return filter.multipleValues ? [] : undefined
-          }
-        },
-        set (val) {
-          if (filter.multipleValues && val.length) {
-            reactiveSearchParams[props.prefix + datasetFilterPrefix + filter.labelField + '_in'] = JSON.stringify(val).slice(1, -1)
-          } else if (!filter.multipleValues && val) {
-            reactiveSearchParams[props.prefix + datasetFilterPrefix + filter.labelField + '_in'] = val
-          } else delete reactiveSearchParams[props.prefix + datasetFilterPrefix + filter.labelField + '_in']
+  filtersScope.stop()
+  filtersScope.run(() => {
+    const state: Record<string, FilterState> = {}
+    const datasetFilterPrefix = '_d_' + (dataset.value?.id || '') + '_'
+
+    for (const filter of (newFilters || [])) {
+      const searchQuery = ref<string | undefined>(undefined)
+
+      const url = computed(() => {
+        if (!dataset.value) return null
+        const otherFilters = (config.value.filters || [])
+          .filter((f: any) => f.labelField !== filter.labelField && reactiveSearchParams[props.prefix + datasetFilterPrefix + f.labelField + '_in'])
+        const params: Record<string, string> = {
+          finalizedAt: dataset.value.finalizedAt || '',
+          stringify: 'true'
         }
-      })
-      filtersState[filter.labelField].searchItems = async (search) => {
-        const otherFilters = (config.value.filters || []).filter(f => f.labelField !== filter.labelField && reactiveSearchParams[props.prefix + datasetFilterPrefix + f.labelField + '_in'])
-        const params = Object.assign({
-          finalizedAt: dataset.value.finalizedAt,
-          stringify: true
-        }, ...otherFilters.map(f => ({ [`${f.labelField}_in`]: `${reactiveSearchParams[props.prefix + datasetFilterPrefix + f.labelField + '_in']}` })))
-        config.value.staticFilters?.forEach(filter => {
-          if (filter.type === 'in') params[filter.field + '_in'] = filter.values.join(',')
-          else if (filter.type === 'interval') {
-            if (filter.minValue != null) params[filter.field + '_gte'] = filter.minValue
-            if (filter.maxValue != null) params[filter.field + '_lte'] = filter.maxValue
+        otherFilters.forEach((f: any) => {
+          params[`${f.labelField}_in`] = `${reactiveSearchParams[props.prefix + datasetFilterPrefix + f.labelField + '_in']}`
+        })
+        config.value.staticFilters?.forEach((sf: any) => {
+          if (sf.type === 'in') params[sf.field + '_in'] = sf.values.join(',')
+          else if (sf.type === 'interval') {
+            if (sf.minValue != null) params[sf.field + '_gte'] = sf.minValue
+            if (sf.maxValue != null) params[sf.field + '_lte'] = sf.maxValue
           }
         })
         if (!filter.showAllValues) {
-          if (search != null) params.q = search + '*'
+          if (searchQuery.value != null) params.q = searchQuery.value + '*'
         } else {
-          params.size = 1000
+          params.size = '1000'
         }
         if (config.value.periodFilter) {
-          params._c_date_match = reactiveSearchParams.period
+          params._c_date_match = reactiveSearchParams.period || ''
         }
         if (config.value.addressFilter && address && reactiveSearchParams.radius) {
-          params._c_geo_distance = address.lon + ',' + address.lat + ',' + reactiveSearchParams.radius * 1000
+          params._c_geo_distance = address.lon + ',' + address.lat + ',' + Number(reactiveSearchParams.radius) * 1000
         }
-        try {
-          const values = await ofetch(dataset.value.href + '/values/' + filter.labelField, { params })
-          const filterValue = reactiveSearchParams[props.prefix + datasetFilterPrefix + filter.labelField + '_in']
+        return `${dataset.value.href}/values/${filter.labelField}?${new URLSearchParams(params)}`
+      })
+
+      const { data, loading, refresh } = useFetch(() => url.value, { immediate: false })
+
+      const filterValue = computed({
+        get () {
+          const key = props.prefix + datasetFilterPrefix + filter.labelField + '_in'
+          if (reactiveSearchParams[key]) {
+            return filter.multipleValues
+              ? JSON.parse(`[${reactiveSearchParams[key]}]`)
+              : reactiveSearchParams[key]
+          }
+          return filter.multipleValues ? [] : undefined
+        },
+        set (val: string | string[] | undefined) {
+          const key = props.prefix + datasetFilterPrefix + filter.labelField + '_in'
+          if (filter.multipleValues && Array.isArray(val) && val.length) {
+            reactiveSearchParams[key] = JSON.stringify(val).slice(1, -1)
+          } else if (!filter.multipleValues && val) {
+            reactiveSearchParams[key] = val as string
+          } else {
+            delete reactiveSearchParams[key]
+          }
+        }
+      })
+
+      state[filter.labelField] = {
+        items: computed(() => {
+          const values = (data.value || []) as string[]
+          const key = props.prefix + datasetFilterPrefix + filter.labelField + '_in'
+          const filterValue = reactiveSearchParams[key]
           if (filterValue) {
             const fValues = filter.multipleValues ? JSON.parse(`[${filterValue}]`) : [filterValue]
-            fValues.filter(v => !values.includes(v)).forEach(v => values.unshift(v))
+            fValues.filter((v: string) => !values.includes(v)).forEach((v: string) => values.unshift(v))
           }
-          filtersState[filter.labelField].items.value = values.sort((a, b) => a.localeCompare(b, 'fr', { sensitivity: 'base' }))
-        } catch (e) {
-          messageType.value = 'error'
-          messageContent.value = e.status + ' - ' + e.data
-          messageDisplay.value = true
+          return values.sort((a: string, b: string) => a.localeCompare(b, 'fr', { sensitivity: 'base' }))
+        }),
+        loading,
+        value: filterValue,
+        searchItems: (search?: string) => {
+          searchQuery.value = search
+          refresh()
         }
       }
     }
+    filtersState.value = state
   })
-  updateFilters()
+
+  // Trigger initial load for all filters
+  updateFiltersExecute()
 }, { immediate: true })
 
-const updateValue = (filter, value) => {
+const updateValue = (filter: any, value: string | string[] | undefined) => {
   if (!filter.forceOneValue || value) {
-    updateFilters(filter.labelField)
+    updateFiltersExecute(filter.labelField)
   }
 }
 
-async function updateFilters (noFieldUpdate) {
-  const datasetFilterPrefix = '_d_' + dataset.value.id + '_'
-  let filtersValues = {}
-  const fieldsWithFilter = filters.value?.filter(f => reactiveSearchParams[props.prefix + datasetFilterPrefix + f.labelField + '_in'])
+const { execute: updateFiltersExecute } = useAsyncAction(async (noFieldUpdate?: string) => {
+  const datasetFilterPrefix = '_d_' + (dataset.value?.id || '') + '_'
+  const filtersValues: Record<string, any> = {}
+  const fieldsWithFilter = (filters.value || [])
+    .filter((f: any) => reactiveSearchParams[props.prefix + datasetFilterPrefix + f.labelField + '_in'])
+
   if (fieldsWithFilter?.length) {
-    const filterFields = [].concat(...fieldsWithFilter.map(f => [].concat(f.values?.length ? f.values : f.labelField))).filter((f, i, s) => s.indexOf(f) === i)
-    const activeFilters = (config.value.filters || []).filter(f => reactiveSearchParams[props.prefix + datasetFilterPrefix + f.labelField + '_in'])
-    const params = Object.assign({
-      finalizedAt: dataset.value.finalizedAt
-    }, ...activeFilters.map(f => ({ [`${f.labelField}_in`]: `${reactiveSearchParams[props.prefix + datasetFilterPrefix + f.labelField + '_in']}` })))
-    config.value.staticFilters?.forEach(filter => {
-      if (filter.type === 'in') params[filter.field + '_in'] = filter.values.join(',')
-      else if (filter.type === 'interval') {
-        if (filter.minValue != null) params[filter.field + '_gte'] = filter.minValue
-        if (filter.maxValue != null) params[filter.field + '_lte'] = filter.maxValue
+    const filterFields = ([] as string[]).concat(
+      ...fieldsWithFilter.map((f: any) => f.values?.length ? f.values : f.labelField)
+    ).filter((f, i, s) => s.indexOf(f) === i)
+
+    const activeFilters = (config.value.filters || [])
+      .filter((f: any) => reactiveSearchParams[props.prefix + datasetFilterPrefix + f.labelField + '_in'])
+
+    const params: Record<string, string> = {
+      finalizedAt: dataset.value?.finalizedAt || ''
+    }
+    activeFilters.forEach((f: any) => {
+      params[`${f.labelField}_in`] = `${reactiveSearchParams[props.prefix + datasetFilterPrefix + f.labelField + '_in']}`
+    })
+    config.value.staticFilters?.forEach((sf: any) => {
+      if (sf.type === 'in') params[sf.field + '_in'] = sf.values.join(',')
+      else if (sf.type === 'interval') {
+        if (sf.minValue != null) params[sf.field + '_gte'] = sf.minValue
+        if (sf.maxValue != null) params[sf.field + '_lte'] = sf.maxValue
       }
     })
-    try {
-      const res = await Promise.all(filterFields.map(f => {
-        const filter = fieldsWithFilter.find(fwf => fwf.labelField === f || fwf.values?.includes(f))
-        if (filter?.values?.length) {
-          return ofetch(dataset.value.href + '/values/' + f, { params })
-        } else {
-          const filterValue = reactiveSearchParams[props.prefix + datasetFilterPrefix + f + '_in']
-          return filter?.multipleValues ? JSON.parse(`[${filterValue}]`) : [filterValue]
-        }
-      }))
-      const values = Object.assign({}, ...filterFields.map((f, i) => ({ [f]: res[i] })))
-      filtersValues = Object.assign({}, ...filterFields.map(f => {
-        if (fields.value[f]['x-concept']) return { [`_c_${fields.value[f]['x-concept'].id}_in`]: JSON.stringify(values[f]).slice(1, -1) }
-        else {
-          return { [`${datasetFilterPrefix}${f}_in`]: JSON.stringify(values[f]).slice(1, -1) }
-        }
-      }))
-      filtersValues.keys = fieldsWithFilter.map(f => f.labelField)
-    } catch (e) {
-      messageType.value = 'error'
-      messageContent.value = e.status + ' - ' + e.data
-      messageDisplay.value = true
-    }
+
+    const res = await Promise.all(filterFields.map((f: string) => {
+      const filter = fieldsWithFilter.find((fwf: any) => fwf.labelField === f || fwf.values?.includes(f))
+      if (filter?.values?.length) {
+        return ofetch(dataset.value!.href + '/values/' + f, { params })
+      } else {
+        const fv = reactiveSearchParams[props.prefix + datasetFilterPrefix + f + '_in']
+        return filter?.multipleValues ? JSON.parse(`[${fv}]`) : [fv]
+      }
+    }))
+
+    const values: Record<string, string[]> = {}
+    filterFields.forEach((f: string, i: number) => { values[f] = res[i] })
+
+    filterFields.forEach((f: string) => {
+      if (fields.value[f]?.['x-concept']) {
+        filtersValues[`_c_${fields.value[f]['x-concept'].id}_in`] = JSON.stringify(values[f]).slice(1, -1)
+      } else {
+        filtersValues[`${datasetFilterPrefix}${f}_in`] = JSON.stringify(values[f]).slice(1, -1)
+      }
+    })
+    filtersValues.keys = fieldsWithFilter.map((f: any) => f.labelField)
   }
 
   if (config.value.periodFilter) {
     filtersValues._c_date_match = reactiveSearchParams.period
   }
   if (config.value.addressFilter && address && reactiveSearchParams.radius) {
-    filtersValues._c_geo_distance = address.lon + ',' + address.lat + ',' + reactiveSearchParams.radius * 1000
+    filtersValues._c_geo_distance = address.lon + ',' + address.lat + ',' + Number(reactiveSearchParams.radius) * 1000
   }
-  config.value.staticFilters?.forEach(filter => {
-    if (filter.type === 'in') filtersValues[`${datasetFilterPrefix}${filter.field}_in`] = filter.values.join(',')
-    else if (filter.type === 'nin') filtersValues[`${datasetFilterPrefix}${filter.field}_nin`] = filter.values.join(',')
-    else if (filter.type === 'interval') {
-      if (filter.minValue != null) filtersValues[`${datasetFilterPrefix}${filter.field}_gte`] = filter.minValue
-      if (filter.maxValue != null) filtersValues[`${datasetFilterPrefix}${filter.field}_lte`] = filter.maxValue
+  config.value.staticFilters?.forEach((sf: any) => {
+    if (sf.type === 'in') filtersValues[`${datasetFilterPrefix}${sf.field}_in`] = sf.values.join(',')
+    else if (sf.type === 'nin') filtersValues[`${datasetFilterPrefix}${sf.field}_nin`] = sf.values.join(',')
+    else if (sf.type === 'interval') {
+      if (sf.minValue != null) filtersValues[`${datasetFilterPrefix}${sf.field}_gte`] = sf.minValue
+      if (sf.maxValue != null) filtersValues[`${datasetFilterPrefix}${sf.field}_lte`] = sf.maxValue
     }
   })
-  emit('update:model-value', filtersValues)
-  filters.value?.forEach(filter => {
-    if (filter.labelField !== noFieldUpdate) filtersState[filter.labelField].searchItems()
+
+  emit('update:modelValue', filtersValues)
+
+  filters.value?.forEach((filter: any) => {
+    if (filter.labelField !== noFieldUpdate && filtersState.value[filter.labelField]) {
+      filtersState.value[filter.labelField].searchItems()
+    }
   })
-}
+}, { catch: 'error' })
 </script>
 
 <template>
@@ -164,38 +216,39 @@ async function updateFilters (noFieldUpdate) {
     <v-col
       v-for="(filter, i) in filters"
       :key="i"
-      :cols="Math.min(Math.max(1,Math.ceil(12*250/width)),12)"
+      :cols="Math.min(Math.max(1, Math.ceil(12 * 250 / (width || 1))), 12)"
     >
       <v-autocomplete
+        v-if="filtersState[filter.labelField]"
         v-model="filtersState[filter.labelField].value.value"
         :loading="filtersState[filter.labelField].loading.value"
         :items="filtersState[filter.labelField].items.value"
-        :item-title="v => fields[filter.labelField]['x-labels'] ? fields[filter.labelField]['x-labels'][v] : v"
-        :item-value="v => v"
+        :item-title="(v: string) => fields[filter.labelField]?.['x-labels']?.[v] ?? v"
+        :item-value="(v: string) => v"
         variant="outlined"
         hide-details
         no-data-text="Aucun élément trouvé"
-        :label="fields[filter.labelField].label || fields[filter.labelField].title || fields[filter.labelField]['x-originalName'] || filter.labelField"
+        :label="fields[filter.labelField]?.label || fields[filter.labelField]?.title || fields[filter.labelField]?.['x-originalName'] || filter.labelField"
         :clearable="!filter.forceOneValue"
         :persistent-clear="!filter.forceOneValue"
         :multiple="filter.multipleValues"
         style="min-width:250px;"
         density="comfortable"
         autocomplete="off"
-        @update:search="search => (search == null || search.length) && search !== reactiveSearchParams[props.prefix +datasetFilterPrefix + filter.labelField + '_in'] && !filter.showAllValues && filtersState[filter.labelField].searchItems(search)"
+        @update:search="search => (search == null || search.length) && search !== reactiveSearchParams[props.prefix + '_d_' + (dataset?.id || '') + '_' + filter.labelField + '_in'] && !filter.showAllValues && filtersState[filter.labelField].searchItems(search)"
         @update:model-value="updateValue(filter, $event)"
       />
     </v-col>
     <v-col
       v-if="config.periodFilter"
-      :cols="Math.min(Math.max(1,Math.round(12*250/width)),12)"
+      :cols="Math.min(Math.max(1, Math.round(12 * 250 / (width || 1))), 12)"
     >
       <date-range-picker
         v-model="reactiveSearchParams.period"
-        :min="dataset.timePeriod?.startDate?.slice(0, 10)"
-        :max="dataset.timePeriod?.endDate?.slice(0, 10)"
+        :min="(dataset as any)?.timePeriod?.startDate?.slice(0, 10)"
+        :max="(dataset as any)?.timePeriod?.endDate?.slice(0, 10)"
         label="Période"
-        @update:model-value="updateFilters()"
+        @update:model-value="updateFiltersExecute()"
       />
     </v-col>
     <v-col
@@ -207,9 +260,6 @@ async function updateFilters (noFieldUpdate) {
         class="px-1 py-2"
         style="width:320px;border-color:#A0A0A0"
       >
-        <!-- <label
-            class="text-body-2 text-medium-emphasis ml-2"
-          >Autour d'une adresse</label> -->
         <v-row align="start">
           <v-col
             class="pr-0"
@@ -218,7 +268,7 @@ async function updateFilters (noFieldUpdate) {
             <search-address
               v-model="reactiveSearchParams.address"
               variant="plain"
-              @selected="address = $event; updateFilters()"
+              @selected="address = $event; updateFiltersExecute()"
             />
           </v-col>
           <v-col
@@ -232,7 +282,7 @@ async function updateFilters (noFieldUpdate) {
               type="number"
               label="Rayon (km)"
               density="compact"
-              @update:model-value="updateFilters()"
+              @update:model-value="updateFiltersExecute()"
             />
           </v-col>
         </v-row>

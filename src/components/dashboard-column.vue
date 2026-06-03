@@ -1,21 +1,21 @@
-<script setup>
+<script setup lang="ts">
+import type { DashboardElement } from '@/config'
 import dashboardElement from './dashboard-element.vue'
 
-defineProps({
-  element: { type: Object, required: true },
-  height: { type: Number, default: 400 },
-  filtersValues: { type: [Object, null], required: true }
-})
-
+defineProps<{
+  element: DashboardElement
+  height?: number
+  filtersValues: Record<string, any> | null
+}>()
 </script>
 
 <template>
-  <template v-if="element.type==='column'">
+  <template v-if="element.type === 'column'">
     <dashboard-element
       v-for="(el, k) in element.elements"
       :key="k"
       :element="el"
-      :height="height*(el.height || 100) / element.elements.reduce((acc, el) => acc+(el.height||100), 0)"
+      :height="height && element.elements ? height * (el.height || 100) / element.elements.reduce((acc, e) => acc + (e.height || 100), 0) : undefined"
       :filters-values="filtersValues"
     />
   </template>

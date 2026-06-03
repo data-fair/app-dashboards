@@ -1,5 +1,5 @@
-<script setup>
-import { ref } from 'vue'
+<script setup lang="ts">
+import { computed, ref } from 'vue'
 import reactiveSearchParams from '@data-fair/lib-vue/reactive-search-params-global.js'
 import dashboardFilters from './dashboard-filters.vue'
 import dashboardSection from './dashboard-section.vue'
@@ -7,29 +7,38 @@ import { useConfig } from '@/composables/config'
 
 const { config, dataset } = useConfig()
 
-const filtersValues = [ref({}), ref({})]
-const tab = [ref(null), ref(null)]
-let maxTitleLength = 0
-let sumTitleLength = 0
+const filtersValues = [ref<Record<string, any>>({}), ref<Record<string, any>>({})]
+const tab = [ref<number | null>(null), ref<number | null>(null)]
 
-const datasetFilterPrefix = '_d_' + dataset.value?.id + '_'
+const datasetFilterPrefix = computed(() => '_d_' + (dataset.value?.id || '') + '_')
+
+// Initialize default filter values from config
 for (const filter of (config.value.filters || [])) {
-  if (!reactiveSearchParams[datasetFilterPrefix + filter.labelField + '_in'] && filter.startValue) {
-    reactiveSearchParams[datasetFilterPrefix + filter.labelField + '_in'] = filter.multipleValues ? JSON.stringify([filter.startValue]).slice(1, -1) : filter.startValue
+  if (!reactiveSearchParams[datasetFilterPrefix.value + filter.labelField + '_in'] && filter.startValue) {
+    reactiveSearchParams[datasetFilterPrefix.value + filter.labelField + '_in'] = filter.multipleValues
+      ? JSON.stringify([filter.startValue]).slice(1, -1)
+      : filter.startValue
   }
 }
+
 if (config.value.periodFilter && !reactiveSearchParams.period) {
-  const start = (dataset.value.timePeriod ? dataset.value.timePeriod.startDate : new Date().toISOString()).slice(0, 10)
-  const end = (dataset.value.timePeriod ? dataset.value.timePeriod.endDate : new Date().toISOString()).slice(0, 10)
+  const timePeriod = (dataset.value as any)?.timePeriod
+  const start = (timePeriod ? timePeriod.startDate : new Date().toISOString()).slice(0, 10)
+  const end = (timePeriod ? timePeriod.endDate : new Date().toISOString()).slice(0, 10)
   const period = [start]
   if (start !== end) period.push(end)
   reactiveSearchParams.period = period.join(',')
 }
 
-maxTitleLength = Math.max(...(config.value.sections?.map((/** @type{any} */s) => (s.title && s.title.length) || 0) || []))
-sumTitleLength = config.value.sections?.reduce((/** @type{any} */acc, /** @type{any} */s) => acc + ((s.title && s.title.length) || 0), 0)
+const maxTitleLength = computed(() =>
+  Math.max(...(config.value.sections?.map((s: any) => (s.title && s.title.length) || 0) || []))
+)
 
-function updateSwitch (v) {
+const sumTitleLength = computed(() =>
+  config.value.sections?.reduce((acc: number, s: any) => acc + ((s.title && s.title.length) || 0), 0) || 0
+)
+
+function updateSwitch (v: boolean | null) {
   if (v) reactiveSearchParams.view = 'compare'
   else delete reactiveSearchParams.view
 }
@@ -72,10 +81,10 @@ function updateSwitch (v) {
         />
         <dashboard-section
           v-if="config.sections?.length === 1"
-          :section="config.sections[0]"
+          :section="(config.sections || [])[0]"
           :filters-values="filtersValues[i].value"
         />
-        <template v-else-if="(config.sectionsGroup || []).includes('tabs')">
+        <template v-else-if="(config.sectionsGroup || '').includes('tabs')">
           <v-tabs
             v-if="config.sectionsGroup === 'tabs-tab'"
             v-model="tab[i].value"
@@ -86,41 +95,36 @@ function updateSwitch (v) {
             :direction="sumTitleLength >= 200 ? 'vertical' : 'horizontal'"
           >
             <v-tab
-              v-for="(section, i) of (config.sections || [])"
-              :key="i"
-              :value="i"
+              v-for="(section, idx) of (config.sections || [])"
+              :key="idx"
+              :value="idx"
             >
               <template v-if="section.icon">
                 <v-icon :icon="section.icon.svgPath" />
-            &nbsp;
+                &nbsp;
               </template>
               {{ section.title }}
             </v-tab>
           </v-tabs>
           <v-row v-else-if="config.sectionsGroup === 'tabs-button'">
             <v-spacer />
-            <v-col
-              cols="auto"
-            >
-              <v-card
-                variant="outlined"
-              >
+            <v-col cols="auto">
+              <v-card variant="outlined">
                 <v-btn-toggle
-
                   v-model="tab[i].value"
                   color="primary"
                   mandatory
-                  :style="sumTitleLength*15 >= $vuetify.display.width ? `flex-direction: column;height:${config.sections.length*36}px`:''"
+                  :style="sumTitleLength * 15 >= $vuetify.display.width ? 'flex-direction: column;height:' + ((config.sections || []).length * 36) + 'px' : ''"
                 >
                   <v-btn
-                    v-for="(section, i) of (config.sections || [])"
-                    :key="i"
-                    :value="i"
-                    :height="sumTitleLength*15 >= $vuetify.display.width ? 36 : 48"
+                    v-for="(section, idx) of (config.sections || [])"
+                    :key="idx"
+                    :value="idx"
+                    :height="sumTitleLength * 15 >= $vuetify.display.width ? 36 : 48"
                   >
                     <template v-if="section.icon">
                       <v-icon :icon="section.icon.svgPath" />
-              &nbsp;
+                      &nbsp;
                     </template>
                     {{ section.title }}
                   </v-btn>
@@ -159,7 +163,7 @@ function updateSwitch (v) {
               <h3>
                 <template v-if="section.icon">
                   <v-icon :icon="section.icon.svgPath" />
-              &nbsp;
+                  &nbsp;
                 </template>
                 {{ section.title }}
               </h3>
