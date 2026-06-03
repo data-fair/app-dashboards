@@ -1,12 +1,24 @@
 <script setup lang="ts">
+/**
+ * Renders a single dashboard element (table preview, form, application, text)
+ * as a `<d-frame>` embed or as plain text. The element's URL is computed by
+ * `useElementUrls` which encapsulates the d-frame src, capture URL, sources
+ * URL and description URL.
+ */
 import { computed, ref } from 'vue'
-import reactiveSearchParams from '@data-fair/lib-vue/reactive-search-params-global.js'
-import { useFetch } from '@data-fair/lib-vue/fetch.js'
 import { useElementSize } from '@vueuse/core'
-import { mdiCodeTags, mdiCamera } from '@mdi/js'
 import { useConfig } from '@/composables/config'
-import { useUiNotif } from '@data-fair/lib-vue/ui-notif.js'
-import type { DashboardElement } from '@/config'
+import { useElementUrls } from '@/composables/useElementUrls'
+import {
+  isApplicationElement,
+  isTablePreviewElement as _isTablePreview,
+  isFormElement as _isForm,
+  isTextElement
+} from '@/config'
+import type { DashboardElement, DashboardDataset, ApplicationElement } from '@/config'
+import ElementDFrame from './element-dframe.vue'
+import ElementActions from './element-actions.vue'
+import ElementDescription from './element-description.vue'
 
 const props = defineProps<{
   element: DashboardElement
@@ -14,187 +26,136 @@ const props = defineProps<{
   filtersValues: Record<string, any> | null
 }>()
 
-const { application, config, fields, accessKey, dFrameAdapter } = useConfig()
-const { sendUiNotif } = useUiNotif()
+const { fields, dataset } = useConfig()
 
-const requiredFilter = computed(() => {
-  return ((props.element.valueMandatory && props.element.mandatoryFilters) || [])
-    .filter((f: string) => !props.filtersValues?.keys?.includes(f))
+const fallbackDataset = computed<DashboardDataset | undefined>(() => dataset.value as DashboardDataset | undefined)
+
+const { dFrameSrc, sourcesList } = useElementUrls({
+  element: computed(() => props.element),
+  filtersValues: computed(() => props.filtersValues),
+  fallbackDataset
 })
 
 const actionsRef = ref<HTMLElement | null>(null)
-const actionsHeight = useElementSize(actionsRef).height
+const { height: actionsHeight } = useElementSize(actionsRef)
 
-const searchParams = computed(() => {
-  const params: Record<string, any> = {
-    ...(props.element.ignoreFilters ? {} : props.filtersValues),
-    'd-frame': true
-  }
-  if (reactiveSearchParams.primary) params.primary = reactiveSearchParams.primary
-  if (reactiveSearchParams.secondary) params.secondary = reactiveSearchParams.secondary
-  if (props.element.type === 'tablePreview') {
-    if (props.element.display !== 'auto') params.display = props.element.display
-    params.interaction = !props.element.noInteractions
-    if (props.element.fields?.length) params.cols = props.element.fields.join(',')
-  }
-  if (reactiveSearchParams.print === 'true') {
-    params.interaction = false
-  }
-  return new URLSearchParams(params)
+const isTable = computed(() => _isTablePreview(props.element))
+const isForm = computed(() => _isForm(props.element))
+const isApp = computed(() => isApplicationElement(props.element))
+const appElement = computed<ApplicationElement | null>(() => isApplicationElement(props.element) ? props.element : null)
+
+const requiredFilter = computed(() => {
+  if (!isTable.value && !isApp.value) return []
+  const el = props.element as { valueMandatory?: boolean; mandatoryFilters?: string[] }
+  return ((el.valueMandatory && el.mandatoryFilters) || [])
+    .filter((f: string) => !props.filtersValues?.keys?.includes(f))
 })
 
-const applicationUrl = computed(() => {
-  if (props.element.type !== 'application' || !props.element.application) return undefined
-  return `${application.href.split('/data-fair/')[0]}/data-fair/${props.element.application.href.split('/data-fair/').pop()}`
+const iframeTitle = computed(() => {
+  const el = props.element
+  if (el.type === 'application') return el.application?.title || ''
+  const ds = el.type === 'tablePreview'
+    ? (el.dataset || fallbackDataset.value)
+    : el.type === 'form' ? el.dataset : null
+  return ds?.title || ''
 })
 
-const descriptionUrl = computed(() => {
-  if (props.element.type !== 'application' || !props.element.description || props.element.description === 'none') return undefined
-  return applicationUrl.value
-})
+const missingFilterLabels = computed(() => requiredFilter.value
+  .map((f: string) => {
+    const field = fields.value[f]
+    return field?.label || field?.title || (field as { 'x-originalName'?: string })?.['x-originalName'] || f
+  })
+  .join(', '))
 
-const { data: appData } = useFetch(() => descriptionUrl.value ? `${descriptionUrl.value}?html=true` : null, { immediate: true })
-const description = computed(() => (appData.value as any)?.description || null)
-
-const sourcesUrl = computed(() => {
-  if (!config.value.showSources) return undefined
-  if (props.element.type === 'tablePreview') return undefined
-  if (props.element.type !== 'application') return undefined
-  return `${applicationUrl.value}/configuration`
-})
-
-const { data: sourcesData } = useFetch(() => sourcesUrl.value, { immediate: true })
-const sources = computed(() => {
-  if (props.element.type === 'tablePreview') return [props.element.dataset || config.value.datasets?.[0]]
-  return (sourcesData.value as any)?.datasets || []
-})
-
-const captureUrl = computed(() => {
-  if (props.element.type !== 'application' || !props.element.application) return undefined
-  const meta = props.element.application.baseApp.meta as Record<string, any>
-  const params: Record<string, any> = {
-    width: meta?.['df:capture-width'] || 1280,
-    height: meta?.['df:capture-height'] || 720,
-    app_embed: true
-  }
-  for (const [key, value] of Object.entries(props.filtersValues || {})) {
-    params['app_' + key] = value
-  }
-  return `${applicationUrl.value}/capture?${new URLSearchParams(params).toString()}`
-})
-
-const embedCode = async () => {
-  try {
-    const key = accessKey.value ? (accessKey.value + '%3A') : ''
-    const url = `${application.exposedUrl.split('data-fair')[0]}data-fair/app/${key}${props.element.application?.id}?embed=true`
-    await navigator.clipboard.writeText(`<iframe src="${url}" width="100%" height="500px" style="background-color: transparent; border: none;"></iframe>`)
-    sendUiNotif({ msg: 'Le code d\'intégration a été mis dans votre presse-papier', type: 'info' })
-  } catch (err: any) {
-    sendUiNotif({ msg: err.message || err, type: 'error' })
-  }
-}
+const hasFilterIssue = computed(() => requiredFilter.value.length > 0)
 </script>
 
 <template>
   <v-alert
-    v-if="requiredFilter.length"
+    v-if="hasFilterIssue"
     type="info"
     variant="outlined"
   >
-    <h4>Veuillez sélectionner une valeur de {{ requiredFilter.map((f: string) => fields[f]?.label || fields[f]?.title || fields[f]?.['x-originalName'] || f).join(', ') }}</h4>
+    <h4>Veuillez sélectionner une valeur de {{ missingFilterLabels }}</h4>
   </v-alert>
-  <d-frame
-    v-else-if="element.type === 'tablePreview'"
-    :adapter="dFrameAdapter"
-    :src="`/data-fair/embed/dataset/${accessKey ? (accessKey + '%3A') : ''}${(element.dataset || (config.datasets || [])[0]).id}/table?${searchParams.toString()}`"
-    :iframe-title="(element.dataset || (config.datasets || [])[0]).title"
-    :style="`height:${height && height > 0 ? (height - (actionsHeight || 0)) + 'px' : '100%'}`"
-  />
-  <d-frame
-    v-else-if="element.type === 'form'"
-    :adapter="dFrameAdapter"
-    :src="`/data-fair/embed/dataset/${accessKey ? (accessKey + '%3A') : ''}${element.dataset?.id}/form?${searchParams.toString()}`"
-    :iframe-title="(element.dataset || (config.datasets || [])[0])?.title"
-    :style="`height:${height && height > 0 ? (height - (actionsHeight || 0)) + 'px' : '100%'}`"
-  />
+
+  <template v-else-if="isTable">
+    <element-d-frame
+      v-if="dFrameSrc"
+      :element="element"
+      :src="dFrameSrc"
+      :iframe-title="iframeTitle"
+      :height="height"
+      :actions-height="actionsHeight"
+    />
+  </template>
+
+  <template v-else-if="isForm">
+    <element-d-frame
+      v-if="dFrameSrc"
+      :element="element"
+      :src="dFrameSrc"
+      :iframe-title="iframeTitle"
+      :height="height"
+      :actions-height="actionsHeight"
+    />
+  </template>
+
   <div
     v-else
     :style="`overflow-y:auto;height:${height && height > 0 ? height + 'px' : '100%'}`"
   >
     <v-row
-      v-if="element.type === 'application'"
+      v-if="isApp"
       align="center"
       class="ma-0"
     >
       <v-col
-        v-if="element.description === 'left'"
+        v-if="appElement && (appElement.description || 'none') === 'left'"
         :cols="6"
       >
-        <div v-html="description" />
-      </v-col>
-      <v-col
-        class="pa-0"
-        :cols="!element.description || element.description === 'none' ? 12 : 6"
-      >
-        <d-frame
-          :adapter="dFrameAdapter"
-          :src="`/data-fair/app/${accessKey ? (accessKey + '%3A') : ''}${element.application?.id}?${searchParams.toString()}`"
-          :iframe-title="element.application?.title"
-          :style="element.application?.baseApp.meta && element.application.baseApp.meta['df:overflow'] !== 'true' ? `height:${height && height > 0 ? (height - (actionsHeight || 0)) + 'px' : '100%'}` : ''"
+        <element-description
+          :element="appElement"
+          :filters-values="filtersValues"
         />
       </v-col>
       <v-col
-        v-if="element.description === 'right'"
+        class="pa-0"
+        :cols="!appElement || (appElement.description || 'none') === 'none' ? 12 : 6"
+      >
+        <element-d-frame
+          v-if="dFrameSrc"
+          :element="element"
+          :src="dFrameSrc"
+          :iframe-title="iframeTitle"
+          :height="height"
+          :actions-height="actionsHeight"
+        />
+      </v-col>
+      <v-col
+        v-if="appElement && appElement.description === 'right'"
         :cols="6"
       >
-        <div v-html="description" />
+        <element-description
+          :element="appElement"
+          :filters-values="filtersValues"
+        />
       </v-col>
     </v-row>
     <div
-      v-else-if="element.type === 'text'"
+      v-else-if="isTextElement(element)"
       style="white-space: pre-wrap"
       class="mt-4"
     >
       {{ element.content }}
     </div>
   </div>
-  <v-card-actions
-    v-if="(config.showSources && sources?.length) || (element.type === 'application' && (config.showEmbed || config.showCapture))"
+
+  <element-actions
+    v-if="!hasFilterIssue"
     ref="actionsRef"
-  >
-    <template v-if="config.showEmbed && element.type === 'application'">
-      <v-spacer />
-      <v-btn
-        size="small"
-        color="primary"
-        @click="embedCode"
-      >
-        <v-icon :icon="mdiCodeTags" />&nbsp;Intégrer
-      </v-btn>
-    </template>
-    <template v-if="config.showCapture && element.type === 'application'">
-      <v-spacer />
-      <v-btn
-        size="small"
-        color="primary"
-        :href="captureUrl"
-      >
-        <v-icon :icon="mdiCamera" />&nbsp;Télécharger
-      </v-btn>
-    </template>
-    <v-spacer />
-    <template v-if="config.showSources && sources?.length">
-      Source{{ sources.length > 1 ? 's' : '' }}&nbsp;:&nbsp;
-      <template
-        v-for="source in sources"
-        :key="source.id"
-      >
-        <a
-          :href="`/datasets/${source.slug || source.id}`"
-          target="_blank"
-        >{{ source.title }}</a>&nbsp;
-      </template>
-      <v-spacer />
-    </template>
-  </v-card-actions>
+    :element="element"
+    :sources="sourcesList"
+    :height="height"
+  />
 </template>
