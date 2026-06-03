@@ -1,42 +1,52 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+/**
+ * Root of the dashboard view.
+ *
+ * Responsibilities:
+ *  - initialize the reactive search params from the config (default filter
+ *    values, default period),
+ *  - decide between single-view and compare-view layout,
+ *  - render the chosen section layout (single, tabs, accordion or flow).
+ */
+import { computed, reactive } from 'vue'
 import reactiveSearchParams from '@data-fair/lib-vue/reactive-search-params-global.js'
 import dashboardFilters from './dashboard-filters.vue'
 import dashboardSection from './dashboard-section.vue'
 import { useConfig } from '@/composables/config'
+import type { DashboardSection } from '@/config'
+import { initDefaultFilterValues } from '@/utils/filters'
 
 const { config, dataset } = useConfig()
 
-const filtersValues = [ref<Record<string, any>>({}), ref<Record<string, any>>({})]
-const tab = [ref<number | null>(null), ref<number | null>(null)]
-
-const datasetFilterPrefix = computed(() => '_d_' + (dataset.value?.id || '') + '_')
+const filtersValues = reactive<Record<number, Record<string, any>>>({ 0: {}, 1: {} })
+const tab = reactive<Record<number, number | null>>({ 0: null, 1: null })
 
 // Initialize default filter values from config
-for (const filter of (config.value.filters || [])) {
-  if (!reactiveSearchParams[datasetFilterPrefix.value + filter.labelField + '_in'] && filter.startValue) {
-    reactiveSearchParams[datasetFilterPrefix.value + filter.labelField + '_in'] = filter.multipleValues
-      ? JSON.stringify([filter.startValue]).slice(1, -1)
-      : filter.startValue
-  }
-}
+initDefaultFilterValues(config.value.filters, dataset.value?.id, reactiveSearchParams)
 
 if (config.value.periodFilter && !reactiveSearchParams.period) {
-  const timePeriod = (dataset.value as any)?.timePeriod
-  const start = (timePeriod ? timePeriod.startDate : new Date().toISOString()).slice(0, 10)
-  const end = (timePeriod ? timePeriod.endDate : new Date().toISOString()).slice(0, 10)
+  const timePeriod = dataset.value?.timePeriod
+  const start = (timePeriod?.startDate || new Date().toISOString()).slice(0, 10)
+  const end = (timePeriod?.endDate || new Date().toISOString()).slice(0, 10)
   const period = [start]
   if (start !== end) period.push(end)
   reactiveSearchParams.period = period.join(',')
 }
 
+const sections = computed<DashboardSection[]>(() => config.value.sections || [])
+
 const maxTitleLength = computed(() =>
-  Math.max(...(config.value.sections?.map((s: any) => (s.title && s.title.length) || 0) || []))
+  Math.max(...sections.value.map(s => s.title?.length || 0), 0)
 )
 
 const sumTitleLength = computed(() =>
-  config.value.sections?.reduce((acc: number, s: any) => acc + ((s.title && s.title.length) || 0), 0) || 0
+  sections.value.reduce((acc, s) => acc + (s.title?.length || 0), 0)
 )
+
+const isCompareView = computed(() => reactiveSearchParams.view === 'compare')
+const compareViewIndices = computed(() => isCompareView.value ? [0, 1] : [0])
+
+const showSectionsTabs = computed(() => (config.value.sectionsGroup || '').includes('tabs'))
 
 function updateSwitch (v: boolean | null) {
   if (v) reactiveSearchParams.view = 'compare'
@@ -65,29 +75,29 @@ function updateSwitch (v: boolean | null) {
       v-if="config.allowDuplicate"
       label="Mode comparaison"
       density="compact"
-      :model-value="reactiveSearchParams.view === 'compare'"
+      :model-value="isCompareView"
       style="max-height:40px"
       @update:model-value="updateSwitch"
     />
     <v-row>
       <v-col
-        v-for="i in reactiveSearchParams.view === 'compare' ? [0, 1] : [0]"
+        v-for="i in compareViewIndices"
         :key="i"
-        :cols="reactiveSearchParams.view === 'compare' ? 6 : 12"
+        :cols="isCompareView ? 6 : 12"
       >
         <dashboard-filters
           :prefix="i ? 'c' : ''"
-          @update:model-value="value => filtersValues[i].value = value"
+          @update:model-value="value => filtersValues[i] = value"
         />
         <dashboard-section
-          v-if="config.sections?.length === 1"
-          :section="(config.sections || [])[0]"
-          :filters-values="filtersValues[i].value"
+          v-if="sections.length === 1"
+          :section="sections[0]"
+          :filters-values="filtersValues[i]"
         />
-        <template v-else-if="(config.sectionsGroup || '').includes('tabs')">
+        <template v-else-if="showSectionsTabs">
           <v-tabs
             v-if="config.sectionsGroup === 'tabs-tab'"
-            v-model="tab[i].value"
+            v-model="tab[i]"
             class="mb-3"
             color="primary"
             :fixed-tabs="maxTitleLength <= 30"
@@ -95,7 +105,7 @@ function updateSwitch (v: boolean | null) {
             :direction="sumTitleLength >= 200 ? 'vertical' : 'horizontal'"
           >
             <v-tab
-              v-for="(section, idx) of (config.sections || [])"
+              v-for="(section, idx) of sections"
               :key="idx"
               :value="idx"
             >
@@ -111,13 +121,13 @@ function updateSwitch (v: boolean | null) {
             <v-col cols="auto">
               <v-card variant="outlined">
                 <v-btn-toggle
-                  v-model="tab[i].value"
+                  v-model="tab[i]"
                   color="primary"
                   mandatory
-                  :style="sumTitleLength * 15 >= $vuetify.display.width ? 'flex-direction: column;height:' + ((config.sections || []).length * 36) + 'px' : ''"
+                  :style="sumTitleLength * 15 >= $vuetify.display.width ? 'flex-direction: column;height:' + (sections.length * 36) + 'px' : ''"
                 >
                   <v-btn
-                    v-for="(section, idx) of (config.sections || [])"
+                    v-for="(section, idx) of sections"
                     :key="idx"
                     :value="idx"
                     :height="sumTitleLength * 15 >= $vuetify.display.width ? 36 : 48"
@@ -133,15 +143,15 @@ function updateSwitch (v: boolean | null) {
             </v-col>
             <v-spacer />
           </v-row>
-          <v-window v-model="tab[i].value">
+          <v-window v-model="tab[i]">
             <v-window-item
-              v-for="(section, j) of (config.sections || [])"
+              v-for="(section, j) of sections"
               :key="j"
               :value="j"
             >
               <dashboard-section
                 :section="section"
-                :filters-values="filtersValues[i].value"
+                :filters-values="filtersValues[i]"
                 hide-title
               />
             </v-window-item>
@@ -151,10 +161,10 @@ function updateSwitch (v: boolean | null) {
           v-else-if="config.sectionsGroup === 'accordion'"
           multiple
           variant="accordion"
-          :model-value="(config.sections || []).map((s, j) => j)"
+          :model-value="sections.map((_, j) => j)"
         >
           <v-expansion-panel
-            v-for="(section, j) of (config.sections || [])"
+            v-for="(section, j) of sections"
             :key="j"
             :value="j"
             eager
@@ -171,7 +181,7 @@ function updateSwitch (v: boolean | null) {
             <v-expansion-panel-text>
               <dashboard-section
                 :section="section"
-                :filters-values="filtersValues[i].value"
+                :filters-values="filtersValues[i]"
                 hide-title
               />
             </v-expansion-panel-text>
@@ -179,7 +189,7 @@ function updateSwitch (v: boolean | null) {
         </v-expansion-panels>
         <template v-else>
           <div
-            v-for="(section, j) of (config.sections || [])"
+            v-for="(section, j) of sections"
             :key="j"
             class="my-6"
           >
@@ -192,7 +202,7 @@ function updateSwitch (v: boolean | null) {
             </h2>
             <dashboard-section
               :section="section"
-              :filters-values="filtersValues[i].value"
+              :filters-values="filtersValues[i]"
               hide-title
             />
           </div>

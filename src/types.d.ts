@@ -1,4 +1,5 @@
 import type { Application } from '@data-fair/lib-common-types/application/index.js'
+import type { DashboardConfig } from '@/config'
 
 declare global {
   interface Window {
@@ -7,7 +8,7 @@ declare global {
       exposedUrl: string
       apiUrl: string
       wsUrl: string
-      configuration: any
+      configuration: DashboardConfig
       baseApp: { id: string; url: string; meta: Record<string, unknown> }
     }
     iFrameResizer: {
