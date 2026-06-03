@@ -1,12 +1,21 @@
-// Types manuels pour la configuration du dashboard
-// Générés à partir de src/config/schema.json
+// Dashboard configuration types
+//
+// NOTE: Types here are defined manually rather than re-exported from
+// src/config/.type/index.d.ts because the generator (json-schema-to-typescript)
+// produces overly loose types (`[k: string]: unknown` on every variant) which
+// make property access in code return `unknown`.
+//
+// The schema in src/config/schema.json remains the source of truth for the
+// VJSF form; regenerate public/config-schema.json and the .type/ directory
+// with `npm run build-types` if the schema changes, then update the
+// interfaces below to stay in sync.
 
 export interface DashboardDataset {
   id: string
   href: string
   title: string
   slug?: string
-  schema?: any[]
+  schema?: Record<string, unknown>[]
   timePeriod?: { startDate: string; endDate: string }
   bbox?: number[]
   finalizedAt?: string
@@ -29,29 +38,63 @@ export interface DashboardStaticFilter {
   maxValue?: string
 }
 
-export interface DashboardElement {
-  type: 'tablePreview' | 'application' | 'text' | 'form' | 'column'
+export type DashboardElementType = 'tablePreview' | 'application' | 'text' | 'form' | 'column'
+
+export type DashboardElementWidth = 1 | 2 | 3
+
+export type DashboardDescriptionPosition = 'none' | 'left' | 'right'
+
+export interface BaseElement {
+  type: DashboardElementType
   title?: string
-  width?: 1 | 2 | 3
+  width?: DashboardElementWidth
   height?: number
+}
+
+export interface TablePreviewElement extends BaseElement {
+  type: 'tablePreview'
   source?: 'root' | 'external'
   dataset?: DashboardDataset
+  fields?: string[]
+  display?: 'table' | 'table-dense' | 'list'
+  noInteractions?: boolean
+  ignoreFilters?: boolean
+  valueMandatory?: boolean
+  mandatoryFilters?: string[]
+}
+
+export interface ApplicationElement extends BaseElement {
+  type: 'application'
+  source?: 'root' | 'external'
   application?: {
     id: string
     title: string
     href: string
     baseApp: { meta: Record<string, unknown> }
   }
-  fields?: string[]
-  display?: string
-  noInteractions?: boolean
   ignoreFilters?: boolean
   valueMandatory?: boolean
   mandatoryFilters?: string[]
-  description?: 'none' | 'left' | 'right'
-  content?: string
-  elements?: DashboardElement[]
+  description?: DashboardDescriptionPosition
 }
+
+export interface TextElement extends BaseElement {
+  type: 'text'
+  content?: string
+}
+
+export interface FormElement extends BaseElement {
+  type: 'form'
+  dataset?: DashboardDataset
+  ignoreFilters?: boolean
+}
+
+export type DashboardElement =
+  | TablePreviewElement
+  | ApplicationElement
+  | TextElement
+  | FormElement
+  | ({ type: 'column' } & Omit<BaseElement, 'type'> & { elements?: DashboardElement[] })
 
 export interface DashboardRow {
   height: number
@@ -65,6 +108,11 @@ export interface DashboardSection {
   rows: DashboardRow[]
 }
 
+export type DashboardSectionsGroup = 'accordion' | 'tabs-tab' | 'tabs-button' | 'flow'
+
+export interface ApplicationRef { id: string; title: string }
+export interface DatasetRef { id: string; title: string; href: string }
+
 export interface DashboardConfig {
   datasets?: DashboardDataset[]
   staticFilters?: DashboardStaticFilter[]
@@ -72,12 +120,30 @@ export interface DashboardConfig {
   periodFilter?: boolean
   addressFilter?: boolean
   sections?: DashboardSection[]
-  sectionsGroup?: 'accordion' | 'tabs-tab' | 'tabs-button' | 'flow'
+  sectionsGroup?: DashboardSectionsGroup
   showSources?: boolean
   showEmbed?: boolean
   showCapture?: boolean
   title?: string
   description?: string
   allowDuplicate?: boolean
-  applications?: { id: string; title: string }[]
+  applications?: ApplicationRef[]
 }
+
+// Type guard helpers (handy with the discriminated union)
+export const isTablePreviewElement = (e: DashboardElement): e is TablePreviewElement => e.type === 'tablePreview'
+export const isApplicationElement = (e: DashboardElement): e is ApplicationElement => e.type === 'application'
+export const isTextElement = (e: DashboardElement): e is TextElement => e.type === 'text'
+export const isFormElement = (e: DashboardElement): e is FormElement => e.type === 'form'
+export const isColumnElement = (e: DashboardElement): e is { type: 'column' } & Omit<BaseElement, 'type'> & { elements?: DashboardElement[] } => e.type === 'column'
+
+// Re-export generated types for code that wants to introspect the schema.
+// Not used as the main type source due to the generator's loose typing.
+export type {
+  ConfigResolved,
+  Filtres,
+  Sections,
+  Autres,
+  FiltresPredefinis,
+  FiltresDynamiquesDuTableauDeBord
+} from './.type/index.js'
