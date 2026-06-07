@@ -105,8 +105,26 @@ export const useFiltersValues = (opts: UseFiltersValuesOptions) => {
 
   const { execute, loading, error } = useAsyncAction(recompute, { catch: 'error' })
 
-  // Trigger initial computation
-  watch([() => reactiveSearchParams, dataset], () => execute(), { deep: true, immediate: true })
+  // Trigger initial computation and re-run on relevant filter inputs only.
+  // Avoid `deep: true` on reactiveSearchParams: d-frame's state-change adapter
+  // (see @data-fair/frame's VueReactiveDFrameStateChangeAdapter) rewrites every
+  // key on every iframe state-change message, which would otherwise trigger
+  // an unbounded fetch loop as the iframe URL drifts.
+  watch(
+    [
+      () => {
+        const ds = dataset.value?.id
+        if (!ds) return ''
+        return (filters.value || [])
+          .map(f => reactiveSearchParams[datasetFilterKey(ds, f.labelField, prefix)])
+          .join('\u0001')
+      },
+      () => reactiveSearchParams.period,
+      () => reactiveSearchParams.radius
+    ],
+    () => execute(),
+    { immediate: true }
+  )
 
   return {
     values: computed(() => emitted.value),

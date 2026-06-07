@@ -3,24 +3,34 @@
  *
  * Extracted from `dashboard-filters.vue`. Manages its own `useFetch`,
  * search debouncing and value synchronization with `reactiveSearchParams`.
+ *
+ * Items are `{value, label}` objects fetched from the dataset's
+ * `/values-labels/` endpoint, so the front-end never has to resolve labels
+ * from the schema's `x-labels` mapping.
  */
-import { computed, effectScope, ref, watch, type Ref, type EffectScope } from 'vue'
+import { computed, ref, watch, type Ref } from 'vue'
 import { useFetch } from '@data-fair/lib-vue/fetch.js'
 import reactiveSearchParams from '@data-fair/lib-vue/reactive-search-params-global.js'
 import type { DashboardConfig, DashboardFilter } from '@/config'
 import { datasetFilterKey } from '@/utils/dataset-filter'
 
+export interface ValueLabel {
+  value: string
+  label?: string
+}
+
 export interface UseFilterStateOptions {
   filter: DashboardFilter
   prefix: string
   datasetId: Ref<string | undefined>
+  datasetHref: Ref<string | undefined>
   config: Ref<DashboardConfig>
   /** Optional reactive address (used by geo filters) */
   address?: Ref<{ lon: number; lat: number } | undefined>
 }
 
 export interface FilterStateApi {
-  items: Ref<string[]>
+  items: Ref<ValueLabel[]>
   loading: Ref<boolean>
   value: Ref<string | string[] | undefined>
   searchItems: (search?: string) => void
@@ -29,13 +39,15 @@ export interface FilterStateApi {
 const buildUrl = (
   filter: DashboardFilter,
   datasetId: Ref<string | undefined>,
+  datasetHref: Ref<string | undefined>,
   config: Ref<DashboardConfig>,
   prefix: string,
   search: Ref<string | undefined>,
   address?: Ref<{ lon: number; lat: number } | undefined>
 ): string | null => {
   const dataset = datasetId.value
-  if (!dataset) return null
+  const href = datasetHref.value
+  if (!dataset || !href) return null
   const otherFilters = (config.value.filters || [])
     .filter(f => f.labelField !== filter.labelField && reactiveSearchParams[`${prefix}_d_${dataset}_${f.labelField}_in`])
 
@@ -64,16 +76,21 @@ const buildUrl = (
   if (config.value.addressFilter && address?.value && reactiveSearchParams.radius) {
     params._c_geo_distance = `${address.value.lon},${address.value.lat},${Number(reactiveSearchParams.radius) * 1000}`
   }
-  return `/api/v1/datasets/${dataset}/values/${filter.labelField}?${new URLSearchParams(params).toString()}`
+  return `${href}/values-labels/${filter.labelField}?${new URLSearchParams(params).toString()}`
 }
 
-export const useFilterState = (opts: UseFilterStateOptions): FilterStateApi => {
-  const { filter, prefix, datasetId, config, address } = opts
-  const search = ref<string | undefined>(undefined)
-  const scope: EffectScope = effectScope()
+const sortByLabel = (a: ValueLabel, b: ValueLabel) =>
+  (a.label || a.value).localeCompare(b.label || b.value, 'fr', { sensitivity: 'base' })
 
-  const url = computed(() => buildUrl(filter, datasetId, config, prefix, search, address))
-  const { data, loading, refresh } = useFetch(() => url.value, { immediate: false })
+export const useFilterState = (opts: UseFilterStateOptions): FilterStateApi => {
+  const { filter, prefix, datasetId, datasetHref, config, address } = opts
+  const search = ref<string | undefined>(undefined)
+
+  const url = computed(() => buildUrl(filter, datasetId, datasetHref, config, prefix, search, address))
+  // `watch: false` to avoid a duplicate watcher; we install our own below so
+  // the effect is owned by the parent scope (filtersScope in dashboard-filters.vue)
+  // and disposed on filters change.
+  const { data, loading, refresh } = useFetch(() => url.value, { watch: false })
 
   const value = computed({
     get () {
@@ -97,21 +114,23 @@ export const useFilterState = (opts: UseFilterStateOptions): FilterStateApi => {
   })
 
   const items = computed(() => {
-    const values = ((data.value as string[] | null) || [])
+    const values = ((data.value as ValueLabel[] | null) || [])
     const key = datasetFilterKey(datasetId.value || '', filter.labelField, prefix)
     const filterValue = reactiveSearchParams[key]
     if (filterValue) {
       const fValues = filter.multipleValues ? JSON.parse(`[${filterValue}]`) : [filterValue]
       for (const v of fValues) {
-        if (!values.includes(v)) values.unshift(v)
+        if (!values.some(item => item.value === v)) {
+          values.unshift({ value: v })
+        }
       }
     }
-    return [...values].sort((a, b) => a.localeCompare(b, 'fr', { sensitivity: 'base' }))
+    return [...values].sort(sortByLabel)
   })
 
-  scope.run(() => {
-    watch(url, () => refresh(), { immediate: true })
-  })
+  // Fetch initial + refetch on URL change. Must be created inside the parent
+  // scope (filtersScope) so it is properly disposed when filters change.
+  watch(url, () => refresh(), { immediate: true })
 
   return {
     items,

@@ -39,6 +39,7 @@ const filtersStateList = computed(() => {
     filter: f,
     prefix: props.prefix || '',
     datasetId: computed(() => dataset.value?.id),
+    datasetHref: computed(() => dataset.value?.href),
     config,
     address
   }))
@@ -94,8 +95,8 @@ const fieldLabel = (filter: DashboardFilter): string => {
         v-model="filtersStateList[i].value.value"
         :loading="filtersStateList[i].loading.value"
         :items="filtersStateList[i].items.value"
-        :item-title="(v: string) => (fields[filter.labelField]?.['x-labels'] as Record<string, string> | undefined)?.[v] ?? v"
-        :item-value="(v: string) => v"
+        :item-title="'label'"
+        :item-value="'value'"
         variant="outlined"
         hide-details
         no-data-text="Aucun élément trouvé"

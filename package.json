@@ -9,7 +9,10 @@
     "prepublishOnly": "npm run build",
     "lint": "eslint . --fix --ignore-path .gitignore --ext .js,.ts,.vue",
     "type-check": "vue-tsc --noEmit",
-    "build-types": "df-build-types && cp src/config/.type/resolved-schema.json public/config-schema.json"
+    "build-types": "df-build-types && cp src/config/.type/resolved-schema.json public/config-schema.json",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui",
+    "test:e2e:report": "playwright show-report"
   },
   "files": [
     "dist"
@@ -33,6 +36,7 @@
   "devDependencies": {
     "@data-fair/dev-server": "^2.0.24",
     "@data-fair/lib-types-builder": "^1.12.0",
+    "@playwright/test": "^1.60.0",
     "@typescript-eslint/eslint-plugin": "^7.0.0",
     "@typescript-eslint/parser": "^7.0.0",
     "@vitejs/plugin-vue": "^6.0.0",
