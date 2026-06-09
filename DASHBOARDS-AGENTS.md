@@ -96,6 +96,34 @@ DashboardConfig
 - **Statiques** (`staticFilters[]`) : `type: 'in'` (restreindre à valeurs), `'interval'` (min/max), `'nin'` (exclure valeurs). Ne s'affichent pas à l'utilisateur.
 - **Globaux** : `periodFilter: true` (sélecteur de période sur `timePeriod`), `addressFilter: true` (saisie d'adresse).
 
+#### 2.3.1 Transmission des filtres aux éléments : deux canaux distincts
+
+Le dashboard propage les filtres aux éléments embarqués via **deux canaux distincts** selon le type d'élément. C'est une distinction essentielle à comprendre pour prédire le comportement d'une visu.
+
+**Canal « embed dataset »** (éléments `tablePreview` et `form`)
+- URL cible : `/data-fair/embed/dataset/<id>/table` ou `/data-fair/embed/dataset/<id>/form`.
+- Les filtres dynamiques (`filters[]`) sont sérialisés dans l'URL avec un préfixe **dataset-scopé** : `<prefix>_d_<rootDatasetId>_<labelField>_in=...`. Ce format est attendu par l'API REST de l'embed dataset natif, qui sait à quel dataset appliquer la requête.
+- Les static filters sont sérialisés sous la même forme : `<prefix>_d_<rootDatasetId>_<field>_in|_nin|_gte|_lte=...`.
+- Les concepts universels (`_c_date_match`, `_c_geo_distance`, `finalizedAt`) sont également transmis.
+- **Conséquence** : la visu reflète fidèlement les filtres du dashboard, mais elle partage le dataset racine (sinon le préfixe ne correspond pas).
+
+**Canal « application »** (éléments `application`)
+- URL cible : `/data-fair/app/<id>`.
+- Seuls les paramètres **universellement reconnus** par les applications DataFair sont transmis dans l'URL :
+  - `_c_date_match` (filtre temporel)
+  - `_c_geo_distance` (filtre géographique)
+  - `finalizedAt`
+  - static filters **re-scopés** (sans préfixe dataset : `<field>_in=...`)
+- Les filtres dynamiques `filters[]` ne sont **PAS** broadcastés dans l'URL : une application peut utiliser un dataset différent du dataset racine du dashboard, et un préfixe `_d_<rootDatasetId>_` serait sans signification pour elle.
+- Les applications qui dépendent des filtres dynamiques doivent les recevoir via leur mécanisme de state-change d-frame (déclaré dans `df:filter-concepts`/`df:sync-state`) : la `<d-frame>` répercute l'évolution de l'URL vers l'iframe via `df-parent updateSrc`, et l'app résout les clés de filtre vers son propre dataset via ses concepts.
+- **Conséquence** : les apps qui s'attendent à des clés dataset-préfixées doivent déclarer leurs concepts ; sinon, les filtres du dashboard ne les atteignent pas.
+
+| Type d'élément | URL de l'embed | Préfixe des filtres dynamiques | Static filters | Concepts universels |
+|----------------|----------------|------------------------------|----------------|---------------------|
+| `tablePreview` | `/data-fair/embed/dataset/<id>/table` | `_d_<rootDatasetId>_` (présent) | préfixés | oui |
+| `form` | `/data-fair/embed/dataset/<id>/form` | `_d_<rootDatasetId>_` (présent) | préfixés | oui |
+| `application` | `/data-fair/app/<id>` | **absent** (géré via d-frame state) | re-scopés (non préfixés) | oui |
+
 ### 2.4 Modes d'affichage des sections
 
 - `accordion` (défaut) : panneaux dépliables, tous ouverts par défaut
@@ -717,6 +745,7 @@ Une `section` = un thème ou une étape du récit. Pour chaque section :
 - **Toujours définir `datasets[0]`** : sans dataset racine, l'app affiche « Veuillez choisir une source de données pour le filtre commun ».
 - **Cohérence des filtres** : les `filters[]` se basent sur le dataset racine. Si une visu utilise un dataset externe, ses filtres propres ne s'appliquent pas au dashboard global — le préciser à l'utilisateur.
 - **`source: 'root'` vs `'external'`** : par défaut `'root'` pour `tablePreview` et `application`. Mettre `'external'` quand la visu doit afficher un dataset **non filtré** (par exemple un référentiel).
+- **Distinction embed dataset vs application (transmission des filtres)** : les `filters[]` du dashboard s'appliquent différemment selon le type d'élément — voir § 2.3.1. Pour un élément `application`, les filtres dynamiques ne sont PAS injectés dans l'URL (l'app ne connaît pas le dataset racine) ; ils sont poussés via le state-change adapter d-frame. Si l'application doit recevoir les filtres, vérifier qu'elle déclare `df:filter-concepts: true` (et un `df:sync-state: true`) dans sa metadata. Sans cela, les filtres du dashboard n'atteindront pas l'application.
 - **`valueMandatory` + `mandatoryFilters`** : indispensable pour les visus qui n'ont aucun sens sans un filtre actif (ex. : carte centrée sur un territoire, fiche d'un item). Sans cela, la viz affiche un état vide.
 - **`height` négatif** des rows : à privilégier pour les visus à hauteur variable (tableaux, cartes). À fixer en px seulement pour les graphes en hauteur définie.
 - **`width: 3`** : à réserver aux visus qui doivent dominer (carte plein écran, timeline large). Combiné à `width: 1` sur la même row, cela donne un layout 1/3 + 2/3.

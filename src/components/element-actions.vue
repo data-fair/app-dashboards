@@ -14,7 +14,6 @@ import type { DashboardElement } from '@/config'
 const props = defineProps<{
   element: DashboardElement
   sources: { id: string; title: string; slug?: string; href?: string }[]
-  height: number | undefined
 }>()
 
 const { config } = useConfig()
@@ -29,7 +28,6 @@ const showCapture = computed(() => Boolean(config.value.showCapture && isApp.val
 <template>
   <v-card-actions
     v-if="showSources || showEmbed || showCapture"
-    :style="`min-height:48px;height:${height}px`"
   >
     <template v-if="showEmbed">
       <v-spacer />

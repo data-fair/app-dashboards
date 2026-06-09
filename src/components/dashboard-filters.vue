@@ -26,6 +26,7 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   'update:modelValue': [value: Record<string, any>]
+  'update:applicationFilters': [value: Record<string, any>]
 }>()
 
 const root = ref<HTMLElement | null>(null)
@@ -34,25 +35,27 @@ const { config, filters, dataset, fields } = useConfig()
 
 const address = ref<{ lon: number; lat: number } | undefined>(undefined)
 
-const filtersStateList = computed(() => {
-  return (filters.value || []).map(f => useFilterState({
-    filter: f,
-    prefix: props.prefix || '',
-    datasetId: computed(() => dataset.value?.id),
-    datasetHref: computed(() => dataset.value?.href),
-    config,
-    address
-  }))
-})
+const filtersStateList = (filters.value || []).map(f => useFilterState({
+  filter: f,
+  prefix: props.prefix || '',
+  datasetId: computed(() => dataset.value?.id),
+  datasetHref: computed(() => dataset.value?.href),
+  config,
+  address
+}))
 
 // Re-aggregate filter values whenever any dependency changes
-const { values: filtersValues, update } = useFiltersValues({
+const { values: filtersValues, applicationValues, update } = useFiltersValues({
   prefix: props.prefix || '',
   address
 })
 
 watch(filtersValues, (val) => {
   emit('update:modelValue', val)
+}, { immediate: true, deep: true })
+
+watch(applicationValues, (val) => {
+  emit('update:applicationFilters', val)
 }, { immediate: true, deep: true })
 
 const updateValue = (filter: DashboardFilter, value: string | string[] | undefined) => {

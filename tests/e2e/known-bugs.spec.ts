@@ -8,7 +8,8 @@ import { test, expect } from '@playwright/test'
  * corriger le code source puis relancer `npm run test:e2e`.
  *
  * Config de référence utilisée par le dev-server : `.dev-config.json`
- * (2 filtres dynamiques : `int` et `equipement`).
+ * (2 filtres dynamiques : `int` et `equipement`, dataset racine
+ * `accidents-velos`, élément `application` Sankey).
  */
 test.describe('Bugs connus (régressions)', () => {
   test('K1 — les filtres dynamiques (v-autocomplete) se rendent dans leurs v-col', async ({ page }) => {
@@ -46,6 +47,127 @@ test.describe('Bugs connus (régressions)', () => {
 
     // L'app doit avoir démarré sans exception (sinon Suspense résout avec
     // l'erreur catchée par main.ts et le DOM reste vide).
+    const initError = consoleEvents.find(
+      (e) => e.text.includes('Failed to initialize app')
+    )
+    expect(
+      initError,
+      `Erreur d'init inattendue : ${initError?.text ?? '(aucune)'}`
+    ).toBeUndefined()
+  })
+
+  test('K2 — distinction embed dataset vs application pour la transmission des filtres', async ({ page }) => {
+    const consoleEvents: { type: string; text: string }[] = []
+    page.on('console', (msg) => {
+      consoleEvents.push({ type: msg.type(), text: msg.text() })
+    })
+
+    await page.goto('/app/')
+
+    // La config de dev référence un élément `application` (Sankey) puis
+    // un élément `tablePreview` (vue table embarquée du dataset racine).
+    // L'ordre des éléments dans le DOM suit l'ordre de la config.
+    const allFrames = page.locator('d-frame')
+    await expect(allFrames).toHaveCount(2, { timeout: 20_000 })
+
+    // 1) Élément `application` → /data-fair/app/<id>
+    const appFrame = allFrames.nth(0)
+    await expect(appFrame).toBeVisible({ timeout: 20_000 })
+    const appSrc = await appFrame.getAttribute('src')
+    expect(appSrc, 'Le src de la visu application doit être défini').toBeTruthy()
+    expect(
+      appSrc,
+      "L'application doit être servie via /data-fair/app/"
+    ).toMatch(/^\/data-fair\/app\//)
+    expect(
+      appSrc,
+      "L'application ne doit PAS être servie via /data-fair/embed/dataset/"
+    ).not.toMatch(/^\/data-fair\/embed\/dataset\//)
+
+    // 2) Élément `tablePreview` → /data-fair/embed/dataset/<id>/table
+    const tableFrame = allFrames.nth(1)
+    await expect(tableFrame).toBeVisible({ timeout: 20_000 })
+    const tableSrc = await tableFrame.getAttribute('src')
+    expect(tableSrc, 'Le src de la vue table doit être défini').toBeTruthy()
+    expect(
+      tableSrc,
+      'La vue table doit être servie via /data-fair/embed/dataset/'
+    ).toMatch(/^\/data-fair\/embed\/dataset\/[^/]+\/table/)
+
+    // 3) finalizedAt est forwardé dans les deux URLs, même quand aucun
+    //    filtre n'est sélectionné.
+    expect(
+      appSrc,
+      `L'URL de l'application doit contenir finalizedAt. src=${appSrc}`
+    ).toMatch(/[?&]finalizedAt=/)
+    expect(
+      tableSrc,
+      `L'URL de la vue table doit contenir finalizedAt. src=${tableSrc}`
+    ).toMatch(/[?&]finalizedAt=/)
+
+    // 4) Sélection d'une valeur dans le 1er filtre (`int`) : on vérifie
+    //    la transmission des filtres résolus à l'app et à la table.
+    const firstAutocomplete = page.locator('.v-autocomplete').nth(0)
+    await firstAutocomplete.click()
+    const firstOption = page.locator('.v-list-item').first()
+    await expect(firstOption).toBeVisible({ timeout: 5_000 })
+    await firstOption.click()
+    // Attendre que les iframes rechargent avec les nouveaux filtres.
+    // On poll l'attribut `src` du sankey (resolve /values/ asynchrone + re-render)
+    const rootDatasetIdForPoll = 'accidents-velos'
+    await expect.poll(
+      async () => await appFrame.getAttribute('src'),
+      {
+        timeout: 10_000,
+        message: 'L\'iframe de l\'application doit recevoir le filtre préfixé par le dataset racine'
+      }
+    ).toMatch(new RegExp(`(?:^|[?&])\\d*_d_${rootDatasetIdForPoll}_\\w+_in=`))
+
+    const appSrcAfter = await appFrame.getAttribute('src')
+    const tableSrcAfter = await tableFrame.getAttribute('src')
+    expect(appSrcAfter, "Le src de l'application doit être défini après le filtre").toBeTruthy()
+    expect(tableSrcAfter, 'Le src de la table doit être défini après le filtre').toBeTruthy()
+
+    // 5) Transmission des filtres après sélection
+    //    - L'application DOIT recevoir les filtres dynamiques résolus
+    //      (codes, résolus via /values/) préfixés par le dataset racine
+    //      du dashboard (cf. useFiltersValues.applicationValues et
+    //      useElementUrls.applicationDFrameSrc). Une application qui
+    //      utilise un autre dataset ignore ces paramètres.
+    //    - La vue table embarquée est servie sur le dataset racine : on
+    //      dé-préfixe les filtres dynamiques (`<prefix>_d_<datasetId>_`)
+    //      avant de les forwarder, l'embed REST API attendant des noms
+    //      de champs non-préfixés.
+    const rootDatasetId = 'accidents-velos'
+    const prefixedFilterRegex = new RegExp(`(?:^|[?&])\\d*_d_${rootDatasetId}_\\w+_in=`)
+    expect(
+      appSrcAfter,
+      `L'URL de l'application doit contenir des filtres préfixés par le dataset racine (${rootDatasetId}) ` +
+      'pour que les valeurs résolues soient transmises. ' +
+      `src=${appSrcAfter}`
+    ).toMatch(prefixedFilterRegex)
+    const tablePrefixedFilterRegex = new RegExp(`(?:^|[?&])\\d*_d_${rootDatasetId}_\\w+_in=`)
+    expect(
+      tableSrcAfter,
+      `L'URL de la vue table ne doit PAS contenir de filtres préfixés par le dataset racine (${rootDatasetId}). ` +
+      `src=${tableSrcAfter}`
+    ).not.toMatch(tablePrefixedFilterRegex)
+    expect(
+      tableSrcAfter,
+      'L\'URL de la vue table doit contenir le filtre int_in= après dé-préfixage. ' +
+      `src=${tableSrcAfter}`
+    ).toMatch(/[?&]int_in=/)
+    expect(
+      tableSrcAfter,
+      `L'URL de la vue table doit être servie pour le dataset racine ${rootDatasetId}. ` +
+      `src=${tableSrcAfter}`
+    ).toMatch(new RegExp(`/embed/dataset/[^/]*${rootDatasetId}/`))
+
+    // 6) Les deux iframes doivent avoir le flag d-frame=true
+    expect(appSrcAfter, "d-frame=true doit être présent dans l'URL de l'application").toMatch(/[?&]d-frame=true/)
+    expect(tableSrcAfter, "d-frame=true doit être présent dans l'URL de la vue table").toMatch(/[?&]d-frame=true/)
+
+    // 7) Pas d'erreur d'init
     const initError = consoleEvents.find(
       (e) => e.text.includes('Failed to initialize app')
     )

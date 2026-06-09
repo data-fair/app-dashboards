@@ -6,6 +6,8 @@ defineProps<{
   element: DashboardElement
   height?: number
   filtersValues: Record<string, any> | null
+  applicationFiltersValues: Record<string, any> | null
+  prefix?: string
 }>()
 </script>
 
@@ -17,6 +19,8 @@ defineProps<{
       :element="el"
       :height="height && element.elements ? height * (el.height || 100) / element.elements.reduce((acc, e) => acc + (e.height || 100), 0) : undefined"
       :filters-values="filtersValues"
+      :application-filters-values="applicationFiltersValues"
+      :prefix="prefix"
     />
   </template>
   <dashboard-element
@@ -24,5 +28,7 @@ defineProps<{
     :element="element"
     :height="height"
     :filters-values="filtersValues"
+    :application-filters-values="applicationFiltersValues"
+    :prefix="prefix"
   />
 </template>

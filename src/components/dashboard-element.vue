@@ -24,6 +24,8 @@ const props = defineProps<{
   element: DashboardElement
   height?: number
   filtersValues: Record<string, any> | null
+  applicationFiltersValues: Record<string, any> | null
+  prefix?: string
 }>()
 
 const { fields, dataset } = useConfig()
@@ -32,8 +34,10 @@ const fallbackDataset = computed<DashboardDataset | undefined>(() => dataset.val
 
 const { dFrameSrc, sourcesList } = useElementUrls({
   element: computed(() => props.element),
-  filtersValues: computed(() => props.filtersValues),
-  fallbackDataset
+  datasetFiltersValues: computed(() => props.filtersValues),
+  applicationFiltersValues: computed(() => props.applicationFiltersValues),
+  fallbackDataset,
+  prefix: props.prefix || ''
 })
 
 const actionsRef = ref<HTMLElement | null>(null)
@@ -82,6 +86,7 @@ const hasFilterIssue = computed(() => requiredFilter.value.length > 0)
   <template v-else-if="isTable">
     <element-d-frame
       v-if="dFrameSrc"
+      :key="`table-${dFrameSrc}`"
       :element="element"
       :src="dFrameSrc"
       :iframe-title="iframeTitle"
@@ -93,6 +98,7 @@ const hasFilterIssue = computed(() => requiredFilter.value.length > 0)
   <template v-else-if="isForm">
     <element-d-frame
       v-if="dFrameSrc"
+      :key="`form-${dFrameSrc}`"
       :element="element"
       :src="dFrameSrc"
       :iframe-title="iframeTitle"
@@ -116,7 +122,8 @@ const hasFilterIssue = computed(() => requiredFilter.value.length > 0)
       >
         <element-description
           :element="appElement"
-          :filters-values="filtersValues"
+          :filters-values="applicationFiltersValues"
+          :application-filters-values="applicationFiltersValues"
         />
       </v-col>
       <v-col
@@ -125,6 +132,7 @@ const hasFilterIssue = computed(() => requiredFilter.value.length > 0)
       >
         <element-d-frame
           v-if="dFrameSrc"
+          :key="`app-${dFrameSrc}`"
           :element="element"
           :src="dFrameSrc"
           :iframe-title="iframeTitle"
@@ -138,7 +146,8 @@ const hasFilterIssue = computed(() => requiredFilter.value.length > 0)
       >
         <element-description
           :element="appElement"
-          :filters-values="filtersValues"
+          :filters-values="applicationFiltersValues"
+          :application-filters-values="applicationFiltersValues"
         />
       </v-col>
     </v-row>
@@ -156,6 +165,5 @@ const hasFilterIssue = computed(() => requiredFilter.value.length > 0)
     ref="actionsRef"
     :element="element"
     :sources="sourcesList"
-    :height="height"
   />
 </template>

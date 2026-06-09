@@ -1501,6 +1501,16 @@
                 },
                 "href": "http://localhost:5888/data-fair/api/v1/applications/vehicules-impliques-dans-des-accidents-avec-les-velos"
               }
+            },
+            {
+              "width": 2,
+              "type": "tablePreview",
+              "source": "root",
+              "fields": [],
+              "display": "table",
+              "noInteractions": false,
+              "ignoreFilters": false,
+              "valueMandatory": false
             }
           ]
         }

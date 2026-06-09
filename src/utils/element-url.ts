@@ -5,6 +5,20 @@
  *  - d-frame src for the `<d-frame>` tag (used by all element types)
  *  - capture URL (server-side screenshot of an application)
  *  - embed code (iframe snippet for sharing)
+ *
+ * Note on filter transmission:
+ *  - The native dataset embed (`/data-fair/embed/dataset/.../table|form`)
+ *    is served on the same dataset as the dashboard's root, so we strip
+ *    the `<prefix>_d_<datasetId>_` part from dynamic and static filter
+ *    keys before forwarding them: the embed REST API expects unprefixed
+ *    field names (e.g. `int_in=...` rather than `_d_<datasetId>_int_in=...`).
+ *    Concept params (`_c_date_match`, `_c_geo_distance`) and `finalizedAt`
+ *    are passed through unchanged.
+ *  - The application embed (`/data-fair/app/...`) receives the full
+ *    `filtersValues` map with dataset-scoped keys preserved
+ *    (`<prefix>_d_<datasetId>_<field>_in`, etc.). The application is
+ *    responsible for picking the ones that target its own dataset and
+ *    ignoring the rest.
  */
 import type { DashboardElement, ApplicationElement, TablePreviewElement, FormElement } from '@/config'
 import { datasetFilterKey } from './dataset-filter'
@@ -27,7 +41,39 @@ const toStringRecord = (obj: FilterValues | null | undefined): Record<string, st
   return out
 }
 
-const baseEmbedParams = (filtersValues: FilterValues | null, primary: unknown, secondary: unknown, print: unknown, ignoreFilters: boolean | undefined): Record<string, string> => {
+/**
+ * Strip the `<prefix>_d_<datasetId>_` dataset scope from filter keys.
+ * Concept params (`_c_*`) and `finalizedAt` are kept as-is.
+ */
+const stripDatasetScope = (filtersValues: FilterValues | null | undefined, prefix: string, datasetId: string): Record<string, string> => {
+  const record = toStringRecord(filtersValues)
+  const scope = `${prefix}_d_${datasetId}_`
+  const out: Record<string, string> = {}
+  for (const [k, v] of Object.entries(record)) {
+    if (k.startsWith(scope)) out[k.slice(scope.length)] = v
+    else out[k] = v
+  }
+  return out
+}
+
+const datasetEmbedParams = (filtersValues: FilterValues | null, primary: unknown, secondary: unknown, print: unknown, ignoreFilters: boolean | undefined, prefix: string, datasetId: string): Record<string, string> => {
+  const params: Record<string, string> = {}
+  if (!ignoreFilters) Object.assign(params, stripDatasetScope(filtersValues, prefix, datasetId))
+  params['d-frame'] = 'true'
+  if (primary) params.primary = String(primary)
+  if (secondary) params.secondary = String(secondary)
+  if (print === 'true') params.interaction = 'false'
+  return params
+}
+
+/**
+ * Param set for embedded applications. The `filtersValues` passed here is
+ * the application-shaped object emitted by `useFiltersValues` →
+ * `applicationValues`: keys are dataset-scoped
+ * (`<prefix>_d_<datasetId>_<field>_in`, etc.), the application picks the
+ * ones that target its own dataset.
+ */
+const applicationEmbedParams = (filtersValues: FilterValues | null, primary: unknown, secondary: unknown, print: unknown, ignoreFilters: boolean | undefined): Record<string, string> => {
   const params: Record<string, string> = {}
   if (!ignoreFilters) Object.assign(params, toStringRecord(filtersValues))
   params['d-frame'] = 'true'
@@ -44,9 +90,10 @@ export const tableDFrameSrc = (
   filtersValues: FilterValues | null,
   primary: unknown,
   secondary: unknown,
-  print: unknown
+  print: unknown,
+  prefix: string
 ): string => {
-  const params: Record<string, string> = baseEmbedParams(filtersValues, primary, secondary, print, element.ignoreFilters)
+  const params: Record<string, string> = datasetEmbedParams(filtersValues, primary, secondary, print, element.ignoreFilters, prefix, datasetId)
   if (element.display) params.display = element.display
   params.interaction = String(!element.noInteractions)
   if (element.fields?.length) params.cols = element.fields.join(',')
@@ -59,21 +106,22 @@ export const formDFrameSrc = (
   filtersValues: FilterValues | null,
   primary: unknown,
   secondary: unknown,
-  print: unknown
+  print: unknown,
+  prefix: string
 ): string => {
-  const params = baseEmbedParams(filtersValues, primary, secondary, print, element.ignoreFilters)
+  const params = datasetEmbedParams(filtersValues, primary, secondary, print, element.ignoreFilters, prefix, element.dataset?.id || '')
   return `/data-fair/embed/dataset/${accessKeyPrefix(accessKey)}${element.dataset?.id}/form?${new URLSearchParams(params).toString()}`
 }
 
 export const applicationDFrameSrc = (
   element: ApplicationElement,
   accessKey: string | null,
-  filtersValues: FilterValues | null,
+  applicationFiltersValues: FilterValues | null,
   primary: unknown,
   secondary: unknown,
   print: unknown
 ): string => {
-  const params = baseEmbedParams(filtersValues, primary, secondary, print, element.ignoreFilters)
+  const params = applicationEmbedParams(applicationFiltersValues, primary, secondary, print, element.ignoreFilters)
   return `/data-fair/app/${accessKeyPrefix(accessKey)}${element.application?.id}?${new URLSearchParams(params).toString()}`
 }
 

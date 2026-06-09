@@ -19,6 +19,7 @@ import { initDefaultFilterValues } from '@/utils/filters'
 const { config, dataset } = useConfig()
 
 const filtersValues = reactive<Record<number, Record<string, any>>>({ 0: {}, 1: {} })
+const applicationFiltersValues = reactive<Record<number, Record<string, any>>>({ 0: {}, 1: {} })
 const tab = reactive<Record<number, number | null>>({ 0: null, 1: null })
 
 // Initialize default filter values from config
@@ -88,11 +89,14 @@ function updateSwitch (v: boolean | null) {
         <dashboard-filters
           :prefix="i ? 'c' : ''"
           @update:model-value="value => filtersValues[i] = value"
+          @update:application-filters="value => applicationFiltersValues[i] = value"
         />
         <dashboard-section
           v-if="sections.length === 1"
           :section="sections[0]"
           :filters-values="filtersValues[i]"
+          :application-filters-values="applicationFiltersValues[i]"
+          :prefix="i ? 'c' : ''"
         />
         <template v-else-if="showSectionsTabs">
           <v-tabs
@@ -152,6 +156,8 @@ function updateSwitch (v: boolean | null) {
               <dashboard-section
                 :section="section"
                 :filters-values="filtersValues[i]"
+                :application-filters-values="applicationFiltersValues[i]"
+                :prefix="i ? 'c' : ''"
                 hide-title
               />
             </v-window-item>
@@ -182,6 +188,8 @@ function updateSwitch (v: boolean | null) {
               <dashboard-section
                 :section="section"
                 :filters-values="filtersValues[i]"
+                :application-filters-values="applicationFiltersValues[i]"
+                :prefix="i ? 'c' : ''"
                 hide-title
               />
             </v-expansion-panel-text>
@@ -203,6 +211,8 @@ function updateSwitch (v: boolean | null) {
             <dashboard-section
               :section="section"
               :filters-values="filtersValues[i]"
+              :application-filters-values="applicationFiltersValues[i]"
+              :prefix="i ? 'c' : ''"
               hide-title
             />
           </div>

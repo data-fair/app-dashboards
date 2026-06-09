@@ -2,6 +2,15 @@
  * Reactive URLs for a dashboard element: d-frame src, capture URL, sources URL,
  * description URL. Encapsulates the `accessKey` and `filtersValues` resolution
  * and the type-narrowing per element type.
+ *
+ * Two filter shapes are accepted:
+ *  - `datasetFiltersValues` (dataset-scoped, with `prefix_d_<datasetId>_…`
+ *    keys) for `tablePreview` and `form` elements. The dataset scope is
+ *    stripped before forwarding to the embed REST API.
+ *  - `applicationFiltersValues` (same shape, dataset-scoped) for
+ *    `application` elements. The scope is preserved: the application is
+ *    expected to pick the filters that target its own dataset and ignore
+ *    the rest.
  */
 import { computed, type ComputedRef, type Ref } from 'vue'
 import reactiveSearchParams from '@data-fair/lib-vue/reactive-search-params-global.js'
@@ -20,8 +29,10 @@ import { useConfig } from './config'
 
 export interface UseElementUrlsOptions {
   element: Ref<DashboardElement>
-  filtersValues: Ref<Record<string, any> | null>
+  datasetFiltersValues: Ref<Record<string, any> | null>
+  applicationFiltersValues: Ref<Record<string, any> | null>
   fallbackDataset?: ComputedRef<DashboardDataset | undefined>
+  prefix?: string
 }
 
 export interface ElementUrlsApi {
@@ -33,7 +44,7 @@ export interface ElementUrlsApi {
 }
 
 export const useElementUrls = (opts: UseElementUrlsOptions): ElementUrlsApi => {
-  const { element, filtersValues, fallbackDataset } = opts
+  const { element, datasetFiltersValues, applicationFiltersValues, fallbackDataset, prefix = '' } = opts
   const { application, accessKey } = useConfig()
   const primary = computed(() => reactiveSearchParams.primary)
   const secondary = computed(() => reactiveSearchParams.secondary)
@@ -44,13 +55,13 @@ export const useElementUrls = (opts: UseElementUrlsOptions): ElementUrlsApi => {
     if (el.type === 'tablePreview') {
       const dsId = el.dataset?.id || fallbackDataset?.value?.id
       if (!dsId) return undefined
-      return tableDFrameSrc(el, dsId, accessKey.value, filtersValues.value, primary.value, secondary.value, print.value)
+      return tableDFrameSrc(el, dsId, accessKey.value, datasetFiltersValues.value, primary.value, secondary.value, print.value, prefix)
     }
     if (el.type === 'form') {
-      return formDFrameSrc(el, accessKey.value, filtersValues.value, primary.value, secondary.value, print.value)
+      return formDFrameSrc(el, accessKey.value, datasetFiltersValues.value, primary.value, secondary.value, print.value, prefix)
     }
     if (el.type === 'application') {
-      return applicationDFrameSrc(el, accessKey.value, filtersValues.value, primary.value, secondary.value, print.value)
+      return applicationDFrameSrc(el, accessKey.value, applicationFiltersValues.value, primary.value, secondary.value, print.value)
     }
     return undefined
   })
@@ -73,7 +84,10 @@ export const useElementUrls = (opts: UseElementUrlsOptions): ElementUrlsApi => {
     return ((sourcesData.value as { datasets?: { id: string; title: string; href?: string }[] } | null)?.datasets || [])
   })
 
-  const captureHref = computed(() => captureUrl(element.value, application, filtersValues.value))
+  // The capture URL is a server-side screenshot of an application. The
+  // application reads its filter params from the URL on capture, so we
+  // use the application-shaped values (no dataset-scoped dynamic filters).
+  const captureHref = computed(() => captureUrl(element.value, application, applicationFiltersValues.value))
 
   return { dFrameSrc, applicationHref, descriptionHtml, sourcesList, captureHref }
 }

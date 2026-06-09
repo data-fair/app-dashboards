@@ -13,7 +13,9 @@ import dashboardColumn from './dashboard-column.vue'
 const props = defineProps<{
   section: DashboardSection
   filtersValues: Record<string, any> | null
+  applicationFiltersValues: Record<string, any> | null
   hideTitle?: boolean
+  prefix?: string
 }>()
 
 const processedRows = computed(() => computeSectionBreakpoints(props.section.rows))
@@ -61,6 +63,8 @@ const processedRows = computed(() => computeSectionBreakpoints(props.section.row
         :element="element"
         :height="row.height"
         :filters-values="filtersValues"
+        :application-filters-values="applicationFiltersValues"
+        :prefix="prefix"
       />
     </v-col>
   </v-row>

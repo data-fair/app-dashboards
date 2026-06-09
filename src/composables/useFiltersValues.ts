@@ -19,6 +19,24 @@ export interface UseFiltersValuesOptions {
 
 export interface FiltersValues { [key: string]: any; keys: string[] }
 
+/**
+ * Filters values shaped for the native DataFair dataset embed endpoint
+ * (`/data-fair/embed/dataset/.../table|form`). Keys are dataset-scoped
+ * (`prefix_d_<datasetId>_<field>_in`) so that the embed REST API can apply
+ * them on the right dataset.
+ */
+export type DatasetFiltersValues = FiltersValues
+
+/**
+ * Filters values shaped for an embedded application (`/data-fair/app/...`).
+ *
+ * Applications receive the full `FiltersValues` object, with dataset-scoped
+ * keys preserved (`<prefix>_d_<datasetId>_<field>_in`, etc.) so the
+ * application can decide which ones apply to its own dataset and ignore
+ * the rest.
+ */
+export interface ApplicationFiltersValues { [key: string]: any }
+
 const collectActiveFields = (filters: DashboardFilter[] | undefined, prefix: string, datasetId: string): string[] => {
   if (!filters) return []
   const result: string[] = []
@@ -98,6 +116,7 @@ export const useFiltersValues = (opts: UseFiltersValuesOptions) => {
       result._c_geo_distance = `${address.value.lon},${address.value.lat},${Number(reactiveSearchParams.radius) * 1000}`
     }
     Object.assign(result, collectStaticFilterParams(config.value, datasetId, prefix))
+    result.finalizedAt = dataset.value?.finalizedAt || ''
 
     emitted.value = result
     lastRefreshedField.value = noFieldUpdate || null
@@ -126,8 +145,27 @@ export const useFiltersValues = (opts: UseFiltersValuesOptions) => {
     { immediate: true }
   )
 
+  /**
+   * Build the filter object broadcast to an embedded application
+   * (`/data-fair/app/...`). The application must scope the parameters to
+   * its own dataset, so we keep the dataset prefix on dynamic and static
+   * filters (`<prefix>_d_<datasetId>_<field>_in`, etc.). The application
+   * is expected to ignore any filter that targets a dataset it does not
+   * use.
+   *
+   * Note: an application that uses a *different* dataset from the
+   * dashboard's root will simply drop the prefixed params. This is
+   * intentional: it is the only way to forward resolved values (codes
+   * resolved from labels via the dataset's `/values/` endpoint) to an
+   * app that does not know the dashboard's root dataset id.
+   */
+  const applicationValues = computed<ApplicationFiltersValues>(() => {
+    return { ...emitted.value }
+  })
+
   return {
     values: computed(() => emitted.value),
+    applicationValues,
     update: execute,
     loading,
     error,
