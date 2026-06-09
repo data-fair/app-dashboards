@@ -65,6 +65,7 @@ const processedRows = computed(() => computeSectionBreakpoints(props.section.row
         :filters-values="filtersValues"
         :application-filters-values="applicationFiltersValues"
         :prefix="prefix"
+        :instance-key="`${j}-${i}`"
       />
     </v-col>
   </v-row>

@@ -26,6 +26,7 @@ const props = defineProps<{
   filtersValues: Record<string, any> | null
   applicationFiltersValues: Record<string, any> | null
   prefix?: string
+  instanceKey?: string
 }>()
 
 const { fields, dataset } = useConfig()
@@ -86,7 +87,7 @@ const hasFilterIssue = computed(() => requiredFilter.value.length > 0)
   <template v-else-if="isTable">
     <element-d-frame
       v-if="dFrameSrc"
-      :key="`table-${dFrameSrc}`"
+      :key="`table-${instanceKey}`"
       :element="element"
       :src="dFrameSrc"
       :iframe-title="iframeTitle"
@@ -98,7 +99,7 @@ const hasFilterIssue = computed(() => requiredFilter.value.length > 0)
   <template v-else-if="isForm">
     <element-d-frame
       v-if="dFrameSrc"
-      :key="`form-${dFrameSrc}`"
+      :key="`form-${instanceKey}`"
       :element="element"
       :src="dFrameSrc"
       :iframe-title="iframeTitle"
@@ -132,7 +133,7 @@ const hasFilterIssue = computed(() => requiredFilter.value.length > 0)
       >
         <element-d-frame
           v-if="dFrameSrc"
-          :key="`app-${dFrameSrc}`"
+          :key="`app-${instanceKey}`"
           :element="element"
           :src="dFrameSrc"
           :iframe-title="iframeTitle"

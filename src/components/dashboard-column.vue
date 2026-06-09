@@ -8,6 +8,7 @@ defineProps<{
   filtersValues: Record<string, any> | null
   applicationFiltersValues: Record<string, any> | null
   prefix?: string
+  instanceKey?: string
 }>()
 </script>
 
@@ -21,6 +22,7 @@ defineProps<{
       :filters-values="filtersValues"
       :application-filters-values="applicationFiltersValues"
       :prefix="prefix"
+      :instance-key="`${instanceKey ?? ''}-${k}`"
     />
   </template>
   <dashboard-element
@@ -30,5 +32,6 @@ defineProps<{
     :filters-values="filtersValues"
     :application-filters-values="applicationFiltersValues"
     :prefix="prefix"
+    :instance-key="instanceKey"
   />
 </template>
