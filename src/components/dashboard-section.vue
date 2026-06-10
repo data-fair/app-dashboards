@@ -7,8 +7,10 @@
  */
 import { computed } from 'vue'
 import type { DashboardSection } from '@/config'
+import { useConfig } from '@/composables/config'
 import { computeSectionBreakpoints } from '@/utils/layout'
 import dashboardColumn from './dashboard-column.vue'
+import dTitle from './d-title.vue'
 
 const props = defineProps<{
   section: DashboardSection
@@ -18,20 +20,29 @@ const props = defineProps<{
   prefix?: string
 }>()
 
+const { config } = useConfig()
+
 const processedRows = computed(() => computeSectionBreakpoints(props.section.rows))
+
+const sectionTitleDefaults = {
+  tag: 'h3' as const,
+  size: 'h4' as const,
+  center: false,
+  bold: false,
+  linePosition: 'none' as const,
+  lineColor: 'primary' as const
+}
 </script>
 
 <template>
-  <h3
-    v-if="!hideTitle"
-    class="text-h5 mt-8"
-  >
-    <template v-if="section.icon">
-      <v-icon :icon="section.icon.svgPath" />
-      &nbsp;
-    </template>
-    {{ section.title }}
-  </h3>
+  <d-title
+    v-if="!hideTitle && section.title"
+    :text="section.title"
+    :style="config.sectionsTitleStyle"
+    :icon="section.icon"
+    :defaults="sectionTitleDefaults"
+    class="mt-8"
+  />
   <p
     v-if="section.description"
     class="mt-4"

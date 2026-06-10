@@ -44,6 +44,23 @@ export type DashboardElementWidth = 1 | 2 | 3
 
 export type DashboardDescriptionPosition = 'none' | 'left' | 'right'
 
+export type TitleTag = 'h1' | 'h2' | 'h3' | 'h4'
+export type TitleSize = 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6'
+export type TitleColor = 'primary' | 'secondary' | 'accent' | 'info' | 'success' | 'error' | 'warning'
+export type TitleLinePosition = 'none' | 'left' | 'bottom-small' | 'bottom-medium' | 'bottom-large'
+
+export interface TitleStyle {
+  tag?: TitleTag
+  size?: TitleSize
+  center?: boolean
+  bold?: boolean
+  color?: TitleColor
+  line?: {
+    position?: TitleLinePosition
+    color?: TitleColor
+  }
+}
+
 export interface BaseElement {
   type: DashboardElementType
   title?: string
@@ -125,6 +142,8 @@ export interface DashboardConfig {
   showEmbed?: boolean
   showCapture?: boolean
   title?: string
+  titleStyle?: TitleStyle
+  sectionsTitleStyle?: TitleStyle
   description?: string
   allowDuplicate?: boolean
   applications?: ApplicationRef[]

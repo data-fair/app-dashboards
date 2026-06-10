@@ -1346,6 +1346,383 @@
           "type": "string",
           "title": "Titre"
         },
+        "titleStyle": {
+          "title": "Style du titre de page",
+          "default": {
+            "tag": "h2",
+            "size": "h4",
+            "center": true,
+            "bold": false,
+            "color": null,
+            "line": {
+              "position": "none",
+              "color": "primary"
+            }
+          },
+          "type": "object",
+          "properties": {
+            "tag": {
+              "type": "string",
+              "title": "Balise HTML",
+              "default": "h2",
+              "oneOf": [
+                {
+                  "const": "h1",
+                  "title": "h1"
+                },
+                {
+                  "const": "h2",
+                  "title": "h2"
+                },
+                {
+                  "const": "h3",
+                  "title": "h3"
+                },
+                {
+                  "const": "h4",
+                  "title": "h4"
+                }
+              ]
+            },
+            "size": {
+              "type": "string",
+              "title": "Taille",
+              "default": "h4",
+              "oneOf": [
+                {
+                  "const": "h1",
+                  "title": "Titre principal (96px)"
+                },
+                {
+                  "const": "h2",
+                  "title": "Très grand (60px)"
+                },
+                {
+                  "const": "h3",
+                  "title": "Grand (48px)"
+                },
+                {
+                  "const": "h4",
+                  "title": "Moyen (34px)"
+                },
+                {
+                  "const": "h5",
+                  "title": "Petit (24px)"
+                },
+                {
+                  "const": "h6",
+                  "title": "Très petit (20px)"
+                }
+              ]
+            },
+            "center": {
+              "type": "boolean",
+              "title": "Centré",
+              "default": false
+            },
+            "bold": {
+              "type": "boolean",
+              "title": "Gras",
+              "default": false
+            },
+            "color": {
+              "type": "string",
+              "title": "Couleur du texte",
+              "default": null,
+              "oneOf": [
+                {
+                  "const": null,
+                  "title": "Aucune (par défaut)"
+                },
+                {
+                  "const": "primary",
+                  "title": "Principale"
+                },
+                {
+                  "const": "secondary",
+                  "title": "Secondaire"
+                },
+                {
+                  "const": "accent",
+                  "title": "Accent"
+                },
+                {
+                  "const": "info",
+                  "title": "Info"
+                },
+                {
+                  "const": "success",
+                  "title": "Succès"
+                },
+                {
+                  "const": "error",
+                  "title": "Erreur"
+                },
+                {
+                  "const": "warning",
+                  "title": "Avertissement"
+                }
+              ]
+            },
+            "line": {
+              "type": "object",
+              "title": "Trait décoratif",
+              "properties": {
+                "position": {
+                  "type": "string",
+                  "title": "Position",
+                  "default": "none",
+                  "oneOf": [
+                    {
+                      "const": "none",
+                      "title": "Aucun"
+                    },
+                    {
+                      "const": "left",
+                      "title": "À gauche du titre"
+                    },
+                    {
+                      "const": "bottom-small",
+                      "title": "Petit trait sous le titre (80px)"
+                    },
+                    {
+                      "const": "bottom-medium",
+                      "title": "Trait moyen sous le titre (largeur du texte)"
+                    },
+                    {
+                      "const": "bottom-large",
+                      "title": "Grand trait sous le titre (toute la largeur)"
+                    }
+                  ]
+                },
+                "color": {
+                  "type": "string",
+                  "title": "Couleur du trait",
+                  "default": "primary",
+                  "oneOf": [
+                    {
+                      "const": "primary",
+                      "title": "Principale"
+                    },
+                    {
+                      "const": "secondary",
+                      "title": "Secondaire"
+                    },
+                    {
+                      "const": "accent",
+                      "title": "Accent"
+                    },
+                    {
+                      "const": "info",
+                      "title": "Info"
+                    },
+                    {
+                      "const": "success",
+                      "title": "Succès"
+                    },
+                    {
+                      "const": "error",
+                      "title": "Erreur"
+                    },
+                    {
+                      "const": "warning",
+                      "title": "Avertissement"
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "sectionsTitleStyle": {
+          "title": "Style des titres de sections",
+          "description": "Style appliqué à tous les libellés de sections",
+          "default": {
+            "tag": "h3",
+            "size": "h4",
+            "center": false,
+            "bold": false,
+            "color": null,
+            "line": {
+              "position": "none",
+              "color": "primary"
+            }
+          },
+          "type": "object",
+          "properties": {
+            "tag": {
+              "type": "string",
+              "title": "Balise HTML",
+              "default": "h2",
+              "oneOf": [
+                {
+                  "const": "h1",
+                  "title": "h1"
+                },
+                {
+                  "const": "h2",
+                  "title": "h2"
+                },
+                {
+                  "const": "h3",
+                  "title": "h3"
+                },
+                {
+                  "const": "h4",
+                  "title": "h4"
+                }
+              ]
+            },
+            "size": {
+              "type": "string",
+              "title": "Taille",
+              "default": "h4",
+              "oneOf": [
+                {
+                  "const": "h1",
+                  "title": "Titre principal (96px)"
+                },
+                {
+                  "const": "h2",
+                  "title": "Très grand (60px)"
+                },
+                {
+                  "const": "h3",
+                  "title": "Grand (48px)"
+                },
+                {
+                  "const": "h4",
+                  "title": "Moyen (34px)"
+                },
+                {
+                  "const": "h5",
+                  "title": "Petit (24px)"
+                },
+                {
+                  "const": "h6",
+                  "title": "Très petit (20px)"
+                }
+              ]
+            },
+            "center": {
+              "type": "boolean",
+              "title": "Centré",
+              "default": false
+            },
+            "bold": {
+              "type": "boolean",
+              "title": "Gras",
+              "default": false
+            },
+            "color": {
+              "type": "string",
+              "title": "Couleur du texte",
+              "default": null,
+              "oneOf": [
+                {
+                  "const": null,
+                  "title": "Aucune (par défaut)"
+                },
+                {
+                  "const": "primary",
+                  "title": "Principale"
+                },
+                {
+                  "const": "secondary",
+                  "title": "Secondaire"
+                },
+                {
+                  "const": "accent",
+                  "title": "Accent"
+                },
+                {
+                  "const": "info",
+                  "title": "Info"
+                },
+                {
+                  "const": "success",
+                  "title": "Succès"
+                },
+                {
+                  "const": "error",
+                  "title": "Erreur"
+                },
+                {
+                  "const": "warning",
+                  "title": "Avertissement"
+                }
+              ]
+            },
+            "line": {
+              "type": "object",
+              "title": "Trait décoratif",
+              "properties": {
+                "position": {
+                  "type": "string",
+                  "title": "Position",
+                  "default": "none",
+                  "oneOf": [
+                    {
+                      "const": "none",
+                      "title": "Aucun"
+                    },
+                    {
+                      "const": "left",
+                      "title": "À gauche du titre"
+                    },
+                    {
+                      "const": "bottom-small",
+                      "title": "Petit trait sous le titre (80px)"
+                    },
+                    {
+                      "const": "bottom-medium",
+                      "title": "Trait moyen sous le titre (largeur du texte)"
+                    },
+                    {
+                      "const": "bottom-large",
+                      "title": "Grand trait sous le titre (toute la largeur)"
+                    }
+                  ]
+                },
+                "color": {
+                  "type": "string",
+                  "title": "Couleur du trait",
+                  "default": "primary",
+                  "oneOf": [
+                    {
+                      "const": "primary",
+                      "title": "Principale"
+                    },
+                    {
+                      "const": "secondary",
+                      "title": "Secondaire"
+                    },
+                    {
+                      "const": "accent",
+                      "title": "Accent"
+                    },
+                    {
+                      "const": "info",
+                      "title": "Info"
+                    },
+                    {
+                      "const": "success",
+                      "title": "Succès"
+                    },
+                    {
+                      "const": "error",
+                      "title": "Erreur"
+                    },
+                    {
+                      "const": "warning",
+                      "title": "Avertissement"
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        },
         "description": {
           "type": "string",
           "title": "Introduction",
@@ -2377,6 +2754,183 @@
           "url": "${rootData.datasets[0].href}/schema?calculated=false",
           "itemKey": "data.key",
           "itemTitle": "data.label"
+        }
+      }
+    },
+    "titleStyle": {
+      "type": "object",
+      "title": "Style du titre",
+      "properties": {
+        "tag": {
+          "type": "string",
+          "title": "Balise HTML",
+          "default": "h2",
+          "oneOf": [
+            {
+              "const": "h1",
+              "title": "h1"
+            },
+            {
+              "const": "h2",
+              "title": "h2"
+            },
+            {
+              "const": "h3",
+              "title": "h3"
+            },
+            {
+              "const": "h4",
+              "title": "h4"
+            }
+          ]
+        },
+        "size": {
+          "type": "string",
+          "title": "Taille",
+          "default": "h4",
+          "oneOf": [
+            {
+              "const": "h1",
+              "title": "Titre principal (96px)"
+            },
+            {
+              "const": "h2",
+              "title": "Très grand (60px)"
+            },
+            {
+              "const": "h3",
+              "title": "Grand (48px)"
+            },
+            {
+              "const": "h4",
+              "title": "Moyen (34px)"
+            },
+            {
+              "const": "h5",
+              "title": "Petit (24px)"
+            },
+            {
+              "const": "h6",
+              "title": "Très petit (20px)"
+            }
+          ]
+        },
+        "center": {
+          "type": "boolean",
+          "title": "Centré",
+          "default": false
+        },
+        "bold": {
+          "type": "boolean",
+          "title": "Gras",
+          "default": false
+        },
+        "color": {
+          "type": "string",
+          "title": "Couleur du texte",
+          "default": null,
+          "oneOf": [
+            {
+              "const": null,
+              "title": "Aucune (par défaut)"
+            },
+            {
+              "const": "primary",
+              "title": "Principale"
+            },
+            {
+              "const": "secondary",
+              "title": "Secondaire"
+            },
+            {
+              "const": "accent",
+              "title": "Accent"
+            },
+            {
+              "const": "info",
+              "title": "Info"
+            },
+            {
+              "const": "success",
+              "title": "Succès"
+            },
+            {
+              "const": "error",
+              "title": "Erreur"
+            },
+            {
+              "const": "warning",
+              "title": "Avertissement"
+            }
+          ]
+        },
+        "line": {
+          "type": "object",
+          "title": "Trait décoratif",
+          "properties": {
+            "position": {
+              "type": "string",
+              "title": "Position",
+              "default": "none",
+              "oneOf": [
+                {
+                  "const": "none",
+                  "title": "Aucun"
+                },
+                {
+                  "const": "left",
+                  "title": "À gauche du titre"
+                },
+                {
+                  "const": "bottom-small",
+                  "title": "Petit trait sous le titre (80px)"
+                },
+                {
+                  "const": "bottom-medium",
+                  "title": "Trait moyen sous le titre (largeur du texte)"
+                },
+                {
+                  "const": "bottom-large",
+                  "title": "Grand trait sous le titre (toute la largeur)"
+                }
+              ]
+            },
+            "color": {
+              "type": "string",
+              "title": "Couleur du trait",
+              "default": "primary",
+              "oneOf": [
+                {
+                  "const": "primary",
+                  "title": "Principale"
+                },
+                {
+                  "const": "secondary",
+                  "title": "Secondaire"
+                },
+                {
+                  "const": "accent",
+                  "title": "Accent"
+                },
+                {
+                  "const": "info",
+                  "title": "Info"
+                },
+                {
+                  "const": "success",
+                  "title": "Succès"
+                },
+                {
+                  "const": "error",
+                  "title": "Erreur"
+                },
+                {
+                  "const": "warning",
+                  "title": "Avertissement"
+                }
+              ]
+            }
+          }
         }
       }
     }

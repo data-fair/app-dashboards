@@ -12,6 +12,7 @@ import { computed, reactive } from 'vue'
 import reactiveSearchParams from '@data-fair/lib-vue/reactive-search-params-global.js'
 import dashboardFilters from './dashboard-filters.vue'
 import dashboardSection from './dashboard-section.vue'
+import dTitle from './d-title.vue'
 import { useConfig } from '@/composables/config'
 import type { DashboardSection } from '@/config'
 import { initDefaultFilterValues } from '@/utils/filters'
@@ -53,6 +54,24 @@ function updateSwitch (v: boolean | null) {
   if (v) reactiveSearchParams.view = 'compare'
   else delete reactiveSearchParams.view
 }
+
+const pageTitleDefaults = {
+  tag: 'h2' as const,
+  size: 'h4' as const,
+  center: true,
+  bold: false,
+  linePosition: 'none' as const,
+  lineColor: 'primary' as const
+}
+
+const sectionTitleDefaults = {
+  tag: 'h3' as const,
+  size: 'h4' as const,
+  center: false,
+  bold: false,
+  linePosition: 'none' as const,
+  lineColor: 'primary' as const
+}
 </script>
 
 <template>
@@ -60,12 +79,12 @@ function updateSwitch (v: boolean | null) {
     fluid
     data-iframe-height
   >
-    <h2
+    <d-title
       v-if="config.title"
-      class="text-h4 text-center"
-    >
-      {{ config.title }}
-    </h2>
+      :text="config.title"
+      :style="config.titleStyle"
+      :defaults="pageTitleDefaults"
+    />
     <p
       v-if="config.description"
       class="mt-2"
@@ -201,13 +220,13 @@ function updateSwitch (v: boolean | null) {
             :key="j"
             class="my-6"
           >
-            <h2>
-              <template v-if="section.icon">
-                <v-icon :icon="section.icon.svgPath" />
-                &nbsp;
-              </template>
-              {{ section.title }}
-            </h2>
+            <d-title
+              v-if="section.title"
+              :text="section.title"
+              :style="config.sectionsTitleStyle"
+              :icon="section.icon"
+              :defaults="sectionTitleDefaults"
+            />
             <dashboard-section
               :section="section"
               :filters-values="filtersValues[i]"

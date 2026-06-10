@@ -1514,7 +1514,8 @@
             }
           ]
         }
-      ]
+      ],
+      "title": "Ma section"
     }
   ],
   "applications": [
@@ -1539,5 +1540,28 @@
       "showAllValues": false,
       "labelField": "equipement"
     }
-  ]
+  ],
+  "titleStyle": {
+    "tag": "h2",
+    "size": "h4",
+    "center": true,
+    "bold": true,
+    "color": "primary",
+    "line": {
+      "position": "none",
+      "color": "accent"
+    }
+  },
+  "sectionsTitleStyle": {
+    "tag": "h3",
+    "size": "h4",
+    "center": false,
+    "bold": false,
+    "color": "primary",
+    "line": {
+      "position": "bottom-small",
+      "color": "secondary"
+    }
+  },
+  "title": "Mon dashboard !"
 }
