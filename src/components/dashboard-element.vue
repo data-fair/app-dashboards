@@ -161,10 +161,13 @@ const hasFilterIssue = computed(() => requiredFilter.value.length > 0)
     </div>
   </div>
 
-  <element-actions
+  <div
     v-if="!hasFilterIssue"
     ref="actionsRef"
-    :element="element"
-    :sources="sourcesList"
-  />
+  >
+    <element-actions
+      :element="element"
+      :sources="sourcesList"
+    />
+  </div>
 </template>

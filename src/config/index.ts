@@ -46,7 +46,7 @@ export type DashboardDescriptionPosition = 'none' | 'left' | 'right'
 
 export type TitleTag = 'h1' | 'h2' | 'h3' | 'h4'
 export type TitleSize = 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6'
-export type TitleColor = 'primary' | 'secondary' | 'accent' | 'info' | 'success' | 'error' | 'warning'
+export type TitleColor = 'primary' | 'secondary' | 'accent' | 'info' | 'success' | 'error' | 'warning' | null
 export type TitleLinePosition = 'none' | 'left' | 'bottom-small' | 'bottom-medium' | 'bottom-large'
 
 export interface TitleStyle {

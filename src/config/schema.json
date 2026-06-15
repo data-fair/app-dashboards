@@ -1000,7 +1000,7 @@
           "default": false
         },
         "color": {
-          "type": "string",
+          "type": ["string", "null"],
           "title": "Couleur du texte",
           "default": null,
           "oneOf": [
