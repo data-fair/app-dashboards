@@ -284,29 +284,6 @@
             }
           }
         },
-        "sectionsGroup": {
-          "title": "Rendu des sections",
-          "type": "string",
-          "oneOf": [
-            {
-              "const": "accordion",
-              "title": "En accordéon"
-            },
-            {
-              "const": "tabs-tab",
-              "title": "Dans des onglets"
-            },
-            {
-              "const": "tabs-button",
-              "title": "Dans des onglets (sélection par boutton)"
-            },
-            {
-              "const": "flow",
-              "title": "Les unes à la suite des autres"
-            }
-          ],
-          "default": "accordion"
-        },
         "showSources": {
           "title": "Afficher les liens vers les sources des données",
           "type": "boolean",
@@ -346,6 +323,29 @@
             }
           }
         },
+        "sectionsGroup": {
+          "title": "Rendu des sections",
+          "type": "string",
+          "oneOf": [
+            {
+              "const": "accordion",
+              "title": "En accordéon"
+            },
+            {
+              "const": "tabs-tab",
+              "title": "Dans des onglets"
+            },
+            {
+              "const": "tabs-button",
+              "title": "Dans des onglets (sélection par boutton)"
+            },
+            {
+              "const": "flow",
+              "title": "Les unes à la suite des autres"
+            }
+          ],
+          "default": "accordion"
+        },
         "sectionsTitleStyle": {
           "$ref": "#/definitions/titleStyle",
           "title": "Style des titres de sections",
@@ -360,6 +360,9 @@
               "position": "none",
               "color": "primary"
             }
+          },
+          "layout": {
+            "if": "rootData.sectionsGroup === 'flow'"
           }
         },
         "description": {
