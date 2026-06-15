@@ -1524,6 +1524,13 @@
       "title": "Véhicules impliqués dans des accidents avec les vélos"
     }
   ],
+  "staticFilters": [
+    {
+      "type": "in",
+      "field": "dep",
+      "values": ["75", "92"]
+    }
+  ],
   "filters": [
     {
       "multipleValues": false,

@@ -105,18 +105,15 @@ Le dashboard propage les filtres aux éléments embarqués via **deux canaux dis
 - Les filtres dynamiques (`filters[]`) sont sérialisés dans l'URL avec un préfixe **dataset-scopé** : `<prefix>_d_<rootDatasetId>_<labelField>_in=...`. Ce format est attendu par l'API REST de l'embed dataset natif, qui sait à quel dataset appliquer la requête.
 - Les static filters sont sérialisés sous la même forme : `<prefix>_d_<rootDatasetId>_<field>_in|_nin|_gte|_lte=...`.
 - Les concepts universels (`_c_date_match`, `_c_geo_distance`, `finalizedAt`) sont également transmis.
-- **Conséquence** : la visu reflète fidèlement les filtres du dashboard, mais elle partage le dataset racine (sinon le préfixe ne correspond pas).
+- **Pour les visus sur un dataset tiers** (≠ dataset racine du dashboard), les filtres liés à un concept (champ avec `x-concept.id` dans le schéma) sont aussi mirorés en `_c_<conceptId>_<op>=<valeur>` (sans préfixe) : l'API REST de l'embed dataset traduit cette clé en filtre sur le champ qui porte ce concept dans le dataset cible. Voir `src/composables/useFiltersValues.ts:recompute` et `src/utils/dataset-filter.ts:conceptFilterKey`.
+- **Conséquence** : la visu reflète fidèlement les filtres du dashboard, que sa source de données soit le dataset racine ou un autre dataset partageant les mêmes concepts.
 
 **Canal « application »** (éléments `application`)
 - URL cible : `/data-fair/app/<id>`.
-- Seuls les paramètres **universellement reconnus** par les applications DataFair sont transmis dans l'URL :
-  - `_c_date_match` (filtre temporel)
-  - `_c_geo_distance` (filtre géographique)
-  - `finalizedAt`
-  - static filters **re-scopés** (sans préfixe dataset : `<field>_in=...`)
-- Les filtres dynamiques `filters[]` ne sont **PAS** broadcastés dans l'URL : une application peut utiliser un dataset différent du dataset racine du dashboard, et un préfixe `_d_<rootDatasetId>_` serait sans signification pour elle.
-- Les applications qui dépendent des filtres dynamiques doivent les recevoir via leur mécanisme de state-change d-frame (déclaré dans `df:filter-concepts`/`df:sync-state`) : la `<d-frame>` répercute l'évolution de l'URL vers l'iframe via `df-parent updateSrc`, et l'app résout les clés de filtre vers son propre dataset via ses concepts.
-- **Conséquence** : les apps qui s'attendent à des clés dataset-préfixées doivent déclarer leurs concepts ; sinon, les filtres du dashboard ne les atteignent pas.
+- Les filtres dynamiques et statiques dataset-scopés sont conservés (`<prefix>_d_<rootDatasetId>_<field>_<op>`) pour les apps qui partagent le dataset racine.
+- Les filtres dynamiques et statiques liés à un concept sont **aussi** mirorés en `_c_<conceptId>_<op>=<valeur>` (sans préfixe) : l'app les lit via `useConceptFilters` (`@data-fair/lib-vue/concept-filters.js`) qui extrait les clés `_c_*` indépendamment du dataset id.
+- Les concepts universels (`_c_date_match`, `_c_geo_distance`, `finalizedAt`) sont également transmis.
+- **Conséquence** : une visu sur un autre dataset peut recevoir un filtre du dashboard dès lors que ses champs portent les concepts correspondants. Les apps qui ne déclarent pas de concepts (`df:filter-concepts` côté base-app) ignorent simplement ces clés.
 
 | Type d'élément | URL de l'embed | Préfixe des filtres dynamiques | Static filters | Concepts universels |
 |----------------|----------------|------------------------------|----------------|---------------------|

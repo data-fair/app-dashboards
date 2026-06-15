@@ -176,4 +176,73 @@ test.describe('Bugs connus (régressions)', () => {
       `Erreur d'init inattendue : ${initError?.text ?? '(aucune)'}`
     ).toBeUndefined()
   })
+
+  test('K3 — propagation des filtres via concepts pour les visus sur dataset tiers', async ({ page }) => {
+    // La config de dev déclare un static filter sur `dep` (concept
+    // `codeDepartement`). Les deux iframes (application Sankey + table
+    // embarquée) doivent recevoir la clé cross-dataset `_c_codeDepartement_in`
+    // dans leur URL, en plus de la clé dataset-scopée
+    // `d_<rootDatasetId>_dep_in=75,92`. Une visu enfant sur un autre
+    // dataset lisant `useConceptFilters` peut ainsi récupérer le filtre
+    // via la clé `_c_*` même si son `datasetId` ne correspond pas à celui
+    // du dataset racine du dashboard.
+    const consoleEvents: { type: string; text: string }[] = []
+    page.on('console', (msg) => {
+      consoleEvents.push({ type: msg.type(), text: msg.text() })
+    })
+
+    await page.goto('/app/')
+
+    const allFrames = page.locator('d-frame')
+    await expect(allFrames).toHaveCount(2, { timeout: 20_000 })
+
+    const appFrame = allFrames.nth(0)
+    const tableFrame = allFrames.nth(1)
+    await expect(appFrame).toBeVisible({ timeout: 20_000 })
+    await expect(tableFrame).toBeVisible({ timeout: 20_000 })
+
+    const appSrc = await appFrame.getAttribute('src')
+    const tableSrc = await tableFrame.getAttribute('src')
+    expect(appSrc, "Le src de l'application doit être défini").toBeTruthy()
+    expect(tableSrc, 'Le src de la table doit être défini').toBeTruthy()
+
+    // 1) Clé concept-aliased présente dans l'URL de l'application.
+    //    Format : _c_<conceptId>_<op>=<valeur>. Pas de préfixe
+    //    (compare-view) — chaque iframe est attachée à une seule colonne
+    //    et reçoit la valeur de cette colonne.
+    const conceptFilterRegex = /[?&]_c_codeDepartement_in=75%2C92/
+    expect(
+      appSrc,
+      'L\'URL de l\'application doit contenir la clé concept _c_codeDepartement_in=75,92. ' +
+      `src=${appSrc}`
+    ).toMatch(conceptFilterRegex)
+
+    // 2) Clé concept-aliased présente dans l'URL de la table embarquée.
+    expect(
+      tableSrc,
+      'L\'URL de la table doit contenir la clé concept _c_codeDepartement_in=75,92. ' +
+      `src=${tableSrc}`
+    ).toMatch(conceptFilterRegex)
+
+    // 3) Non-régression : la clé dataset-scopée reste présente pour
+    //    l'application (utilisée par les apps qui partagent le dataset
+    //    racine) et strippée pour la table (l'embed REST API utilise le
+    //    nom de champ direct).
+    const rootDatasetId = 'accidents-velos'
+    const prefixedDepRegex = new RegExp(`(?:^|[?&])\\d*_d_${rootDatasetId}_dep_in=`)
+    expect(
+      appSrc,
+      'L\'URL de l\'application doit toujours contenir la clé dataset-scopée ' +
+      `<prefix>_d_${rootDatasetId}_dep_in=. src=${appSrc}`
+    ).toMatch(prefixedDepRegex)
+
+    // 4) Pas d'erreur d'init
+    const initError = consoleEvents.find(
+      (e) => e.text.includes('Failed to initialize app')
+    )
+    expect(
+      initError,
+      `Erreur d'init inattendue : ${initError?.text ?? '(aucune)'}`
+    ).toBeUndefined()
+  })
 })

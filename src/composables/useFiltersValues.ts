@@ -8,9 +8,10 @@ import { computed, ref, watch, type Ref } from 'vue'
 import { ofetch } from 'ofetch'
 import { useAsyncAction } from '@data-fair/lib-vue/async-action.js'
 import reactiveSearchParams from '@data-fair/lib-vue/reactive-search-params-global.js'
+import type { Field } from '@data-fair/lib-common-types/application/index.js'
 import type { DashboardConfig, DashboardFilter, DashboardStaticFilter } from '@/config'
 import { useConfig } from './config'
-import { datasetFilterKey } from '@/utils/dataset-filter'
+import { datasetFilterKey, conceptFilterKey } from '@/utils/dataset-filter'
 
 export interface UseFiltersValuesOptions {
   prefix: string
@@ -48,15 +49,39 @@ const collectActiveFields = (filters: DashboardFilter[] | undefined, prefix: str
   return result
 }
 
-const collectStaticFilterParams = (config: DashboardConfig, datasetId: string, prefix: string): Record<string, string> => {
+const fieldConcept = (field: Field | undefined): string | undefined => {
+  return field?.['x-concept']?.id as string | undefined
+}
+
+const collectStaticFilterParams = (
+  config: DashboardConfig,
+  datasetId: string,
+  prefix: string,
+  fields: Record<string, Field>
+): Record<string, string> => {
   const params: Record<string, string> = {}
   for (const sf of (config.staticFilters || []) as DashboardStaticFilter[]) {
     const base = `${prefix}_d_${datasetId}_${sf.field}`
-    if (sf.type === 'in') params[`${base}_in`] = sf.values?.join(',') || ''
-    else if (sf.type === 'nin') params[`${base}_nin`] = sf.values?.join(',') || ''
-    else if (sf.type === 'interval') {
-      if (sf.minValue != null) params[`${base}_gte`] = String(sf.minValue)
-      if (sf.maxValue != null) params[`${base}_lte`] = String(sf.maxValue)
+    const concept = fieldConcept(fields[sf.field])
+    if (sf.type === 'in') {
+      const v = sf.values?.join(',') || ''
+      params[`${base}_in`] = v
+      if (concept) params[conceptFilterKey(concept, 'in')] = v
+    } else if (sf.type === 'nin') {
+      const v = sf.values?.join(',') || ''
+      params[`${base}_nin`] = v
+      if (concept) params[conceptFilterKey(concept, 'nin')] = v
+    } else if (sf.type === 'interval') {
+      if (sf.minValue != null) {
+        const v = String(sf.minValue)
+        params[`${base}_gte`] = v
+        if (concept) params[conceptFilterKey(concept, 'gte')] = v
+      }
+      if (sf.maxValue != null) {
+        const v = String(sf.maxValue)
+        params[`${base}_lte`] = v
+        if (concept) params[conceptFilterKey(concept, 'lte')] = v
+      }
     }
   }
   return params
@@ -64,7 +89,7 @@ const collectStaticFilterParams = (config: DashboardConfig, datasetId: string, p
 
 export const useFiltersValues = (opts: UseFiltersValuesOptions) => {
   const { prefix, address } = opts
-  const { config, filters, dataset } = useConfig()
+  const { config, filters, dataset, fields } = useConfig()
   const emitted = ref<FiltersValues>({ keys: [] })
   const lastRefreshedField = ref<string | null>(null)
 
@@ -104,7 +129,15 @@ export const useFiltersValues = (opts: UseFiltersValuesOptions) => {
 
       for (const f of fetchFields) {
         if (values[f]) {
-          result[`${prefix}_d_${datasetId}_${f}_in`] = JSON.stringify(values[f]).slice(1, -1)
+          const serialized = JSON.stringify(values[f]).slice(1, -1)
+          result[`${prefix}_d_${datasetId}_${f}_in`] = serialized
+          // Mirror as a concept-aliased key for child visus on a different
+          // dataset. Only emit when the field carries a concept — filters
+          // without a concept are not cross-dataset translatable.
+          const concept = fieldConcept(fields.value[f])
+          if (concept) {
+            result[conceptFilterKey(concept, 'in')] = serialized
+          }
         }
       }
     }
@@ -115,7 +148,7 @@ export const useFiltersValues = (opts: UseFiltersValuesOptions) => {
     if (config.value.addressFilter && address.value && reactiveSearchParams.radius) {
       result._c_geo_distance = `${address.value.lon},${address.value.lat},${Number(reactiveSearchParams.radius) * 1000}`
     }
-    Object.assign(result, collectStaticFilterParams(config.value, datasetId, prefix))
+    Object.assign(result, collectStaticFilterParams(config.value, datasetId, prefix, fields.value))
     result.finalizedAt = dataset.value?.finalizedAt || ''
 
     emitted.value = result
