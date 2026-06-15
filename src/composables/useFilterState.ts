@@ -60,6 +60,7 @@ const buildUrl = (
   }
   for (const sf of (config.value.staticFilters || [])) {
     if (sf.type === 'in') params[`${sf.field}_in`] = sf.values?.join(',') || ''
+    else if (sf.type === 'nin') params[`${sf.field}_nin`] = sf.values?.join(',') || ''
     else if (sf.type === 'interval') {
       if (sf.minValue != null) params[`${sf.field}_gte`] = String(sf.minValue)
       if (sf.maxValue != null) params[`${sf.field}_lte`] = String(sf.maxValue)

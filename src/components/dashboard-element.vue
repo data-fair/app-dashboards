@@ -76,13 +76,24 @@ const hasFilterIssue = computed(() => requiredFilter.value.length > 0)
 </script>
 
 <template>
-  <v-alert
+  <div
     v-if="hasFilterIssue"
-    type="info"
-    variant="outlined"
+    class="d-flex flex-column align-center justify-center text-center pa-6 my-4 mx-auto"
+    style="max-width:480px;background-color:#FAFAFA;border:1px solid #E0E0E0;border-radius:8px;"
   >
-    <h4>Veuillez sélectionner une valeur de {{ missingFilterLabels }}</h4>
-  </v-alert>
+    <v-icon
+      icon="mdi-filter-variant"
+      size="40"
+      class="mb-3 text-medium-emphasis"
+    />
+    <div class="text-subtitle-1 font-weight-medium mb-1">
+      Filtre requis
+    </div>
+    <div class="text-body-2 text-medium-emphasis">
+      Veuillez sélectionner une valeur{{ requiredFilter.length > 1 ? 's' : '' }}
+      de <strong>{{ missingFilterLabels }}</strong> pour afficher cet élément.
+    </div>
+  </div>
 
   <template v-else-if="isTable">
     <element-d-frame
