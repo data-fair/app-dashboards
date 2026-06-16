@@ -42,7 +42,7 @@ export type DashboardElementType = 'tablePreview' | 'application' | 'text' | 'fo
 
 export type DashboardElementWidth = 1 | 2 | 3
 
-export type DashboardDescriptionPosition = 'none' | 'left' | 'right'
+export type DashboardDescriptionPosition = 'none' | 'left' | 'right' | 'top' | 'bottom'
 
 export type TitleTag = 'h1' | 'h2' | 'h3' | 'h4'
 export type TitleSize = 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6'

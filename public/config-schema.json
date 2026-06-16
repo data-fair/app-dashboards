@@ -711,6 +711,14 @@
                                       {
                                         "const": "right",
                                         "title": "A droite"
+                                      },
+                                      {
+                                        "const": "top",
+                                        "title": "En haut"
+                                      },
+                                      {
+                                        "const": "bottom",
+                                        "title": "En bas"
                                       }
                                     ],
                                     "default": "none"
@@ -776,6 +784,33 @@
                                       },
                                       "if": "parent.data.valueMandatory"
                                     }
+                                  },
+                                  "description": {
+                                    "title": "Affichage de la description",
+                                    "type": "string",
+                                    "oneOf": [
+                                      {
+                                        "const": "none",
+                                        "title": "Aucun affichage"
+                                      },
+                                      {
+                                        "const": "left",
+                                        "title": "A gauche"
+                                      },
+                                      {
+                                        "const": "right",
+                                        "title": "A droite"
+                                      },
+                                      {
+                                        "const": "top",
+                                        "title": "En haut"
+                                      },
+                                      {
+                                        "const": "bottom",
+                                        "title": "En bas"
+                                      }
+                                    ],
+                                    "default": "none"
                                   }
                                 }
                               }
@@ -1118,6 +1153,14 @@
                                                 {
                                                   "const": "right",
                                                   "title": "A droite"
+                                                },
+                                                {
+                                                  "const": "top",
+                                                  "title": "En haut"
+                                                },
+                                                {
+                                                  "const": "bottom",
+                                                  "title": "En bas"
                                                 }
                                               ],
                                               "default": "none"
@@ -1183,6 +1226,33 @@
                                                 },
                                                 "if": "parent.data.valueMandatory"
                                               }
+                                            },
+                                            "description": {
+                                              "title": "Affichage de la description",
+                                              "type": "string",
+                                              "oneOf": [
+                                                {
+                                                  "const": "none",
+                                                  "title": "Aucun affichage"
+                                                },
+                                                {
+                                                  "const": "left",
+                                                  "title": "A gauche"
+                                                },
+                                                {
+                                                  "const": "right",
+                                                  "title": "A droite"
+                                                },
+                                                {
+                                                  "const": "top",
+                                                  "title": "En haut"
+                                                },
+                                                {
+                                                  "const": "bottom",
+                                                  "title": "En bas"
+                                                }
+                                              ],
+                                              "default": "none"
                                             }
                                           }
                                         }
@@ -2038,6 +2108,14 @@
                 {
                   "const": "right",
                   "title": "A droite"
+                },
+                {
+                  "const": "top",
+                  "title": "En haut"
+                },
+                {
+                  "const": "bottom",
+                  "title": "En bas"
                 }
               ],
               "default": "none"
@@ -2103,6 +2181,33 @@
                 },
                 "if": "parent.data.valueMandatory"
               }
+            },
+            "description": {
+              "title": "Affichage de la description",
+              "type": "string",
+              "oneOf": [
+                {
+                  "const": "none",
+                  "title": "Aucun affichage"
+                },
+                {
+                  "const": "left",
+                  "title": "A gauche"
+                },
+                {
+                  "const": "right",
+                  "title": "A droite"
+                },
+                {
+                  "const": "top",
+                  "title": "En haut"
+                },
+                {
+                  "const": "bottom",
+                  "title": "En bas"
+                }
+              ],
+              "default": "none"
             }
           }
         }
@@ -2480,6 +2585,14 @@
                           {
                             "const": "right",
                             "title": "A droite"
+                          },
+                          {
+                            "const": "top",
+                            "title": "En haut"
+                          },
+                          {
+                            "const": "bottom",
+                            "title": "En bas"
                           }
                         ],
                         "default": "none"
@@ -2545,6 +2658,33 @@
                           },
                           "if": "parent.data.valueMandatory"
                         }
+                      },
+                      "description": {
+                        "title": "Affichage de la description",
+                        "type": "string",
+                        "oneOf": [
+                          {
+                            "const": "none",
+                            "title": "Aucun affichage"
+                          },
+                          {
+                            "const": "left",
+                            "title": "A gauche"
+                          },
+                          {
+                            "const": "right",
+                            "title": "A droite"
+                          },
+                          {
+                            "const": "top",
+                            "title": "En haut"
+                          },
+                          {
+                            "const": "bottom",
+                            "title": "En bas"
+                          }
+                        ],
+                        "default": "none"
                       }
                     }
                   }

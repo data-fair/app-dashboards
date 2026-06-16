@@ -13,9 +13,10 @@ import {
   isApplicationElement,
   isTablePreviewElement as _isTablePreview,
   isFormElement as _isForm,
-  isTextElement
+  isTextElement,
+  type DashboardDescriptionPosition
+  , DashboardElement, DashboardDataset, ApplicationElement
 } from '@/config'
-import type { DashboardElement, DashboardDataset, ApplicationElement } from '@/config'
 import ElementDFrame from './element-dframe.vue'
 import ElementActions from './element-actions.vue'
 import ElementDescription from './element-description.vue'
@@ -48,6 +49,10 @@ const isTable = computed(() => _isTablePreview(props.element))
 const isForm = computed(() => _isForm(props.element))
 const isApp = computed(() => isApplicationElement(props.element))
 const appElement = computed<ApplicationElement | null>(() => isApplicationElement(props.element) ? props.element : null)
+
+const descriptionPos = computed<DashboardDescriptionPosition>(() => appElement.value?.description ?? 'none')
+const isHorizontal = computed(() => descriptionPos.value === 'left' || descriptionPos.value === 'right')
+const isVertical = computed(() => descriptionPos.value === 'top' || descriptionPos.value === 'bottom')
 
 const requiredFilter = computed(() => {
   if (!isTable.value && !isApp.value) return []
@@ -124,12 +129,12 @@ const hasFilterIssue = computed(() => requiredFilter.value.length > 0)
     :style="`overflow-y:auto;height:${height && height > 0 ? height + 'px' : '100%'}`"
   >
     <v-row
-      v-if="isApp"
+      v-if="isApp && isHorizontal"
       align="center"
       class="ma-0"
     >
       <v-col
-        v-if="appElement && (appElement.description || 'none') === 'left'"
+        v-if="descriptionPos === 'left' && appElement"
         :cols="6"
       >
         <element-description
@@ -140,7 +145,7 @@ const hasFilterIssue = computed(() => requiredFilter.value.length > 0)
       </v-col>
       <v-col
         class="pa-0"
-        :cols="!appElement || (appElement.description || 'none') === 'none' ? 12 : 6"
+        :cols="6"
       >
         <element-d-frame
           v-if="dFrameSrc"
@@ -153,7 +158,7 @@ const hasFilterIssue = computed(() => requiredFilter.value.length > 0)
         />
       </v-col>
       <v-col
-        v-if="appElement && appElement.description === 'right'"
+        v-if="descriptionPos === 'right' && appElement"
         :cols="6"
       >
         <element-description
@@ -163,6 +168,47 @@ const hasFilterIssue = computed(() => requiredFilter.value.length > 0)
         />
       </v-col>
     </v-row>
+    <div
+      v-else-if="isApp && isVertical"
+      class="d-flex flex-column"
+      style="width:100%;height:100%"
+    >
+      <element-description
+        v-if="descriptionPos === 'top' && appElement"
+        :element="appElement"
+        :filters-values="applicationFiltersValues"
+        :application-filters-values="applicationFiltersValues"
+        class="mb-2"
+        style="flex:0 0 auto;max-height:50%;overflow-y:auto"
+      />
+      <element-d-frame
+        v-if="dFrameSrc"
+        :key="`app-${instanceKey}`"
+        :element="element"
+        :src="dFrameSrc"
+        :iframe-title="iframeTitle"
+        :height="height"
+        :actions-height="actionsHeight"
+        style="flex:1 1 0;min-height:0"
+      />
+      <element-description
+        v-if="descriptionPos === 'bottom' && appElement"
+        :element="appElement"
+        :filters-values="applicationFiltersValues"
+        :application-filters-values="applicationFiltersValues"
+        class="mt-2"
+        style="flex:0 0 auto;max-height:50%;overflow-y:auto"
+      />
+    </div>
+    <element-d-frame
+      v-else-if="isApp && dFrameSrc"
+      :key="`app-${instanceKey}`"
+      :element="element"
+      :src="dFrameSrc"
+      :iframe-title="iframeTitle"
+      :height="height"
+      :actions-height="actionsHeight"
+    />
     <div
       v-else-if="isTextElement(element)"
       style="white-space: pre-wrap"
