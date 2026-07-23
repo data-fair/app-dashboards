@@ -113,7 +113,11 @@ test.describe('Bugs connus (régressions)', () => {
     await expect(firstOption).toBeVisible({ timeout: 5_000 })
     await firstOption.click()
     // Attendre que les iframes rechargent avec les nouveaux filtres.
-    // On poll l'attribut `src` du sankey (resolve /values/ asynchrone + re-render)
+    // On poll l'attribut `src` du sankey (resolve /values/ asynchrone + re-render).
+    // ⚠️ La regex cible explicitement le filtre dynamique `int` : une regex
+    // générique `\w+_in` matcherait immédiatement le static filter
+    // `_d_<datasetId>_dep_in` déjà présent et le poll passerait avant la
+    // mise à jour des src (race condition).
     const rootDatasetIdForPoll = 'accidents-velos'
     await expect.poll(
       async () => await appFrame.getAttribute('src'),
@@ -121,7 +125,17 @@ test.describe('Bugs connus (régressions)', () => {
         timeout: 10_000,
         message: 'L\'iframe de l\'application doit recevoir le filtre préfixé par le dataset racine'
       }
-    ).toMatch(new RegExp(`(?:^|[?&])\\d*_d_${rootDatasetIdForPoll}_\\w+_in=`))
+    ).toMatch(new RegExp(`(?:^|[?&])\\d*_d_${rootDatasetIdForPoll}_int_in=`))
+
+    // Idem pour la vue table : on attend que le filtre dé-préfixé `int_in=`
+    // soit bien propagé avant de lire les src pour les assertions suivantes.
+    await expect.poll(
+      async () => await tableFrame.getAttribute('src'),
+      {
+        timeout: 10_000,
+        message: 'L\'iframe de la vue table doit recevoir le filtre int_in= après dé-préfixage'
+      }
+    ).toMatch(/[?&]int_in=/)
 
     const appSrcAfter = await appFrame.getAttribute('src')
     const tableSrcAfter = await tableFrame.getAttribute('src')

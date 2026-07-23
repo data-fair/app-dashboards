@@ -8,7 +8,7 @@
  *  - decide between single-view and compare-view layout,
  *  - render the chosen section layout (single, tabs, accordion or flow).
  */
-import { computed, reactive } from 'vue'
+import { computed, onMounted, reactive } from 'vue'
 import reactiveSearchParams from '@data-fair/lib-vue/reactive-search-params-global.js'
 import dashboardFilters from './dashboard-filters.vue'
 import dashboardSection from './dashboard-section.vue'
@@ -36,6 +36,13 @@ if (config.value.periodFilter && !reactiveSearchParams.period) {
 }
 
 const sections = computed<DashboardSection[]>(() => config.value.sections || [])
+
+// Signale au service de capture DataFair que le dashboard est rendu.
+// Le service attend ensuite le network idle (chargement des iframes) ou
+// le délai df:capture-delay avant de capturer.
+onMounted(() => {
+  window.triggerCapture?.()
+})
 
 const maxTitleLength = computed(() =>
   Math.max(...sections.value.map(s => s.title?.length || 0), 0)

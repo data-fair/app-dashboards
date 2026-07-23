@@ -9,6 +9,11 @@
 import { computed } from 'vue'
 import type { TitleColor, TitleLinePosition, TitleSize, TitleStyle, TitleTag } from '@/config'
 
+// Le composant rend une racine fragment (titre + divider optionnel) :
+// sans inheritAttrs: false, les classes passées par le parent (ex. mt-8)
+// sont ignorées avec un warning Vue "Extraneous non-props attributes".
+defineOptions({ inheritAttrs: false })
+
 const props = withDefaults(defineProps<{
   text?: string
   style?: TitleStyle
@@ -43,6 +48,7 @@ const resolvedLineColor = computed<TitleColor>(() => props.style?.line?.color ??
     :is="resolvedTag"
     :class="[
       'd-title d-flex align-center',
+      $attrs.class,
       resolvedCenter ? 'justify-center' : undefined,
       resolvedBold ? 'font-weight-bold' : undefined,
       `text-${resolvedSize}`

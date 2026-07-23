@@ -14,6 +14,10 @@ declare global {
     iFrameResizer: {
       heightCalculationMethod: string
     }
+    /** Options lues par le shim v-iframe-compat injecté par DataFair (df:sync-state). */
+    vIframeOptions?: { reactiveParams: unknown }
+    /** Fonction injectée par le service de capture DataFair. */
+    triggerCapture?: (animationSupported?: boolean) => void
   }
 }
 

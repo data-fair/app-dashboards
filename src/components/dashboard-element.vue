@@ -34,7 +34,7 @@ const { fields, dataset } = useConfig()
 
 const fallbackDataset = computed<DashboardDataset | undefined>(() => dataset.value as DashboardDataset | undefined)
 
-const { dFrameSrc, sourcesList } = useElementUrls({
+const { dFrameSrc, sourcesList, captureHref } = useElementUrls({
   element: computed(() => props.element),
   datasetFiltersValues: computed(() => props.filtersValues),
   applicationFiltersValues: computed(() => props.applicationFiltersValues),
@@ -225,6 +225,7 @@ const hasFilterIssue = computed(() => requiredFilter.value.length > 0)
     <element-actions
       :element="element"
       :sources="sourcesList"
+      :capture-href="captureHref"
     />
   </div>
 </template>

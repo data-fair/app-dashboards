@@ -145,26 +145,32 @@ export const sourcesUrl = (element: DashboardElement, application: ApplicationLi
   return url ? `${url}/configuration` : undefined
 }
 
+/**
+ * URL de capture (screenshot) d'un élément application.
+ *
+ * L'endpoint de capture est servi par l'API (`GET {app.href}/capture`) :
+ * les paramètres préfixés `app_` sont dé-préfixés et propagés à l'URL cible
+ * de l'application, ce qui permet de capturer la visu dans l'état filtré
+ * courant du dashboard. `width`/`height` ne sont transmis que si la baseApp
+ * les déclare (metas df:capture-width / df:capture-height), sinon le
+ * serveur applique ses dimensions par défaut.
+ */
 export const captureUrl = (
   element: DashboardElement,
-  application: ApplicationLike,
   filtersValues: FilterValues | null
 ): string | undefined => {
   if (element.type !== 'application') return undefined
   const app = element.application
-  if (!app) return undefined
+  if (!app?.href) return undefined
   const meta = (app.baseApp?.meta || {}) as Record<string, any>
-  const params: Record<string, string> = {
-    width: String(meta['df:capture-width'] || 1280),
-    height: String(meta['df:capture-height'] || 720),
-    app_embed: 'true'
-  }
+  const params: Record<string, string> = { app_embed: 'true' }
+  if (meta['df:capture-width']) params.width = String(meta['df:capture-width'])
+  if (meta['df:capture-height']) params.height = String(meta['df:capture-height'])
   for (const [key, value] of Object.entries(filtersValues || {})) {
     if (key === 'keys') continue
     params[`app_${key}`] = String(value)
   }
-  const url = applicationUrl(element, application)
-  return url ? `${url}/capture?${new URLSearchParams(params).toString()}` : undefined
+  return `${app.href}/capture?${new URLSearchParams(params).toString()}`
 }
 
 export const embedCode = (

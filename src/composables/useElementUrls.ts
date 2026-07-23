@@ -45,7 +45,7 @@ export interface ElementUrlsApi {
 
 export const useElementUrls = (opts: UseElementUrlsOptions): ElementUrlsApi => {
   const { element, datasetFiltersValues, applicationFiltersValues, fallbackDataset, prefix = '' } = opts
-  const { application, accessKey } = useConfig()
+  const { application, accessKey, config } = useConfig()
   const primary = computed(() => reactiveSearchParams.primary)
   const secondary = computed(() => reactiveSearchParams.secondary)
   const print = computed(() => reactiveSearchParams.print)
@@ -75,7 +75,7 @@ export const useElementUrls = (opts: UseElementUrlsOptions): ElementUrlsApi => {
   const { data: appData } = useFetch(() => descriptionFetchUrl.value, { immediate: true })
   const descriptionHtml = computed(() => (appData.value as { description?: string } | null)?.description || null)
 
-  const sourcesFetchUrl = computed(() => sourcesUrl(element.value, application, undefined))
+  const sourcesFetchUrl = computed(() => sourcesUrl(element.value, application, config.value?.showSources))
   const { data: sourcesData } = useFetch(() => sourcesFetchUrl.value, { immediate: true })
   const sourcesList = computed(() => {
     if (element.value.type === 'tablePreview') {
@@ -87,7 +87,7 @@ export const useElementUrls = (opts: UseElementUrlsOptions): ElementUrlsApi => {
   // The capture URL is a server-side screenshot of an application. The
   // application reads its filter params from the URL on capture, so we
   // use the application-shaped values (no dataset-scoped dynamic filters).
-  const captureHref = computed(() => captureUrl(element.value, application, applicationFiltersValues.value))
+  const captureHref = computed(() => captureUrl(element.value, applicationFiltersValues.value))
 
   return { dFrameSrc, applicationHref, descriptionHtml, sourcesList, captureHref }
 }

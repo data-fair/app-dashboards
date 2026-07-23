@@ -1,4 +1,4 @@
-import { computed, inject, ref, type App, type Ref } from 'vue'
+import { computed, inject, ref, toRaw, type App, type Ref } from 'vue'
 import type { Application, Field } from '@data-fair/lib-common-types/application/index.js'
 import createDFrameAdapter from '@data-fair/frame/lib/vue-reactive/state-change-adapter.js'
 import reactiveSearchParams from '@data-fair/lib-vue/reactive-search-params-global.js'
@@ -101,7 +101,9 @@ export function createConfig () {
           if (content.configuration) {
             config.value = content.configuration
           } else if (content.chart || content.datasets || content.layers || content.metrics) {
-            config.value = content
+            // Fusion plutôt qu'écrasement : certains émetteurs n'envoient
+            // qu'un sous-arbre modifié de la configuration.
+            config.value = { ...toRaw(config.value), ...content }
           } else if (content.field && 'value' in content) {
             const newConfig = JSON.parse(JSON.stringify(config.value))
             setByPath(newConfig, content.field, content.value)

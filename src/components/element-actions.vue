@@ -14,6 +14,7 @@ import type { DashboardElement } from '@/config'
 const props = defineProps<{
   element: DashboardElement
   sources: { id: string; title: string; slug?: string; href?: string }[]
+  captureHref?: string
 }>()
 
 const { config } = useConfig()
@@ -22,7 +23,7 @@ const { copyToClipboard } = useEmbedCode(computed(() => props.element))
 const isApp = computed(() => isApplicationElement(props.element))
 const showSources = computed(() => Boolean(config.value.showSources && props.sources.length))
 const showEmbed = computed(() => Boolean(config.value.showEmbed && isApp.value))
-const showCapture = computed(() => Boolean(config.value.showCapture && isApp.value))
+const showCapture = computed(() => Boolean(config.value.showCapture && isApp.value && props.captureHref))
 </script>
 
 <template>
@@ -39,12 +40,12 @@ const showCapture = computed(() => Boolean(config.value.showCapture && isApp.val
         <v-icon :icon="mdiCodeTags" />&nbsp;Intégrer
       </v-btn>
     </template>
-    <template v-if="showCapture && element.type === 'application' && element.application">
+    <template v-if="showCapture">
       <v-spacer />
       <v-btn
         size="small"
         color="primary"
-        :href="`${element.application.href}/capture?app_embed=true`"
+        :href="captureHref"
         target="_blank"
       >
         <v-icon :icon="mdiCamera" />&nbsp;Télécharger
