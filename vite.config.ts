@@ -1,5 +1,6 @@
 import vue from '@vitejs/plugin-vue'
 import vuetify, { transformAssetUrls } from 'vite-plugin-vuetify'
+import VueI18nPlugin from '@intlify/unplugin-vue-i18n/vite'
 import { defineConfig } from 'vite'
 import { fileURLToPath, URL } from 'node:url'
 
@@ -10,6 +11,7 @@ export default defineConfig({
     vue({
       template: { transformAssetUrls, compilerOptions: { isCustomElement: (tag: string) => ['d-frame'].includes(tag) } }
     }),
+    VueI18nPlugin({ strictMessage: false }),
     // https://github.com/vuetifyjs/vuetify-loader/tree/next/packages/vite-plugin
     vuetify({
       autoImport: true,
