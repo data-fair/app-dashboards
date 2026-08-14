@@ -2,6 +2,7 @@ import { computed, inject, ref, toRaw, type App, type Ref } from 'vue'
 import type { Application, Field } from '@data-fair/lib-common-types/application/index.js'
 import createDFrameAdapter from '@data-fair/frame/lib/vue-reactive/state-change-adapter.js'
 import reactiveSearchParams from '@data-fair/lib-vue/reactive-search-params-global.js'
+import { parseAccessKey, setByPath, computeConfigError } from '@/utils/config'
 import type {
   DashboardConfig,
   DashboardDataset,
@@ -46,36 +47,14 @@ export function createConfig () {
   const sections = computed<DashboardSection[] | undefined>(() => config.value?.sections)
 
   // AccessKey pour les liens partagés
-  const last = window.APPLICATION?.exposedUrl?.split('/').pop()
-  const toks = last?.split('%3A')
-  const accessKey = ref<string | null>((toks?.length === 2) ? toks[0] : null)
+  const accessKey = ref<string | null>(parseAccessKey(window.APPLICATION?.exposedUrl))
 
   const dFrameAdapter = createDFrameAdapter(reactiveSearchParams)
 
-  const error = computed<string | null>(() => {
-    if (!config.value) return 'Il n\'y a pas de configuration définie'
-    if (!config.value.datasets?.length) return 'Veuillez choisir une source de données pour le filtre commun'
-    if (!config.value.datasets?.[0]?.schema) return 'La source de données n\'a pas de schéma'
-    return null
-  })
+  const error = computed<string | null>(() => computeConfigError(config.value))
 
   function setConfig (newConfig: DashboardConfig) {
     config.value = newConfig
-  }
-
-  function setByPath (obj: Record<string, unknown>, path: string, value: unknown) {
-    const keys = path.split('.')
-    let current: Record<string, unknown> = obj
-    for (let i = 0; i < keys.length - 1; i++) {
-      const key = keys[i]
-      if (!(key in current) || typeof current[key] !== 'object' || current[key] === null) {
-        current[key] = {}
-      } else {
-        current[key] = Array.isArray(current[key]) ? [...current[key]] : { ...current[key] }
-      }
-      current = current[key] as Record<string, unknown>
-    }
-    current[keys[keys.length - 1]] = value
   }
 
   return {

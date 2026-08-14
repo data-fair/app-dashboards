@@ -8,10 +8,10 @@ import { computed, ref, watch, type Ref } from 'vue'
 import { ofetch } from 'ofetch'
 import { useAsyncAction } from '@data-fair/lib-vue/async-action.js'
 import reactiveSearchParams from '@data-fair/lib-vue/reactive-search-params-global.js'
-import type { Field } from '@data-fair/lib-common-types/application/index.js'
-import type { DashboardConfig, DashboardFilter, DashboardStaticFilter } from '@/config'
+import type { DashboardFilter } from '@/config'
 import { useConfig } from './config'
 import { datasetFilterKey, conceptFilterKey } from '@/utils/dataset-filter'
+import { collectActiveFields, collectStaticFilterParams, fieldConcept } from '@/utils/filters'
 
 export interface UseFiltersValuesOptions {
   prefix: string
@@ -38,55 +38,6 @@ export type DatasetFiltersValues = FiltersValues
  */
 export interface ApplicationFiltersValues { [key: string]: any }
 
-const collectActiveFields = (filters: DashboardFilter[] | undefined, prefix: string, datasetId: string): string[] => {
-  if (!filters) return []
-  const result: string[] = []
-  for (const f of filters) {
-    if (reactiveSearchParams[datasetFilterKey(datasetId, f.labelField, prefix)]) {
-      result.push(f.labelField)
-    }
-  }
-  return result
-}
-
-const fieldConcept = (field: Field | undefined): string | undefined => {
-  return field?.['x-concept']?.id as string | undefined
-}
-
-const collectStaticFilterParams = (
-  config: DashboardConfig,
-  datasetId: string,
-  prefix: string,
-  fields: Record<string, Field>
-): Record<string, string> => {
-  const params: Record<string, string> = {}
-  for (const sf of (config.staticFilters || []) as DashboardStaticFilter[]) {
-    const base = `${prefix}_d_${datasetId}_${sf.field}`
-    const concept = fieldConcept(fields[sf.field])
-    if (sf.type === 'in') {
-      const v = sf.values?.join(',') || ''
-      params[`${base}_in`] = v
-      if (concept) params[conceptFilterKey(concept, 'in')] = v
-    } else if (sf.type === 'nin') {
-      const v = sf.values?.join(',') || ''
-      params[`${base}_nin`] = v
-      if (concept) params[conceptFilterKey(concept, 'nin')] = v
-    } else if (sf.type === 'interval') {
-      if (sf.minValue != null) {
-        const v = String(sf.minValue)
-        params[`${base}_gte`] = v
-        if (concept) params[conceptFilterKey(concept, 'gte')] = v
-      }
-      if (sf.maxValue != null) {
-        const v = String(sf.maxValue)
-        params[`${base}_lte`] = v
-        if (concept) params[conceptFilterKey(concept, 'lte')] = v
-      }
-    }
-  }
-  return params
-}
-
 export const useFiltersValues = (opts: UseFiltersValuesOptions) => {
   const { prefix, address } = opts
   const { config, filters, dataset, fields } = useConfig()
@@ -102,7 +53,7 @@ export const useFiltersValues = (opts: UseFiltersValuesOptions) => {
     const allFilters = (filters.value || []) as DashboardFilter[]
     const active = allFilters.filter(f => reactiveSearchParams[datasetFilterKey(datasetId, f.labelField, prefix)])
 
-    const result: FiltersValues = { keys: collectActiveFields(allFilters, prefix, datasetId) }
+    const result: FiltersValues = { keys: collectActiveFields(allFilters, prefix, datasetId, reactiveSearchParams) }
 
     if (active.length) {
       // Fields to fetch: either the filter's value-association fields or its label field

@@ -22,9 +22,11 @@ test.describe('Bugs connus (régressions)', () => {
 
     await page.goto('/app/')
 
-    // On attend que le dashboard ait fini de monter : l'iframe de la visu
-    // sankey est le marqueur le plus fiable d'un mount complet.
-    await expect(page.locator('iframe').first()).toBeVisible({ timeout: 20_000 })
+    // On attend que le dashboard ait fini de monter : le <d-frame> de la visu
+    // sankey est le marqueur le plus fiable d'un mount complet. ⚠️ Le iframe
+    // vit dans le shadow DOM du custom element (d-frame v0.18) : le sélecteur
+    // doit cibler `<d-frame>`, pas `iframe`.
+    await expect(page.locator('d-frame').first()).toBeVisible({ timeout: 20_000 })
 
     // 2 filtres dans .dev-config.json → 2 v-autocomplete attendus.
     // Si le filtre est vide (`filtersState[labelField]` undefined) le
@@ -56,7 +58,10 @@ test.describe('Bugs connus (régressions)', () => {
     ).toBeUndefined()
   })
 
-  test('K2 — distinction embed dataset vs application pour la transmission des filtres', async ({ page }) => {
+  test('K2 — transmission des filtres aux embeds : dataset vs application, clés concept et dé-préfixage', async ({ page }) => {
+    // La config de dev référence un élément `application` (Sankey) puis
+    // un élément `tablePreview` (vue table embarquée du dataset racine).
+    // L'ordre des éléments dans le DOM suit l'ordre de la config.
     const consoleEvents: { type: string; text: string }[] = []
     page.on('console', (msg) => {
       consoleEvents.push({ type: msg.type(), text: msg.text() })
@@ -64,9 +69,6 @@ test.describe('Bugs connus (régressions)', () => {
 
     await page.goto('/app/')
 
-    // La config de dev référence un élément `application` (Sankey) puis
-    // un élément `tablePreview` (vue table embarquée du dataset racine).
-    // L'ordre des éléments dans le DOM suit l'ordre de la config.
     const allFrames = page.locator('d-frame')
     await expect(allFrames).toHaveCount(2, { timeout: 20_000 })
 
@@ -105,7 +107,33 @@ test.describe('Bugs connus (régressions)', () => {
       `L'URL de la vue table doit contenir finalizedAt. src=${tableSrc}`
     ).toMatch(/[?&]finalizedAt=/)
 
-    // 4) Sélection d'une valeur dans le 1er filtre (`int`) : on vérifie
+    // 4) Les static filters (sur `dep`, concept `codeDepartement`) sont
+    //    propagés :
+    //    - en clé dataset-scopée `<prefix>_d_<rootDatasetId>_dep_in=` pour
+    //      l'application (elle connaît le dataset racine) ;
+    //    - en clé concept `_c_codeDepartement_in=75,92` (sans préfixe) pour
+    //      les deux embeds, afin qu'une visu enfant sur un AUTRE dataset
+    //      puisse récupérer le filtre via `useConceptFilters`.
+    const rootDatasetId = 'accidents-velos'
+    const conceptFilterRegex = /[?&]_c_codeDepartement_in=75%2C92/
+    expect(
+      appSrc,
+      'L\'URL de l\'application doit contenir la clé concept _c_codeDepartement_in=75,92. ' +
+      `src=${appSrc}`
+    ).toMatch(conceptFilterRegex)
+    expect(
+      tableSrc,
+      'L\'URL de la table doit contenir la clé concept _c_codeDepartement_in=75,92. ' +
+      `src=${tableSrc}`
+    ).toMatch(conceptFilterRegex)
+    const prefixedDepRegex = new RegExp(`(?:^|[?&])\\d*_d_${rootDatasetId}_dep_in=`)
+    expect(
+      appSrc,
+      'L\'URL de l\'application doit toujours contenir la clé dataset-scopée ' +
+      `<prefix>_d_${rootDatasetId}_dep_in=. src=${appSrc}`
+    ).toMatch(prefixedDepRegex)
+
+    // 5) Sélection d'une valeur dans le 1er filtre (`int`) : on vérifie
     //    la transmission des filtres résolus à l'app et à la table.
     const firstAutocomplete = page.locator('.v-autocomplete').nth(0)
     await firstAutocomplete.click()
@@ -118,14 +146,13 @@ test.describe('Bugs connus (régressions)', () => {
     // générique `\w+_in` matcherait immédiatement le static filter
     // `_d_<datasetId>_dep_in` déjà présent et le poll passerait avant la
     // mise à jour des src (race condition).
-    const rootDatasetIdForPoll = 'accidents-velos'
     await expect.poll(
       async () => await appFrame.getAttribute('src'),
       {
         timeout: 10_000,
         message: 'L\'iframe de l\'application doit recevoir le filtre préfixé par le dataset racine'
       }
-    ).toMatch(new RegExp(`(?:^|[?&])\\d*_d_${rootDatasetIdForPoll}_int_in=`))
+    ).toMatch(new RegExp(`(?:^|[?&])\\d*_d_${rootDatasetId}_int_in=`))
 
     // Idem pour la vue table : on attend que le filtre dé-préfixé `int_in=`
     // soit bien propagé avant de lire les src pour les assertions suivantes.
@@ -142,7 +169,7 @@ test.describe('Bugs connus (régressions)', () => {
     expect(appSrcAfter, "Le src de l'application doit être défini après le filtre").toBeTruthy()
     expect(tableSrcAfter, 'Le src de la table doit être défini après le filtre').toBeTruthy()
 
-    // 5) Transmission des filtres après sélection
+    // 6) Transmission des filtres après sélection
     //    - L'application DOIT recevoir les filtres dynamiques résolus
     //      (codes, résolus via /values/) préfixés par le dataset racine
     //      du dashboard (cf. useFiltersValues.applicationValues et
@@ -152,7 +179,6 @@ test.describe('Bugs connus (régressions)', () => {
     //      dé-préfixe les filtres dynamiques (`<prefix>_d_<datasetId>_`)
     //      avant de les forwarder, l'embed REST API attendant des noms
     //      de champs non-préfixés.
-    const rootDatasetId = 'accidents-velos'
     const prefixedFilterRegex = new RegExp(`(?:^|[?&])\\d*_d_${rootDatasetId}_\\w+_in=`)
     expect(
       appSrcAfter,
@@ -177,80 +203,24 @@ test.describe('Bugs connus (régressions)', () => {
       `src=${tableSrcAfter}`
     ).toMatch(new RegExp(`/embed/dataset/[^/]*${rootDatasetId}/`))
 
-    // 6) Les deux iframes doivent avoir le flag d-frame=true
+    // 7) Les clés concept restent présentes après la sélection (les
+    //    static filters ne sont pas perdus lors de la mise à jour).
+    expect(
+      appSrcAfter,
+      'Les clés concept _c_ doivent subsister après la sélection. ' +
+      `src=${appSrcAfter}`
+    ).toMatch(conceptFilterRegex)
+    expect(
+      tableSrcAfter,
+      'Les clés concept _c_ doivent subsister après la sélection. ' +
+      `src=${tableSrcAfter}`
+    ).toMatch(conceptFilterRegex)
+
+    // 8) Les deux iframes doivent avoir le flag d-frame=true
     expect(appSrcAfter, "d-frame=true doit être présent dans l'URL de l'application").toMatch(/[?&]d-frame=true/)
     expect(tableSrcAfter, "d-frame=true doit être présent dans l'URL de la vue table").toMatch(/[?&]d-frame=true/)
 
-    // 7) Pas d'erreur d'init
-    const initError = consoleEvents.find(
-      (e) => e.text.includes('Failed to initialize app')
-    )
-    expect(
-      initError,
-      `Erreur d'init inattendue : ${initError?.text ?? '(aucune)'}`
-    ).toBeUndefined()
-  })
-
-  test('K3 — propagation des filtres via concepts pour les visus sur dataset tiers', async ({ page }) => {
-    // La config de dev déclare un static filter sur `dep` (concept
-    // `codeDepartement`). Les deux iframes (application Sankey + table
-    // embarquée) doivent recevoir la clé cross-dataset `_c_codeDepartement_in`
-    // dans leur URL, en plus de la clé dataset-scopée
-    // `d_<rootDatasetId>_dep_in=75,92`. Une visu enfant sur un autre
-    // dataset lisant `useConceptFilters` peut ainsi récupérer le filtre
-    // via la clé `_c_*` même si son `datasetId` ne correspond pas à celui
-    // du dataset racine du dashboard.
-    const consoleEvents: { type: string; text: string }[] = []
-    page.on('console', (msg) => {
-      consoleEvents.push({ type: msg.type(), text: msg.text() })
-    })
-
-    await page.goto('/app/')
-
-    const allFrames = page.locator('d-frame')
-    await expect(allFrames).toHaveCount(2, { timeout: 20_000 })
-
-    const appFrame = allFrames.nth(0)
-    const tableFrame = allFrames.nth(1)
-    await expect(appFrame).toBeVisible({ timeout: 20_000 })
-    await expect(tableFrame).toBeVisible({ timeout: 20_000 })
-
-    const appSrc = await appFrame.getAttribute('src')
-    const tableSrc = await tableFrame.getAttribute('src')
-    expect(appSrc, "Le src de l'application doit être défini").toBeTruthy()
-    expect(tableSrc, 'Le src de la table doit être défini').toBeTruthy()
-
-    // 1) Clé concept-aliased présente dans l'URL de l'application.
-    //    Format : _c_<conceptId>_<op>=<valeur>. Pas de préfixe
-    //    (compare-view) — chaque iframe est attachée à une seule colonne
-    //    et reçoit la valeur de cette colonne.
-    const conceptFilterRegex = /[?&]_c_codeDepartement_in=75%2C92/
-    expect(
-      appSrc,
-      'L\'URL de l\'application doit contenir la clé concept _c_codeDepartement_in=75,92. ' +
-      `src=${appSrc}`
-    ).toMatch(conceptFilterRegex)
-
-    // 2) Clé concept-aliased présente dans l'URL de la table embarquée.
-    expect(
-      tableSrc,
-      'L\'URL de la table doit contenir la clé concept _c_codeDepartement_in=75,92. ' +
-      `src=${tableSrc}`
-    ).toMatch(conceptFilterRegex)
-
-    // 3) Non-régression : la clé dataset-scopée reste présente pour
-    //    l'application (utilisée par les apps qui partagent le dataset
-    //    racine) et strippée pour la table (l'embed REST API utilise le
-    //    nom de champ direct).
-    const rootDatasetId = 'accidents-velos'
-    const prefixedDepRegex = new RegExp(`(?:^|[?&])\\d*_d_${rootDatasetId}_dep_in=`)
-    expect(
-      appSrc,
-      'L\'URL de l\'application doit toujours contenir la clé dataset-scopée ' +
-      `<prefix>_d_${rootDatasetId}_dep_in=. src=${appSrc}`
-    ).toMatch(prefixedDepRegex)
-
-    // 4) Pas d'erreur d'init
+    // 9) Pas d'erreur d'init
     const initError = consoleEvents.find(
       (e) => e.text.includes('Failed to initialize app')
     )

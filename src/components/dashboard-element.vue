@@ -20,6 +20,7 @@ import {
 import ElementDFrame from './element-dframe.vue'
 import ElementActions from './element-actions.vue'
 import ElementDescription from './element-description.vue'
+import { computeMandatoryFilterIssues } from '@/utils/filters'
 
 const props = defineProps<{
   element: DashboardElement
@@ -56,9 +57,7 @@ const isVertical = computed(() => descriptionPos.value === 'top' || descriptionP
 
 const requiredFilter = computed(() => {
   if (!isTable.value && !isApp.value) return []
-  const el = props.element as { valueMandatory?: boolean; mandatoryFilters?: string[] }
-  return ((el.valueMandatory && el.mandatoryFilters) || [])
-    .filter((f: string) => !props.filtersValues?.keys?.includes(f))
+  return computeMandatoryFilterIssues(props.element as { valueMandatory?: boolean; mandatoryFilters?: string[] }, props.filtersValues?.keys, fields.value)
 })
 
 const iframeTitle = computed(() => {
@@ -70,12 +69,7 @@ const iframeTitle = computed(() => {
   return ds?.title || ''
 })
 
-const missingFilterLabels = computed(() => requiredFilter.value
-  .map((f: string) => {
-    const field = fields.value[f]
-    return field?.label || field?.title || (field as { 'x-originalName'?: string })?.['x-originalName'] || f
-  })
-  .join(', '))
+const missingFilterLabels = computed(() => requiredFilter.value.join(', '))
 
 const hasFilterIssue = computed(() => requiredFilter.value.length > 0)
 </script>
