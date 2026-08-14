@@ -10,8 +10,6 @@ export const datasetFilterKey = (datasetId: string, field: string, prefix = ''):
   return `${prefix}_d_${datasetId || ''}_${field}_in`
 }
 
-export const datasetFilterKeyRegex = /^(.*?)_d_(.+?)_(.+)_in$/
-
 /**
  * Build the concept-scoped search-param key used to broadcast a filter value
  * to a child visu, regardless of the child's dataset.

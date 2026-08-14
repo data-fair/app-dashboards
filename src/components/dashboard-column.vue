@@ -1,12 +1,13 @@
 <script setup lang="ts">
 import type { DashboardElement } from '@/config'
+import type { FiltersValues, ApplicationFiltersValues } from '@/utils/filters'
 import dashboardElement from './dashboard-element.vue'
 
 defineProps<{
   element: DashboardElement
   height?: number
-  filtersValues: Record<string, any> | null
-  applicationFiltersValues: Record<string, any> | null
+  filtersValues: FiltersValues | null
+  applicationFiltersValues: ApplicationFiltersValues | null
   prefix?: string
   instanceKey?: string
 }>()

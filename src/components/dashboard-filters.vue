@@ -8,41 +8,60 @@
  *   `useFiltersValues`.
  * - Renders the period picker and the address filter (if enabled in config).
  */
-import { computed, ref, watch } from 'vue'
+import { computed, effectScope, ref, watch } from 'vue'
+import { useI18n } from 'vue-i18n'
 import reactiveSearchParams from '@data-fair/lib-vue/reactive-search-params-global.js'
 import SearchAddress from '@data-fair/lib-vuetify/search-address.vue'
 import DateRangePicker from '@data-fair/lib-vuetify/date-range-picker.vue'
 import { useElementSize } from '@vueuse/core'
 import { useConfig } from '@/composables/config'
 import { useFiltersValues } from '@/composables/useFiltersValues'
-import { useFilterState } from '@/composables/useFilterState'
+import { useFilterState, type FilterStateApi } from '@/composables/useFilterState'
 import type { DashboardFilter } from '@/config'
 import type { Field } from '@data-fair/lib-common-types/application/index.js'
 import { datasetFilterKey } from '@/utils/dataset-filter'
+import type { FiltersValues, ApplicationFiltersValues } from '@/utils/filters'
 
 const props = defineProps<{
   prefix?: string
 }>()
 
 const emit = defineEmits<{
-  'update:modelValue': [value: Record<string, any>]
-  'update:applicationFilters': [value: Record<string, any>]
+  'update:modelValue': [value: FiltersValues]
+  'update:applicationFilters': [value: ApplicationFiltersValues]
 }>()
 
 const root = ref<HTMLElement | null>(null)
 const { width } = useElementSize(root)
 const { config, filters, dataset, fields } = useConfig()
+const { t } = useI18n()
 
 const address = ref<{ lon: number; lat: number } | undefined>(undefined)
 
-const filtersStateList = (filters.value || []).map(f => useFilterState({
-  filter: f,
-  prefix: props.prefix || '',
-  datasetId: computed(() => dataset.value?.id),
-  datasetHref: computed(() => dataset.value?.href),
-  config,
-  address
-}))
+// The per-filter states are created inside a dedicated effect scope that is
+// re-created whenever the configured filters change (draft hot reload):
+// adding/removing a filter in the config must render/remove its autocomplete.
+// The plain array is reassigned in the watch callback (flush: 'pre'), which
+// runs before the re-render triggered by the `filters` v-for source.
+let filtersScope: ReturnType<typeof effectScope> | null = null
+let filtersStateList: FilterStateApi[] = []
+
+const createFilterStates = () => {
+  filtersScope?.stop()
+  filtersScope = effectScope()
+  filtersScope.run(() => {
+    filtersStateList = (filters.value || []).map(f => useFilterState({
+      filter: f,
+      prefix: props.prefix || '',
+      datasetId: computed(() => dataset.value?.id),
+      datasetHref: computed(() => dataset.value?.href),
+      config,
+      address
+    }))
+  })
+}
+
+watch(filters, createFilterStates, { immediate: true })
 
 // Re-aggregate filter values whenever any dependency changes
 const { values: filtersValues, applicationValues, update } = useFiltersValues({
@@ -60,7 +79,22 @@ watch(applicationValues, (val) => {
 
 const updateValue = (filter: DashboardFilter, value: string | string[] | undefined) => {
   if (!filter.forceOneValue || value) {
-    update(filter.labelField)
+    update()
+  }
+}
+
+/**
+ * Debounced search handling for a filter's autocomplete. Refreshes the
+ * values-labels fetch unless the search matches the value already applied
+ * in the URL or the filter is configured to keep all values.
+ */
+const onFilterSearch = (i: number, search: string | undefined) => {
+  const filter = filters.value?.[i]
+  const state = filtersStateList[i]
+  if (!filter || !state) return
+  const key = datasetFilterKey(dataset.value?.id || '', filter.labelField, props.prefix || '')
+  if ((search == null || search.length) && search !== reactiveSearchParams[key] && !filter.showAllValues) {
+    state.searchItems(search)
   }
 }
 
@@ -102,7 +136,7 @@ const fieldLabel = (filter: DashboardFilter): string => {
         :item-value="'value'"
         variant="outlined"
         hide-details
-        no-data-text="Aucun élément trouvé"
+        :no-data-text="t('filters.noData')"
         :label="fieldLabel(filter)"
         :clearable="!filter.forceOneValue"
         :persistent-clear="!filter.forceOneValue"
@@ -110,7 +144,7 @@ const fieldLabel = (filter: DashboardFilter): string => {
         style="min-width:250px;"
         density="comfortable"
         autocomplete="off"
-        @update:search="search => (search == null || search.length) && search !== reactiveSearchParams[datasetFilterKey(dataset?.id || '', filter.labelField, props.prefix || '')] && !filter.showAllValues && filtersStateList[i].searchItems(search)"
+        @update:search="search => onFilterSearch(i, search)"
         @update:model-value="updateValue(filter, $event)"
       />
     </v-col>
@@ -122,7 +156,7 @@ const fieldLabel = (filter: DashboardFilter): string => {
         v-model="reactiveSearchParams.period"
         :min="dataset?.timePeriod?.startDate?.slice(0, 10)"
         :max="dataset?.timePeriod?.endDate?.slice(0, 10)"
-        label="Période"
+        :label="t('filters.period')"
         @update:model-value="onPeriodChange"
       />
     </v-col>
@@ -155,7 +189,7 @@ const fieldLabel = (filter: DashboardFilter): string => {
               style="height:38px"
               variant="plain"
               type="number"
-              label="Rayon (km)"
+              :label="t('filters.radius')"
               density="compact"
               @update:model-value="onRadiusChange"
             />

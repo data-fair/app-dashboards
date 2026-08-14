@@ -1,12 +1,14 @@
 import { describe, it, expect } from 'vitest'
 import {
   collectActiveFields,
+  collectFilterEmitFields,
   collectStaticFilterParams,
   fieldConcept,
   initDefaultFilterValues,
   mergeAndSortItems,
   computeMandatoryFilterIssues,
-  buildValuesLabelsUrl
+  buildValuesLabelsUrl,
+  serializeFiltersValues
 } from '@/utils/filters'
 import type { DashboardConfig } from '@/config'
 
@@ -322,5 +324,160 @@ describe('buildValuesLabelsUrl', () => {
     const url = buildValuesLabelsUrl(filter, 'ds1', 'https://x/href', cfg as DashboardConfig, '', undefined, undefined, {})!
     expect(url).toContain('_c_date_match=')
     expect(url).not.toContain('_c_geo_distance')
+  })
+})
+
+describe('collectFilterEmitFields', () => {
+  it('retourne les labelFields sans valeurs associées', () => {
+    expect(collectFilterEmitFields([{ labelField: 'a' }, { labelField: 'b' }])).toEqual(['a', 'b'])
+  })
+
+  it('déplie les valeurs associées et déduplique', () => {
+    expect(collectFilterEmitFields([
+      { labelField: 'a', values: ['x', 'y'] },
+      { labelField: 'b', values: ['y', 'z'] }
+    ])).toEqual(['x', 'y', 'z'])
+  })
+
+  it('gère un mélange labelField / valeurs associées', () => {
+    expect(collectFilterEmitFields([
+      { labelField: 'a' },
+      { labelField: 'b', values: ['x'] }
+    ])).toEqual(['a', 'x'])
+  })
+
+  it('retourne [] sans filtre', () => {
+    expect(collectFilterEmitFields([])).toEqual([])
+  })
+})
+
+describe('serializeFiltersValues', () => {
+  const fields = {
+    dep: fieldWithConcept('dep', 'codeDepartement'),
+    an: plainField('an')
+  }
+
+  it('émet les valeurs résolues en clés dataset-scopées avec mirror concept', () => {
+    const result = serializeFiltersValues({
+      emitFields: ['dep', 'an'],
+      activeFields: ['dep', 'an'],
+      resolvedValues: { dep: ['75', '92'], an: ['2020'] },
+      fields,
+      config: {} as DashboardConfig,
+      prefix: '',
+      datasetId: 'ds1',
+      finalizedAt: '2020-01-01'
+    })
+    expect(result).toEqual({
+      keys: ['dep', 'an'],
+      _d_ds1_dep_in: '"75","92"',
+      _c_codeDepartement_in: '"75","92"',
+      _d_ds1_an_in: '"2020"',
+      finalizedAt: '2020-01-01'
+    })
+  })
+
+  it('applique le préfixe de colonne sur les clés dataset-scopées', () => {
+    const result = serializeFiltersValues({
+      emitFields: ['dep'],
+      activeFields: ['dep'],
+      resolvedValues: { dep: ['75'] },
+      fields,
+      config: {} as DashboardConfig,
+      prefix: 'c',
+      datasetId: 'ds1'
+    })
+    expect(result).toEqual({
+      keys: ['dep'],
+      c_d_ds1_dep_in: '"75"',
+      _c_codeDepartement_in: '"75"',
+      finalizedAt: ''
+    })
+  })
+
+  it('ajoute période et géo quand activées', () => {
+    const result = serializeFiltersValues({
+      emitFields: [],
+      activeFields: [],
+      resolvedValues: {},
+      fields,
+      config: { periodFilter: true, addressFilter: true } as DashboardConfig,
+      prefix: '',
+      datasetId: 'ds1',
+      period: '2020-01-01,2020-12-31',
+      geoDistance: '1.5,48.8,5000'
+    })
+    expect(result).toEqual({
+      keys: [],
+      _c_date_match: '2020-01-01,2020-12-31',
+      _c_geo_distance: '1.5,48.8,5000',
+      finalizedAt: ''
+    })
+  })
+
+  it('n\'émet pas période/géo si désactivées ou vides', () => {
+    const result = serializeFiltersValues({
+      emitFields: [],
+      activeFields: [],
+      resolvedValues: {},
+      fields,
+      config: {} as DashboardConfig,
+      prefix: '',
+      datasetId: 'ds1',
+      period: '2020'
+    })
+    expect(result).toEqual({ keys: [], finalizedAt: '' })
+    expect(result._c_date_match).toBeUndefined()
+    expect(result._c_geo_distance).toBeUndefined()
+  })
+
+  it('fusionne les staticFilters et émet toujours finalizedAt (même vide)', () => {
+    const result = serializeFiltersValues({
+      emitFields: [],
+      activeFields: [],
+      resolvedValues: {},
+      fields,
+      config: { staticFilters: [{ type: 'in', field: 'dep', values: ['75'] }] } as DashboardConfig,
+      prefix: '',
+      datasetId: 'ds1'
+    })
+    expect(result).toEqual({
+      keys: [],
+      _d_ds1_dep_in: '75',
+      _c_codeDepartement_in: '75',
+      finalizedAt: ''
+    })
+  })
+
+  it('émet la valeur finalizedAt fournie', () => {
+    const result = serializeFiltersValues({
+      emitFields: [],
+      activeFields: [],
+      resolvedValues: {},
+      fields,
+      config: {} as DashboardConfig,
+      prefix: '',
+      datasetId: 'ds1',
+      finalizedAt: '2020-01-01'
+    })
+    expect(result.finalizedAt).toBe('2020-01-01')
+  })
+
+  it('ignore un emitField sans valeurs résolues', () => {
+    const result = serializeFiltersValues({
+      emitFields: ['dep', 'an'],
+      activeFields: ['dep'],
+      resolvedValues: { dep: ['75'] },
+      fields,
+      config: {} as DashboardConfig,
+      prefix: '',
+      datasetId: 'ds1'
+    })
+    expect(result).toEqual({
+      keys: ['dep'],
+      _d_ds1_dep_in: '"75"',
+      _c_codeDepartement_in: '"75"',
+      finalizedAt: ''
+    })
   })
 })

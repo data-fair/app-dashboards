@@ -38,8 +38,8 @@ export const useFilterState = (opts: UseFilterStateOptions): FilterStateApi => {
 
   const url = computed(() => buildValuesLabelsUrl(filter, datasetId.value, datasetHref.value, config.value, prefix, search.value, address?.value, reactiveSearchParams))
   // `watch: false` to avoid a duplicate watcher; we install our own below so
-  // the effect is owned by the parent scope (filtersScope in dashboard-filters.vue)
-  // and disposed on filters change.
+  // the effect is owned by the effect scope created in dashboard-filters.vue
+  // and disposed when the configured filters change.
   const { data, loading, refresh } = useFetch(() => url.value, { watch: false })
 
   const value = computed({
@@ -68,8 +68,9 @@ export const useFilterState = (opts: UseFilterStateOptions): FilterStateApi => {
     return mergeAndSortItems(data.value as ValueLabel[] | null, reactiveSearchParams[key], filter.multipleValues)
   })
 
-  // Fetch initial + refetch on URL change. Must be created inside the parent
-  // scope (filtersScope) so it is properly disposed when filters change.
+  // Fetch initial + refetch on URL change. Must be created inside the effect
+  // scope owned by dashboard-filters.vue so it is properly disposed when the
+  // configured filters change.
   watch(url, () => refresh(), { immediate: true })
 
   return {

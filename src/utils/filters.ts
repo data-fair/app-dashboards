@@ -16,8 +16,81 @@ export interface ValueLabel {
   label?: string
 }
 
+/**
+ * Filters values shaped for the native DataFair dataset embed endpoint
+ * (`/data-fair/embed/dataset/.../table|form`). Keys are dataset-scoped
+ * (`prefix_d_<datasetId>_<field>_in`) so that the embed REST API can apply
+ * them on the right dataset.
+ */
+export interface FiltersValues { [key: string]: any; keys: string[] }
+
+/**
+ * Filters values shaped for an embedded application (`/data-fair/app/...`).
+ *
+ * Applications receive the full `FiltersValues` object, with dataset-scoped
+ * keys preserved (`<prefix>_d_<datasetId>_<field>_in`, etc.) so the
+ * application can decide which ones apply to its own dataset and ignore
+ * the rest.
+ */
+export interface ApplicationFiltersValues { [key: string]: any }
+
+export type DatasetFiltersValues = FiltersValues
+
 export const fieldConcept = (field: Field | undefined): string | undefined => {
   return field?.['x-concept']?.id as string | undefined
+}
+
+export interface SerializeFiltersValuesInput {
+  /** Fields whose resolved values are broadcast (`_d_<datasetId>_<f>_in` + concept mirror). */
+  emitFields: string[]
+  /** Active filter fields, stored under `result.keys`. */
+  activeFields: string[]
+  /** Resolved values per emitted field (already fetched from `/values/`). */
+  resolvedValues: Record<string, string[]>
+  fields: Record<string, Field>
+  config: DashboardConfig
+  prefix: string
+  datasetId: string
+  finalizedAt?: string
+  period?: string
+  geoDistance?: string
+}
+
+/**
+ * Build the `FiltersValues` object broadcast to embeds: resolved dynamic
+ * filter values (dataset-scoped keys + concept mirror), period, geo
+ * distance and static filters. Pure and testable in isolation.
+ */
+export const serializeFiltersValues = (input: SerializeFiltersValuesInput): FiltersValues => {
+  const { emitFields, activeFields, resolvedValues, fields, config, prefix, datasetId, finalizedAt, period, geoDistance } = input
+  const result: FiltersValues = { keys: activeFields }
+
+  for (const f of emitFields) {
+    const values = resolvedValues[f]
+    if (values) {
+      const serialized = JSON.stringify(values).slice(1, -1)
+      result[`${prefix}_d_${datasetId}_${f}_in`] = serialized
+      // Mirror as a concept-aliased key for child visus on a different
+      // dataset. Only emit when the field carries a concept — filters
+      // without a concept are not cross-dataset translatable.
+      const concept = fieldConcept(fields[f])
+      if (concept) {
+        result[conceptFilterKey(concept, 'in')] = serialized
+      }
+    }
+  }
+
+  if (config.periodFilter && period) {
+    result._c_date_match = period
+  }
+  if (config.addressFilter && geoDistance) {
+    result._c_geo_distance = geoDistance
+  }
+  Object.assign(result, collectStaticFilterParams(config, datasetId, prefix, fields))
+  // Always emitted (even empty): embeds cache their dataset version on it.
+  result.finalizedAt = finalizedAt || ''
+
+  return result
 }
 
 /**
@@ -29,6 +102,22 @@ export const collectActiveFields = (filters: DashboardFilter[] | undefined, pref
   for (const f of filters) {
     if (params[datasetFilterKey(datasetId, f.labelField, prefix)]) {
       result.push(f.labelField)
+    }
+  }
+  return result
+}
+
+/**
+ * Fields whose values must be resolved for the given filters: either the
+ * filter's value-association fields (`values`) or its label field,
+ * deduplicated in declaration order.
+ */
+export const collectFilterEmitFields = (filters: DashboardFilter[]): string[] => {
+  const result: string[] = []
+  for (const f of filters) {
+    const fields = f.values?.length ? f.values : [f.labelField]
+    for (const field of fields) {
+      if (!result.includes(field)) result.push(field)
     }
   }
   return result

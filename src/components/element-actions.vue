@@ -5,6 +5,7 @@
  * the element type.
  */
 import { computed } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { mdiCodeTags, mdiCamera } from '@mdi/js'
 import { useConfig } from '@/composables/config'
 import { useEmbedCode } from '@/composables/useEmbedCode'
@@ -18,6 +19,7 @@ const props = defineProps<{
 }>()
 
 const { config } = useConfig()
+const { t } = useI18n()
 const { copyToClipboard } = useEmbedCode(computed(() => props.element))
 
 const isApp = computed(() => isApplicationElement(props.element))
@@ -37,7 +39,7 @@ const showCapture = computed(() => Boolean(config.value.showCapture && isApp.val
         color="primary"
         @click="copyToClipboard"
       >
-        <v-icon :icon="mdiCodeTags" />&nbsp;Intégrer
+        <v-icon :icon="mdiCodeTags" />&nbsp;{{ t('actions.embed') }}
       </v-btn>
     </template>
     <template v-if="showCapture">
@@ -48,12 +50,12 @@ const showCapture = computed(() => Boolean(config.value.showCapture && isApp.val
         :href="captureHref"
         target="_blank"
       >
-        <v-icon :icon="mdiCamera" />&nbsp;Télécharger
+        <v-icon :icon="mdiCamera" />&nbsp;{{ t('actions.download') }}
       </v-btn>
     </template>
     <v-spacer />
     <template v-if="showSources">
-      <span>Source{{ sources.length > 1 ? 's' : '' }}&nbsp;:&nbsp;</span>
+      <span>{{ t('actions.sources', sources.length) }}&nbsp;:&nbsp;</span>
       <template
         v-for="source in sources"
         :key="source.id"

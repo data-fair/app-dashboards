@@ -4,7 +4,13 @@
  * Used by the parent iframe sync (see `useParentSync`) so that DataFair knows
  * which applications and datasets the dashboard depends on.
  */
-import type { DashboardConfig, DashboardElement, DashboardSection } from '@/config'
+import type {
+  DashboardConfig,
+  DashboardElement,
+  DashboardSection,
+  ApplicationRef,
+  DatasetRef
+} from '@/config'
 
 export type FlattenedElement = DashboardElement
 
@@ -31,9 +37,6 @@ export const flattenElements = (sections: DashboardSection[] | undefined): Flatt
   }
   return result
 }
-
-export interface ApplicationRef { id: string; title: string }
-export interface DatasetRef { id: string; title: string; href: string }
 
 export const extractReferencedApplications = (elements: FlattenedElement[]): ApplicationRef[] => {
   const seen = new Set<string>()

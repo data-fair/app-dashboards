@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { datasetFilterKey, datasetFilterKeyRegex, conceptFilterKey } from '@/utils/dataset-filter'
+import { datasetFilterKey, conceptFilterKey } from '@/utils/dataset-filter'
 
 describe('datasetFilterKey', () => {
   it('build la clé dataset-scopée', () => {
@@ -12,20 +12,6 @@ describe('datasetFilterKey', () => {
 
   it('tolère un datasetId vide', () => {
     expect(datasetFilterKey('', 'an')).toBe('_d__an_in')
-  })
-})
-
-describe('datasetFilterKeyRegex', () => {
-  it('capture prefix, datasetId et champ', () => {
-    const match = 'c_d_ds1_an_in'.match(datasetFilterKeyRegex)
-    expect(match).not.toBeNull()
-    expect(match![1]).toBe('c')
-    expect(match![2]).toBe('ds1')
-    expect(match![3]).toBe('an')
-  })
-
-  it('ne matche pas une clé non dataset-scopée', () => {
-    expect('_c_date_match'.match(datasetFilterKeyRegex)).toBeNull()
   })
 })
 

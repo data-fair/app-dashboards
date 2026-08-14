@@ -154,7 +154,6 @@ export const isTablePreviewElement = (e: DashboardElement): e is TablePreviewEle
 export const isApplicationElement = (e: DashboardElement): e is ApplicationElement => e.type === 'application'
 export const isTextElement = (e: DashboardElement): e is TextElement => e.type === 'text'
 export const isFormElement = (e: DashboardElement): e is FormElement => e.type === 'form'
-export const isColumnElement = (e: DashboardElement): e is { type: 'column' } & Omit<BaseElement, 'type'> & { elements?: DashboardElement[] } => e.type === 'column'
 
 // Re-export generated types for code that wants to introspect the schema.
 // Not used as the main type source due to the generator's loose typing.

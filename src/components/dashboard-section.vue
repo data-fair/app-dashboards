@@ -9,13 +9,15 @@ import { computed } from 'vue'
 import type { DashboardSection } from '@/config'
 import { useConfig } from '@/composables/config'
 import { computeSectionBreakpoints } from '@/utils/layout'
+import { sectionTitleDefaults } from '@/utils/title-style'
+import type { FiltersValues, ApplicationFiltersValues } from '@/utils/filters'
 import dashboardColumn from './dashboard-column.vue'
 import dTitle from './d-title.vue'
 
 const props = defineProps<{
   section: DashboardSection
-  filtersValues: Record<string, any> | null
-  applicationFiltersValues: Record<string, any> | null
+  filtersValues: FiltersValues | null
+  applicationFiltersValues: ApplicationFiltersValues | null
   hideTitle?: boolean
   prefix?: string
 }>()
@@ -23,15 +25,6 @@ const props = defineProps<{
 const { config } = useConfig()
 
 const processedRows = computed(() => computeSectionBreakpoints(props.section.rows))
-
-const sectionTitleDefaults = {
-  tag: 'h3' as const,
-  size: 'h4' as const,
-  center: false,
-  bold: false,
-  linePosition: 'none' as const,
-  lineColor: 'primary' as const
-}
 </script>
 
 <template>

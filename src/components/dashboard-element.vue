@@ -6,6 +6,7 @@
  * URL and description URL.
  */
 import { computed, ref } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { useElementSize } from '@vueuse/core'
 import { useConfig } from '@/composables/config'
 import { useElementUrls } from '@/composables/useElementUrls'
@@ -21,17 +22,19 @@ import ElementDFrame from './element-dframe.vue'
 import ElementActions from './element-actions.vue'
 import ElementDescription from './element-description.vue'
 import { computeMandatoryFilterIssues } from '@/utils/filters'
+import type { FiltersValues, ApplicationFiltersValues } from '@/utils/filters'
 
 const props = defineProps<{
   element: DashboardElement
   height?: number
-  filtersValues: Record<string, any> | null
-  applicationFiltersValues: Record<string, any> | null
+  filtersValues: FiltersValues | null
+  applicationFiltersValues: ApplicationFiltersValues | null
   prefix?: string
   instanceKey?: string
 }>()
 
 const { fields, dataset } = useConfig()
+const { t } = useI18n()
 
 const fallbackDataset = computed<DashboardDataset | undefined>(() => dataset.value as DashboardDataset | undefined)
 
@@ -50,6 +53,7 @@ const isTable = computed(() => _isTablePreview(props.element))
 const isForm = computed(() => _isForm(props.element))
 const isApp = computed(() => isApplicationElement(props.element))
 const appElement = computed<ApplicationElement | null>(() => isApplicationElement(props.element) ? props.element : null)
+const elementKind = computed(() => isTable.value ? 'table' : isForm.value ? 'form' : 'app')
 
 const descriptionPos = computed<DashboardDescriptionPosition>(() => appElement.value?.description ?? 'none')
 const isHorizontal = computed(() => descriptionPos.value === 'left' || descriptionPos.value === 'right')
@@ -72,6 +76,11 @@ const iframeTitle = computed(() => {
 const missingFilterLabels = computed(() => requiredFilter.value.join(', '))
 
 const hasFilterIssue = computed(() => requiredFilter.value.length > 0)
+
+const missingFilterText = computed(() => {
+  const key = requiredFilter.value.length > 1 ? 'element.missingFilterPlural' : 'element.missingFilter'
+  return t(key, { labels: missingFilterLabels.value })
+})
 </script>
 
 <template>
@@ -86,30 +95,20 @@ const hasFilterIssue = computed(() => requiredFilter.value.length > 0)
       class="mb-3 text-medium-emphasis"
     />
     <div class="text-subtitle-1 font-weight-medium mb-1">
-      Filtre requis
+      {{ t('element.missingFilterTitle') }}
     </div>
-    <div class="text-body-2 text-medium-emphasis">
-      Veuillez sélectionner une valeur{{ requiredFilter.length > 1 ? 's' : '' }}
-      de <strong>{{ missingFilterLabels }}</strong> pour afficher cet élément.
-    </div>
+    <!-- eslint-disable vue/no-v-html -->
+    <div
+      class="text-body-2 text-medium-emphasis"
+      v-html="missingFilterText"
+    />
+    <!-- eslint-enable vue/no-v-html -->
   </div>
 
-  <template v-else-if="isTable">
+  <template v-else-if="isTable || isForm">
     <element-d-frame
       v-if="dFrameSrc"
-      :key="`table-${instanceKey}`"
-      :element="element"
-      :src="dFrameSrc"
-      :iframe-title="iframeTitle"
-      :height="height"
-      :actions-height="actionsHeight"
-    />
-  </template>
-
-  <template v-else-if="isForm">
-    <element-d-frame
-      v-if="dFrameSrc"
-      :key="`form-${instanceKey}`"
+      :key="`${elementKind}-${instanceKey}`"
       :element="element"
       :src="dFrameSrc"
       :iframe-title="iframeTitle"
@@ -131,11 +130,7 @@ const hasFilterIssue = computed(() => requiredFilter.value.length > 0)
         v-if="descriptionPos === 'left' && appElement"
         :cols="6"
       >
-        <element-description
-          :element="appElement"
-          :filters-values="applicationFiltersValues"
-          :application-filters-values="applicationFiltersValues"
-        />
+        <element-description :element="appElement" />
       </v-col>
       <v-col
         class="pa-0"
@@ -155,11 +150,7 @@ const hasFilterIssue = computed(() => requiredFilter.value.length > 0)
         v-if="descriptionPos === 'right' && appElement"
         :cols="6"
       >
-        <element-description
-          :element="appElement"
-          :filters-values="applicationFiltersValues"
-          :application-filters-values="applicationFiltersValues"
-        />
+        <element-description :element="appElement" />
       </v-col>
     </v-row>
     <div
@@ -170,8 +161,6 @@ const hasFilterIssue = computed(() => requiredFilter.value.length > 0)
       <element-description
         v-if="descriptionPos === 'top' && appElement"
         :element="appElement"
-        :filters-values="applicationFiltersValues"
-        :application-filters-values="applicationFiltersValues"
         class="mb-2"
         style="flex:0 0 auto;max-height:50%;overflow-y:auto"
       />
@@ -188,8 +177,6 @@ const hasFilterIssue = computed(() => requiredFilter.value.length > 0)
       <element-description
         v-if="descriptionPos === 'bottom' && appElement"
         :element="appElement"
-        :filters-values="applicationFiltersValues"
-        :application-filters-values="applicationFiltersValues"
         class="mt-2"
         style="flex:0 0 auto;max-height:50%;overflow-y:auto"
       />

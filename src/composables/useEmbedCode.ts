@@ -3,6 +3,7 @@
  * to the clipboard. Centralizes the notif feedback.
  */
 import type { Ref } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { useConfig } from './config'
 import { useUiNotif, getErrorMsg } from '@data-fair/lib-vue/ui-notif.js'
 import { embedCode } from '@/utils/element-url'
@@ -10,6 +11,7 @@ import type { DashboardElement } from '@/config'
 
 export const useEmbedCode = (element: Ref<DashboardElement>) => {
   const { application, accessKey } = useConfig()
+  const { t } = useI18n()
   const { sendUiNotif } = useUiNotif()
 
   const buildCode = (): string | undefined => embedCode(element.value, application.exposedUrl, accessKey.value)
@@ -19,7 +21,7 @@ export const useEmbedCode = (element: Ref<DashboardElement>) => {
     if (!code) return
     try {
       await navigator.clipboard.writeText(code)
-      sendUiNotif({ msg: "Le code d'intégration a été mis dans votre presse-papier", type: 'info' })
+      sendUiNotif({ msg: t('embed.copied'), type: 'info' })
     } catch (err) {
       sendUiNotif({ msg: getErrorMsg(err) || String(err), type: 'error' })
     }

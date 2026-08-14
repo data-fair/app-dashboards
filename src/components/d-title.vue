@@ -7,7 +7,7 @@
  * like `TitleStyle`; missing fields fall back to `defaults`.
  */
 import { computed } from 'vue'
-import type { TitleColor, TitleLinePosition, TitleSize, TitleStyle, TitleTag } from '@/config'
+import type { TitleColor, TitleSize, TitleStyle, TitleTag } from '@/config'
 
 // Le composant rend une racine fragment (titre + divider optionnel) :
 // sans inheritAttrs: false, les classes passées par le parent (ex. mt-8)
@@ -18,15 +18,7 @@ const props = withDefaults(defineProps<{
   text?: string
   style?: TitleStyle
   icon?: { svgPath: string } | null
-  defaults?: Partial<{
-    tag: TitleTag
-    size: TitleSize
-    center: boolean
-    bold: boolean
-    color: TitleColor
-    linePosition: TitleLinePosition
-    lineColor: TitleColor
-  }>
+  defaults?: Partial<TitleStyle>
 }>(), {
   text: '',
   style: () => ({}),
@@ -39,8 +31,8 @@ const resolvedSize = computed<TitleSize>(() => props.style?.size ?? props.defaul
 const resolvedCenter = computed<boolean>(() => props.style?.center ?? props.defaults.center ?? false)
 const resolvedBold = computed<boolean>(() => props.style?.bold ?? props.defaults.bold ?? false)
 const resolvedColor = computed<TitleColor | undefined>(() => props.style?.color ?? props.defaults.color)
-const resolvedLinePosition = computed(() => props.style?.line?.position ?? props.defaults.linePosition ?? 'none')
-const resolvedLineColor = computed<TitleColor>(() => props.style?.line?.color ?? props.defaults.lineColor ?? 'primary')
+const resolvedLinePosition = computed(() => props.style?.line?.position ?? props.defaults.line?.position ?? 'none')
+const resolvedLineColor = computed<TitleColor>(() => props.style?.line?.color ?? props.defaults.line?.color ?? 'primary')
 </script>
 
 <template>

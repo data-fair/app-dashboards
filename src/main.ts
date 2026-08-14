@@ -11,6 +11,8 @@ import '@data-fair/frame/lib/d-frame'
 import App from './app.vue'
 import { createConfig } from '@/composables/config'
 import reactiveSearchParams from '@data-fair/lib-vue/reactive-search-params-global.js'
+import fr from './locales/fr'
+import en from './locales/en'
 
 window.iFrameResizer = {
   heightCalculationMethod: 'taggedElement'
@@ -19,7 +21,15 @@ window.iFrameResizer = {
 // L'instance i18n DOIT être créée au niveau module, avant l'évaluation des
 // composants de @data-fair/lib-vuetify qui appellent useI18n() (ui-notif,
 // layout-empty-state, ...), sinon ils reçoivent une instance non initialisée.
-const i18n = createI18n({ legacy: false, locale: 'fr', fallbackLocale: 'en' })
+// `escapeParameterHtml` assainit les paramètres interpolés (labels de champs,
+// ...) tandis que le HTML des messages (ex. <strong>) est conservé.
+const i18n = createI18n({
+  legacy: false,
+  locale: 'fr',
+  fallbackLocale: 'en',
+  messages: { fr, en },
+  escapeParameterHtml: true
+})
 
 // Permet au shim v-iframe-compat (injecté par DataFair quand l'app est
 // embarquée via d-frame) d'appliquer les updateSrc sans recharger l'iframe.
@@ -35,7 +45,7 @@ async function init () {
     sets: { mdi }
   }
 
-  i18n.global.locale.value = session.lang.value
+  i18n.global.locale.value = session.lang.value as 'fr' | 'en'
 
   const app = createApp(App)
   app.use(i18n)
