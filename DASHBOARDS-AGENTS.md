@@ -61,7 +61,7 @@ DashboardConfig
 ├── title, description            # Métadonnées globales
 ├── allowDuplicate                # Active le mode comparaison (2 colonnes côte-à-côte)
 ├── datasets[0]                   # ⚠️ Dataset source des filtres (obligatoire)
-├── staticFilters[]               # Filtres figés (in / interval / nin)
+├── staticFilters[]               # Filtres figés (in / interval / nin / starts / exists / notExists)
 ├── filters[]                     # Filtres dynamiques (libellés déroulants)
 ├── periodFilter                  # Filtre temporel global
 ├── addressFilter                 # Filtre géographique par adresse
@@ -93,7 +93,7 @@ DashboardConfig
 ### 2.3 Filtres
 
 - **Dynamiques** (`filters[]`) : listes déroulantes sur des champs du dataset racine, avec `labelField` (champ affiché) et `values` (champs pour les valeurs). `startValue` pour pré-remplir, `multipleValues` pour multi-sélection.
-- **Statiques** (`staticFilters[]`) : `type: 'in'` (restreindre à valeurs), `'interval'` (min/max), `'nin'` (exclure valeurs). Ne s'affichent pas à l'utilisateur.
+- **Statiques** (`staticFilters[]`) : `type: 'in'` (restreindre à valeurs), `'interval'` (min/max), `'nin'` (exclure valeurs), `'starts'` (commence par), `'exists'` / `'notExists'` (vides ou non définis). Ne s'affichent pas à l'utilisateur.
 - **Globaux** : `periodFilter: true` (sélecteur de période sur `timePeriod`), `addressFilter: true` (saisie d'adresse).
 
 #### 2.3.1 Transmission des filtres aux éléments : deux canaux distincts
@@ -103,7 +103,7 @@ Le dashboard propage les filtres aux éléments embarqués via **deux canaux dis
 **Canal « embed dataset »** (éléments `tablePreview` et `form`)
 - URL cible : `/data-fair/embed/dataset/<id>/table` ou `/data-fair/embed/dataset/<id>/form`.
 - Les filtres dynamiques (`filters[]`) sont sérialisés dans l'URL avec un préfixe **dataset-scopé** : `<prefix>_d_<rootDatasetId>_<labelField>_in=...`. Ce format est attendu par l'API REST de l'embed dataset natif, qui sait à quel dataset appliquer la requête.
-- Les static filters sont sérialisés sous la même forme : `<prefix>_d_<rootDatasetId>_<field>_in|_nin|_gte|_lte=...`.
+- Les static filters sont sérialisés sous la même forme : `<prefix>_d_<rootDatasetId>_<field>_in|_nin|_gte|_lte|_starts|_exists|_nexists=...`.
 - Les concepts universels (`_c_date_match`, `_c_geo_distance`, `finalizedAt`) sont également transmis.
 - **Pour les visus sur un dataset tiers** (≠ dataset racine du dashboard), les filtres liés à un concept (champ avec `x-concept.id` dans le schéma) sont aussi mirorés en `_c_<conceptId>_<op>=<valeur>` (sans préfixe) : l'API REST de l'embed dataset traduit cette clé en filtre sur le champ qui porte ce concept dans le dataset cible. Voir `src/composables/useFiltersValues.ts:recompute` et `src/utils/dataset-filter.ts:conceptFilterKey`.
 - **Conséquence** : la visu reflète fidèlement les filtres du dashboard, que sa source de données soit le dataset racine ou un autre dataset partageant les mêmes concepts.

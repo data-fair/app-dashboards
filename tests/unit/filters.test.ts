@@ -90,17 +90,11 @@ describe('collectStaticFilterParams', () => {
     expect(collectStaticFilterParams(config as DashboardConfig, 'ds1', '', fields)).toEqual({})
   })
 
-  it('sérialise les valeurs vides en chaîne vide (mirror concept aussi émis)', () => {
+  it('omet un filtre sans valeurs (sémantique filters2params)', () => {
     const config = { staticFilters: [{ type: 'in', field: 'dep' }] }
-    expect(collectStaticFilterParams(config as DashboardConfig, 'ds1', '', fields)).toEqual({
-      _d_ds1_dep_in: '',
-      _c_codeDepartement_in: ''
-    })
+    expect(collectStaticFilterParams(config as DashboardConfig, 'ds1', '', fields)).toEqual({})
     const configNin = { staticFilters: [{ type: 'nin', field: 'dep' }] }
-    expect(collectStaticFilterParams(configNin as DashboardConfig, 'ds1', '', fields)).toEqual({
-      _d_ds1_dep_nin: '',
-      _c_codeDepartement_nin: ''
-    })
+    expect(collectStaticFilterParams(configNin as DashboardConfig, 'ds1', '', fields)).toEqual({})
   })
 
   it('gère un interval borné par le haut uniquement, et un interval vide', () => {
@@ -110,6 +104,29 @@ describe('collectStaticFilterParams', () => {
       _c_codeDepartement_lte: '20'
     })
     expect(collectStaticFilterParams({ staticFilters: [{ type: 'interval', field: 'dep' }] } as DashboardConfig, 'ds1', '', fields)).toEqual({})
+  })
+
+  it('gère starts avec mirror concept, et sans valeur', () => {
+    const config = { staticFilters: [{ type: 'starts', field: 'dep', value: '75' }] }
+    expect(collectStaticFilterParams(config as DashboardConfig, 'ds1', '', fields)).toEqual({
+      _d_ds1_dep_starts: '75',
+      _c_codeDepartement_starts: '75'
+    })
+    expect(collectStaticFilterParams({ staticFilters: [{ type: 'starts', field: 'dep' }] } as DashboardConfig, 'ds1', '', fields)).toEqual({})
+  })
+
+  it('gère exists et notExists avec la valeur conventionnelle espace', () => {
+    const config = {
+      staticFilters: [
+        { type: 'exists', field: 'dep' },
+        { type: 'notExists', field: 'an' }
+      ]
+    }
+    expect(collectStaticFilterParams(config as DashboardConfig, 'ds1', '', fields)).toEqual({
+      _d_ds1_dep_exists: ' ',
+      _c_codeDepartement_exists: ' ',
+      _d_ds1_an_nexists: ' '
+    })
   })
 })
 
@@ -285,7 +302,21 @@ describe('buildValuesLabelsUrl', () => {
     expect(url).toContain('an_lte=2020')
   })
 
-  it('sérialise les staticFilters sans valeurs et les intervalles partiels', () => {
+  it('applique les staticFilters starts/exists/notExists', () => {
+    const cfg = {
+      staticFilters: [
+        { type: 'starts', field: 'dep', value: '75' },
+        { type: 'exists', field: 'reg' },
+        { type: 'notExists', field: 'an' }
+      ]
+    }
+    const url = buildValuesLabelsUrl(filter, 'ds1', 'https://x/href', cfg as DashboardConfig, '', undefined, undefined, {})!
+    expect(url).toContain('dep_starts=75')
+    expect(url).toContain('reg_exists=+')
+    expect(url).toContain('an_nexists=+')
+  })
+
+  it('omet les staticFilters sans valeurs et garde les intervalles partiels', () => {
     const cfg = {
       staticFilters: [
         { type: 'in', field: 'dep' },
@@ -295,8 +326,8 @@ describe('buildValuesLabelsUrl', () => {
       ]
     }
     const url = buildValuesLabelsUrl(filter, 'ds1', 'https://x/href', cfg as DashboardConfig, '', undefined, undefined, {})!
-    expect(url).toContain('dep_in=')
-    expect(url).toContain('reg_nin=')
+    expect(url).not.toContain('dep_')
+    expect(url).not.toContain('reg_')
     expect(url).toContain('an_gte=2010')
     expect(url).toContain('jour_lte=2020')
   })

@@ -991,6 +991,49 @@
                 }
               }
             }
+          },
+          {
+            "title": "Commence par",
+            "required": ["field", "value"],
+            "additionalProperties": false,
+            "properties": {
+              "type": {
+                "const": "starts"
+              },
+              "field": {
+                "$ref": "#/definitions/filterField"
+              },
+              "value": {
+                "type": "string",
+                "title": "Valeur"
+              }
+            }
+          },
+          {
+            "title": "Exclure les valeurs vides ou non définies",
+            "required": ["field"],
+            "additionalProperties": false,
+            "properties": {
+              "type": {
+                "const": "exists"
+              },
+              "field": {
+                "$ref": "#/definitions/filterField"
+              }
+            }
+          },
+          {
+            "title": "Restreindre aux valeurs vides ou non définies",
+            "required": ["field"],
+            "additionalProperties": false,
+            "properties": {
+              "type": {
+                "const": "notExists"
+              },
+              "field": {
+                "$ref": "#/definitions/filterField"
+              }
+            }
           }
         ]
       }

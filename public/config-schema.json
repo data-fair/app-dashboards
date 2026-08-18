@@ -181,6 +181,80 @@
                     }
                   }
                 }
+              },
+              {
+                "title": "Commence par",
+                "required": [
+                  "field",
+                  "value"
+                ],
+                "additionalProperties": false,
+                "properties": {
+                  "type": {
+                    "const": "starts"
+                  },
+                  "field": {
+                    "type": "string",
+                    "title": "Colonne de filtre",
+                    "layout": {
+                      "getItems": {
+                        "url": "${rootData.datasets[0].href}/schema?calculated=false",
+                        "itemKey": "data.key",
+                        "itemTitle": "data.label"
+                      }
+                    }
+                  },
+                  "value": {
+                    "type": "string",
+                    "title": "Valeur"
+                  }
+                }
+              },
+              {
+                "title": "Exclure les valeurs vides ou non définies",
+                "required": [
+                  "field"
+                ],
+                "additionalProperties": false,
+                "properties": {
+                  "type": {
+                    "const": "exists"
+                  },
+                  "field": {
+                    "type": "string",
+                    "title": "Colonne de filtre",
+                    "layout": {
+                      "getItems": {
+                        "url": "${rootData.datasets[0].href}/schema?calculated=false",
+                        "itemKey": "data.key",
+                        "itemTitle": "data.label"
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "title": "Restreindre aux valeurs vides ou non définies",
+                "required": [
+                  "field"
+                ],
+                "additionalProperties": false,
+                "properties": {
+                  "type": {
+                    "const": "notExists"
+                  },
+                  "field": {
+                    "type": "string",
+                    "title": "Colonne de filtre",
+                    "layout": {
+                      "getItems": {
+                        "url": "${rootData.datasets[0].href}/schema?calculated=false",
+                        "itemKey": "data.key",
+                        "itemTitle": "data.label"
+                      }
+                    }
+                  }
+                }
               }
             ]
           }
@@ -2912,6 +2986,80 @@
                   "getItems": {
                     "url": "${rootData.datasets[0].href}/values-labels/${parent.data.field}?q={q}&q_mode=complete&size=1000&stringify=true",
                     "itemKey": "data.value",
+                    "itemTitle": "data.label"
+                  }
+                }
+              }
+            }
+          },
+          {
+            "title": "Commence par",
+            "required": [
+              "field",
+              "value"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "type": {
+                "const": "starts"
+              },
+              "field": {
+                "type": "string",
+                "title": "Colonne de filtre",
+                "layout": {
+                  "getItems": {
+                    "url": "${rootData.datasets[0].href}/schema?calculated=false",
+                    "itemKey": "data.key",
+                    "itemTitle": "data.label"
+                  }
+                }
+              },
+              "value": {
+                "type": "string",
+                "title": "Valeur"
+              }
+            }
+          },
+          {
+            "title": "Exclure les valeurs vides ou non définies",
+            "required": [
+              "field"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "type": {
+                "const": "exists"
+              },
+              "field": {
+                "type": "string",
+                "title": "Colonne de filtre",
+                "layout": {
+                  "getItems": {
+                    "url": "${rootData.datasets[0].href}/schema?calculated=false",
+                    "itemKey": "data.key",
+                    "itemTitle": "data.label"
+                  }
+                }
+              }
+            }
+          },
+          {
+            "title": "Restreindre aux valeurs vides ou non définies",
+            "required": [
+              "field"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "type": {
+                "const": "notExists"
+              },
+              "field": {
+                "type": "string",
+                "title": "Colonne de filtre",
+                "layout": {
+                  "getItems": {
+                    "url": "${rootData.datasets[0].href}/schema?calculated=false",
+                    "itemKey": "data.key",
                     "itemTitle": "data.label"
                   }
                 }

@@ -6,8 +6,10 @@
  * `useFiltersValues` to be testable in isolation.
  */
 import type { Field } from '@data-fair/lib-common-types/application/index.js'
-import type { DashboardConfig, DashboardFilter, DashboardStaticFilter } from '@/config'
+import { filters2params } from '@data-fair/lib-utils/filters/index.js'
+import type { DashboardConfig, DashboardFilter } from '@/config'
 import { datasetFilterKey, conceptFilterKey } from './dataset-filter'
+import { normalizeStaticFilters } from './staticFilters'
 
 export interface ReactiveParams { [key: string]: any }
 
@@ -128,6 +130,29 @@ export const collectFilterEmitFields = (filters: DashboardFilter[]): string[] =>
  * concept-aliased keys (`_c_<conceptId>_<op>`) when the field carries a
  * concept, so child visus on a different dataset can read them.
  */
+/**
+ * REST op suffixes produced by `filters2params`, ordered longest-first so the
+ * split is unambiguous (`field_nexists` ends with `_exists` too, `field_nin`
+ * with `_in`, etc.).
+ */
+const STATIC_FILTER_OPS = ['_nexists', '_starts', '_exists', '_nin', '_lte', '_gte', '_in'] as const
+
+const splitFilterParam = (key: string): [field: string, op: string] | null => {
+  for (const op of STATIC_FILTER_OPS) {
+    if (key.endsWith(op)) return [key.slice(0, -op.length), op.slice(1)]
+  }
+  return null
+}
+
+/**
+ * Build the dataset-scoped params for the static filters, mirroring them as
+ * concept-aliased keys (`_c_<conceptId>_<op>`) when the field carries a
+ * concept, so child visus on a different dataset can read them.
+ *
+ * The field-level REST keys are produced by `filters2params` from
+ * `@data-fair/lib-utils` (canonical type conversion); this function only adds
+ * the dataset scope and the concept mirror.
+ */
 export const collectStaticFilterParams = (
   config: DashboardConfig,
   datasetId: string,
@@ -135,29 +160,14 @@ export const collectStaticFilterParams = (
   fields: Record<string, Field>
 ): Record<string, string> => {
   const params: Record<string, string> = {}
-  for (const sf of (config.staticFilters || []) as DashboardStaticFilter[]) {
-    const base = `${prefix}_d_${datasetId}_${sf.field}`
-    const concept = fieldConcept(fields[sf.field])
-    if (sf.type === 'in') {
-      const v = sf.values?.join(',') || ''
-      params[`${base}_in`] = v
-      if (concept) params[conceptFilterKey(concept, 'in')] = v
-    } else if (sf.type === 'nin') {
-      const v = sf.values?.join(',') || ''
-      params[`${base}_nin`] = v
-      if (concept) params[conceptFilterKey(concept, 'nin')] = v
-    } else if (sf.type === 'interval') {
-      if (sf.minValue != null) {
-        const v = String(sf.minValue)
-        params[`${base}_gte`] = v
-        if (concept) params[conceptFilterKey(concept, 'gte')] = v
-      }
-      if (sf.maxValue != null) {
-        const v = String(sf.maxValue)
-        params[`${base}_lte`] = v
-        if (concept) params[conceptFilterKey(concept, 'lte')] = v
-      }
-    }
+  const staticParams = filters2params(normalizeStaticFilters(config.staticFilters))
+  for (const [key, value] of Object.entries(staticParams)) {
+    const split = splitFilterParam(key)
+    if (!split) continue
+    const [field, op] = split
+    params[`${prefix}_d_${datasetId}_${key}`] = value
+    const concept = fieldConcept(fields[field])
+    if (concept) params[conceptFilterKey(concept, op as 'in' | 'nin' | 'gte' | 'lte' | 'starts' | 'exists' | 'nexists')] = value
   }
   return params
 }
@@ -188,14 +198,7 @@ export const buildValuesLabelsUrl = (
   for (const f of otherFilters) {
     query[`${f.labelField}_in`] = String(params[`${prefix}_d_${datasetId}_${f.labelField}_in`])
   }
-  for (const sf of (config.staticFilters || [])) {
-    if (sf.type === 'in') query[`${sf.field}_in`] = sf.values?.join(',') || ''
-    else if (sf.type === 'nin') query[`${sf.field}_nin`] = sf.values?.join(',') || ''
-    else if (sf.type === 'interval') {
-      if (sf.minValue != null) query[`${sf.field}_gte`] = String(sf.minValue)
-      if (sf.maxValue != null) query[`${sf.field}_lte`] = String(sf.maxValue)
-    }
-  }
+  Object.assign(query, filters2params(normalizeStaticFilters(config.staticFilters)))
   if (!filter.showAllValues) {
     if (search != null) query.q = search + '*'
   } else {

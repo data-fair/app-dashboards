@@ -43,11 +43,12 @@ export interface DashboardFilter {
 }
 
 export interface DashboardStaticFilter {
-  type: 'in' | 'interval' | 'nin'
+  type: 'in' | 'interval' | 'nin' | 'starts' | 'exists' | 'notExists'
   field: string
   values?: string[]
   minValue?: string
   maxValue?: string
+  value?: string
 }
 
 export type DashboardElementType = 'tablePreview' | 'application' | 'text' | 'form' | 'column'

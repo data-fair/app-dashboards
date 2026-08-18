@@ -26,6 +26,6 @@ export const datasetFilterKey = (datasetId: string, field: string, prefix = ''):
  * separate broadcast object per column. This matches the existing convention
  * for `_c_date_match` and `_c_geo_distance`.
  */
-export const conceptFilterKey = (conceptId: string, op: 'in' | 'nin' | 'eq' | 'gte' | 'lte' = 'in'): string => {
+export const conceptFilterKey = (conceptId: string, op: 'in' | 'nin' | 'eq' | 'gte' | 'lte' | 'starts' | 'exists' | 'nexists' = 'in'): string => {
   return `_c_${conceptId}_${op}`
 }
