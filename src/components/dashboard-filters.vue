@@ -64,7 +64,7 @@ const createFilterStates = () => {
 watch(filters, createFilterStates, { immediate: true })
 
 // Re-aggregate filter values whenever any dependency changes
-const { values: filtersValues, applicationValues, update } = useFiltersValues({
+const { values: filtersValues, applicationValues } = useFiltersValues({
   prefix: props.prefix || '',
   address
 })
@@ -77,17 +77,6 @@ watch(applicationValues, (val) => {
   emit('update:applicationFilters', val)
 }, { immediate: true, deep: true })
 
-const updateValue = (filter: DashboardFilter, value: string | string[] | undefined) => {
-  if (!filter.forceOneValue || value) {
-    update()
-  }
-}
-
-/**
- * Debounced search handling for a filter's autocomplete. Refreshes the
- * values-labels fetch unless the search matches the value already applied
- * in the URL or the filter is configured to keep all values.
- */
 const onFilterSearch = (i: number, search: string | undefined) => {
   const filter = filters.value?.[i]
   const state = filtersStateList[i]
@@ -98,14 +87,13 @@ const onFilterSearch = (i: number, search: string | undefined) => {
   }
 }
 
-const onPeriodChange = () => update()
-
+// The selected address must be fed to the local `address` ref: the geo
+// distance filter is computed from it, and the v-model only writes the
+// `address` URL param. Re-aggregation is handled by the useFiltersValues
+// watcher (which now depends on `address`).
 const onAddressSelected = (ev: { lon: number; lat: number }) => {
   address.value = ev
-  update()
 }
-
-const onRadiusChange = () => update()
 
 const colWidth = computed(() => Math.min(Math.max(1, Math.ceil(12 * 250 / (width.value || 1))), 12))
 
@@ -145,7 +133,6 @@ const fieldLabel = (filter: DashboardFilter): string => {
         density="comfortable"
         autocomplete="off"
         @update:search="search => onFilterSearch(i, search)"
-        @update:model-value="updateValue(filter, $event)"
       />
     </v-col>
     <v-col
@@ -157,7 +144,6 @@ const fieldLabel = (filter: DashboardFilter): string => {
         :min="dataset?.timePeriod?.startDate?.slice(0, 10)"
         :max="dataset?.timePeriod?.endDate?.slice(0, 10)"
         :label="t('filters.period')"
-        @update:model-value="onPeriodChange"
       />
     </v-col>
     <v-col
@@ -191,7 +177,6 @@ const fieldLabel = (filter: DashboardFilter): string => {
               type="number"
               :label="t('filters.radius')"
               density="compact"
-              @update:model-value="onRadiusChange"
             />
           </v-col>
         </v-row>

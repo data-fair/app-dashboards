@@ -9,6 +9,18 @@
 // VJSF form; regenerate public/config-schema.json and the .type/ directory
 // with `npm run build-types` if the schema changes, then update the
 // interfaces below to stay in sync.
+//
+// Dataset selector prerequisites: the root `datasets` selector is intentionally
+// open — this dashboard must accept any dataset for its filters, so no
+// `bbox`/`concepts` prerequisite is declared. The selector URL relies on the
+// host-provided `${context.datasetFilter}` (VJSF layout context) to constrain
+// the proposed datasets (portal scope, additional filters); if the host does
+// not provide it, the selector lists all finalized datasets.
+//
+// Nested columns: the runtime (`dashboard-column.vue`) and `flattenElements`
+// support a `column` element, but the schema only exposes columns at row
+// level (no nested-column form variant); a nested column can only come from
+// hand-edited configuration.
 
 export interface DashboardDataset {
   id: string
@@ -154,14 +166,3 @@ export const isTablePreviewElement = (e: DashboardElement): e is TablePreviewEle
 export const isApplicationElement = (e: DashboardElement): e is ApplicationElement => e.type === 'application'
 export const isTextElement = (e: DashboardElement): e is TextElement => e.type === 'text'
 export const isFormElement = (e: DashboardElement): e is FormElement => e.type === 'form'
-
-// Re-export generated types for code that wants to introspect the schema.
-// Not used as the main type source due to the generator's loose typing.
-export type {
-  ConfigResolved,
-  Filtres,
-  Sections,
-  Autres,
-  FiltresPredefinis,
-  FiltresDynamiquesDuTableauDeBord
-} from './.type/index.js'

@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { computeSectionBreakpoints } from '@/utils/layout'
+import { computeSectionBreakpoints, dedupeKeys, elementKey } from '@/utils/layout'
 import type { DashboardElement, DashboardRow } from '@/config'
 
 const el = (type: DashboardElement['type'], width?: 1 | 2 | 3): DashboardElement =>
@@ -80,5 +80,26 @@ describe('computeSectionBreakpoints', () => {
     // md : 4 + 4 = 8 ≤ 12 → spans 6/6
     expect(rows[1].layouts[0].md).toBe(6)
     expect(rows[1].layouts[1].md).toBe(6)
+  })
+})
+
+describe('elementKey', () => {
+  it('identifie les éléments par leur dataset/application plutôt que par l\'index', () => {
+    expect(elementKey({ type: 'tablePreview', dataset: { id: 'a' } } as DashboardElement, 0)).toBe('tablePreview-a')
+    expect(elementKey({ type: 'form', dataset: { id: 'b' } } as DashboardElement, 5)).toBe('form-b')
+    expect(elementKey({ type: 'application', application: { id: 'x' } } as DashboardElement, 9)).toBe('application-x')
+  })
+
+  it('retombe sur l\'index pour les éléments racine (source root) et sans identité', () => {
+    expect(elementKey({ type: 'tablePreview' } as DashboardElement, 2)).toBe('tablePreview-root')
+    expect(elementKey({ type: 'text', content: 'c' } as DashboardElement, 3)).toBe('text-c')
+    expect(elementKey({ type: 'text' } as DashboardElement, 4)).toBe('text-4')
+    expect(elementKey({ type: 'column' } as DashboardElement, 1)).toBe('column-1')
+  })
+})
+
+describe('dedupeKeys', () => {
+  it('garde le premier exemplaire et suffixe les doublons', () => {
+    expect(dedupeKeys(['a', 'a', 'b', 'a'])).toEqual(['a', 'a#1', 'b', 'a#2'])
   })
 })

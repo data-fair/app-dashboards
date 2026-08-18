@@ -144,7 +144,7 @@
                   "if": "!summary",
                   "children": [
                     {
-                      "children": ["title", "icon", "rows"]
+                      "children": ["title", "description", "icon", "rows"]
                     }
                   ]
                 },
@@ -157,6 +157,11 @@
               "title": {
                 "type": "string",
                 "title": "Libellé"
+              },
+              "description": {
+                "type": "string",
+                "title": "Description",
+                "layout": "textarea"
               },
               "icon": {
                 "type": "object",
@@ -826,6 +831,11 @@
               "itemsResults": "data.results"
             }
           }
+        },
+        "ignoreFilters": {
+          "title": "Ignorer les filtres",
+          "type": "boolean",
+          "default": false
         }
       }
     },
@@ -936,7 +946,7 @@
                 "title": "Valeur min",
                 "layout": {
                   "getItems": {
-                    "url": "${rootData.datasets[0].href}/values-labels/$${parent.data.field}?sort=asc&{parent.data.field}_gte={q}&stringify=true",
+                    "url": "${rootData.datasets[0].href}/values-labels/${parent.data.field}?sort=asc&${parent.data.field}_gte={q}&stringify=true",
                     "itemKey": "data.value",
                     "itemTitle": "data.label"
                   }
@@ -947,7 +957,7 @@
                 "title": "Valeur max",
                 "layout": {
                   "getItems": {
-                    "url": "${rootData.datasets[0].href}/values-labels/$${parent.data.field}?sort=desc&{parent.data.field}_lte={q}&stringify=true",
+                    "url": "${rootData.datasets[0].href}/values-labels/${parent.data.field}?sort=desc&${parent.data.field}_lte={q}&stringify=true",
                     "itemKey": "data.value",
                     "itemTitle": "data.label"
                   }

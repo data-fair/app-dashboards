@@ -16,22 +16,26 @@ export type FlattenedElement = DashboardElement
 
 const asArray = <T>(v: unknown): T[] => Array.isArray(v) ? (v as T[]) : []
 
+const flattenElement = (el: DashboardElement, result: FlattenedElement[]): void => {
+  if (el.type === 'column') {
+    // Recursively flatten columns so the references of nested elements are
+    // not missed when syncing applications/datasets to the parent.
+    for (const inner of asArray<DashboardElement>((el as { elements?: unknown }).elements)) {
+      flattenElement(inner, result)
+    }
+  } else {
+    result.push(el)
+  }
+}
+
 export const flattenElements = (sections: DashboardSection[] | undefined): FlattenedElement[] => {
   if (!sections) return []
   const result: FlattenedElement[] = []
   for (const section of sections) {
     const rows = section.rows || []
     for (const row of rows) {
-      const elements = asArray<DashboardElement>(row.elements)
-      for (const el of elements) {
-        const nested = (el as { elements?: unknown }).elements
-        if (Array.isArray(nested)) {
-          for (const inner of nested as DashboardElement[]) {
-            result.push(inner)
-          }
-        } else {
-          result.push(el)
-        }
+      for (const el of asArray<DashboardElement>(row.elements)) {
+        flattenElement(el, result)
       }
     }
   }

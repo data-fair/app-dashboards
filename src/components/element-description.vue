@@ -1,22 +1,18 @@
 <script setup lang="ts">
 /**
- * Loads and renders the HTML description of an application element.
- * Description position (left/right) is controlled by the parent.
+ * Renders the HTML description of an application element.
+ *
+ * The description is fetched once by `dashboard-element.vue` (which owns the
+ * single `useElementUrls` instance) and passed down as a prop, so the fetch
+ * is not duplicated per element. Description position (left/right) is
+ * controlled by the parent.
  */
-import { computed } from 'vue'
-import { useElementUrls } from '@/composables/useElementUrls'
-import type { DashboardElement } from '@/config'
-
-const props = defineProps<{
-  element: DashboardElement
+defineProps<{
+  html: string | null
 }>()
-
-const { descriptionHtml } = useElementUrls({
-  element: computed(() => props.element)
-})
 </script>
 
 <template>
   <!-- eslint-disable-next-line vue/no-v-html -->
-  <div v-html="descriptionHtml" />
+  <div v-html="html" />
 </template>

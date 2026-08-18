@@ -19,6 +19,17 @@ const props = defineProps<{
 
 const { dFrameAdapter } = useConfig()
 
+// ⚠️ Fuite de watchers connue (côté lib @data-fair/frame) :
+// `connectedCallback` de DFrameElement crée un `watch(reactiveParams, ...)`
+// via l'adapter partagé, et `disconnectedCallback` ne le stoppe jamais. Chaque
+// destruction/re-création d'un <d-frame> (édition config draft, toggle du mode
+// compare) accumule donc un watcher permanent sur reactiveSearchParams.
+// Impact : perf mineure (updateSrc sur des éléments détachés), pas de bug de
+// correction. Le correctif est à faire en amont dans @data-fair/frame
+// (retourner le stop handle de `watch`/`afterEach`/`popstate` et l'appeler
+// dans disconnectedCallback). Côté app, les clés stables des éléments
+// (utils/layout.ts → elementKey) limitent les recréations inutiles.
+
 const allowOverflow = computed(() => {
   if (!isApplicationElement(props.element)) return false
   const meta = props.element.application?.baseApp?.meta as Record<string, unknown> | undefined

@@ -180,6 +180,13 @@ describe('initDefaultFilterValues', () => {
     initDefaultFilterValues([{ labelField: 'an', startValue: '2020' }], undefined, params)
     expect(params._d__an_in).toBe('2020')
   })
+
+  it('préfixe la clé avec le prefix de colonne compare', () => {
+    const params: Record<string, string> = {}
+    initDefaultFilterValues([{ labelField: 'an', startValue: '2020' }], 'ds1', params, 'c')
+    expect(params.c_d_ds1_an_in).toBe('2020')
+    expect(params._d_ds1_an_in).toBeUndefined()
+  })
 })
 
 describe('mergeAndSortItems', () => {

@@ -9,7 +9,7 @@
  *  - render the filters and delegate the sections layout to
  *    `sections-view.vue`.
  */
-import { computed, onMounted, reactive } from 'vue'
+import { computed, onMounted, reactive, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import reactiveSearchParams from '@data-fair/lib-vue/reactive-search-params-global.js'
 import dashboardFilters from './dashboard-filters.vue'
@@ -26,17 +26,31 @@ const { t } = useI18n()
 const filtersValues = reactive<Record<number, FiltersValues>>({ 0: { keys: [] }, 1: { keys: [] } })
 const applicationFiltersValues = reactive<Record<number, ApplicationFiltersValues>>({ 0: {}, 1: {} })
 
-// Initialize default filter values from config
-initDefaultFilterValues(config.value.filters, dataset.value?.id, reactiveSearchParams)
+// Initialize default filter values (startValue and default period) from the
+// config. Run in a watcher rather than at setup so a draft config change (hot
+// reload) applies the defaults of newly added filters/period toggles. The
+// `c` prefix initializes the compare-view column too.
+const applyDefaultFilterValues = (prefix: string) => {
+  initDefaultFilterValues(config.value.filters, dataset.value?.id, reactiveSearchParams, prefix)
 
-if (config.value.periodFilter && !reactiveSearchParams.period) {
-  const timePeriod = dataset.value?.timePeriod
-  const start = (timePeriod?.startDate || new Date().toISOString()).slice(0, 10)
-  const end = (timePeriod?.endDate || new Date().toISOString()).slice(0, 10)
-  const period = [start]
-  if (start !== end) period.push(end)
-  reactiveSearchParams.period = period.join(',')
+  if (config.value.periodFilter && !reactiveSearchParams.period) {
+    const timePeriod = dataset.value?.timePeriod
+    const start = (timePeriod?.startDate || new Date().toISOString()).slice(0, 10)
+    const end = (timePeriod?.endDate || new Date().toISOString()).slice(0, 10)
+    const period = [start]
+    if (start !== end) period.push(end)
+    reactiveSearchParams.period = period.join(',')
+  }
 }
+
+watch(
+  () => [config.value.filters, config.value.periodFilter, dataset.value?.id],
+  () => {
+    applyDefaultFilterValues('')
+    applyDefaultFilterValues('c')
+  },
+  { immediate: true }
+)
 
 // Signale au service de capture DataFair que le dashboard est rendu.
 // Le service attend ensuite le network idle (chargement des iframes) ou

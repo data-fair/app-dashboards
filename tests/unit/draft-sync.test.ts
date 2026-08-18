@@ -41,6 +41,16 @@ describe('flattenElements', () => {
     ])
     expect(elements).toEqual([inner1, inner2])
   })
+
+  it('aplatit récursivement les colonnes de colonnes', () => {
+    const leaf = el({ type: 'application' })
+    const nested = el({ type: 'column', elements: [leaf] })
+    const deep = el({ type: 'column', elements: [nested, el({ type: 'text', content: 't' })] })
+    const elements = flattenElements([
+      section([{ height: 0, elements: [deep] }])
+    ])
+    expect(elements).toEqual([leaf, el({ type: 'text', content: 't' })])
+  })
 })
 
 describe('extractReferencedApplications', () => {

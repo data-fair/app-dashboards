@@ -31,7 +31,16 @@ export const useFiltersValues = (opts: UseFiltersValuesOptions) => {
   const { config, filters, dataset, fields } = useConfig()
   const emitted = ref<FiltersValues>({ keys: [] })
 
+  // Abort the previous resolution when a new one starts: rapid filter/period/
+  // radius changes must not leave a stale response winning the race on
+  // `emitted` (last-write-wins by network arrival order).
+  let abortController: AbortController | null = null
+
   const recompute = async (): Promise<void> => {
+    abortController?.abort()
+    abortController = new AbortController()
+    const { signal } = abortController
+
     const datasetId = dataset.value?.id
     if (!datasetId) {
       emitted.value = { keys: [] }
@@ -52,7 +61,7 @@ export const useFiltersValues = (opts: UseFiltersValuesOptions) => {
       const responses = await Promise.all(emitFields.map(f => {
         const filter = active.find(fwf => fwf.labelField === f || fwf.values?.includes(f))
         if (filter?.values?.length) {
-          return ofetch(`${dataset.value!.href}/values/${f}`, { params: baseParams })
+          return ofetch(`${dataset.value!.href}/values/${f}`, { params: baseParams, signal })
         }
         const fv = reactiveSearchParams[datasetFilterKey(datasetId, f, prefix)]
         return filter?.multipleValues ? JSON.parse(`[${fv}]`) : [fv]
@@ -80,11 +89,15 @@ export const useFiltersValues = (opts: UseFiltersValuesOptions) => {
 
   const { execute, loading, error } = useAsyncAction(recompute, { catch: 'error' })
 
-  // Trigger initial computation and re-run on relevant filter inputs only.
+  // Trigger initial computation and re-run on relevant inputs only.
   // Avoid `deep: true` on reactiveSearchParams: d-frame's state-change adapter
   // (see @data-fair/frame's VueReactiveDFrameStateChangeAdapter) rewrites every
   // key on every iframe state-change message, which would otherwise trigger
   // an unbounded fetch loop as the iframe URL drifts.
+  //
+  // The config-dependent inputs (staticFilters, periodFilter, addressFilter,
+  // finalizedAt) are explicit watch sources so a draft config change (hot
+  // reload) re-broadcasts the values to the embeds.
   watch(
     [
       () => {
@@ -95,7 +108,12 @@ export const useFiltersValues = (opts: UseFiltersValuesOptions) => {
           .join('\u0001')
       },
       () => reactiveSearchParams.period,
-      () => reactiveSearchParams.radius
+      () => reactiveSearchParams.radius,
+      () => address.value,
+      () => config.value.periodFilter,
+      () => config.value.addressFilter,
+      () => config.value.staticFilters,
+      () => dataset.value?.finalizedAt
     ],
     () => execute(),
     { immediate: true }

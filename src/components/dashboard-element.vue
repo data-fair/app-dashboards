@@ -38,7 +38,7 @@ const { t } = useI18n()
 
 const fallbackDataset = computed<DashboardDataset | undefined>(() => dataset.value as DashboardDataset | undefined)
 
-const { dFrameSrc, sourcesList, captureHref } = useElementUrls({
+const { dFrameSrc, descriptionHtml, sourcesList, captureHref } = useElementUrls({
   element: computed(() => props.element),
   datasetFiltersValues: computed(() => props.filtersValues),
   applicationFiltersValues: computed(() => props.applicationFiltersValues),
@@ -130,7 +130,7 @@ const missingFilterText = computed(() => {
         v-if="descriptionPos === 'left' && appElement"
         :cols="6"
       >
-        <element-description :element="appElement" />
+        <element-description :html="descriptionHtml" />
       </v-col>
       <v-col
         class="pa-0"
@@ -150,7 +150,7 @@ const missingFilterText = computed(() => {
         v-if="descriptionPos === 'right' && appElement"
         :cols="6"
       >
-        <element-description :element="appElement" />
+        <element-description :html="descriptionHtml" />
       </v-col>
     </v-row>
     <div
@@ -160,7 +160,7 @@ const missingFilterText = computed(() => {
     >
       <element-description
         v-if="descriptionPos === 'top' && appElement"
-        :element="appElement"
+        :html="descriptionHtml"
         class="mb-2"
         style="flex:0 0 auto;max-height:50%;overflow-y:auto"
       />
@@ -176,7 +176,7 @@ const missingFilterText = computed(() => {
       />
       <element-description
         v-if="descriptionPos === 'bottom' && appElement"
-        :element="appElement"
+        :html="descriptionHtml"
         class="mt-2"
         style="flex:0 0 auto;max-height:50%;overflow-y:auto"
       />

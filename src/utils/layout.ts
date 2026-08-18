@@ -73,3 +73,37 @@ const computeRowLayout = (row: DashboardRow): ProcessedRow => {
 export const computeSectionBreakpoints = (rows: DashboardRow[] | undefined): ProcessedRow[] => {
   return (rows || []).map(computeRowLayout)
 }
+
+/**
+ * Stable identity of an element for `v-for` keys and d-frame instance keys.
+ * Based on the element's own content (dataset/application id) so a reorder in
+ * draft does not recreate the components (and their iframes); the index is
+ * only used as a fallback for elements without a stable identity.
+ */
+export const elementKey = (el: DashboardElement, index: number): string => {
+  switch (el.type) {
+    case 'tablePreview':
+    case 'form':
+      return `${el.type}-${el.dataset?.id || 'root'}`
+    case 'application':
+      return `application-${el.application?.id || index}`
+    case 'text':
+      return `text-${el.content || index}`
+    case 'column':
+      return `column-${index}`
+  }
+}
+
+/**
+ * Make a list of element keys unique (two identical sibling elements share
+ * the same identity): append a counter to duplicates. The first occurrence
+ * keeps the bare key so its component is reused across reorders.
+ */
+export const dedupeKeys = (keys: string[]): string[] => {
+  const seen = new Map<string, number>()
+  return keys.map(key => {
+    const count = seen.get(key) ?? 0
+    seen.set(key, count + 1)
+    return count === 0 ? key : `${key}#${count}`
+  })
+}

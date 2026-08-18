@@ -74,22 +74,51 @@ export function createConfig () {
       }
       app.provide('data-fair-app-config', state)
 
-      window.addEventListener('message', (event) => {
-        if (event.data?.type === 'set-config' && event.data?.content) {
-          const { content } = event.data
-          if (content.configuration) {
-            config.value = content.configuration
-          } else if (content.chart || content.datasets || content.layers || content.metrics) {
-            // Fusion plutôt qu'écrasement : certains émetteurs n'envoient
-            // qu'un sous-arbre modifié de la configuration.
-            config.value = { ...toRaw(config.value), ...content }
-          } else if (content.field && 'value' in content) {
-            const newConfig = JSON.parse(JSON.stringify(config.value))
-            setByPath(newConfig, content.field, content.value)
-            config.value = newConfig
-          }
-        }
-      })
+      // Singleton listener: remove any previous one before adding so a
+      // re-install (HMR) does not stack multiple handlers.
+      if (messageHandler) window.removeEventListener('message', messageHandler)
+      messageHandler = onSetConfigMessage(config)
+      window.addEventListener('message', messageHandler)
+    }
+  }
+}
+
+// Top-level config keys recognized as a partial `set-config` payload. The
+// merge branch below relies on this to distinguish a config sub-tree from a
+// single field update (`{ field, value }`).
+const CONFIG_KEYS = [
+  'datasets', 'filters', 'staticFilters', 'sections', 'periodFilter',
+  'addressFilter', 'title', 'titleStyle', 'sectionsTitleStyle', 'description',
+  'allowDuplicate', 'showSources', 'showEmbed', 'showCapture', 'sectionsGroup',
+  'applications'
+]
+
+let messageHandler: ((event: MessageEvent) => void) | null = null
+
+/**
+ * Handle `set-config` postMessage updates from the DataFair preview (draft
+ * hot reload). Only messages from the direct parent window are accepted.
+ */
+const onSetConfigMessage = (
+  config: Ref<DashboardConfig>
+): ((event: MessageEvent) => void) => {
+  return (event) => {
+    if (event.source !== window.parent) return
+    if (event.data?.type !== 'set-config' || !event.data?.content) return
+    const { content } = event.data
+    if (content.configuration) {
+      // Tolérance défensive : format enveloppé, jamais émis par l'UI actuelle.
+      config.value = content.configuration
+    } else if (content.field && 'value' in content) {
+      // Update par path : { field: 'sections.0.title', value: '...' }
+      const newConfig = JSON.parse(JSON.stringify(config.value))
+      setByPath(newConfig, content.field, content.value)
+      config.value = newConfig
+    } else if (CONFIG_KEYS.some(key => key in content)) {
+      // Fusion partielle plutôt qu'écrasement : certains émetteurs n'envoient
+      // qu'un sous-arbre modifié de la configuration (perte des champs frères
+      // sinon).
+      config.value = { ...toRaw(config.value), ...content }
     }
   }
 }

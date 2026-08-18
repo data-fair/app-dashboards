@@ -260,10 +260,11 @@ export const computeMandatoryFilterIssues = (
 export const initDefaultFilterValues = (
   filters: DashboardFilter[] | undefined,
   datasetId: string | undefined,
-  reactiveSearchParams: ReactiveParams
+  reactiveSearchParams: ReactiveParams,
+  prefix = ''
 ): void => {
   for (const filter of filters || []) {
-    const key = datasetFilterKey(datasetId || '', filter.labelField)
+    const key = datasetFilterKey(datasetId || '', filter.labelField, prefix)
     if (!reactiveSearchParams[key] && filter.startValue) {
       reactiveSearchParams[key] = filter.multipleValues
         ? JSON.stringify([filter.startValue]).slice(1, -1)

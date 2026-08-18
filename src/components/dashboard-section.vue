@@ -8,7 +8,7 @@
 import { computed } from 'vue'
 import type { DashboardSection } from '@/config'
 import { useConfig } from '@/composables/config'
-import { computeSectionBreakpoints } from '@/utils/layout'
+import { computeSectionBreakpoints, dedupeKeys, elementKey } from '@/utils/layout'
 import { sectionTitleDefaults } from '@/utils/title-style'
 import type { FiltersValues, ApplicationFiltersValues } from '@/utils/filters'
 import dashboardColumn from './dashboard-column.vue'
@@ -25,6 +25,14 @@ const props = defineProps<{
 const { config } = useConfig()
 
 const processedRows = computed(() => computeSectionBreakpoints(props.section.rows))
+
+// Stable per-element keys (identity-based, deduplicated) so reordering or
+// inserting elements in draft reuses the existing components/iframes instead
+// of recreating them.
+const rowsWithKeys = computed(() => processedRows.value.map(row => ({
+  ...row,
+  keys: dedupeKeys(row.elements.map((el, i) => elementKey(el, i)))
+})))
 </script>
 
 <template>
@@ -43,13 +51,13 @@ const processedRows = computed(() => computeSectionBreakpoints(props.section.row
     {{ section.description }}
   </p>
   <v-row
-    v-for="(row, j) of processedRows"
+    v-for="(row, j) of rowsWithKeys"
     :key="j"
     justify="center"
   >
     <v-col
       v-for="(element, i) of row.elements"
-      :key="i"
+      :key="row.keys[i]"
       :cols="12"
       :sm="row.layouts[i].sm"
       :md="row.layouts[i].md"
@@ -69,7 +77,7 @@ const processedRows = computed(() => computeSectionBreakpoints(props.section.row
         :filters-values="filtersValues"
         :application-filters-values="applicationFiltersValues"
         :prefix="prefix"
-        :instance-key="`${j}-${i}`"
+        :instance-key="row.keys[i]"
       />
     </v-col>
   </v-row>

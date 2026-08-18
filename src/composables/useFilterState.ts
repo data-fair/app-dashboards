@@ -9,6 +9,7 @@
  * from the schema's `x-labels` mapping.
  */
 import { computed, ref, watch, type Ref } from 'vue'
+import { useDebounce } from '@vueuse/core'
 import { useFetch } from '@data-fair/lib-vue/fetch.js'
 import reactiveSearchParams from '@data-fair/lib-vue/reactive-search-params-global.js'
 import type { DashboardConfig, DashboardFilter } from '@/config'
@@ -34,7 +35,10 @@ export interface FilterStateApi {
 
 export const useFilterState = (opts: UseFilterStateOptions): FilterStateApi => {
   const { filter, prefix, datasetId, datasetHref, config, address } = opts
-  const search = ref<string | undefined>(undefined)
+  // The search term is debounced so the values-labels fetch only fires once the
+  // user pauses typing (each keystroke would otherwise trigger a new request).
+  const searchInput = ref<string | undefined>(undefined)
+  const search = useDebounce(searchInput, 300)
 
   const url = computed(() => buildValuesLabelsUrl(filter, datasetId.value, datasetHref.value, config.value, prefix, search.value, address?.value, reactiveSearchParams))
   // `watch: false` to avoid a duplicate watcher; we install our own below so
@@ -78,8 +82,9 @@ export const useFilterState = (opts: UseFilterStateOptions): FilterStateApi => {
     loading,
     value,
     searchItems: (searchTerm?: string) => {
-      search.value = searchTerm
-      refresh()
+      // Just update the debounced search term: the `url` watcher above
+      // refetches automatically once the user pauses typing.
+      searchInput.value = searchTerm
     }
   }
 }
