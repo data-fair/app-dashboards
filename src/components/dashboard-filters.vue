@@ -2,13 +2,15 @@
 /**
  * Dynamic filter row.
  *
- * - For each filter declared in the config, manages a `useFilterState`
- *   (items / loading / value / search).
+ * - Renders one `dashboard-filter-item` per filter declared in the config:
+ *   each item owns its own `useFilterState` (items / loading / value /
+ *   search) in a real component setup, so draft config hot reloads
+ *   add/remove autocompletes without an effect scope.
  * - Computes the aggregated `filtersValues` broadcast to embeds via
  *   `useFiltersValues`.
  * - Renders the period picker and the address filter (if enabled in config).
  */
-import { computed, effectScope, ref, watch } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import reactiveSearchParams from '@data-fair/lib-vue/reactive-search-params-global.js'
 import SearchAddress from '@data-fair/lib-vuetify/search-address.vue'
@@ -16,10 +18,7 @@ import DateRangePicker from '@data-fair/lib-vuetify/date-range-picker.vue'
 import { useElementSize } from '@vueuse/core'
 import { useConfig } from '@/composables/config'
 import { useFiltersValues } from '@/composables/useFiltersValues'
-import { useFilterState, type FilterStateApi } from '@/composables/useFilterState'
-import type { DashboardFilter } from '@/config'
-import type { Field } from '@data-fair/lib-common-types/application/index.js'
-import { datasetFilterKey } from '@/utils/dataset-filter'
+import DashboardFilterItem from './dashboard-filter-item.vue'
 import type { FiltersValues, ApplicationFiltersValues } from '@/utils/filters'
 
 const props = defineProps<{
@@ -33,35 +32,10 @@ const emit = defineEmits<{
 
 const root = ref<HTMLElement | null>(null)
 const { width } = useElementSize(root)
-const { config, filters, dataset, fields } = useConfig()
+const { config, filters, dataset } = useConfig()
 const { t } = useI18n()
 
 const address = ref<{ lon: number; lat: number } | undefined>(undefined)
-
-// The per-filter states are created inside a dedicated effect scope that is
-// re-created whenever the configured filters change (draft hot reload):
-// adding/removing a filter in the config must render/remove its autocomplete.
-// The plain array is reassigned in the watch callback (flush: 'pre'), which
-// runs before the re-render triggered by the `filters` v-for source.
-let filtersScope: ReturnType<typeof effectScope> | null = null
-let filtersStateList: FilterStateApi[] = []
-
-const createFilterStates = () => {
-  filtersScope?.stop()
-  filtersScope = effectScope()
-  filtersScope.run(() => {
-    filtersStateList = (filters.value || []).map(f => useFilterState({
-      filter: f,
-      prefix: props.prefix || '',
-      datasetId: computed(() => dataset.value?.id),
-      datasetHref: computed(() => dataset.value?.href),
-      config,
-      address
-    }))
-  })
-}
-
-watch(filters, createFilterStates, { immediate: true })
 
 // Re-aggregate filter values whenever any dependency changes
 const { values: filtersValues, applicationValues } = useFiltersValues({
@@ -77,16 +51,6 @@ watch(applicationValues, (val) => {
   emit('update:applicationFilters', val)
 }, { immediate: true, deep: true })
 
-const onFilterSearch = (i: number, search: string | undefined) => {
-  const filter = filters.value?.[i]
-  const state = filtersStateList[i]
-  if (!filter || !state) return
-  const key = datasetFilterKey(dataset.value?.id || '', filter.labelField, props.prefix || '')
-  if ((search == null || search.length) && search !== reactiveSearchParams[key] && !filter.showAllValues) {
-    state.searchItems(search)
-  }
-}
-
 // The selected address must be fed to the local `address` ref: the geo
 // distance filter is computed from it, and the v-model only writes the
 // `address` URL param. Re-aggregation is handled by the useFiltersValues
@@ -96,11 +60,6 @@ const onAddressSelected = (ev: { lon: number; lat: number }) => {
 }
 
 const colWidth = computed(() => Math.min(Math.max(1, Math.ceil(12 * 250 / (width.value || 1))), 12))
-
-const fieldLabel = (filter: DashboardFilter): string => {
-  const field = fields.value[filter.labelField] as (Field & { 'x-originalName'?: string }) | undefined
-  return (field?.label as string | undefined) || (field?.title as string | undefined) || field?.['x-originalName'] || filter.labelField
-}
 </script>
 
 <template>
@@ -110,31 +69,14 @@ const fieldLabel = (filter: DashboardFilter): string => {
     align="center"
     class="py-3"
   >
-    <v-col
+    <dashboard-filter-item
       v-for="(filter, i) in filters"
       :key="filter.labelField || i"
+      :filter="filter"
+      :prefix="prefix || ''"
+      :address="address"
       :cols="colWidth"
-    >
-      <v-autocomplete
-        v-if="filtersStateList[i]"
-        v-model="filtersStateList[i].value.value"
-        :loading="filtersStateList[i].loading.value"
-        :items="filtersStateList[i].items.value"
-        :item-title="'label'"
-        :item-value="'value'"
-        variant="outlined"
-        hide-details
-        :no-data-text="t('filters.noData')"
-        :label="fieldLabel(filter)"
-        :clearable="!filter.forceOneValue"
-        :persistent-clear="!filter.forceOneValue"
-        :multiple="filter.multipleValues"
-        style="min-width:250px;"
-        density="comfortable"
-        autocomplete="off"
-        @update:search="search => onFilterSearch(i, search)"
-      />
-    </v-col>
+    />
     <v-col
       v-if="config.periodFilter"
       :cols="colWidth"

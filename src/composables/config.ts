@@ -115,10 +115,17 @@ const onSetConfigMessage = (
       setByPath(newConfig, content.field, content.value)
       config.value = newConfig
     } else if (CONFIG_KEYS.some(key => key in content)) {
-      // Fusion partielle plutôt qu'écrasement : certains émetteurs n'envoient
-      // qu'un sous-arbre modifié de la configuration (perte des champs frères
-      // sinon).
-      config.value = { ...toRaw(config.value), ...content }
+      // L'UI DataFair envoie le modèle de configuration complet
+      // (`editConfig` dans application-config.vue) ; VJSF omet simplement les
+      // clés vidées (ex. `filters` après suppression du dernier filtre,
+      // `title`/`description` vidés). Fusionner puis retirer les clés absentes
+      // pour que les suppressions en draft s'appliquent au lieu de rester
+      // figées dans l'aperçu.
+      const newConfig = { ...toRaw(config.value), ...content }
+      for (const key of CONFIG_KEYS) {
+        if (!(key in content)) delete newConfig[key]
+      }
+      config.value = newConfig
     }
   }
 }
