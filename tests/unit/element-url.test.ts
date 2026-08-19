@@ -102,11 +102,8 @@ describe('formDFrameSrc', () => {
     expect(src).toMatch(/^\/data-fair\/embed\/dataset\/form-ds\/form\?d-frame=true$/)
   })
 
-  // ⚠️ Comportement actuel : un form sans dataset rend littéralement
-  // "undefined" dans l'URL (pas de garde sur element.dataset?.id).
-  it('tolère un élément sans dataset (id "undefined" documenté)', () => {
-    const src = formDFrameSrc(formEl(), null, null, undefined, undefined, undefined, '')
-    expect(src).toMatch(/^\/data-fair\/embed\/dataset\/undefined\/form\?d-frame=true$/)
+  it('renvoie undefined pour un élément sans dataset (état invalide)', () => {
+    expect(formDFrameSrc(formEl(), null, null, undefined, undefined, undefined, '')).toBeUndefined()
   })
 
   it('dé-préfixe les filtres et préfixe avec l\'accessKey', () => {
@@ -234,18 +231,14 @@ describe('embedCode', () => {
     expect(embedCode({ ...appEl(), application: { ...appEl().application!, id: '' } }, 'https://host/app', null)).toBeUndefined()
   })
 
-  // ⚠️ Comportement actuel documenté : `stripAfterDataFair(exposedUrl)`
-  // découpe sur '/data-fair/' et ne laisse pas de slash final → l'URL
-  // produite est `https://hostdata-fair/...` (slash manquant entre l'hôte
-  // et `data-fair`). Bug latent : l'URL embed est invalide.
-  it('build l\'iframe embed sur l\'hôte exposé (slash manquant documenté)', () => {
+  it('build l\'iframe embed sur l\'hôte exposé', () => {
     expect(embedCode(appEl(), 'https://host/data-fair/app/abc', null)).toBe(
-      '<iframe src="https://hostdata-fair/app/sankey?embed=true" width="100%" height="500px" style="background-color: transparent; border: none;"></iframe>'
+      '<iframe src="https://host/data-fair/app/sankey?embed=true" width="100%" height="500px" style="background-color: transparent; border: none;"></iframe>'
     )
   })
 
   it('préfixe l\'accessKey dans le src', () => {
     const code = embedCode(appEl(), 'https://host/data-fair/app/abc', 'KEY')!
-    expect(code).toContain('https://hostdata-fair/app/KEY%3Asankey?embed=true')
+    expect(code).toContain('https://host/data-fair/app/KEY%3Asankey?embed=true')
   })
 })

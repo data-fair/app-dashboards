@@ -139,13 +139,21 @@ describe('buildSyncDeltas', () => {
     expect(buildSyncDeltas(prev as DashboardConfig, next)).toEqual({})
   })
 
-  it('ne signale pas de delta applications quand prev n\'en déclare pas', () => {
+  it('signale un delta applications quand next déclare des applications absentes de prev', () => {
     const prev: DashboardConfig = { sections: base.sections }
     const next: DashboardConfig = JSON.parse(JSON.stringify(prev))
     next.applications = [{ id: 'a', title: 'A' }]
     expect(buildSyncDeltas(prev, next)).toEqual({
       applications: [{ id: 'a', title: 'A' }]
     })
+  })
+
+  it('ne signale pas de delta applications quand prev et next déclarent les mêmes ids', () => {
+    const prev: DashboardConfig = { applications: [{ id: 'a', title: 'A' }], sections: base.sections }
+    const next: DashboardConfig = JSON.parse(JSON.stringify(prev))
+    // Seuls les ids sont comparés : un changement de titre n'est pas détecté.
+    next.applications = [{ id: 'a', title: 'A renommé' }]
+    expect(buildSyncDeltas(prev, next)).toEqual({})
   })
 })
 

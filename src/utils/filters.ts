@@ -231,7 +231,7 @@ export const mergeAndSortItems = (
     const fValues = multipleValues ? JSON.parse(`[${filterValue}]`) : [filterValue]
     for (const v of fValues) {
       if (!values.some(item => item.value === v)) {
-        values.unshift({ value: v })
+        values.unshift({ value: v, label: v })
       }
     }
   }

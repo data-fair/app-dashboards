@@ -108,9 +108,13 @@ export const formDFrameSrc = (
   secondary: unknown,
   print: unknown,
   prefix: string
-): string => {
-  const params = datasetEmbedParams(filtersValues, primary, secondary, print, element.ignoreFilters, prefix, element.dataset?.id || '')
-  return `/data-fair/embed/dataset/${accessKeyPrefix(accessKey)}${element.dataset?.id}/form?${new URLSearchParams(params).toString()}`
+): string | undefined => {
+  const datasetId = element.dataset?.id
+  // A form is always bound to a dataset: a missing dataset is an invalid
+  // state that must not render an embed URL.
+  if (!datasetId) return undefined
+  const params = datasetEmbedParams(filtersValues, primary, secondary, print, element.ignoreFilters, prefix, datasetId)
+  return `/data-fair/embed/dataset/${accessKeyPrefix(accessKey)}${datasetId}/form?${new URLSearchParams(params).toString()}`
 }
 
 export const applicationDFrameSrc = (
@@ -182,7 +186,7 @@ export const embedCode = (
   const appId = element.application?.id
   if (!appId) return undefined
   const key = accessKeyPrefix(accessKey)
-  const url = `${stripAfterDataFair(exposedUrl)}data-fair/app/${key}${appId}?embed=true`
+  const url = `${stripAfterDataFair(exposedUrl)}/data-fair/app/${key}${appId}?embed=true`
   return `<iframe src="${url}" width="100%" height="500px" style="background-color: transparent; border: none;"></iframe>`
 }
 

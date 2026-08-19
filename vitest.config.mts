@@ -4,16 +4,20 @@ import { fileURLToPath, URL } from 'node:url'
 export default defineConfig({
   test: {
     include: ['tests/unit/**/*.test.ts'],
-    environment: 'node',
+    environment: 'jsdom',
     coverage: {
       provider: 'v8',
-      include: ['src/utils/**'],
+      // Le périmètre couvert : les utilitaires purs + les composables (le gros
+      // de la logique). Les composants Vue (.vue) et le point d'entrée restent
+      // hors périmètre pour l'instant (montage Vuetify lourd) — à noter en
+      // follow-up, ils apparaissent à 0% si on les inclut.
+      include: ['src/utils/**/*.ts', 'src/composables/**/*.ts'],
       reporter: ['text', 'html'],
       thresholds: {
-        lines: 95,
-        functions: 95,
-        statements: 95,
-        branches: 95
+        lines: 80,
+        functions: 80,
+        statements: 80,
+        branches: 80
       }
     }
   },

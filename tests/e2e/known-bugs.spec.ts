@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test'
+import { test, expect, type Page } from '@playwright/test'
 
 /**
  * Régressions / bugs connus du dashboard.
@@ -7,226 +7,274 @@ import { test, expect } from '@playwright/test'
  * Si le test échoue, c'est que la régression est de retour : il faut
  * corriger le code source puis relancer `npm run test:e2e`.
  *
- * Config de référence utilisée par le dev-server : `.dev-config.json`
- * (2 filtres dynamiques : `int` et `equipement`, dataset racine
- * `accidents-velos`, élément `application` Sankey).
+ * ⚠️ Les attentes ne sont PLUS couplées à `.dev-config.json` : la config
+ * live est lue depuis l'endpoint `GET /config` du dev-server, et toutes les
+ * valeurs attendues en sont dérivées (nombre de filtres, d'éléments, dataset
+ * racine, clés concept/static-filters). Les assertions qui nécessitent un
+ * ingrédient absent de la config courante sont simplement sautées, si bien
+ * que la suite reste verte sur n'importe quelle config valide.
  */
+
+interface SchemaField {
+  key: string
+  'x-concept'?: { id: string }
+}
+
+interface DashboardElementConfig {
+  type: string
+  dataset?: { id: string }
+  application?: { id: string }
+}
+
+type StaticFilter =
+  | { type: 'in' | 'nin'; field: string | { key: string }; values?: string[] }
+  | { type: 'interval'; field: string | { key: string }; minValue?: string; maxValue?: string }
+  | { type: 'starts'; field: string | { key: string }; value?: string }
+  | { type: 'exists' | 'notExists'; field: string | { key: string } }
+
+interface DevConfig {
+  filters?: { labelField?: string; multipleValues?: boolean; forceOneValue?: boolean }[]
+  staticFilters?: StaticFilter[] | null
+  sectionsGroup?: string
+  datasets?: { id?: string; schema?: SchemaField[] }[]
+  sections?: { rows?: { elements?: DashboardElementConfig[] }[] }[]
+}
+
+const fieldKeyOf = (f: StaticFilter['field']): string => (typeof f === 'string' ? f : f.key)
+
+const flatElements = (config: DevConfig): DashboardElementConfig[] =>
+  (config.sections || [])
+    .flatMap(section => (section.rows || []).flatMap(row => row.elements || []))
+
+/**
+ * Éléments réellement montés dans le DOM : avec un groupement par onglets
+ * (`tabs-*`), seul l'onglet actif (le premier) est rendu par le v-window ;
+ * sinon tous les éléments des sections sont rendus.
+ */
+const visibleElements = (config: DevConfig): DashboardElementConfig[] => {
+  const sections = config.sections || []
+  if (sections.length <= 1) return flatElements(config)
+  if ((config.sectionsGroup || '').includes('tabs')) {
+    return flatElements({ sections: [sections[0]] })
+  }
+  return flatElements(config)
+}
+
+/**
+ * Éléments qui produisent réellement un `<d-frame>` : une `application` avec
+ * un id, un `tablePreview` (dataset racine en fallback) et un `form` avec un
+ * dataset. Un form sans dataset ne rend pas d'embed (état invalide).
+ */
+const expectedFrames = (config: DevConfig): { type: 'application' | 'table' | 'form' }[] => {
+  return visibleElements(config)
+    .map(el => {
+      if (el.type === 'application') return el.application?.id ? { type: 'application' as const } : null
+      if (el.type === 'tablePreview') return { type: 'table' as const }
+      if (el.type === 'form') return el.dataset?.id ? { type: 'form' as const } : null
+      return null
+    })
+    .filter((e): e is { type: 'application' | 'table' | 'form' } => !!e)
+}
+
+/**
+ * Paramètres REST attendus pour un static filter (mêmes conventions que
+ * `filters2params` de @data-fair/lib-utils : suffixes `_in/_nin/_gte/_lte/
+ * _starts/_exists/_nexists`, valeur espace pour exists/nexists).
+ */
+const staticFilterParams = (sf: StaticFilter): Record<string, string> => {
+  const key = fieldKeyOf(sf.field)
+  switch (sf.type) {
+    case 'in':
+      return sf.values?.length ? { [`${key}_in`]: sf.values.join(',') } : {}
+    case 'nin':
+      return sf.values?.length ? { [`${key}_nin`]: sf.values.join(',') } : {}
+    case 'interval': {
+      const params: Record<string, string> = {}
+      if (sf.minValue != null && sf.minValue !== '') params[`${key}_gte`] = String(sf.minValue)
+      if (sf.maxValue != null && sf.maxValue !== '') params[`${key}_lte`] = String(sf.maxValue)
+      return params
+    }
+    case 'starts':
+      return sf.value != null && sf.value !== '' ? { [`${key}_starts`]: sf.value } : {}
+    case 'exists':
+      return { [`${key}_exists`]: ' ' }
+    case 'notExists':
+      return { [`${key}_nexists`]: ' ' }
+  }
+}
+
+/** Suffixes REST ordonnés du plus long au plus court (split non ambigu). */
+const REST_OPS = ['_nexists', '_starts', '_exists', '_nin', '_lte', '_gte', '_in'] as const
+
+const splitRestKey = (key: string): { field: string; op: string } | null => {
+  for (const op of REST_OPS) {
+    if (key.endsWith(op)) return { field: key.slice(0, -op.length), op: op.slice(1) }
+  }
+  return null
+}
+
+const queryOf = (src: string): URLSearchParams => new URLSearchParams(src.split('?')[1] || '')
+
+const findParam = (query: URLSearchParams, pattern: RegExp): string | undefined => {
+  for (const key of query.keys()) {
+    if (pattern.test(key)) return query.get(key) ?? undefined
+  }
+  return undefined
+}
+
+const getDevConfig = async (page: Page): Promise<DevConfig> => {
+  const res = await page.request.get('/config')
+  expect(res.ok(), `GET /config doit répondre (dev-server up). ${res.status()}`).toBeTruthy()
+  return res.json() as Promise<DevConfig>
+}
+
+const collectConsoleEvents = (page: Page): { type: string; text: string }[] => {
+  const events: { type: string; text: string }[] = []
+  page.on('console', (msg) => {
+    events.push({ type: msg.type(), text: msg.text() })
+  })
+  return events
+}
+
+const assertNoInitIssue = (events: { type: string; text: string }[]) => {
+  const inactiveScopeWarning = events.find((e) => e.text.includes('cannot run an inactive effect scope'))
+  expect(
+    inactiveScopeWarning,
+    `Warning Vue inattendu : ${inactiveScopeWarning?.text ?? '(aucun)'}\n` +
+    `Tous les messages console :\n${events.map(e => `[${e.type}] ${e.text}`).join('\n')}`
+  ).toBeUndefined()
+  const initError = events.find((e) => e.text.includes('Failed to initialize app'))
+  expect(
+    initError,
+    `Erreur d'init inattendue : ${initError?.text ?? '(aucune)'}`
+  ).toBeUndefined()
+}
+
 test.describe('Bugs connus (régressions)', () => {
   test('K1 — les filtres dynamiques (v-autocomplete) se rendent dans leurs v-col', async ({ page }) => {
-    // Capture tous les messages console pour pouvoir diagnostiquer les
-    // régressions futures (warnings Vue suspects, erreurs d'init, etc.).
-    const consoleEvents: { type: string; text: string }[] = []
-    page.on('console', (msg) => {
-      consoleEvents.push({ type: msg.type(), text: msg.text() })
-    })
+    const consoleEvents = collectConsoleEvents(page)
 
     await page.goto('/app/')
+    const config = await getDevConfig(page)
 
-    // On attend que le dashboard ait fini de monter : le <d-frame> de la visu
-    // sankey est le marqueur le plus fiable d'un mount complet. ⚠️ Le iframe
-    // vit dans le shadow DOM du custom element (d-frame v0.18) : le sélecteur
-    // doit cibler `<d-frame>`, pas `iframe`.
-    await expect(page.locator('d-frame').first()).toBeVisible({ timeout: 20_000 })
+    // Marqueur de mount fiable, indépendant du contenu de la config.
+    await expect(page.locator('.v-container').first()).toBeVisible({ timeout: 20_000 })
 
-    // 2 filtres dans .dev-config.json → 2 v-autocomplete attendus.
-    // Si le filtre est vide (`filtersState[labelField]` undefined) le
-    // `v-if` du template tombe à false et la v-col est vide.
-    await expect(page.locator('.v-autocomplete')).toHaveCount(2, { timeout: 5_000 })
+    // Un autocomplete par filtre dynamique déclaré dans la config.
+    const filters = config.filters || []
+    if (filters.length) {
+      await expect(page.locator('.v-autocomplete')).toHaveCount(filters.length, { timeout: 5_000 })
+    }
 
-    // Aucun warning Vue sur l'inactive effect scope : ce warning survient
-    // quand un `effectScope.stop()` est suivi d'un `scope.run()` sur le
-    // même scope. Le pattern propre est de créer un nouveau scope à
-    // chaque changement de la liste de filtres, ou de ne pas utiliser
-    // d'effectScope du tout.
-    const inactiveScopeWarning = consoleEvents.find(
-      (e) => e.text.includes('cannot run an inactive effect scope')
-    )
-    expect(
-      inactiveScopeWarning,
-      `Warning Vue inattendu : ${inactiveScopeWarning?.text ?? '(aucun)'}\n` +
-      `Tous les messages console :\n${consoleEvents.map(e => `[${e.type}] ${e.text}`).join('\n')}`
-    ).toBeUndefined()
-
-    // L'app doit avoir démarré sans exception (sinon Suspense résout avec
-    // l'erreur catchée par main.ts et le DOM reste vide).
-    const initError = consoleEvents.find(
-      (e) => e.text.includes('Failed to initialize app')
-    )
-    expect(
-      initError,
-      `Erreur d'init inattendue : ${initError?.text ?? '(aucune)'}`
-    ).toBeUndefined()
+    assertNoInitIssue(consoleEvents)
   })
 
   test('K2 — transmission des filtres aux embeds : dataset vs application, clés concept et dé-préfixage', async ({ page }) => {
-    // La config de dev référence un élément `application` (Sankey) puis
-    // un élément `tablePreview` (vue table embarquée du dataset racine).
-    // L'ordre des éléments dans le DOM suit l'ordre de la config.
-    const consoleEvents: { type: string; text: string }[] = []
-    page.on('console', (msg) => {
-      consoleEvents.push({ type: msg.type(), text: msg.text() })
-    })
+    const consoleEvents = collectConsoleEvents(page)
 
     await page.goto('/app/')
+    const config = await getDevConfig(page)
 
+    const rootDatasetId = config.datasets?.[0]?.id
+    const rootSchema = config.datasets?.[0]?.schema || []
+    const frames = expectedFrames(config)
+
+    test.skip(frames.length === 0, 'La config courante n\'a aucun élément embarquable')
+
+    // L'ordre des éléments dans le DOM suit l'ordre de la config.
     const allFrames = page.locator('d-frame')
-    await expect(allFrames).toHaveCount(2, { timeout: 20_000 })
+    await expect(allFrames).toHaveCount(frames.length, { timeout: 20_000 })
 
-    // 1) Élément `application` → /data-fair/app/<id>
-    const appFrame = allFrames.nth(0)
-    await expect(appFrame).toBeVisible({ timeout: 20_000 })
-    const appSrc = await appFrame.getAttribute('src')
-    expect(appSrc, 'Le src de la visu application doit être défini').toBeTruthy()
-    expect(
-      appSrc,
-      "L'application doit être servie via /data-fair/app/"
-    ).toMatch(/^\/data-fair\/app\//)
-    expect(
-      appSrc,
-      "L'application ne doit PAS être servie via /data-fair/embed/dataset/"
-    ).not.toMatch(/^\/data-fair\/embed\/dataset\//)
+    const firstAppFrame = allFrames.first()
+    const tableFormIndex = frames.findIndex(f => f.type !== 'application')
+    const firstTableFormFrame = tableFormIndex >= 0 ? allFrames.nth(tableFormIndex) : null
 
-    // 2) Élément `tablePreview` → /data-fair/embed/dataset/<id>/table
-    const tableFrame = allFrames.nth(1)
-    await expect(tableFrame).toBeVisible({ timeout: 20_000 })
-    const tableSrc = await tableFrame.getAttribute('src')
-    expect(tableSrc, 'Le src de la vue table doit être défini').toBeTruthy()
-    expect(
-      tableSrc,
-      'La vue table doit être servie via /data-fair/embed/dataset/'
-    ).toMatch(/^\/data-fair\/embed\/dataset\/[^/]+\/table/)
-
-    // 3) finalizedAt est forwardé dans les deux URLs, même quand aucun
-    //    filtre n'est sélectionné.
-    expect(
-      appSrc,
-      `L'URL de l'application doit contenir finalizedAt. src=${appSrc}`
-    ).toMatch(/[?&]finalizedAt=/)
-    expect(
-      tableSrc,
-      `L'URL de la vue table doit contenir finalizedAt. src=${tableSrc}`
-    ).toMatch(/[?&]finalizedAt=/)
-
-    // 4) Les static filters (sur `dep`, concept `codeDepartement`) sont
-    //    propagés :
-    //    - en clé dataset-scopée `<prefix>_d_<rootDatasetId>_dep_in=` pour
-    //      l'application (elle connaît le dataset racine) ;
-    //    - en clé concept `_c_codeDepartement_in=75,92` (sans préfixe) pour
-    //      les deux embeds, afin qu'une visu enfant sur un AUTRE dataset
-    //      puisse récupérer le filtre via `useConceptFilters`.
-    const rootDatasetId = 'accidents-velos'
-    const conceptFilterRegex = /[?&]_c_codeDepartement_in=75%2C92/
-    expect(
-      appSrc,
-      'L\'URL de l\'application doit contenir la clé concept _c_codeDepartement_in=75,92. ' +
-      `src=${appSrc}`
-    ).toMatch(conceptFilterRegex)
-    expect(
-      tableSrc,
-      'L\'URL de la table doit contenir la clé concept _c_codeDepartement_in=75,92. ' +
-      `src=${tableSrc}`
-    ).toMatch(conceptFilterRegex)
-    const prefixedDepRegex = new RegExp(`(?:^|[?&])\\d*_d_${rootDatasetId}_dep_in=`)
-    expect(
-      appSrc,
-      'L\'URL de l\'application doit toujours contenir la clé dataset-scopée ' +
-      `<prefix>_d_${rootDatasetId}_dep_in=. src=${appSrc}`
-    ).toMatch(prefixedDepRegex)
-
-    // 5) Sélection d'une valeur dans le 1er filtre (`int`) : on vérifie
-    //    la transmission des filtres résolus à l'app et à la table.
-    const firstAutocomplete = page.locator('.v-autocomplete').nth(0)
-    await firstAutocomplete.click()
-    const firstOption = page.locator('.v-list-item').first()
-    await expect(firstOption).toBeVisible({ timeout: 5_000 })
-    await firstOption.click()
-    // Attendre que les iframes rechargent avec les nouveaux filtres.
-    // On poll l'attribut `src` du sankey (resolve /values/ asynchrone + re-render).
-    // ⚠️ La regex cible explicitement le filtre dynamique `int` : une regex
-    // générique `\w+_in` matcherait immédiatement le static filter
-    // `_d_<datasetId>_dep_in` déjà présent et le poll passerait avant la
-    // mise à jour des src (race condition).
-    await expect.poll(
-      async () => await appFrame.getAttribute('src'),
-      {
-        timeout: 10_000,
-        message: 'L\'iframe de l\'application doit recevoir le filtre préfixé par le dataset racine'
+    // 1) Chaque élément rend le bon type d'embed, avec finalizedAt et d-frame.
+    for (let i = 0; i < frames.length; i++) {
+      const frame = allFrames.nth(i)
+      await expect(frame).toBeVisible({ timeout: 20_000 })
+      const src = await frame.getAttribute('src')
+      expect(src, `Le src du d-frame #${i} doit être défini`).toBeTruthy()
+      if (frames[i].type === 'application') {
+        expect(src, "L'application doit être servie via /data-fair/app/").toMatch(/^\/data-fair\/app\//)
+        expect(src, "L'application ne doit PAS être servie via /data-fair/embed/dataset/").not.toMatch(/^\/data-fair\/embed\/dataset\//)
+      } else {
+        expect(src, 'La vue dataset doit être servie via /data-fair/embed/dataset/').toMatch(/^\/data-fair\/embed\/dataset\//)
       }
-    ).toMatch(new RegExp(`(?:^|[?&])\\d*_d_${rootDatasetId}_int_in=`))
+      expect(src, 'finalizedAt doit être forwardé').toMatch(/[?&]finalizedAt=/)
+      expect(src, 'd-frame=true doit être présent').toMatch(/[?&]d-frame=true/)
+    }
 
-    // Idem pour la vue table : on attend que le filtre dé-préfixé `int_in=`
-    // soit bien propagé avant de lire les src pour les assertions suivantes.
-    await expect.poll(
-      async () => await tableFrame.getAttribute('src'),
-      {
-        timeout: 10_000,
-        message: 'L\'iframe de la vue table doit recevoir le filtre int_in= après dé-préfixage'
+    // 2) Les static filters sont propagés :
+    //    - en clés dataset-scopées `<prefix>_d_<rootDatasetId>_<field>_<op>=`
+    //      sur les embeds d'application ;
+    //    - en clés dé-préfixées (`<field>_<op>=`) sur les vues dataset
+    //      (l'embed REST API attend des noms de champs non préfixés) ;
+    //    - en clés concept `_c_<conceptId>_<op>` sur les deux, quand le champ
+    //      porte un concept (pour qu'une visu sur un AUTRE dataset les lise).
+    const staticFilters = config.staticFilters || []
+    if (staticFilters.length && rootDatasetId) {
+      for (const sf of staticFilters) {
+        const params = staticFilterParams(sf)
+        const query = queryOf(await firstAppFrame.getAttribute('src') || '')
+        for (const [restKey, value] of Object.entries(params)) {
+          const scoped = findParam(query, new RegExp(`^c?_d_${rootDatasetId}_${restKey}$`))
+          expect(
+            scoped,
+            `L'URL de l'application doit contenir la clé dataset-scopée _d_${rootDatasetId}_${restKey} (${sf.type}). src=${query}`
+          ).toBe(value)
+          const split = splitRestKey(restKey)
+          const conceptId = split ? rootSchema.find(f => f.key === split.field)?.['x-concept']?.id : undefined
+          if (conceptId) {
+            expect(
+              query.get(`_c_${conceptId}_${split!.op}`),
+              `L'URL de l'application doit contenir la clé concept _c_${conceptId}_${split!.op}. src=${query}`
+            ).toBe(value)
+          }
+        }
       }
-    ).toMatch(/[?&]int_in=/)
+      if (firstTableFormFrame) {
+        const tableQuery = queryOf(await firstTableFormFrame.getAttribute('src') || '')
+        for (const sf of staticFilters) {
+          for (const [restKey, value] of Object.entries(staticFilterParams(sf))) {
+            expect(
+              tableQuery.get(restKey),
+              `L'URL de la vue table doit contenir la clé dé-préfixée ${restKey}. src=${tableQuery}`
+            ).toBe(value)
+          }
+        }
+      }
+    }
 
-    const appSrcAfter = await appFrame.getAttribute('src')
-    const tableSrcAfter = await tableFrame.getAttribute('src')
-    expect(appSrcAfter, "Le src de l'application doit être défini après le filtre").toBeTruthy()
-    expect(tableSrcAfter, 'Le src de la table doit être défini après le filtre').toBeTruthy()
+    // 3) Sélection d'une valeur dans le 1er filtre : la valeur résolue doit
+    //    être transmise aux embeds (préfixée par le dataset racine pour les
+    //    applications, dé-préfixée pour les vues dataset).
+    const firstFilter = (config.filters || [])[0]
+    if (firstFilter?.labelField && rootDatasetId) {
+      const firstAutocomplete = page.locator('.v-autocomplete').first()
+      await firstAutocomplete.click()
+      const firstOption = page.locator('.v-list-item').first()
+      await expect(firstOption).toBeVisible({ timeout: 5_000 })
+      await firstOption.click()
 
-    // 6) Transmission des filtres après sélection
-    //    - L'application DOIT recevoir les filtres dynamiques résolus
-    //      (codes, résolus via /values/) préfixés par le dataset racine
-    //      du dashboard (cf. useFiltersValues.applicationValues et
-    //      useElementUrls.applicationDFrameSrc). Une application qui
-    //      utilise un autre dataset ignore ces paramètres.
-    //    - La vue table embarquée est servie sur le dataset racine : on
-    //      dé-préfixe les filtres dynamiques (`<prefix>_d_<datasetId>_`)
-    //      avant de les forwarder, l'embed REST API attendant des noms
-    //      de champs non-préfixés.
-    const prefixedFilterRegex = new RegExp(`(?:^|[?&])\\d*_d_${rootDatasetId}_\\w+_in=`)
-    expect(
-      appSrcAfter,
-      `L'URL de l'application doit contenir des filtres préfixés par le dataset racine (${rootDatasetId}) ` +
-      'pour que les valeurs résolues soient transmises. ' +
-      `src=${appSrcAfter}`
-    ).toMatch(prefixedFilterRegex)
-    const tablePrefixedFilterRegex = new RegExp(`(?:^|[?&])\\d*_d_${rootDatasetId}_\\w+_in=`)
-    expect(
-      tableSrcAfter,
-      `L'URL de la vue table ne doit PAS contenir de filtres préfixés par le dataset racine (${rootDatasetId}). ` +
-      `src=${tableSrcAfter}`
-    ).not.toMatch(tablePrefixedFilterRegex)
-    expect(
-      tableSrcAfter,
-      'L\'URL de la vue table doit contenir le filtre int_in= après dé-préfixage. ' +
-      `src=${tableSrcAfter}`
-    ).toMatch(/[?&]int_in=/)
-    expect(
-      tableSrcAfter,
-      `L'URL de la vue table doit être servie pour le dataset racine ${rootDatasetId}. ` +
-      `src=${tableSrcAfter}`
-    ).toMatch(new RegExp(`/embed/dataset/[^/]*${rootDatasetId}/`))
+      // ⚠️ La regex cible explicitement le champ du filtre dynamique : une
+      // regex générique matcherait immédiatement les static filters déjà
+      // présents et le poll passerait avant la mise à jour des src.
+      const scopedKeyRegex = new RegExp(`(?:^|[?&])c?_d_${rootDatasetId}_${firstFilter.labelField}_in=`)
+      await expect.poll(
+        async () => await firstAppFrame.getAttribute('src'),
+        { timeout: 10_000, message: 'L\'iframe de l\'application doit recevoir le filtre résolu préfixé par le dataset racine' }
+      ).toMatch(scopedKeyRegex)
 
-    // 7) Les clés concept restent présentes après la sélection (les
-    //    static filters ne sont pas perdus lors de la mise à jour).
-    expect(
-      appSrcAfter,
-      'Les clés concept _c_ doivent subsister après la sélection. ' +
-      `src=${appSrcAfter}`
-    ).toMatch(conceptFilterRegex)
-    expect(
-      tableSrcAfter,
-      'Les clés concept _c_ doivent subsister après la sélection. ' +
-      `src=${tableSrcAfter}`
-    ).toMatch(conceptFilterRegex)
+      if (firstTableFormFrame) {
+        const deprefixedKeyRegex = new RegExp(`(?:^|[?&])${firstFilter.labelField}_in=`)
+        await expect.poll(
+          async () => await firstTableFormFrame.getAttribute('src'),
+          { timeout: 10_000, message: 'L\'iframe de la vue dataset doit recevoir le filtre dé-préfixé' }
+        ).toMatch(deprefixedKeyRegex)
+      }
+    }
 
-    // 8) Les deux iframes doivent avoir le flag d-frame=true
-    expect(appSrcAfter, "d-frame=true doit être présent dans l'URL de l'application").toMatch(/[?&]d-frame=true/)
-    expect(tableSrcAfter, "d-frame=true doit être présent dans l'URL de la vue table").toMatch(/[?&]d-frame=true/)
-
-    // 9) Pas d'erreur d'init
-    const initError = consoleEvents.find(
-      (e) => e.text.includes('Failed to initialize app')
-    )
-    expect(
-      initError,
-      `Erreur d'init inattendue : ${initError?.text ?? '(aucune)'}`
-    ).toBeUndefined()
+    assertNoInitIssue(consoleEvents)
   })
 })

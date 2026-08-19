@@ -60,16 +60,18 @@ describe('computeSectionBreakpoints', () => {
     expect(widthsOf(rows, 2).xl).toBe(6)
   })
 
-  it('les éléments text sont classés order-first', () => {
+  it('les éléments text sont classés order-first à chaque breakpoint', () => {
     const rows = computeSectionBreakpoints([row(0, el('text'), el('tablePreview'))])
     const textLayout = rows[0].layouts[0]
     const otherLayout = rows[0].layouts[1]
     expect(textLayout.class).toContain('order-first')
-    // ⚠️ Comportement actuel : `layouts[k].class` est réaffecté à chaque
-    // breakpoint → seule la classe du DERNIER breakpoint (xl) subsiste.
-    // Les classes order-{sm|md|lg}-* théoriques sont écrasées (bug latent).
-    expect(textLayout.class).toEqual(['order-first', 'order-xl-1'])
-    expect(otherLayout.class).toEqual(['order-xl-2'])
+    // Les classes order-{sm|md|lg|xl}-* sont accumulées : le texte est
+    // order-first sur sm (il occupe seul la ligne) puis repasse en 1ère
+    // position sur md/lg/xl quand il partage la ligne avec la table.
+    expect(textLayout.class).toEqual([
+      'order-first', 'order-sm-first', 'order-md-1', 'order-lg-1', 'order-xl-1'
+    ])
+    expect(otherLayout.class).toEqual(['order-sm-2', 'order-md-2', 'order-lg-2', 'order-xl-2'])
   })
 
   it('traite chaque row indépendamment', () => {

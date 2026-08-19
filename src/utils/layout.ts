@@ -56,7 +56,12 @@ const computeRowLayout = (row: DashboardRow): ProcessedRow => {
         const baseWidth = widths[breakpoint][elementWidth(el) - 1]
         layouts[k][breakpoint] = Math.floor(0.3 + 12 * baseWidth / cpt)
         const isText = el.type === 'text'
-        layouts[k].class = isText ? ['order-first'] : []
+        // Accumulate the classes across breakpoints: `layouts[k].class` must
+        // keep the order classes of every breakpoint so the element is
+        // ordered first on sm/md and shifted back on lg/xl, etc.
+        if (isText && !layouts[k].class.includes('order-first')) {
+          layouts[k].class.push('order-first')
+        }
         if (isText && layouts[k][breakpoint] === 12) {
           layouts[k].class.push(`order-${breakpoint}-first`)
         } else {

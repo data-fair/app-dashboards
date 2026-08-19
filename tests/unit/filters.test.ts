@@ -219,6 +219,7 @@ describe('mergeAndSortItems', () => {
   it('gère une sélection simple (non multiple)', () => {
     const items = mergeAndSortItems([{ value: 'x', label: 'X' }], 'z', false)
     expect(items.map(i => i.value)).toEqual(['x', 'z'])
+    expect(items.find(i => i.value === 'z')?.label).toBe('z')
   })
 
   it('renvoie [] sans données', () => {

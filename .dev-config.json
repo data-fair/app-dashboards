@@ -1,190 +1,1876 @@
 {
-  "periodFilter": false,
-  "addressFilter": false,
-  "showSources": false,
-  "showEmbed": false,
-  "showCapture": false,
-  "titleStyle": {
-    "tag": "h2",
-    "size": "h4",
-    "center": false,
-    "bold": false,
-    "color": null,
-    "line": {
-      "position": "none",
-      "color": "primary"
-    }
-  },
-  "sectionsGroup": "tabs-button",
-  "allowDuplicate": false,
+  "title": "Ma commune en un coup d’œil",
+  "description": "Sélectionnez une commune française : équipements, commerces, santé, écoles, population, tourisme et bornes de recharge se recalent automatiquement. Sources : INSEE (Base Permanente des Équipements 2025, recensement, revenus), Etalab (bornes IRVE), ministère de la Culture (Journées du patrimoine), OpenAgenda Bretagne.",
   "datasets": [
     {
-      "title": "begesAka2024_jdd_20250205",
+      "href": "http://localhost:5888/data-fair/api/v1/datasets/aoxziknf32z-osjojmorabww",
+      "title": "Base Permanente des Equipements - 2025",
+      "id": "aoxziknf32z-osjojmorabww",
       "schema": [
         {
-          "key": "annee_donnees",
-          "title": "Année",
+          "key": "an",
+          "x-originalName": "AN",
           "type": "string",
-          "x-refersTo": "https://www.w3.org/TR/owl-time/#time:year",
+          "title": "Millésime de la base",
+          "x-group": "Identification de l'équipement",
+          "x-cardinality": 1,
+          "description": "",
+          "x-transform": {
+            "expr": "",
+            "type": "string"
+          },
+          "enum": [
+            "2025"
+          ]
+        },
+        {
+          "key": "nomrs",
+          "x-originalName": "NOMRS",
+          "type": "string",
+          "title": "Nom ou raison sociale",
+          "description": "Nom ou raison sociale de l'équipement",
+          "x-refersTo": "http://www.w3.org/2000/01/rdf-schema#label",
+          "x-group": "Identification de l'équipement",
           "x-concept": {
-            "id": "year",
-            "title": "Année",
+            "id": "label",
+            "title": "Libellé",
             "primary": true
           },
+          "x-cardinality": 2188484
+        },
+        {
+          "key": "cnomrs",
+          "x-originalName": "CNOMRS",
+          "type": "string",
+          "title": "Complément du nom",
+          "description": "Complément du nom ou de la raison sociale de l'équipement",
+          "x-group": "Identification de l'équipement",
+          "x-cardinality": 846173
+        },
+        {
+          "key": "siret",
+          "x-originalName": "SIRET",
+          "type": "string",
+          "title": "Numéro SIRET",
+          "description": "Numéro SIRET de l'équipement",
+          "x-refersTo": "http://www.datatourisme.fr/ontology/core/1.0/#siret",
+          "x-group": "Identification de l'équipement",
+          "x-concept": {
+            "id": "siret",
+            "title": "SIRET",
+            "primary": true
+          },
+          "x-cardinality": 2006648
+        },
+        {
+          "key": "apet",
+          "x-originalName": "APET",
+          "type": "string",
+          "title": "Code d'activité principale exercée (APET)",
+          "x-group": "Identification de l'équipement",
+          "x-cardinality": 80,
+          "description": ""
+        },
+        {
+          "key": "statut_diffusion",
+          "x-originalName": "STATUT_DIFFUSION",
+          "type": "string",
+          "title": "Statut de diffusion Sirene",
+          "x-labels": {
+            "O": "Diffusion totale",
+            "P": "Diffusion partielle",
+            "_Z": "Sans objet"
+          },
+          "x-group": "Identification de l'équipement",
+          "x-cardinality": 3,
           "description": "",
-          "x-capabilities": {},
+          "enum": [
+            "O",
+            "_Z",
+            "P"
+          ]
+        },
+        {
+          "key": "categorie",
+          "x-originalName": "CATEGORIE",
+          "type": "string",
+          "title": "Catégorie d'équipement culturel",
+          "description": "Catégorie d'équipement",
+          "x-group": "Identification de l'équipement",
+          "x-cardinality": 63
+        },
+        {
+          "key": "accueil",
+          "x-originalName": "ACCUEIL",
+          "type": "string",
+          "title": "Type d'accueil",
+          "description": "Type d'accueil de l'infrastructure",
+          "x-group": "Identification de l'équipement",
+          "x-cardinality": 19,
+          "enum": [
+            "_Z",
+            "PERISCOLAIRE",
+            "EXTRASCOLAIRE",
+            "MULTI ACCUEIL CRECHE COLLECTIVE",
+            "TEMPS ACCUEIL PERISCOLAIRE ET HORS PERISCOLAIRE",
+            "DECLARE STRUCTURE ACCUEIL LOGEMENT SANS HEBERGEMENT",
+            "CRECHE COLLECTIVE",
+            "MICRO CRECHE",
+            "HALTE-GARDERIE COLLECTIVE",
+            "CRECHE FAMILIALE",
+            "ACCUEIL JEUNE",
+            "MULTI ACCUEIL CRECHE COLLECTIVE ET FAMILIALE",
+            "DECLARE ETABLISSEMENT ACCUEIL JEUNES",
+            "CRECHE PARENTALE",
+            "JARDIN D'ENFANT",
+            "MULTI ACCUEIL GESTION PARENTALE",
+            "JARDIN DENFANT",
+            "HALTE-GARDERIE PARENTALE",
+            "TEMPS ACCUEIL PERISCOLAIRE"
+          ]
+        },
+        {
+          "key": "specialite",
+          "x-originalName": "SPECIALITE",
+          "type": "string",
+          "title": "Spécialité du professionnel",
+          "x-group": "Identification de l'équipement",
+          "x-cardinality": 61,
+          "description": ""
+        },
+        {
+          "key": "structure_exercice",
+          "x-originalName": "STRUCTURE_EXERCICE",
+          "type": "string",
+          "title": "Structure d'exercice de l'activité",
+          "x-labels": {
+            "AM": "Appareillage médical",
+            "CG": "Cabinet de groupe",
+            "CI": "Cabinet individuel",
+            "ES": "Exercice en société",
+            "_U": "Indéterminé",
+            "_Z": "Sans objet"
+          },
+          "x-group": "Identification de l'équipement",
+          "x-cardinality": 5,
+          "description": "",
+          "enum": [
+            "_Z",
+            "CI",
+            "CG",
+            "ES",
+            "AM"
+          ]
+        },
+        {
+          "key": "numvoie",
+          "x-originalName": "NUMVOIE",
+          "type": "string",
+          "title": "Numéro de voie",
+          "description": "Numéro de voie de l'adresse d'implantation de l'équipement",
+          "x-refersTo": "http://www.ontotext.com/proton/protonext#StreetNumber",
+          "x-group": "Adresse",
+          "x-concept": {
+            "id": "streetNumber",
+            "title": "Numéro de rue",
+            "primary": true
+          },
+          "x-cardinality": 5185
+        },
+        {
+          "key": "indrep",
+          "x-originalName": "INDREP",
+          "type": "string",
+          "title": "Indice de répétition du numéro de voie",
+          "description": "Indice de répétition du numéro de voie de l'adresse d'implantation de l'équipement",
+          "x-group": "Adresse",
+          "x-cardinality": 8
+        },
+        {
+          "key": "typvoie",
+          "x-originalName": "TYPVOIE",
+          "type": "string",
+          "title": "Type de voie",
+          "description": "Type de voie de l'adresse d'implantation de l'équipement",
+          "x-group": "Adresse",
+          "x-cardinality": 188
+        },
+        {
+          "key": "libvoie",
+          "x-originalName": "LIBVOIE",
+          "type": "string",
+          "title": "Libellé de la voie",
+          "description": "Libellé de la voie d'implantation de l'équipement",
+          "x-refersTo": "http://schema.org/streetAddress",
+          "x-group": "Adresse",
+          "x-concept": {
+            "id": "streetAddress",
+            "title": "Rue ou lieu-dit",
+            "primary": true
+          },
+          "x-cardinality": 370127
+        },
+        {
+          "key": "cadr",
+          "x-originalName": "CADR",
+          "type": "string",
+          "title": "Complément d'adresse",
+          "x-group": "Adresse",
+          "x-cardinality": 252117,
+          "description": ""
+        },
+        {
+          "key": "codpos",
+          "x-originalName": "CODPOS",
+          "type": "string",
+          "title": "Code postal",
+          "description": "Code postal de l'adresse d'implantation de l'équipement",
+          "x-refersTo": "http://schema.org/postalCode",
+          "x-group": "Adresse",
+          "x-concept": {
+            "id": "postalCode",
+            "title": "Code postal",
+            "primary": true
+          },
+          "x-cardinality": 6210
+        },
+        {
+          "key": "libcom",
+          "x-originalName": "LIBCOM",
+          "type": "string",
+          "title": "Commune",
+          "description": "Libellé de la commune d'implantation de l'équipement",
+          "x-refersTo": "http://schema.org/City",
+          "x-group": "Adresse",
+          "x-concept": {
+            "id": "city",
+            "title": "Commune",
+            "primary": true
+          },
+          "x-cardinality": 32232
+        },
+        {
+          "key": "depcom",
+          "x-originalName": "DEPCOM",
+          "type": "string",
+          "title": "Code commune",
+          "description": "Code département et commune d'implantation de l'équipement",
+          "x-refersTo": "http://rdf.insee.fr/def/geo#codeCommune",
+          "x-capabilities": {
+            "textAgg": true
+          },
+          "x-group": "Découpage administratif",
+          "x-concept": {
+            "id": "codeCommune",
+            "title": "Code commune",
+            "primary": true
+          },
+          "x-cardinality": 34848
+        },
+        {
+          "key": "_infos_commune.nom_departement",
+          "x-originalName": "_infos_commune.nom_departement",
+          "x-extension": "dataset:communes-de-france/masterData_bulkSearch_infos-commune",
+          "title": "Nom département",
+          "description": "Nom du département",
+          "type": "string",
+          "x-refersTo": "http://rdf.insee.fr/def/geo#Departement",
+          "x-concept": {
+            "id": "departement",
+            "title": "Département",
+            "primary": true
+          }
+        },
+        {
+          "key": "dep",
+          "x-originalName": "DEP",
+          "type": "string",
+          "title": "Code département",
+          "description": "Département d'implantation de l'équipement",
+          "x-refersTo": "http://rdf.insee.fr/def/geo#codeDepartement",
+          "x-group": "Découpage administratif",
+          "x-concept": {
+            "id": "codeDepartement",
+            "title": "Code département",
+            "primary": true
+          },
+          "x-cardinality": 101
+        },
+        {
+          "key": "_infos_commune.nom_epci",
+          "x-originalName": "_infos_commune.nom_epci",
+          "x-extension": "dataset:communes-de-france/masterData_bulkSearch_infos-commune",
+          "title": "Nom EPCI",
+          "description": "Nom de l'établissement public de coopération intercommunale",
+          "type": "string"
+        },
+        {
+          "key": "reg",
+          "x-originalName": "REG",
+          "type": "string",
+          "title": "Région",
+          "description": "Région d'implantation de l'équipement",
+          "x-refersTo": "http://rdf.insee.fr/def/geo#codeRegion",
+          "x-group": "Découpage administratif",
+          "x-concept": {
+            "id": "codeRegion",
+            "title": "Code région",
+            "primary": true
+          },
+          "x-cardinality": 18,
+          "enum": [
+            "11",
+            "84",
+            "76",
+            "93",
+            "75",
+            "44",
+            "32",
+            "52",
+            "53",
+            "28",
+            "27",
+            "24",
+            "04",
+            "94",
+            "01",
+            "02",
+            "03",
+            "06"
+          ]
+        },
+        {
+          "key": "_infos_commune.nom_region",
+          "x-originalName": "_infos_commune.nom_region",
+          "x-extension": "dataset:communes-de-france/masterData_bulkSearch_infos-commune",
+          "title": "Nom région",
+          "description": "Nom de la région",
+          "type": "string",
+          "x-refersTo": "https://schema.org/addressRegion",
+          "x-concept": {
+            "id": "region",
+            "title": "Région",
+            "primary": true
+          }
+        },
+        {
+          "key": "epci",
+          "x-originalName": "EPCI",
+          "type": "string",
+          "title": "Etablissement public de coopération intercommunal",
+          "description": "Etablissement public de coopération intercommunal d'implantation de l'équipement",
+          "x-refersTo": "http://rdf.insee.fr/def/geo#EtablissementPublicDeCooperationIntercommunale",
+          "x-group": "Découpage administratif",
+          "x-concept": {
+            "id": "codeEPCI",
+            "title": "Code EPCI",
+            "primary": true
+          },
+          "x-cardinality": 1256
+        },
+        {
+          "key": "uu2020",
+          "x-originalName": "UU2020",
+          "type": "string",
+          "title": "Unité urbaine 2020",
+          "description": "Unité urbaine 2020 d'implantation de l'équipement",
+          "x-refersTo": "http://rdf.insee.fr/def/geo#UniteUrbaine2020",
+          "x-group": "Découpage administratif",
+          "x-concept": {
+            "id": "uniteUrbaine2020",
+            "title": "Code unité urbaine 2020",
+            "primary": true
+          },
+          "x-cardinality": 2473
+        },
+        {
+          "key": "bv2022",
+          "x-originalName": "BV2022",
+          "type": "integer",
+          "title": "Bassin de vie 2022",
+          "description": "Zonage en bassins de vie 2022 d’implantation de l’équipement",
+          "x-group": "Découpage administratif",
+          "x-cardinality": 1691
+        },
+        {
+          "key": "aav2020",
+          "x-originalName": "AAV2020",
+          "type": "string",
+          "title": "Zonage en aire d'attraction des villes 2020",
+          "description": "Zonage en aire d'attraction des villes 2020 d'implantation de l'équipement",
+          "x-group": "Découpage administratif",
+          "x-cardinality": 700
+        },
+        {
+          "key": "dciris",
+          "x-originalName": "DCIRIS",
+          "type": "string",
+          "title": "Code IRIS d'implantation",
+          "description": "Code IRIS d'implantation de l'équipement",
+          "x-refersTo": "http://rdf.insee.fr/def/geo#codeIRIS",
+          "x-group": "Découpage administratif",
+          "x-concept": {
+            "id": "codeIRIS",
+            "title": "Code IRIS",
+            "primary": true
+          },
+          "x-cardinality": 51037
+        },
+        {
+          "key": "irisee",
+          "x-originalName": "IRISEE",
+          "type": "boolean",
+          "title": "Irisation de la commune",
+          "description": "Indicatrice d'irisation de la commune",
+          "x-group": "Découpage administratif",
+          "x-cardinality": 2,
+          "enum": [
+            "true",
+            "false"
+          ]
+        },
+        {
+          "key": "dens3",
+          "x-originalName": "DENS3",
+          "type": "integer",
+          "title": "Grille communale de densité à 3 niveaux",
+          "x-labels": {
+            "1": "Communes densément peuplées",
+            "2": "Communes de densité intermédiaire",
+            "3": "Communes rurales"
+          },
+          "x-group": "Découpage administratif",
+          "x-cardinality": 3,
+          "description": "",
+          "enum": [
+            1,
+            2,
+            3
+          ]
+        },
+        {
+          "key": "dens7",
+          "x-originalName": "DENS7",
+          "type": "integer",
+          "title": "Grille communale de densité à 7 niveaux",
+          "x-labels": {
+            "1": "Grands centres urbains",
+            "2": "Centres urbains intermédiaires",
+            "3": "Petites villes",
+            "4": "Ceintures urbaines",
+            "5": "Bourgs ruraux",
+            "6": "Rural à habitat dispersé",
+            "7": "Rural à habitat très dispersé"
+          },
+          "x-group": "Découpage administratif",
+          "x-cardinality": 7,
+          "description": "",
+          "enum": [
+            1,
+            5,
+            2,
+            6,
+            4,
+            3,
+            7
+          ]
+        },
+        {
+          "key": "qp2015",
+          "x-originalName": "QP2015",
+          "type": "string",
+          "title": "Quartier prioritaire de la politique de la ville 2015",
+          "description": "Quartier prioritaire de la politique de la ville 2015 d'appartenance de l'équipement",
+          "x-group": "Zonages politique de la ville",
+          "x-cardinality": 1403
+        },
+        {
+          "key": "qp2024",
+          "x-originalName": "QP2024",
+          "type": "string",
+          "title": "Quartier prioritaire de la politique de la ville 2024 d'appartenance de l'équipement",
+          "x-group": "Zonages politique de la ville",
+          "x-cardinality": 1479,
+          "description": ""
+        },
+        {
+          "key": "quali_qp2015",
+          "x-originalName": "QUALI_QP2015",
+          "type": "string",
+          "title": "Qualité du géoréférencement dans le quartier prioritaire 2015",
+          "description": "Indicateur de qualité du géoréférencement dans le quartier prioritaire de la politique de la ville 2015",
+          "x-labels": {
+            "1": "Appartenance sûre au zonage",
+            "2": "Appartenance probable au zonage",
+            "3": "Appartenance aléatoire ou indéterminée au zonage",
+            "_Z": "Sans objet"
+          },
+          "x-group": "Zonages politique de la ville",
           "x-cardinality": 4,
           "enum": [
-            "2024",
-            "2023",
-            "2022",
-            "2019"
+            "_Z",
+            "1",
+            "3",
+            "2"
+          ]
+        },
+        {
+          "key": "quali_qp2024",
+          "x-originalName": "QUALI_QP2024",
+          "type": "string",
+          "title": "Indicateur de qualité du géoréférencement dans le quartier prioritaire de la politique de la ville 2024",
+          "x-labels": {
+            "1": "Appartenance sûre au zonage",
+            "2": "Appartenance probable au zonage",
+            "3": "Appartenance aléatoire ou indéterminée au zonage",
+            "_Z": "Sans objet"
+          },
+          "x-group": "Zonages politique de la ville",
+          "x-cardinality": 4,
+          "description": "",
+          "enum": [
+            "_Z",
+            "1",
+            "3",
+            "2"
+          ]
+        },
+        {
+          "key": "qva",
+          "x-originalName": "QVA",
+          "type": "string",
+          "title": "Quartier de veille active",
+          "description": "Quartier de veille active d'appartenance de l'équipement",
+          "x-group": "Zonages politique de la ville",
+          "x-cardinality": 786
+        },
+        {
+          "key": "quali_qva",
+          "x-originalName": "QUALI_QVA",
+          "type": "string",
+          "title": "Qualité du géoréférencement dans le quartier de veille active",
+          "description": "Indicateur de qualité du géoréférencement dans le quartier de veille active",
+          "x-labels": {
+            "1": "Appartenance sûre au zonage",
+            "2": "Appartenance probable au zonage",
+            "3": "Appartenance aléatoire ou indéterminée au zonage",
+            "_Z": "Sans objet"
+          },
+          "x-group": "Zonages politique de la ville",
+          "x-cardinality": 4,
+          "enum": [
+            "_Z",
+            "1",
+            "3",
+            "2"
+          ]
+        },
+        {
+          "key": "zus",
+          "x-originalName": "ZUS",
+          "type": "string",
+          "title": "Zone urbaine sensible",
+          "description": "Zone urbaine sensible d'appartenance de l'équipement",
+          "x-group": "Zonages politique de la ville",
+          "x-cardinality": 751
+        },
+        {
+          "key": "quali_zus",
+          "x-originalName": "QUALI_ZUS",
+          "type": "string",
+          "title": "Qualité du géoréférencement dans la zone urbaine sensible",
+          "description": "Indicateur de qualité du géoréférencement dans la zone urbaine sensible",
+          "x-labels": {
+            "1": "Appartenance sûre au zonage",
+            "2": "Appartenance probable au zonage",
+            "3": "Appartenance aléatoire ou indéterminée au zonage",
+            "_Z": "Sans objet"
+          },
+          "x-group": "Zonages politique de la ville",
+          "x-cardinality": 4,
+          "enum": [
+            "_Z",
+            "1",
+            "3",
+            "2"
+          ]
+        },
+        {
+          "key": "lambert_x",
+          "x-originalName": "LAMBERT_X",
+          "type": "integer",
+          "title": "Coordonnée X de l'équipement",
+          "x-refersTo": "http://data.ign.fr/def/geometrie#coordX",
+          "x-group": "Coordonnées géographiques",
+          "x-concept": {
+            "id": "coordX",
+            "title": "Coordonnée X",
+            "primary": true
+          },
+          "x-cardinality": 666240,
+          "description": ""
+        },
+        {
+          "key": "lambert_y",
+          "x-originalName": "LAMBERT_Y",
+          "type": "integer",
+          "title": "Coordonnée Y de l'équipement",
+          "x-refersTo": "http://data.ign.fr/def/geometrie#coordY",
+          "x-group": "Coordonnées géographiques",
+          "x-concept": {
+            "id": "coordY",
+            "title": "Coordonnée Y (projection libre)",
+            "primary": true
+          },
+          "x-cardinality": 682374,
+          "description": ""
+        },
+        {
+          "key": "longitude",
+          "x-originalName": "LONGITUDE",
+          "type": "number",
+          "title": "Longitude",
+          "description": "Longitude en coordonnées GPS de l’équipement (degrés décimaux)",
+          "x-refersTo": "http://schema.org/longitude",
+          "x-group": "Coordonnées géographiques",
+          "x-concept": {
+            "id": "longitude",
+            "title": "Longitude",
+            "primary": true
+          }
+        },
+        {
+          "key": "latitude",
+          "x-originalName": "LATITUDE",
+          "type": "number",
+          "title": "Latitude",
+          "description": "Latitude en coordonnées GPS de l’équipement (degrés décimaux)",
+          "x-refersTo": "http://schema.org/latitude",
+          "x-group": "Coordonnées géographiques",
+          "x-concept": {
+            "id": "latitude",
+            "title": "Latitude",
+            "primary": true
+          }
+        },
+        {
+          "key": "epsg",
+          "x-originalName": "EPSG",
+          "type": "integer",
+          "title": "Code EPSG du système de coordonnées",
+          "x-labels": {
+            "2154": "Lambert 93",
+            "2972": "UTM 22 Nord",
+            "2975": "UTM 40 Sud",
+            "4471": "UTM 38 Sud",
+            "5490": "UTM 20 Nord"
+          },
+          "x-group": "Coordonnées géographiques",
+          "x-cardinality": 5,
+          "description": "",
+          "enum": [
+            2154,
+            5490,
+            2975,
+            2972,
+            4471
+          ]
+        },
+        {
+          "key": "qualite_xy",
+          "x-originalName": "QUALITE_XY",
+          "type": "string",
+          "title": "Qualité de géolocalisation",
+          "description": "Indicateur de qualité de géolocalisation",
+          "x-labels": {
+            "B": "Bonne",
+            "A": "Acceptable",
+            "M": "Mauvaise",
+            "_Z": "Non-géolocalisé",
+            "_U": "Indéterminée"
+          },
+          "x-group": "Coordonnées géographiques",
+          "x-cardinality": 5,
+          "enum": [
+            "B",
+            "_U",
+            "M",
+            "A",
+            "_Z"
+          ]
+        },
+        {
+          "key": "qualite_geoloc",
+          "x-originalName": "QUALITE_GEOLOC",
+          "type": "string",
+          "title": "Précision du repérage par l’adresse",
+          "description": "Indicateur de précision du repérage par l’adresse",
+          "x-labels": {
+            "11": "Voie sûre, Numéro trouvé",
+            "12": "Voie sûre, Position aléatoire dans la voie",
+            "21": "Voie probable, Numéro trouvé",
+            "22": "Voie probable, Position aléatoire dans la voie",
+            "33": "Voie inconnue, Position aléatoire dans la commune",
+            "_U": "Indéterminé",
+            "_Z": "Sans objet"
+          },
+          "x-group": "Coordonnées géographiques",
+          "x-cardinality": 7,
+          "enum": [
+            "11",
+            "_Z",
+            "12",
+            "_U",
+            "33",
+            "21",
+            "22"
+          ]
+        },
+        {
+          "key": "tr_dist_precision",
+          "x-originalName": "TR_DIST_PRECISION",
+          "type": "string",
+          "title": "Erreur maximum de positionnement dans la voie ou le lieu-dit",
+          "x-labels": {
+            "< 100": "Moins de 100 mètres",
+            ">= 500": "500 mètres ou plus",
+            "[100 - 500[": "De 100 à moins de 500 mètres",
+            "_U": "Indéterminé",
+            "_Z": "Sans objet"
+          },
+          "x-group": "Coordonnées géographiques",
+          "x-cardinality": 5,
+          "description": "",
+          "enum": [
+            "< 100",
+            "_Z",
+            ">= 500",
+            "_U",
+            "[100 - 500["
+          ]
+        },
+        {
+          "key": "quali_iris",
+          "x-originalName": "QUALI_IRIS",
+          "type": "string",
+          "title": "Indicateur de qualité du géoréférencement dans l'iris",
+          "x-labels": {
+            "1": "Appartenance sûre au zonage",
+            "2": "Appartenance probable au zonage",
+            "3": "Appartenance aléatoire ou indéterminée au zonage",
+            "X": "Non concerné par le zonage"
+          },
+          "x-group": "Coordonnées géographiques",
+          "x-cardinality": 4,
+          "description": "",
+          "enum": [
+            "1",
+            "_Z",
+            "3",
+            "2"
+          ]
+        },
+        {
+          "key": "dom",
+          "x-originalName": "DOM",
+          "type": "string",
+          "title": "Domaine d'appartenance",
+          "description": "Domaine d'appartenance de l'équipement",
+          "x-labels": {
+            "A": "Services aux particuliers",
+            "B": "Commerces",
+            "C": "Enseignement",
+            "D": "Santé et action sociale",
+            "E": "Transports et déplacements",
+            "F": "Sports, loisirs et culture",
+            "G": "Tourisme"
+          },
+          "x-group": "Classification de l'équipement",
+          "x-cardinality": 7,
+          "enum": [
+            "A",
+            "D",
+            "B",
+            "F",
+            "E",
+            "C",
+            "G"
+          ]
+        },
+        {
+          "key": "sdom",
+          "x-originalName": "SDOM",
+          "type": "string",
+          "title": "Sous-domaine d'appartenance",
+          "description": "Sous-domaine d'appartenance de l'équipement",
+          "x-labels": {
+            "A1": "Services publics",
+            "A2": "Services généraux",
+            "A3": "Services automobiles",
+            "A4": "Artisanat du bâtiment",
+            "A5": "Autres services à la population",
+            "B1": "Grandes surfaces",
+            "B2": "Commerces alimentaires",
+            "B3": "Commerces spécialisés non-alimentaires",
+            "C1": "Enseignement du premier degré",
+            "C2": "Enseignement du second degré - premier cycle",
+            "C3": "Enseignement du second degré - second cycle",
+            "C4": "Enseignement supérieur non-universitaire",
+            "C5": "Enseignement supérieur universitaire",
+            "C6": "Formation continue",
+            "C7": "Autres services de l'éducation",
+            "D1": "Etablissements et services de santé",
+            "D2": "Fonctions médicales et paramédicales (à titre libéral)",
+            "D3": "Autres établissements et services à caractère sanitaire",
+            "D4": "Action sociale pour personnes âgées",
+            "D5": "Action sociale pour enfants en bas-âge",
+            "D6": "Action sociale pour handicapés",
+            "D7": "Autres services d'action sociale",
+            "E1": "Infrastructures de transports",
+            "F1": "Equipements sportifs",
+            "F2": "Equipements de loisirs",
+            "F3": "Equipements culturels et socioculturels",
+            "G1": "Tourisme"
+          },
+          "x-group": "Classification de l'équipement",
+          "x-cardinality": 27,
+          "enum": [
+            "A4",
+            "A5",
+            "D2",
+            "B3",
+            "F1",
+            "B2",
+            "A3",
+            "E1",
+            "D5",
+            "A1",
+            "A2",
+            "C1",
+            "G1",
+            "D3",
+            "F2",
+            "D6",
+            "F3",
+            "D4",
+            "D1",
+            "B1",
+            "D7",
+            "C6",
+            "C2",
+            "C3",
+            "C4",
+            "C5",
+            "C7"
+          ]
+        },
+        {
+          "key": "typequ",
+          "x-originalName": "TYPEQU",
+          "type": "string",
+          "title": "Type d'équipement",
+          "x-labels": {
+            "A101": "POLICE-",
+            "A104": "GENDARMERIE",
+            "A105": "COUR D'APPEL (CA)",
+            "A108": "CONSEIL DE PRUD'HOMMES (CPH)",
+            "A109": "TRIBUNAL DE COMMERCE (TCO)",
+            "A120": "DRFIP (DIRECTION RÉGIONALE DES FINANCES PUBLIQUES)",
+            "A121": "DDFIP (DIRECTION DÉPARTEMENTALE DES FINANCES PUBLIQUES)",
+            "A122": "RÉSEAU DE PROXIMITÉ PÔLE EMPLOI",
+            "A124": "MAISON DE JUSTICE ET DU DROIT",
+            "A125": "ANTENNE DE JUSTICE",
+            "A126": "CONSEIL DÉPARTEMENTAL D'ACCÈS AU DROIT (CDAD)",
+            "A128": "IMPLANTATIONS FRANCE SERVICES (IFS)",
+            "A129": "MAIRIE",
+            "A130": "BUREAU D'AIDE JURIDICTIONNELLE (BAJ)",
+            "A131": "TRIBUNAL JUDICIAIRE (TJ)",
+            "A132": "TRIBUNAL DE PROXIMITÉ (TPRX)",
+            "A133": "DÉCHÈTERIE",
+            "A203": "BANQUE, CAISSE D'ÉPARGNE",
+            "A205": "SERVICES FUNÉRAIRES",
+            "A206": "BUREAU DE POSTE",
+            "A207": "RELAIS POSTE",
+            "A208": "AGENCE POSTALE",
+            "A301": "RÉPARATION AUTOMOBILE ET DE MATÉRIEL AGRICOLE",
+            "A302": "CONTRÔLE TECHNIQUE AUTOMOBILE",
+            "A303": "LOCATION AUTO-UTILITAIRES LÉGERS",
+            "A304": "ÉCOLE DE CONDUITE",
+            "A401": "MAÇON",
+            "A402": "PLÂTRIER PEINTRE",
+            "A403": "MENUISIER CHARPENTIER SERRURIER",
+            "A404": "PLOMBIER COUVREUR CHAUFFAGISTE",
+            "A405": "ÉLECTRICIEN",
+            "A406": "ENTREPRISE GÉNÉRALE DU BÂTIMENT",
+            "A501": "COIFFURE",
+            "A502": "VÉTÉRINAIRE",
+            "A503": "AGENCE DE TRAVAIL TEMPORAIRE",
+            "A504": "RESTAURANT- RESTAURATION RAPIDE",
+            "A505": "AGENCE IMMOBILIÈRE",
+            "A506": "PRESSING-LAVERIE AUTOMATIQUE",
+            "A507": "INSTITUT DE BEAUTÉ-ONGLERIE",
+            "B103": "GRANDE SURFACE DE BRICOLAGE",
+            "B104": "HYPERMARCHÉ ET GRAND MAGASIN",
+            "B105": "SUPERMARCHÉ ET MAGASIN MULTI-COMMERCE",
+            "B201": "SUPÉRETTE",
+            "B202": "ÉPICERIE",
+            "B204": "BOUCHERIE CHARCUTERIE",
+            "B205": "PRODUITS SURGELÉS",
+            "B206": "POISSONNERIE",
+            "B207": "BOULANGERIE-PÂTISSERIE",
+            "B208": "COMMERCE SPÉCIALISÉ EN FRUITS ET LÉGUMES",
+            "B209": "COMMERCE DE BOISSONS",
+            "B210": "AUTRES COMMERCES ALIMENTAIRES",
+            "B302": "MAGASIN DE VÊTEMENTS",
+            "B303": "MAGASIN D'ÉQUIPEMENTS DU FOYER",
+            "B304": "MAGASIN DE CHAUSSURES",
+            "B306": "MAGASIN DE MEUBLES",
+            "B307": "MAGASIN D'ARTICLES DE SPORTS ET DE LOISIRS",
+            "B308": "MAGASIN DE REVÊTEMENTS MURS ET SOLS",
+            "B309": "DROGUERIE QUINCAILLERIE BRICOLAGE",
+            "B310": "PARFUMERIE-COSMÉTIQUE",
+            "B311": "HORLOGERIE-BIJOUTERIE",
+            "B312": "FLEURISTE-JARDINERIE-ANIMALERIE",
+            "B313": "MAGASIN D'OPTIQUE",
+            "B315": "MAGASIN DE MATÉRIEL MÉDICAL ET ORTHOPÉDIQUE",
+            "B316": "STATION-SERVICE",
+            "B317": "COMMERCE DE TISSUS ET MERCERIE",
+            "B318": "COMMERCE DE JEUX ET JOUETS",
+            "B319": "MAROQUINERIE ET ARTICLES DE VOYAGE",
+            "B320": "COMMERCE DE COMBUSTIBLES DOMESTIQUES",
+            "B321": "MAGASIN ÉLECTROMÉNAGER, MATÉRIEL AUDIO VIDÉO INFORMATIQUE",
+            "B322": "MAGASIN DE MATÉRIELS DE TÉLÉCOMMUNICATION",
+            "B323": "COMMERCE DE BIENS D’OCCASION",
+            "B324": "LIBRAIRIE",
+            "B325": "PAPETERIE ET PRESSE",
+            "C107": "ÉCOLE MATERNELLE",
+            "C108": "ÉCOLE PRIMAIRE",
+            "C109": "ÉCOLE ÉLÉMENTAIRE",
+            "C201": "COLLÈGE",
+            "C301": "LYCÉE D'ENSEIGNEMENT GÉNÉRAL ET/OU TECHNOLOGIQUE",
+            "C302": "LYCÉE D'ENSEIGNEMENT PROFESSIONNEl",
+            "C303": "LYCÉE D'ENSEIGNEMENT TECHNIQUE ET/OU PROFESSIONNEL AGRICOLE",
+            "C304": "SGT SECTION D'ENSEIGNEMENT GÉNÉRAL ET TECHNOLOGIQUE",
+            "C305": "SEP SECTION D'ENSEIGNEMENT PROFESSIONNEl",
+            "C401": "STS SECTION TECHNICIEN SUPÉRIEUR, CPGE CLASSE PRÉPARATOIRE AUX GRANDES ÉCOLES",
+            "C402": "FORMATION SANTÉ",
+            "C403": "FORMATION COMMERCE",
+            "C409": "AUTRE FORMATION POST BAC NON UNIVERSITAIRE",
+            "C501": "UFR",
+            "C502": "INSTITUT UNIVERSITAIRE",
+            "C503": "ÉCOLE D'INGÉNIEURS",
+            "C504": "ENSEIGNEMENT GÉNÉRAL SUPÉRIEUR PRIVÉ",
+            "C505": "ÉCOLE D'ENSEIGNEMENT SUPÉRIEUR AGRICOLE",
+            "C509": "AUTRE ENSEIGNEMENT SUPÉRIEUR",
+            "C601": "CENTRE DE FORMATION D'APPRENTIS HORS AGRICULTURE",
+            "C602": "GRETA",
+            "C603": "CENTRE DISPENSANT DE LA FORMATION CONTINUE AGRICOLE",
+            "C604": "FORMATION AUX MÉTIERS DU SPORT",
+            "C605": "CENTRE DISPENSANT DES FORMATIONS D'APPRENTISSAGE AGRICOLE",
+            "C609": "AUTRE FORMATION CONTINUE",
+            "C701": "RÉSIDENCE UNIVERSITAIRE",
+            "C702": "RESTAURANT UNIVERSITAIRE",
+            "D101": "ÉTABLISSEMENT SANTÉ COURT SÉJOUR",
+            "D102": "ÉTABLISSEMENT SANTÉ MOYEN SÉJOUR",
+            "D103": "ÉTABLISSEMENT SANTÉ LONG SÉJOUR",
+            "D104": "ÉTABLISSEMENT PSYCHIATRIQUE",
+            "D105": "CENTRE LUTTE CANCER",
+            "D106": "URGENCES",
+            "D107": "MATERNITÉ",
+            "D108": "CENTRE DE SANTÉ",
+            "D109": "STRUCTURE PSYCHIATRIQUE EN AMBULATOIRE",
+            "D110": "CENTRE MÉDECINE PRÉVENTIVE",
+            "D111": "DIALYSE",
+            "D112": "HOSPITALISATION À DOMICILE",
+            "D113": "MAISON DE SANTÉ PLURIDISCIPLINAIRE",
+            "D201": "MÉDECIN GÉNÉRALISTE",
+            "D202": "SPÉCIALISTE EN CARDIOLOGIE",
+            "D203": "SPÉCIALISTE EN DERMATOLOGIE VÉNÉRÉOLOGIE",
+            "D206": "SPÉCIALISTE EN GASTRO-ENTÉROLOGIE HÉPATOLOGIE",
+            "D207": "SPÉCIALISTE EN PSYCHIATRIE",
+            "D208": "SPÉCIALISTE EN OPHTALMOLOGIE",
+            "D209": "SPÉCIALISTE EN OTO-RHINO-LARYNGOLOGIE",
+            "D210": "SPÉCIALISTE EN PÉDIATRIE",
+            "D211": "SPÉCIALISTE EN PNEUMOLOGIE",
+            "D212": "SPÉCIALISTE EN RADIODIAGNOSTIC ET IMAGERIE MÉDICALE",
+            "D213": "SPÉCIALISTE EN STOMATOLOGIE",
+            "D214": "SPÉCIALISTE EN GYNÉCOLOGIE (MÉDICALE ET/OU OBSTÉTRIQUE)",
+            "D221": "CHIRURGIEN DENTISTE",
+            "D231": "SAGE-FEMME",
+            "D233": "MASSEUR KINÉSITHÉRAPEUTE",
+            "D235": "ORTHOPHONISTE",
+            "D236": "ORTHOPTISTE",
+            "D237": "PÉDICURE-PODOLOGUE",
+            "D238": "AUDIO PROTHÉSISTE",
+            "D239": "ERGOTHÉRAPEUTE",
+            "D240": "PSYCHOMOTRICIEN",
+            "D242": "DIÉTÉTICIEN",
+            "D243": "PSYCHOLOGUE",
+            "D244": "INFIRMIER",
+            "D302": "LABORATOIRE D ANALYSES ET DE BIOLOGIE MÉDICALE",
+            "D303": "AMBULANCE",
+            "D304": "TRANSFUSION SANGUINE",
+            "D305": "ÉTABLISSEMENT THERMAl",
+            "D307": "PHARMACIE",
+            "D401": "PERSONNES ÂGÉES : HÉBERGEMENT",
+            "D402": "PERSONNES ÂGÉES : SOINS À DOMICILE",
+            "D403": "PERSONNES ÂGÉES : SERVICES D'AIDE",
+            "D502": "ÉTABLISSEMENT D'ACCUEIL DU JEUNE ENFANT (EAJE)",
+            "D503": "LIEUX D'ACCUEIL ENFANT-PARENT (LAEP)",
+            "D504": "RELAIS PETITE ENFANCE",
+            "D505": "ACCUEIL DE LOISIR SANS HÉBERGEMENT (ALSH)",
+            "D506": "CENTRES SOCIAUX",
+            "D507": "MÉDIATION FAMILIALE",
+            "D601": "ENFANTS HANDICAPÉS : HÉBERGEMENT",
+            "D602": "ENFANTS HANDICAPÉS : SERVICES À DOMICILE OU AMBULATOIRES",
+            "D603": "ADULTES HANDICAPÉS : ACCUEIL/HÉBERGEMENT",
+            "D604": "ADULTES HANDICAPÉS : SERVICES D'AIDE",
+            "D605": "TRAVAIL PROTÉGÉ",
+            "D606": "ADULTES HANDICAPÉS : SERVICES DE SOINS À DOMICILE",
+            "D701": "PROTECTION DE L'ENFANCE - HÉBERGEMENT",
+            "D702": "PROTECTION DE L'ENFANCE - ACTION ÉDUCATIVE",
+            "D703": "CHRS : CENTRE D'HÉBERGEMENT ET DE RÉINSERTION SOCIALE",
+            "D704": "CENTRE PROVISOIRE D'HÉBERGEMENT",
+            "D705": "CENTRE ACCUEIL DEMANDEUR D'ASILE",
+            "D709": "AUTRES ÉTABLISSEMENTS POUR ADULTES ET FAMILLES EN DIFFICULTÉ",
+            "E101": "TAXI-VTC",
+            "E102": "AÉROPORT",
+            "E107": "GARE DE VOYAGEURS D'INTÉRÊT NATIONAl",
+            "E108": "GARE DE VOYAGEURS D'INTÉRÊT RÉGIONAl",
+            "E109": "GARE DE VOYAGEURS D'INTÉRÊT LOCAl",
+            "F101": "BASSIN DE NATATION",
+            "F102": "BOULODROME",
+            "F103": "TENNIS",
+            "F104": "ÉQUIPEMENT DE CYCLISME",
+            "F105": "DOMAINE SKIABLE",
+            "F106": "CENTRE ÉQUESTRE",
+            "F107": "ATHLÉTISME",
+            "F108": "TERRAIN DE GOLF",
+            "F109": "PARCOURS SPORTIF/SANTÉ",
+            "F110": "SPORTS DE GLACE",
+            "F111": "PLATEAUX ET TERRAINS DE JEUX EXTÉRIEURS",
+            "F112": "SALLES SPÉCIALISÉES",
+            "F113": "TERRAINS DE GRANDS JEUX",
+            "F114": "SALLES DE COMBAT",
+            "F116": "SALLES NON SPÉCIALISÉES",
+            "F117": "ROLLER-SKATE-VÉLO BICROSS OU FREESTYLE",
+            "F118": "SPORTS NAUTIQUES",
+            "F119": "BOWLING",
+            "F120": "SALLES DE REMISE EN FORME",
+            "F121": "SALLES MULTISPORTS (GYMNASES)",
+            "F122": "CIRCUIT / PISTE DE SPORTS MÉCANIQUES",
+            "F123": "MUR ET FRONTON",
+            "F124": "PAS DE TIR",
+            "F125": "SITE D'ACTIVITÉS AÉRIENNES",
+            "F126": "SITE DE MODÉLISME",
+            "F201": "BAIGNADE AMENAGÉE",
+            "F202": "PORT DE PLAISANCE – MOUILLAGE",
+            "F203": "BOUCLE DE RANDONNÉE",
+            "F204": "ÉQUIPEMENTS DE SPORTS DE NATURE",
+            "F303": "CINÉMA",
+            "F305": "CONSERVATOIRE",
+            "F307": "BIBLIOTHÈQUE",
+            "F312": "EXPOSITION ET MEDIATION CULTURELLE",
+            "F313": "ESPACE REMARQUABLE ET PATRIMOINE",
+            "F314": "ARCHIVES",
+            "F315": "ARTS DU SPECTACLE",
+            "G101": "AGENCE DE VOYAGE",
+            "G102": "HÔTEl",
+            "G103": "CAMPING",
+            "G104": "INFORMATION TOURISTIQUE",
+            "G105": "AUTRES HÉBERGEMENTS COLLECTIFS TOURISTIQUES (AHCT)"
+          },
+          "x-group": "Classification de l'équipement",
+          "x-cardinality": 235,
+          "description": ""
+        },
+        {
+          "key": "type",
+          "x-originalName": "TYPE",
+          "type": "string",
+          "title": "Type de lieux",
+          "x-labels": {
+            "ANT": "Antenne",
+            "LF": "Lieu fixe",
+            "MO": "Mobile",
+            "MS": "Multi-sites",
+            "_U": "Indéterminé",
+            "_Z": "Sans objet"
+          },
+          "x-group": "Classification de l'équipement",
+          "x-cardinality": 6,
+          "description": "",
+          "enum": [
+            "_Z",
+            "1",
+            "5",
+            "2",
+            "4",
+            "3"
           ]
         },
         {
           "key": "secteur",
+          "x-originalName": "SECTEUR",
           "type": "string",
-          "title": "",
+          "title": "Secteur public, privé hors contrat, privé sous contrat",
+          "x-labels": {
+            "1": "Public",
+            "2": "Privé hors contrat",
+            "3": "Privé sous contrat"
+          },
+          "x-group": "Classification de l'équipement",
+          "x-cardinality": 4,
           "description": "",
-          "x-capabilities": {},
+          "enum": [
+            "_Z",
+            "1",
+            "3",
+            "2"
+          ]
+        },
+        {
+          "key": "sect",
+          "x-originalName": "SECT",
+          "type": "string",
+          "title": "Appartenance au secteur public ou privé d'enseignement",
+          "x-labels": {
+            "PR": "Secteur privé",
+            "PU": "Secteur public",
+            "_U": "Indéterminé",
+            "_Z": "Sans objet"
+          },
+          "x-group": "Classification de l'équipement",
+          "x-cardinality": 3,
+          "description": "",
+          "enum": [
+            "_Z",
+            "PR",
+            "PU"
+          ]
+        },
+        {
+          "key": "cantine",
+          "x-originalName": "CANTINE",
+          "type": "string",
+          "title": "Présence ou absence d'une cantine",
+          "x-labels": {
+            "0": "Absence",
+            "1": "Présence",
+            "_U": "Indéterminé",
+            "_Z": "Sans objet"
+          },
+          "x-group": "Enseignement",
+          "x-cardinality": 4,
+          "description": "",
+          "enum": [
+            "_Z",
+            "1",
+            "0",
+            "_U"
+          ]
+        },
+        {
+          "key": "internat",
+          "x-originalName": "INTERNAT",
+          "type": "string",
+          "title": "Présence ou absence d'un internat",
+          "description": "Présence ou absence d’un internat",
+          "x-labels": {
+            "0": "Absence",
+            "1": "Présence",
+            "_U": "Indéterminé",
+            "_Z": "Sans objet"
+          },
+          "x-group": "Enseignement",
+          "x-cardinality": 4,
+          "enum": [
+            "_Z",
+            "0",
+            "1",
+            "_U"
+          ]
+        },
+        {
+          "key": "rpi",
+          "x-originalName": "RPI",
+          "type": "string",
+          "title": "Type de regroupement pédagogique intercommunal",
+          "x-labels": {
+            "C": "RPI concentré",
+            "D": "RPI dispersé",
+            "_Z": "Sans objet"
+          },
+          "x-group": "Enseignement",
+          "x-cardinality": 3,
+          "description": "",
+          "enum": [
+            "_Z",
+            "D",
+            "C"
+          ]
+        },
+        {
+          "key": "ep",
+          "x-originalName": "EP",
+          "type": "string",
+          "title": "Présence ou absence d'un dispositif d'éducation prioritaire",
+          "x-labels": {
+            "0": "Absence",
+            "1": "Présence",
+            "_U": "Indéterminé",
+            "_Z": "Sans objet"
+          },
+          "x-group": "Enseignement",
+          "x-cardinality": 3,
+          "description": "",
+          "enum": [
+            "_Z",
+            "0",
+            "1"
+          ]
+        },
+        {
+          "key": "cl_pge",
+          "x-originalName": "CL_PGE",
+          "type": "string",
+          "title": "Présence ou absence d'une classe préparatoire aux grandes écoles en lycée",
+          "x-labels": {
+            "0": "Absence",
+            "1": "Présence",
+            "_U": "Indéterminé",
+            "_Z": "Sans objet"
+          },
+          "x-group": "Enseignement",
+          "x-cardinality": 3,
+          "description": "",
+          "enum": [
+            "_Z",
+            "0",
+            "1"
+          ]
+        },
+        {
+          "key": "acces_aire_pratique",
+          "x-originalName": "ACCES_AIRE_PRATIQUE",
+          "type": "string",
+          "title": "Aménagement permettant l'accessibilité",
+          "description": "Présence d’un aménagement permettant l’accessibilité d’au moins une aire de pratique, au sein d’une même installation, aux personnes handicapées moteur ou à mobilité réduite",
+          "x-labels": {
+            "0": "Absence",
+            "1": "Présence",
+            "_U": "Indéterminé",
+            "_Z": "Sans objet"
+          },
+          "x-group": "Sport, loisirs & accessibilité",
+          "x-cardinality": 3,
+          "enum": [
+            "_Z",
+            "1",
+            "0"
+          ]
+        },
+        {
+          "key": "acces_libre",
+          "x-originalName": "ACCES_LIBRE",
+          "type": "string",
+          "title": "Accès libre permanent",
+          "description": "Présence d’un équipement en accès libre permanent",
+          "x-labels": {
+            "0": "Absence",
+            "1": "Présence",
+            "_U": "Indéterminé",
+            "_Z": "Sans objet"
+          },
+          "x-group": "Sport, loisirs & accessibilité",
+          "x-cardinality": 4,
+          "enum": [
+            "_Z",
+            "0",
+            "1",
+            "_U"
+          ]
+        },
+        {
+          "key": "acces_sanitaire",
+          "x-originalName": "ACCES_SANITAIRE",
+          "type": "string",
+          "title": "Accessibilité des sanitaires",
+          "description": "Présence d’un aménagement permettant l’accessibilité d’au moins un sanitaire, au sein d’une même installation, aux personnes handicapées moteur ou à mobilité réduite",
+          "x-labels": {
+            "0": "Absence",
+            "1": "Présence",
+            "_U": "Indéterminé",
+            "_Z": "Sans objet"
+          },
+          "x-group": "Sport, loisirs & accessibilité",
+          "x-cardinality": 3,
+          "enum": [
+            "_Z",
+            "0",
+            "1"
+          ]
+        },
+        {
+          "key": "acces_vestiaire",
+          "x-originalName": "ACCES_VESTIAIRE",
+          "type": "string",
+          "title": "Accessibilité des vestiaires",
+          "description": "Présence d’un aménagement permettant l’accessibilité d’au moins un vestiaire et une douche, au sein d’une même installation, aux personnes handicapées moteur ou à mobilité réduite",
+          "x-labels": {
+            "0": "Absence",
+            "1": "Présence",
+            "_U": "Indéterminé",
+            "_Z": "Sans objet"
+          },
+          "x-group": "Sport, loisirs & accessibilité",
+          "x-cardinality": 3,
+          "enum": [
+            "_Z",
+            "0",
+            "1"
+          ]
+        },
+        {
+          "key": "capacite_d_accueil",
+          "x-originalName": "CAPACITE_D_ACCUEIL",
+          "type": "string",
+          "title": "Catégorie d’ERP",
+          "description": "Catégorie d’établissement recevant du public (ERP)",
+          "x-labels": {
+            "1": "Au-dessus de 1500 personnes",
+            "2": "De 701 à 1500 personnes",
+            "3": "De 301 à 700 Personnes",
+            "4": "De 101 à 300 personnes",
+            "5": "Inférieur ou égal à 100 personnes",
+            "_U": "Indéterminé",
+            "_Z": "Sans objet"
+          },
+          "x-group": "Sport, loisirs & accessibilité",
+          "x-cardinality": 7,
+          "enum": [
+            "_Z",
+            "_U",
+            "5",
+            "3",
+            "4",
+            "2",
+            "1"
+          ]
+        },
+        {
+          "key": "pres_douche",
+          "x-originalName": "PRES_DOUCHE",
+          "type": "string",
+          "title": "Présence de douches",
+          "x-labels": {
+            "0": "Absence",
+            "1": "Présence",
+            "_U": "Indéterminé",
+            "_Z": "Sans objet"
+          },
+          "x-group": "Sport, loisirs & accessibilité",
+          "x-cardinality": 4,
+          "description": "",
+          "enum": [
+            "_Z",
+            "0",
+            "1",
+            "_U"
+          ]
+        },
+        {
+          "key": "pres_sanitaire",
+          "x-originalName": "PRES_SANITAIRE",
+          "type": "string",
+          "title": "Présence de sanitaires",
+          "x-labels": {
+            "0": "Absence",
+            "1": "Présence",
+            "_U": "Indéterminé",
+            "_Z": "Sans objet"
+          },
+          "x-group": "Sport, loisirs & accessibilité",
+          "x-cardinality": 4,
+          "description": "",
+          "enum": [
+            "_Z",
+            "1",
+            "0",
+            "_U"
+          ]
+        },
+        {
+          "key": "saisonnier",
+          "x-originalName": "SAISONNIER",
+          "type": "string",
+          "title": "Ouverture exclusivement saisonnière",
+          "description": "Présence d’un équipement à l’ouverture exclusivement saisonnière",
+          "x-labels": {
+            "0": "Absence",
+            "1": "Présence",
+            "_U": "Indéterminé",
+            "_Z": "Sans objet"
+          },
+          "x-group": "Sport, loisirs & accessibilité",
+          "x-cardinality": 4,
+          "enum": [
+            "_Z",
+            "0",
+            "1",
+            "_U"
+          ]
+        },
+        {
+          "key": "couvert",
+          "x-originalName": "COUVERT",
+          "type": "string",
+          "title": "Partie couverte",
+          "description": "Présence ou absence d’équipement(s) avec au moins une partie couverte",
+          "x-labels": {
+            "0": "Absence",
+            "1": "Présence",
+            "_U": "Indéterminé",
+            "_Z": "Sans objet"
+          },
+          "x-group": "Sport, loisirs & accessibilité",
+          "x-cardinality": 4,
+          "enum": [
+            "_Z",
+            "0",
+            "1",
+            "_U"
+          ]
+        },
+        {
+          "key": "eclaire",
+          "x-originalName": "ECLAIRE",
+          "type": "string",
+          "title": "Partie éclairée",
+          "description": "Présence ou absence d'équipement(s) avec au moins une partie éclairée",
+          "x-labels": {
+            "0": "Absence",
+            "1": "Présence",
+            "_U": "Indéterminé",
+            "_Z": "Sans objet"
+          },
+          "x-group": "Sport, loisirs & accessibilité",
+          "x-cardinality": 4,
+          "enum": [
+            "_Z",
+            "1",
+            "0",
+            "_U"
+          ]
+        },
+        {
+          "key": "multiplexe",
+          "x-originalName": "MULTIPLEXE",
+          "type": "string",
+          "title": "Présence d’un cinéma multiplexe",
+          "x-labels": {
+            "0": "Absence",
+            "1": "Présence",
+            "_U": "Indéterminé",
+            "_Z": "Sans objet"
+          },
+          "x-group": "Sport, loisirs & accessibilité",
+          "x-cardinality": 4,
+          "description": "",
+          "enum": [
+            "_Z",
+            "0",
+            "1",
+            "_U"
+          ]
+        },
+        {
+          "key": "itinerance",
+          "x-originalName": "ITINERANCE",
+          "type": "string",
+          "title": "Présence d’une structure itinérante",
+          "x-labels": {
+            "0": "Absence",
+            "1": "Présence",
+            "_U": "Indéterminé",
+            "_Z": "Sans objet"
+          },
+          "x-group": "Sport, loisirs & accessibilité",
+          "x-cardinality": 3,
+          "description": "",
+          "enum": [
+            "_Z",
+            "0",
+            "1"
+          ]
+        },
+        {
+          "key": "mode_gestion",
+          "x-originalName": "MODE_GESTION",
+          "type": "string",
+          "title": "Mode de gestion",
+          "description": "Mode de gestion de l'infrastructure",
+          "x-labels": {
+            "ENTRE": "Marché de prestation de service",
+            "GESDE": "Délégation de service public",
+            "PRIVE": "Gestion privée",
+            "REGIE": "Régie",
+            "_U": "Indéterminé",
+            "_Z": "Sans objet"
+          },
+          "x-group": "Sport, loisirs & accessibilité",
+          "x-cardinality": 6,
+          "enum": [
+            "_Z",
+            "REGIE",
+            "ENTRE",
+            "GESDE",
+            "PRIVE",
+            "_U"
+          ]
+        },
+        {
+          "key": "sstypheb",
+          "x-originalName": "SSTYPHEB",
+          "type": "string",
+          "title": "Sous-type d'hébergement",
+          "x-labels": {
+            "AH": "Autres hébergements",
+            "RT": "Résidence de tourisme",
+            "VV": "Village vacances",
+            "_Z": "Sans objet"
+          },
+          "x-group": "Sport, loisirs & accessibilité",
+          "x-cardinality": 4,
+          "description": "",
+          "enum": [
+            "_Z",
+            "RT",
+            "VV",
+            "AH"
+          ]
+        },
+        {
+          "key": "capacite",
+          "x-originalName": "CAPACITE",
+          "type": "integer",
+          "title": "Capacité",
+          "description": "Capacité de l'équipement",
+          "x-group": "Sport, loisirs & accessibilité",
+          "x-cardinality": 1872
+        },
+        {
+          "key": "indic_capa",
+          "x-originalName": "INDIC_CAPA",
+          "type": "boolean",
+          "title": "Concerné par la capacité",
+          "description": "Indicateur de concernement : vaut 1 lorsque l'équipement est concerné par cette information (valeur renseignée et pertinente), 0 sinon. Permet de distinguer une valeur absente d'une valeur non applicable.",
+          "x-group": "Sport, loisirs & accessibilité",
+          "x-cardinality": 2,
+          "enum": [
+            "false",
+            "true"
+          ]
+        },
+        {
+          "key": "nbequident",
+          "x-originalName": "NBEQUIDENT",
+          "type": "integer",
+          "title": "Nombre d'équipements identiques",
+          "description": "Nombre d'aires de pratique identiques dans l'équipement",
+          "x-group": "Sport, loisirs & accessibilité",
+          "x-cardinality": 42
+        },
+        {
+          "key": "indic_nbequident",
+          "x-originalName": "INDIC_NBEQUIDENT",
+          "type": "boolean",
+          "title": "Concerné par le nombre d'infrastructures",
+          "description": "Indicateur de concernement : vaut 1 lorsque l'équipement est concerné par cette information (valeur renseignée et pertinente), 0 sinon. Permet de distinguer une valeur absente d'une valeur non applicable.",
+          "x-group": "Sport, loisirs & accessibilité",
+          "x-cardinality": 2,
+          "enum": [
+            "false",
+            "true"
+          ]
+        },
+        {
+          "key": "nbsalles",
+          "x-originalName": "NBSALLES",
+          "type": "integer",
+          "title": "Nombre de salles",
+          "x-group": "Sport, loisirs & accessibilité",
           "x-cardinality": 5,
+          "description": ""
+        },
+        {
+          "key": "indic_nbsalles",
+          "x-originalName": "INDIC_NBSALLES",
+          "type": "boolean",
+          "title": "Concerné par le nombre de salles",
+          "description": "Indicateur de concernement : vaut 1 lorsque l'équipement est concerné par cette information (valeur renseignée et pertinente), 0 sinon. Permet de distinguer une valeur absente d'une valeur non applicable.",
+          "x-group": "Sport, loisirs & accessibilité",
+          "x-cardinality": 2,
           "enum": [
-            "01. Déplacements",
-            "05. Intrants",
-            "03. Immobilisations (hors véhicules)",
-            "04. Déchets",
-            "02. Locaux"
+            "false",
+            "true"
           ]
         },
         {
-          "key": "sous_secteur",
-          "title": "Sous-secteur",
+          "key": "nblieux",
+          "x-originalName": "NBLIEUX",
+          "type": "integer",
+          "title": "Nombre de lieux",
+          "x-group": "Sport, loisirs & accessibilité",
+          "x-cardinality": 18,
+          "description": ""
+        },
+        {
+          "key": "indic_nblieux",
+          "x-originalName": "INDIC_NBLIEUX",
+          "type": "boolean",
+          "title": "Concerné par le nombre de lieux",
+          "description": "Indicateur de concernement : vaut 1 lorsque l'équipement est concerné par cette information (valeur renseignée et pertinente), 0 sinon. Permet de distinguer une valeur absente d'une valeur non applicable.",
+          "x-group": "Sport, loisirs & accessibilité",
+          "x-cardinality": 2,
+          "enum": [
+            "false",
+            "true"
+          ]
+        },
+        {
+          "key": "typeresto",
+          "x-originalName": "TYPERESTO",
           "type": "string",
+          "title": "Type de restauration",
+          "x-labels": {
+            "5610A": "Restauration traditionnelle",
+            "5610B": "Cafétérias et autres libres-services",
+            "5610C": "Restauration de type rapide"
+          },
+          "x-group": "Sport, loisirs & accessibilité",
+          "x-cardinality": 4,
           "description": "",
-          "x-capabilities": {},
+          "enum": [
+            "_Z",
+            "5610C",
+            "5610A",
+            "5610B"
+          ]
+        },
+        {
+          "key": "gpl",
+          "x-originalName": "GPL",
+          "type": "string",
+          "title": "Gaz de pétrole liquéfiés",
+          "x-labels": {
+            "0": "Absence",
+            "1": "Présence",
+            "_U": "Indéterminé",
+            "_Z": "Sans objet"
+          },
+          "x-group": "Bornes de recharge",
+          "x-cardinality": 4,
+          "description": "",
+          "enum": [
+            "_Z",
+            "0",
+            "1",
+            "_U"
+          ]
+        },
+        {
+          "key": "implantation_station",
+          "x-originalName": "IMPLANTATION_STATION",
+          "type": "string",
+          "title": "Implantation d’une station de recharge",
+          "x-labels": {
+            "1": "Voirie",
+            "2": "Parking public",
+            "3": "Parking privé à usage public",
+            "4": "parking privé réservé à la clientèle",
+            "5": "Station dédiée à la recharge rapide",
+            "_U": "Indéterminé",
+            "_Z": "Sans objet"
+          },
+          "x-group": "Bornes de recharge",
+          "x-cardinality": 6,
+          "description": "",
+          "enum": [
+            "_Z",
+            "1",
+            "3",
+            "2",
+            "5",
+            "4"
+          ]
+        },
+        {
+          "key": "nb_pdc",
+          "x-originalName": "NB_PDC",
+          "type": "integer",
+          "title": "Nombre de points de charge dans une station de recharge",
+          "x-group": "Bornes de recharge",
+          "x-cardinality": 79,
+          "description": ""
+        },
+        {
+          "key": "indic_nb_pdc",
+          "x-originalName": "INDIC_NB_PDC",
+          "type": "boolean",
+          "title": "Indicateur de concernement des valeurs du nombre de points de charge dans une station de recharge",
+          "description": "Indicateur de concernement : vaut 1 lorsque l'équipement est concerné par cette information (valeur renseignée et pertinente), 0 sinon. Permet de distinguer une valeur absente d'une valeur non applicable.",
+          "x-group": "Bornes de recharge",
+          "x-cardinality": 2,
+          "enum": [
+            "false",
+            "true"
+          ]
+        },
+        {
+          "key": "nb_pdc_pa",
+          "x-originalName": "NB_PDC_PA",
+          "type": "integer",
+          "title": "Nombre de points de recharge à paiement à l’acte dans une station de recharge",
+          "x-group": "Bornes de recharge",
+          "x-cardinality": 78,
+          "description": ""
+        },
+        {
+          "key": "indic_nb_pdc_pa",
+          "x-originalName": "INDIC_NB_PDC_PA",
+          "type": "boolean",
+          "title": "Indicateur de concernement des valeurs du nombre de points de recharge à paiement à l'acte",
+          "description": "Indicateur de concernement : vaut 1 lorsque l'équipement est concerné par cette information (valeur renseignée et pertinente), 0 sinon. Permet de distinguer une valeur absente d'une valeur non applicable.",
+          "x-group": "Bornes de recharge",
+          "x-cardinality": 2,
+          "enum": [
+            "false",
+            "true"
+          ]
+        },
+        {
+          "key": "nb_pdc_acceleree",
+          "x-originalName": "NB_PDC_ACCELEREE",
+          "type": "integer",
+          "title": "Nombre de points de recharge accélérée dans une station de recharge",
+          "x-group": "Bornes de recharge",
+          "x-cardinality": 60,
+          "description": ""
+        },
+        {
+          "key": "indic_nb_pdc_acceleree",
+          "x-originalName": "INDIC_NB_PDC_ACCELEREE",
+          "type": "boolean",
+          "title": "Indicateur de concernement des valeurs du nombre de points de recharge accélérée",
+          "description": "Indicateur de concernement : vaut 1 lorsque l'équipement est concerné par cette information (valeur renseignée et pertinente), 0 sinon. Permet de distinguer une valeur absente d'une valeur non applicable.",
+          "x-group": "Bornes de recharge",
+          "x-cardinality": 2,
+          "enum": [
+            "false",
+            "true"
+          ]
+        },
+        {
+          "key": "nb_pdc_lente",
+          "x-originalName": "NB_PDC_LENTE",
+          "type": "integer",
+          "title": "Nombre de points de recharge lente dans une station de recharge",
+          "x-group": "Bornes de recharge",
+          "x-cardinality": 68,
+          "description": ""
+        },
+        {
+          "key": "indic_nb_pdc_lente",
+          "x-originalName": "INDIC_NB_PDC_LENTE",
+          "type": "boolean",
+          "title": "Indicateur de concernement des valeurs du nombre de points de recharge lente",
+          "description": "Indicateur de concernement : vaut 1 lorsque l'équipement est concerné par cette information (valeur renseignée et pertinente), 0 sinon. Permet de distinguer une valeur absente d'une valeur non applicable.",
+          "x-group": "Bornes de recharge",
+          "x-cardinality": 2,
+          "enum": [
+            "false",
+            "true"
+          ]
+        },
+        {
+          "key": "nb_pdc_rapide",
+          "x-originalName": "NB_PDC_RAPIDE",
+          "type": "integer",
+          "title": "Nombre de points de recharge rapide dans une station de recharge",
+          "x-group": "Bornes de recharge",
           "x-cardinality": 21,
+          "description": ""
+        },
+        {
+          "key": "indic_nb_pdc_rapide",
+          "x-originalName": "INDIC_NB_PDC_RAPIDE",
+          "type": "boolean",
+          "title": "Indicateur de concernement des valeurs du nombre de points de recharge rapide",
+          "description": "Indicateur de concernement : vaut 1 lorsque l'équipement est concerné par cette information (valeur renseignée et pertinente), 0 sinon. Permet de distinguer une valeur absente d'une valeur non applicable.",
+          "x-group": "Bornes de recharge",
+          "x-cardinality": 2,
           "enum": [
-            "Achats de services (assurances, entretien, formations…)",
-            "Déplacements dans le cadre du travail - Non opérés",
-            "Déplacements domicile-travail",
-            "Achats de biens",
-            "Déplacements dans le cadre du travail - Opérés",
-            "Immobilisation - Véhicules",
-            "Matériel informatique",
-            "Autres frais de déplacements (hébergement, restauration)",
-            "Services auxiliaires des transports (entretien, péages, stationnement)",
-            "Sous-traitance",
-            "Immobilisations incorporelles et financières (R&D, brevets et licences…)",
-            "Consommation d'eau potable",
-            "Consommation d'électricité (hors VE)",
-            "Déchets organiques",
-            "Fuites de fluides frigorigènes (climatisation)",
-            "Mobilier",
-            "Ordures ménagères",
-            "Papiers et cartons",
-            "Traitement eaux usées",
-            "Installations, agencement, aménagement divers",
-            "Matériel, outillage et équipement métier"
+            "false",
+            "true"
           ]
         },
         {
-          "key": "operateur",
-          "title": "Poste",
+          "key": "nb_pdc_ultrarapide",
+          "x-originalName": "NB_PDC_ULTRARAPIDE",
+          "type": "integer",
+          "title": "Nombre de points de recharge ultra-rapide dans une station de recharge",
+          "x-group": "Bornes de recharge",
+          "x-cardinality": 35,
+          "description": ""
+        },
+        {
+          "key": "indic_nb_pdc_ultrarapide",
+          "x-originalName": "INDIC_NB_PDC_ULTRARAPIDE",
+          "type": "boolean",
+          "title": "Indicateur de concernement des valeurs du nombre de points de recharge ultra-rapide",
+          "description": "Indicateur de concernement : vaut 1 lorsque l'équipement est concerné par cette information (valeur renseignée et pertinente), 0 sinon. Permet de distinguer une valeur absente d'une valeur non applicable.",
+          "x-group": "Bornes de recharge",
+          "x-cardinality": 2,
+          "enum": [
+            "false",
+            "true"
+          ]
+        },
+        {
+          "key": "nb_jours_ouvert",
+          "x-originalName": "NB_JOURS_OUVERT",
+          "type": "integer",
+          "title": "Nombre de jours d’ouverture hebdomadaire d’une station de recharge",
+          "x-group": "Bornes de recharge",
+          "x-cardinality": 7,
+          "description": ""
+        },
+        {
+          "key": "indic_nb_jours_ouvert",
+          "x-originalName": "INDIC_NB_JOURS_OUVERT",
+          "type": "boolean",
+          "title": "Indicateur de concernement des valeurs du nombre de jours d’ouverture hebdomadaire d’une station de recharge",
+          "description": "Indicateur de concernement : vaut 1 lorsque l'équipement est concerné par cette information (valeur renseignée et pertinente), 0 sinon. Permet de distinguer une valeur absente d'une valeur non applicable.",
+          "x-group": "Bornes de recharge",
+          "x-cardinality": 2,
+          "enum": [
+            "false",
+            "true"
+          ]
+        },
+        {
+          "x-calculated": true,
+          "key": "_geopoint",
           "type": "string",
-          "description": "",
-          "x-capabilities": {},
-          "x-cardinality": 46,
-          "enum": [
-            "Transports urbains (bus, tram…)",
-            "Véhicules personnels",
-            "Train",
-            "Services",
-            "Autres déchets",
-            "Matériel informatique",
-            "Consommation de carburant - Véhicules thermiques opérés",
-            "Restauration",
-            "Equipements",
-            "Avion",
-            "Consommation d'eau potable",
-            "Consommation d'électricité (hors VE)",
-            "Consommation d'électricité - Véhicules électriques opérés",
-            "Fuites de fluides frigorigènes (climatisation)",
-            "Mobilier",
-            "Ordures ménagères",
-            "Traitement eaux usées",
-            "Véhicules de société - Achat",
-            "Abonnements",
-            "Assurances",
-            "Courrier",
-            "Entretien et maintenance",
-            "Entretien véhicules",
-            "Formations",
-            "Fournitures de bureau",
-            "Frais de R&D",
-            "Hôtels",
-            "Installations, agencement, aménagement divers",
-            "Marche/Vélo",
-            "Matériel, outillage et équipement métier",
-            "Produits alimentaires",
-            "Péages et Stationnement",
-            "Salons, forums...",
-            "Services bancaires, conseils et honoraires",
-            "Services informatiques",
-            "Taxi",
-            "Textile, EPI…",
-            "Télécommunications",
-            "VAE/EDPM",
-            "Véhicules de société - Location Thermiques",
-            "Véhicules de société - Location VE",
-            "Café & Thé",
-            "Voiture de location",
-            "Concessions, brevets, licences",
-            "Frais d'établissement",
-            "Papiers et cartons"
-          ]
-        },
-        {
-          "key": "categorie_beges_r",
-          "title": "Catégorie BEGES-R",
-          "type": "string",
-          "description": "",
-          "x-capabilities": {},
-          "x-cardinality": 9,
-          "enum": [
-            "4.5 Achats de services",
-            "4.2 Immobilisations de biens",
-            "3.5 Déplacements professionnels",
-            "3.3 Déplacements domicile-travail",
-            "4.1 Achats de biens",
-            "4.3 Gestion des déchets",
-            "2.1 Emissions indirectes liées à la consommation d'électricité",
-            "1.2 Emissions directes des sources mobiles de combustion",
-            "1.4 Emissions directes fugitives"
-          ]
-        },
-        {
-          "key": "emissions_tco2e",
-          "title": "Emissions de GES",
-          "type": "number",
-          "description": "",
-          "x-capabilities": {},
-          "x-cardinality": 66
-        },
-        {
-          "key": "emissions_etp_tco2e_etp",
-          "title": "Emissions ETP",
-          "type": "number",
-          "description": "",
-          "x-capabilities": {},
-          "x-cardinality": 190
-        },
-        {
-          "key": "emissions_ca_kgco2e_keuro",
-          "title": "Emissions CA",
-          "type": "number",
-          "description": "",
-          "x-capabilities": {},
-          "x-cardinality": 197
+          "title": "Coordonnée géographique",
+          "description": "Centroïde au format \"lat,lon\"",
+          "x-refersTo": "http://www.w3.org/2003/01/geo/wgs84_pos#lat_long",
+          "x-concept": {
+            "id": "latLon",
+            "title": "Latitude / Longitude",
+            "primary": true
+          }
         },
         {
           "x-calculated": true,
@@ -207,158 +1893,65 @@
           "type": "integer",
           "title": "Nombre aléatoire",
           "description": "Un nombre aléatoire associé à la ligne qui permet d'obtenir un tri aléatoire par exemple"
+        },
+        {
+          "key": "_infos_commune._error",
+          "type": "string",
+          "x-originalName": "_error",
+          "x-extension": "dataset:communes-de-france/masterData_bulkSearch_infos-commune",
+          "title": "Erreur de récupération de données de référence",
+          "description": "Une erreur lors de la récupération des informations depuis un service distant",
+          "x-calculated": true
         }
       ],
-      "id": "25lkpag0ycuiz25bagf5v4ew",
-      "slug": "begesaka2024jdd20250205-2",
-      "href": "http://localhost:5888/data-fair/api/v1/datasets/25lkpag0ycuiz25bagf5v4ew",
-      "finalizedAt": "2026-07-21T11:42:54.007Z"
+      "bbox": [
+        -61.807760037481785,
+        -21.38701003510505,
+        55.82920993678272,
+        51.08514997176826
+      ],
+      "finalizedAt": "2026-07-23T06:58:22.208Z",
+      "slug": "base-permanente-des-equipements"
     }
   ],
+  "filters": [
+    {
+      "labelField": "libcom",
+      "values": [
+        "depcom"
+      ],
+      "multipleValues": false,
+      "forceOneValue": true,
+      "startValue": "VANNES",
+      "showAllValues": false
+    }
+  ],
+  "periodFilter": false,
+  "addressFilter": false,
   "sections": [
     {
+      "title": "Chiffres clés",
+      "icon": {
+        "name": "counter",
+        "svg": "<?xml version=\"1.0\" encoding=\"UTF-8\"?><!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 1.1//EN\" \"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd\"><svg xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" version=\"1.1\" width=\"24\" height=\"24\" id=\"mdi-counter\" viewBox=\"0 0 24 24\"><path d=\"M4,4H20A2,2 0 0,1 22,6V18A2,2 0 0,1 20,20H4A2,2 0 0,1 2,18V6A2,2 0 0,1 4,4M4,6V18H11V6H4M20,18V6H18.76C19,6.54 18.95,7.07 18.95,7.13C18.88,7.8 18.41,8.5 18.24,8.75L15.91,11.3L19.23,11.28L19.24,12.5L14.04,12.47L14,11.47C14,11.47 17.05,8.24 17.2,7.95C17.34,7.67 17.91,6 16.5,6C15.27,6.05 15.41,7.3 15.41,7.3L13.87,7.31C13.87,7.31 13.88,6.65 14.25,6H13V18H15.58L15.57,17.14L16.54,17.13C16.54,17.13 17.45,16.97 17.46,16.08C17.5,15.08 16.65,15.08 16.5,15.08C16.37,15.08 15.43,15.13 15.43,15.95H13.91C13.91,15.95 13.95,13.89 16.5,13.89C19.1,13.89 18.96,15.91 18.96,15.91C18.96,15.91 19,17.16 17.85,17.63L18.37,18H20M8.92,16H7.42V10.2L5.62,10.76V9.53L8.76,8.41H8.92V16Z\" /></svg>",
+        "svgPath": "M4,4H20A2,2 0 0,1 22,6V18A2,2 0 0,1 20,20H4A2,2 0 0,1 2,18V6A2,2 0 0,1 4,4M4,6V18H11V6H4M20,18V6H18.76C19,6.54 18.95,7.07 18.95,7.13C18.88,7.8 18.41,8.5 18.24,8.75L15.91,11.3L19.23,11.28L19.24,12.5L14.04,12.47L14,11.47C14,11.47 17.05,8.24 17.2,7.95C17.34,7.67 17.91,6 16.5,6C15.27,6.05 15.41,7.3 15.41,7.3L13.87,7.31C13.87,7.31 13.88,6.65 14.25,6H13V18H15.58L15.57,17.14L16.54,17.13C16.54,17.13 17.45,16.97 17.46,16.08C17.5,15.08 16.65,15.08 16.5,15.08C16.37,15.08 15.43,15.13 15.43,15.95H13.91C13.91,15.95 13.95,13.89 16.5,13.89C19.1,13.89 18.96,15.91 18.96,15.91C18.96,15.91 19,17.16 17.85,17.63L18.37,18H20M8.92,16H7.42V10.2L5.62,10.76V9.53L8.76,8.41H8.92V16Z"
+      },
       "rows": [
         {
-          "height": 520,
+          "height": -1,
           "elements": [
             {
-              "width": 1,
-              "type": "column",
-              "elements": [
-                {
-                  "type": "application",
-                  "height": 100,
-                  "source": "root",
-                  "ignoreFilters": false,
-                  "valueMandatory": false,
-                  "description": "none",
-                  "application": {
-                    "title": "BEGES Akajoule - KPI Bilan",
-                    "baseApp": {
-                      "_id": "6a22c1f15c0e8c6fcd2ae9d5",
-                      "id": "https:koumoul.comappsmetrics1.6",
-                      "datasetsFilters": [
-                        {
-                          "select": [
-                            "id",
-                            "title",
-                            "schema"
-                          ],
-                          "sort": [
-                            "createdAt:-1"
-                          ],
-                          "fromUrl": "api/v1/datasets?status=finalized,indexed,updated&q={q}&select=id,title,schema&${context.datasetFilter}&size=100&sort=createdAt:-1",
-                          "properties": {
-                            "href": {
-                              "type": "string"
-                            },
-                            "title": {
-                              "type": "string"
-                            },
-                            "id": {
-                              "type": "string"
-                            },
-                            "schema": {
-                              "type": "array"
-                            }
-                          }
-                        }
-                      ],
-                      "meta": {
-                        "title": "Métriques",
-                        "viewport": "width=device-width, initial-scale=1.0",
-                        "x-capture": "trigger",
-                        "df:overflow": "true",
-                        "df:sync-state": "true",
-                        "df:filter-concepts": "true",
-                        "df:sync-config": "true",
-                        "df:vjsf": "3",
-                        "{VERSION}": "trigger",
-                        "description": "Visualiser des métriques de haut niveau sur un jeu de données.",
-                        "application-name": "Métriques",
-                        "thumbnail": "thumbnail.png",
-                        "keywords": "indicateurs, kpi, icp, métriques"
-                      },
-                      "url": "http://localhost:5888/apps/metrics/1.6/"
-                    },
-                    "id": "WJRuGkuSXqipa_iXNyMI8",
-                    "href": "http://localhost:5888/data-fair/api/v1/applications/WJRuGkuSXqipa_iXNyMI8"
-                  }
-                },
-                {
-                  "type": "application",
-                  "height": 100,
-                  "source": "root",
-                  "ignoreFilters": false,
-                  "valueMandatory": false,
-                  "description": "none",
-                  "application": {
-                    "title": "BEGES Akajoule - KPI Postes 1-2",
-                    "baseApp": {
-                      "_id": "6a22c1f15c0e8c6fcd2ae9d5",
-                      "id": "https:koumoul.comappsmetrics1.6",
-                      "datasetsFilters": [
-                        {
-                          "select": [
-                            "id",
-                            "title",
-                            "schema"
-                          ],
-                          "sort": [
-                            "createdAt:-1"
-                          ],
-                          "fromUrl": "api/v1/datasets?status=finalized,indexed,updated&q={q}&select=id,title,schema&${context.datasetFilter}&size=100&sort=createdAt:-1",
-                          "properties": {
-                            "href": {
-                              "type": "string"
-                            },
-                            "title": {
-                              "type": "string"
-                            },
-                            "id": {
-                              "type": "string"
-                            },
-                            "schema": {
-                              "type": "array"
-                            }
-                          }
-                        }
-                      ],
-                      "meta": {
-                        "title": "Métriques",
-                        "viewport": "width=device-width, initial-scale=1.0",
-                        "x-capture": "trigger",
-                        "df:overflow": "true",
-                        "df:sync-state": "true",
-                        "df:filter-concepts": "true",
-                        "df:sync-config": "true",
-                        "df:vjsf": "3",
-                        "{VERSION}": "trigger",
-                        "description": "Visualiser des métriques de haut niveau sur un jeu de données.",
-                        "application-name": "Métriques",
-                        "thumbnail": "thumbnail.png",
-                        "keywords": "indicateurs, kpi, icp, métriques"
-                      },
-                      "url": "http://localhost:5888/apps/metrics/1.6/"
-                    },
-                    "id": "zoPEx0aIfX8k8bAP_K2rG",
-                    "href": "http://localhost:5888/data-fair/api/v1/applications/zoPEx0aIfX8k8bAP_K2rG"
-                  }
-                }
-              ]
-            },
-            {
-              "width": 2,
               "type": "application",
               "source": "root",
-              "ignoreFilters": false,
-              "valueMandatory": false,
-              "description": "top",
+              "title": "Vue d’ensemble",
+              "width": 3,
               "application": {
-                "title": "BEGES Akajoule - Détail",
+                "id": "sedjV41O0MrqwFu9E-04T",
+                "title": "Ma commune - Synthèse",
+                "href": "https://opendata.koumoul.com/data-fair/api/v1/applications/ma-commune-synthese",
                 "baseApp": {
-                  "_id": "6a32c1b75c0e8c6fcd4251a7",
-                  "id": "https:koumoul.comappsapp-treemap1.3",
+                  "_id": "6a22c1f15c0e8c6fcd2ae9d5",
+                  "id": "https:koumoul.comappsmetrics1.6",
                   "datasetsFilters": [
                     {
                       "select": [
@@ -369,7 +1962,7 @@
                       "sort": [
                         "createdAt:-1"
                       ],
-                      "fromUrl": "api/v1/datasets?status=finalized&q={q}&select=id,title,schema&${context.datasetFilter}&sort=createdAt:-1&size=100",
+                      "fromUrl": "api/v1/datasets?status=finalized,indexed,updated&q={q}&select=id,title,schema&${context.datasetFilter}&size=100&sort=createdAt:-1",
                       "properties": {
                         "href": {
                           "type": "string"
@@ -387,52 +1980,409 @@
                     }
                   ],
                   "meta": {
-                    "title": "Treemap",
-                    "viewport": "width=device-width,initial-scale=1.0",
+                    "title": "Métriques",
+                    "viewport": "width=device-width, initial-scale=1.0",
+                    "x-capture": "trigger",
+                    "df:overflow": "true",
                     "df:sync-state": "true",
                     "df:filter-concepts": "true",
                     "df:sync-config": "true",
                     "df:vjsf": "3",
-                    "description": "Cette application permet de générer des treemaps pour visualiser des informations hiérarchiques.",
-                    "application-name": "app-treemap",
-                    "thumbnail": "thumbnail.png"
+                    "{VERSION}": "trigger",
+                    "description": "Visualiser des métriques de haut niveau sur un jeu de données.",
+                    "application-name": "Métriques",
+                    "thumbnail": "thumbnail.png",
+                    "keywords": "indicateurs, kpi, icp, métriques"
                   },
-                  "url": "http://localhost:5888/apps/app-treemap/1.3/"
-                },
-                "id": "B13vMgHEQbj-SP4o-DuvV",
-                "href": "http://localhost:5888/data-fair/api/v1/applications/B13vMgHEQbj-SP4o-DuvV"
-              }
+                  "url": "http://localhost:5888/apps/metrics/1.6/"
+                }
+              },
+              "ignoreFilters": false,
+              "valueMandatory": true,
+              "mandatoryFilters": [
+                "libcom"
+              ],
+              "description": "none"
+            }
+          ]
+        },
+        {
+          "height": -1,
+          "elements": [
+            {
+              "type": "application",
+              "source": "root",
+              "title": "Vie quotidienne",
+              "width": 3,
+              "application": {
+                "id": "wYgvvRgVCMYZ4g3BXHR3p",
+                "title": "Ma commune - Vie quotidienne",
+                "href": "https://opendata.koumoul.com/data-fair/api/v1/applications/ma-commune-vie-quotidienne",
+                "baseApp": {
+                  "_id": "6a22c1f15c0e8c6fcd2ae9d5",
+                  "id": "https:koumoul.comappsmetrics1.6",
+                  "datasetsFilters": [
+                    {
+                      "select": [
+                        "id",
+                        "title",
+                        "schema"
+                      ],
+                      "sort": [
+                        "createdAt:-1"
+                      ],
+                      "fromUrl": "api/v1/datasets?status=finalized,indexed,updated&q={q}&select=id,title,schema&${context.datasetFilter}&size=100&sort=createdAt:-1",
+                      "properties": {
+                        "href": {
+                          "type": "string"
+                        },
+                        "title": {
+                          "type": "string"
+                        },
+                        "id": {
+                          "type": "string"
+                        },
+                        "schema": {
+                          "type": "array"
+                        }
+                      }
+                    }
+                  ],
+                  "meta": {
+                    "title": "Métriques",
+                    "viewport": "width=device-width, initial-scale=1.0",
+                    "x-capture": "trigger",
+                    "df:overflow": "true",
+                    "df:sync-state": "true",
+                    "df:filter-concepts": "true",
+                    "df:sync-config": "true",
+                    "df:vjsf": "3",
+                    "{VERSION}": "trigger",
+                    "description": "Visualiser des métriques de haut niveau sur un jeu de données.",
+                    "application-name": "Métriques",
+                    "thumbnail": "thumbnail.png",
+                    "keywords": "indicateurs, kpi, icp, métriques"
+                  },
+                  "url": "http://localhost:5888/apps/metrics/1.6/"
+                }
+              },
+              "ignoreFilters": false,
+              "valueMandatory": true,
+              "mandatoryFilters": [
+                "libcom"
+              ],
+              "description": "none"
+            }
+          ]
+        },
+        {
+          "height": -1,
+          "elements": [
+            {
+              "type": "application",
+              "source": "root",
+              "title": "Famille & scolarité",
+              "width": 3,
+              "application": {
+                "id": "BoBUD40_FaPgvE9GrDT01",
+                "title": "Ma commune - Famille & scolarité",
+                "href": "https://opendata.koumoul.com/data-fair/api/v1/applications/ma-commune-famille-and-scolarite",
+                "baseApp": {
+                  "_id": "6a22c1f15c0e8c6fcd2ae9d5",
+                  "id": "https:koumoul.comappsmetrics1.6",
+                  "datasetsFilters": [
+                    {
+                      "select": [
+                        "id",
+                        "title",
+                        "schema"
+                      ],
+                      "sort": [
+                        "createdAt:-1"
+                      ],
+                      "fromUrl": "api/v1/datasets?status=finalized,indexed,updated&q={q}&select=id,title,schema&${context.datasetFilter}&size=100&sort=createdAt:-1",
+                      "properties": {
+                        "href": {
+                          "type": "string"
+                        },
+                        "title": {
+                          "type": "string"
+                        },
+                        "id": {
+                          "type": "string"
+                        },
+                        "schema": {
+                          "type": "array"
+                        }
+                      }
+                    }
+                  ],
+                  "meta": {
+                    "title": "Métriques",
+                    "viewport": "width=device-width, initial-scale=1.0",
+                    "x-capture": "trigger",
+                    "df:overflow": "true",
+                    "df:sync-state": "true",
+                    "df:filter-concepts": "true",
+                    "df:sync-config": "true",
+                    "df:vjsf": "3",
+                    "{VERSION}": "trigger",
+                    "description": "Visualiser des métriques de haut niveau sur un jeu de données.",
+                    "application-name": "Métriques",
+                    "thumbnail": "thumbnail.png",
+                    "keywords": "indicateurs, kpi, icp, métriques"
+                  },
+                  "url": "http://localhost:5888/apps/metrics/1.6/"
+                }
+              },
+              "ignoreFilters": false,
+              "valueMandatory": true,
+              "mandatoryFilters": [
+                "libcom"
+              ],
+              "description": "none"
+            }
+          ]
+        },
+        {
+          "height": -1,
+          "elements": [
+            {
+              "type": "application",
+              "source": "root",
+              "title": "Loisirs & culture",
+              "width": 3,
+              "application": {
+                "id": "bTnaoASZxxsuqr4Q0kT6z",
+                "title": "Ma commune - Loisirs & culture",
+                "href": "https://opendata.koumoul.com/data-fair/api/v1/applications/ma-commune-loisirs-and-culture",
+                "baseApp": {
+                  "_id": "6a22c1f15c0e8c6fcd2ae9d5",
+                  "id": "https:koumoul.comappsmetrics1.6",
+                  "datasetsFilters": [
+                    {
+                      "select": [
+                        "id",
+                        "title",
+                        "schema"
+                      ],
+                      "sort": [
+                        "createdAt:-1"
+                      ],
+                      "fromUrl": "api/v1/datasets?status=finalized,indexed,updated&q={q}&select=id,title,schema&${context.datasetFilter}&size=100&sort=createdAt:-1",
+                      "properties": {
+                        "href": {
+                          "type": "string"
+                        },
+                        "title": {
+                          "type": "string"
+                        },
+                        "id": {
+                          "type": "string"
+                        },
+                        "schema": {
+                          "type": "array"
+                        }
+                      }
+                    }
+                  ],
+                  "meta": {
+                    "title": "Métriques",
+                    "viewport": "width=device-width, initial-scale=1.0",
+                    "x-capture": "trigger",
+                    "df:overflow": "true",
+                    "df:sync-state": "true",
+                    "df:filter-concepts": "true",
+                    "df:sync-config": "true",
+                    "df:vjsf": "3",
+                    "{VERSION}": "trigger",
+                    "description": "Visualiser des métriques de haut niveau sur un jeu de données.",
+                    "application-name": "Métriques",
+                    "thumbnail": "thumbnail.png",
+                    "keywords": "indicateurs, kpi, icp, métriques"
+                  },
+                  "url": "http://localhost:5888/apps/metrics/1.6/"
+                }
+              },
+              "ignoreFilters": false,
+              "valueMandatory": true,
+              "mandatoryFilters": [
+                "libcom"
+              ],
+              "description": "none"
+            }
+          ]
+        },
+        {
+          "height": -1,
+          "elements": [
+            {
+              "type": "application",
+              "source": "root",
+              "title": "Tourisme & mobilité",
+              "width": 3,
+              "application": {
+                "id": "ViQ7s_xGRLqIWtslYFjMl",
+                "title": "Ma commune - Tourisme & mobilité",
+                "href": "https://opendata.koumoul.com/data-fair/api/v1/applications/ma-commune-tourisme-and-mobilite",
+                "baseApp": {
+                  "_id": "6a22c1f15c0e8c6fcd2ae9d5",
+                  "id": "https:koumoul.comappsmetrics1.6",
+                  "datasetsFilters": [
+                    {
+                      "select": [
+                        "id",
+                        "title",
+                        "schema"
+                      ],
+                      "sort": [
+                        "createdAt:-1"
+                      ],
+                      "fromUrl": "api/v1/datasets?status=finalized,indexed,updated&q={q}&select=id,title,schema&${context.datasetFilter}&size=100&sort=createdAt:-1",
+                      "properties": {
+                        "href": {
+                          "type": "string"
+                        },
+                        "title": {
+                          "type": "string"
+                        },
+                        "id": {
+                          "type": "string"
+                        },
+                        "schema": {
+                          "type": "array"
+                        }
+                      }
+                    }
+                  ],
+                  "meta": {
+                    "title": "Métriques",
+                    "viewport": "width=device-width, initial-scale=1.0",
+                    "x-capture": "trigger",
+                    "df:overflow": "true",
+                    "df:sync-state": "true",
+                    "df:filter-concepts": "true",
+                    "df:sync-config": "true",
+                    "df:vjsf": "3",
+                    "{VERSION}": "trigger",
+                    "description": "Visualiser des métriques de haut niveau sur un jeu de données.",
+                    "application-name": "Métriques",
+                    "thumbnail": "thumbnail.png",
+                    "keywords": "indicateurs, kpi, icp, métriques"
+                  },
+                  "url": "http://localhost:5888/apps/metrics/1.6/"
+                }
+              },
+              "ignoreFilters": false,
+              "valueMandatory": true,
+              "mandatoryFilters": [
+                "libcom"
+              ],
+              "description": "none"
+            }
+          ]
+        },
+        {
+          "height": 60,
+          "elements": [
+            {
+              "type": "text",
+              "width": 3,
+              "content": "Source : Base Permanente des Équipements 2025 — INSEE."
             }
           ]
         }
-      ],
-      "title": "Bilan 2024",
-      "icon": {
-        "svgPath": "M10.35 17L16 11.35L14.55 9.9L10.33 14.13L8.23 12.03L6.8 13.45M6.5 20Q4.22 20 2.61 18.43 1 16.85 1 14.58 1 12.63 2.17 11.1 3.35 9.57 5.25 9.15 5.88 6.85 7.75 5.43 9.63 4 12 4 14.93 4 16.96 6.04 19 8.07 19 11 20.73 11.2 21.86 12.5 23 13.78 23 15.5 23 17.38 21.69 18.69 20.38 20 18.5 20Z",
-        "svg": "<?xml version=\"1.0\" encoding=\"UTF-8\"?><!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 1.1//EN\" \"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd\"><svg xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" version=\"1.1\" width=\"24\" height=\"24\" id=\"mdi-cloud-check-variant\" viewBox=\"0 0 24 24\"><path d=\"M10.35 17L16 11.35L14.55 9.9L10.33 14.13L8.23 12.03L6.8 13.45M6.5 20Q4.22 20 2.61 18.43 1 16.85 1 14.58 1 12.63 2.17 11.1 3.35 9.57 5.25 9.15 5.88 6.85 7.75 5.43 9.63 4 12 4 14.93 4 16.96 6.04 19 8.07 19 11 20.73 11.2 21.86 12.5 23 13.78 23 15.5 23 17.38 21.69 18.69 20.38 20 18.5 20Z\" /></svg>",
-        "name": "cloud-check-variant"
-      }
+      ]
     },
     {
-      "title": "Evolution",
+      "title": "Population",
       "icon": {
-        "svgPath": "M17.45,15.18L22,7.31V19L22,21H2V3H4V15.54L9.5,6L16,9.78L20.24,2.45L21.97,3.45L16.74,12.5L10.23,8.75L4.31,19H6.57L10.96,11.44L17.45,15.18Z",
-        "svg": "<?xml version=\"1.0\" encoding=\"UTF-8\"?><!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 1.1//EN\" \"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd\"><svg xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" version=\"1.1\" width=\"24\" height=\"24\" id=\"mdi-chart-areaspline\" viewBox=\"0 0 24 24\"><path d=\"M17.45,15.18L22,7.31V19L22,21H2V3H4V15.54L9.5,6L16,9.78L20.24,2.45L21.97,3.45L16.74,12.5L10.23,8.75L4.31,19H6.57L10.96,11.44L17.45,15.18Z\" /></svg>",
-        "name": "chart-areaspline"
+        "name": "account-group",
+        "svg": "<?xml version=\"1.0\" encoding=\"UTF-8\"?><!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 1.1//EN\" \"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd\"><svg xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" version=\"1.1\" width=\"24\" height=\"24\" id=\"mdi-account-group\" viewBox=\"0 0 24 24\"><path d=\"M12,5.5A3.5,3.5 0 0,1 15.5,9A3.5,3.5 0 0,1 12,12.5A3.5,3.5 0 0,1 8.5,9A3.5,3.5 0 0,1 12,5.5M5,8C5.56,8 6.08,8.15 6.53,8.42C6.38,9.85 6.8,11.27 7.66,12.38C7.16,13.34 6.16,14 5,14A3,3 0 0,1 2,11A3,3 0 0,1 5,8M19,8A3,3 0 0,1 22,11A3,3 0 0,1 19,14C17.84,14 16.84,13.34 16.34,12.38C17.2,11.27 17.62,9.85 17.47,8.42C17.92,8.15 18.44,8 19,8M5.5,18.25C5.5,16.18 8.41,14.5 12,14.5C15.59,14.5 18.5,16.18 18.5,18.25V20H5.5V18.25M0,20V18.5C0,17.11 1.89,15.94 4.45,15.6C3.86,16.28 3.5,17.22 3.5,18.25V20H0M24,20H20.5V18.25C20.5,17.22 20.14,16.28 19.55,15.6C22.11,15.94 24,17.11 24,18.5V20Z\" /></svg>",
+        "svgPath": "M12,5.5A3.5,3.5 0 0,1 15.5,9A3.5,3.5 0 0,1 12,12.5A3.5,3.5 0 0,1 8.5,9A3.5,3.5 0 0,1 12,5.5M5,8C5.56,8 6.08,8.15 6.53,8.42C6.38,9.85 6.8,11.27 7.66,12.38C7.16,13.34 6.16,14 5,14A3,3 0 0,1 2,11A3,3 0 0,1 5,8M19,8A3,3 0 0,1 22,11A3,3 0 0,1 19,14C17.84,14 16.84,13.34 16.34,12.38C17.2,11.27 17.62,9.85 17.47,8.42C17.92,8.15 18.44,8 19,8M5.5,18.25C5.5,16.18 8.41,14.5 12,14.5C15.59,14.5 18.5,16.18 18.5,18.25V20H5.5V18.25M0,20V18.5C0,17.11 1.89,15.94 4.45,15.6C3.86,16.28 3.5,17.22 3.5,18.25V20H0M24,20H20.5V18.25C20.5,17.22 20.14,16.28 19.55,15.6C22.11,15.94 24,17.11 24,18.5V20Z"
       },
       "rows": [
+        {
+          "height": -1,
+          "elements": [
+            {
+              "type": "application",
+              "source": "root",
+              "title": "Population & niveau de vie",
+              "width": 3,
+              "application": {
+                "id": "XDM23qciGs_zno2U7k2AB",
+                "title": "Ma commune - Population & niveau de vie",
+                "href": "https://opendata.koumoul.com/data-fair/api/v1/applications/ma-commune-population-and-niveau-de-vie",
+                "baseApp": {
+                  "_id": "6a22c1f15c0e8c6fcd2ae9d5",
+                  "id": "https:koumoul.comappsmetrics1.6",
+                  "datasetsFilters": [
+                    {
+                      "select": [
+                        "id",
+                        "title",
+                        "schema"
+                      ],
+                      "sort": [
+                        "createdAt:-1"
+                      ],
+                      "fromUrl": "api/v1/datasets?status=finalized,indexed,updated&q={q}&select=id,title,schema&${context.datasetFilter}&size=100&sort=createdAt:-1",
+                      "properties": {
+                        "href": {
+                          "type": "string"
+                        },
+                        "title": {
+                          "type": "string"
+                        },
+                        "id": {
+                          "type": "string"
+                        },
+                        "schema": {
+                          "type": "array"
+                        }
+                      }
+                    }
+                  ],
+                  "meta": {
+                    "title": "Métriques",
+                    "viewport": "width=device-width, initial-scale=1.0",
+                    "x-capture": "trigger",
+                    "df:overflow": "true",
+                    "df:sync-state": "true",
+                    "df:filter-concepts": "true",
+                    "df:sync-config": "true",
+                    "df:vjsf": "3",
+                    "{VERSION}": "trigger",
+                    "description": "Visualiser des métriques de haut niveau sur un jeu de données.",
+                    "application-name": "Métriques",
+                    "thumbnail": "thumbnail.png",
+                    "keywords": "indicateurs, kpi, icp, métriques"
+                  },
+                  "url": "http://localhost:5888/apps/metrics/1.6/"
+                }
+              },
+              "ignoreFilters": false,
+              "valueMandatory": true,
+              "mandatoryFilters": [
+                "libcom"
+              ],
+              "description": "none"
+            }
+          ]
+        },
         {
           "height": 520,
           "elements": [
             {
-              "width": 3,
               "type": "application",
               "source": "root",
-              "ignoreFilters": true,
-              "valueMandatory": false,
-              "description": "none",
+              "title": "Répartition par âge",
+              "width": 3,
               "application": {
-                "title": "BEGES Akajoule - Evolution",
+                "id": "JtIF6okIhoNPBn-05afvb",
+                "title": "Ma commune - Population par tranche d’âge",
+                "href": "https://opendata.koumoul.com/data-fair/api/v1/applications/ma-commune-pyramide-des-ages",
                 "baseApp": {
                   "_id": "69ef7fed5c0e8c6fcdc6f68a",
                   "id": "https:cdn.jsdelivr.netnpm@data-fairapp-charts@1.3dist",
@@ -482,34 +2432,68 @@
                     "vocabulary-require": "http://www.w3.org/2003/01/geo/wgs84_pos#lat_long"
                   },
                   "url": "https://cdn.jsdelivr.net/npm/@data-fair/app-charts@1.3/dist/"
-                },
-                "id": "IAHpzSw20-61A9tp6rLl_",
-                "href": "http://localhost:5888/data-fair/api/v1/applications/IAHpzSw20-61A9tp6rLl_"
-              }
-            },
+                }
+              },
+              "ignoreFilters": false,
+              "valueMandatory": true,
+              "mandatoryFilters": [
+                "libcom"
+              ],
+              "description": "none"
+            }
+          ]
+        },
+        {
+          "height": 60,
+          "elements": [
             {
-              "width": 1,
+              "type": "text",
+              "width": 3,
+              "content": "Sources : Population - Exploitation principale, Population par âge en 2022, Principaux indicateurs sur les revenus et la pauvreté — INSEE."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Carte",
+      "icon": {
+        "name": "map",
+        "svg": "<?xml version=\"1.0\" encoding=\"UTF-8\"?><!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 1.1//EN\" \"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd\"><svg xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" version=\"1.1\" width=\"24\" height=\"24\" id=\"mdi-map\" viewBox=\"0 0 24 24\"><path d=\"M15,19L9,16.89V5L15,7.11M20.5,3C20.44,3 20.39,3 20.34,3L15,5.1L9,3L3.36,4.9C3.15,4.97 3,5.15 3,5.38V20.5A0.5,0.5 0 0,0 3.5,21C3.55,21 3.61,21 3.66,20.97L9,18.9L15,21L20.64,19.1C20.85,19 21,18.85 21,18.62V3.5A0.5,0.5 0 0,0 20.5,3Z\" /></svg>",
+        "svgPath": "M15,19L9,16.89V5L15,7.11M20.5,3C20.44,3 20.39,3 20.34,3L15,5.1L9,3L3.36,4.9C3.15,4.97 3,5.15 3,5.38V20.5A0.5,0.5 0 0,0 3.5,21C3.55,21 3.61,21 3.66,20.97L9,18.9L15,21L20.64,19.1C20.85,19 21,18.85 21,18.62V3.5A0.5,0.5 0 0,0 20.5,3Z"
+      },
+      "rows": [
+        {
+          "height": 700,
+          "elements": [
+            {
               "type": "application",
               "source": "root",
-              "ignoreFilters": true,
-              "valueMandatory": false,
-              "description": "none",
+              "title": "Équipements, bornes de recharge et stations-service",
+              "width": 3,
               "application": {
-                "title": "BEGES Akajoule - KPI ETP CA",
+                "id": "xPzygKgx5jvNjAVdAvzIS",
+                "title": "Ma commune - Carte des équipements",
+                "href": "https://opendata.koumoul.com/data-fair/api/v1/applications/ma-commune-carte-des-equipements",
                 "baseApp": {
-                  "_id": "6a22c1f15c0e8c6fcd2ae9d5",
-                  "id": "https:koumoul.comappsmetrics1.6",
+                  "_id": "6a4bcf2815c923900450aad7",
+                  "id": "https:koumoul.comappsatelier-carto1.8",
                   "datasetsFilters": [
                     {
                       "select": [
                         "id",
                         "title",
-                        "schema"
+                        "schema",
+                        "bbox",
+                        "attachmentsAsImage"
+                      ],
+                      "bbox": [
+                        "true"
                       ],
                       "sort": [
                         "createdAt:-1"
                       ],
-                      "fromUrl": "api/v1/datasets?status=finalized,indexed,updated&q={q}&select=id,title,schema&${context.datasetFilter}&size=100&sort=createdAt:-1",
+                      "fromUrl": "api/v1/datasets?status=finalized&q={q}&select=id,title,schema,bbox,attachmentsAsImage&bbox=true&${context.datasetFilter}&sort=createdAt:-1&size=100",
                       "properties": {
                         "href": {
                           "type": "string"
@@ -522,76 +2506,332 @@
                         },
                         "schema": {
                           "type": "array"
+                        },
+                        "bbox": {
+                          "type": "array"
+                        },
+                        "attachmentsAsImage": {
+                          "type": "boolean"
                         }
                       }
                     }
                   ],
                   "meta": {
-                    "title": "Métriques",
-                    "viewport": "width=device-width, initial-scale=1.0",
+                    "title": "Atelier cartographique",
+                    "viewport": "width=device-width,initial-scale=1.0",
                     "x-capture": "trigger",
+                    "df:overflow": "false",
+                    "df:sync-state": "true",
+                    "df:filter-concepts": "true",
+                    "df:vjsf": "3",
+                    "df:sync-config": "true",
+                    "description": "Cette application permet de visualiser sur une même carte plusieurs sources de données géographiques.",
+                    "application-name": "atelier-carto",
+                    "keywords": "cartographie,calques,couches",
+                    "thumbnail": "thumbnail.png",
+                    "vocabulary-require": "https://schema.org/box"
+                  },
+                  "url": "http://localhost:5888/apps/atelier-carto/1.8/"
+                }
+              },
+              "ignoreFilters": false,
+              "valueMandatory": true,
+              "mandatoryFilters": [
+                "libcom"
+              ],
+              "description": "none"
+            }
+          ]
+        },
+        {
+          "height": 60,
+          "elements": [
+            {
+              "type": "text",
+              "width": 3,
+              "content": "Sources : Base Permanente des Équipements 2025 — INSEE · Fichier consolidé des bornes de recharge pour véhicules électriques (IRVE) — Etalab."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Annuaire",
+      "icon": {
+        "name": "format-list-bulleted",
+        "svg": "<?xml version=\"1.0\" encoding=\"UTF-8\"?><!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 1.1//EN\" \"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd\"><svg xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" version=\"1.1\" width=\"24\" height=\"24\" id=\"mdi-format-list-bulleted\" viewBox=\"0 0 24 24\"><path d=\"M7,5H21V7H7V5M7,13V11H21V13H7M4,4.5A1.5,1.5 0 0,1 5.5,6A1.5,1.5 0 0,1 4,7.5A1.5,1.5 0 0,1 2.5,6A1.5,1.5 0 0,1 4,4.5M4,10.5A1.5,1.5 0 0,1 5.5,12A1.5,1.5 0 0,1 4,13.5A1.5,1.5 0 0,1 2.5,12A1.5,1.5 0 0,1 4,10.5M7,19V17H21V19H7M4,16.5A1.5,1.5 0 0,1 5.5,18A1.5,1.5 0 0,1 4,19.5A1.5,1.5 0 0,1 2.5,18A1.5,1.5 0 0,1 4,16.5Z\" /></svg>",
+        "svgPath": "M7,5H21V7H7V5M7,13V11H21V13H7M4,4.5A1.5,1.5 0 0,1 5.5,6A1.5,1.5 0 0,1 4,7.5A1.5,1.5 0 0,1 2.5,6A1.5,1.5 0 0,1 4,4.5M4,10.5A1.5,1.5 0 0,1 5.5,12A1.5,1.5 0 0,1 4,13.5A1.5,1.5 0 0,1 2.5,12A1.5,1.5 0 0,1 4,10.5M7,19V17H21V19H7M4,16.5A1.5,1.5 0 0,1 5.5,18A1.5,1.5 0 0,1 4,19.5A1.5,1.5 0 0,1 2.5,18A1.5,1.5 0 0,1 4,16.5Z"
+      },
+      "rows": [
+        {
+          "height": -1,
+          "elements": [
+            {
+              "type": "application",
+              "source": "root",
+              "title": "Rechercher un équipement",
+              "width": 3,
+              "application": {
+                "id": "nr_dy-pqo-ml21sQQjVmH",
+                "title": "Ma commune - Annuaire des équipements",
+                "href": "https://opendata.koumoul.com/data-fair/api/v1/applications/ma-commune-annuaire-des-equipements",
+                "baseApp": {
+                  "_id": "6a27d4e15c0e8c6fcd313267",
+                  "id": "https:koumoul.comappslist-details1.6",
+                  "datasetsFilters": [
+                    {
+                      "select": [
+                        "id",
+                        "title",
+                        "schema",
+                        "attachmentsAsImage",
+                        "count"
+                      ],
+                      "sort": [
+                        "createdAt:-1"
+                      ],
+                      "fromUrl": "api/v1/datasets?status=finalized&q={q}&select=id,title,schema,attachmentsAsImage,count&${context.datasetFilter}&sort=createdAt:-1&size=100",
+                      "properties": {
+                        "href": {
+                          "type": "string"
+                        },
+                        "title": {
+                          "type": "string"
+                        },
+                        "id": {
+                          "type": "string"
+                        },
+                        "schema": {
+                          "type": "array"
+                        },
+                        "attachmentsAsImage": {
+                          "type": "boolean"
+                        },
+                        "count": {
+                          "type": "integer"
+                        }
+                      }
+                    }
+                  ],
+                  "meta": {
+                    "title": "Liste et fiches",
+                    "viewport": "width=device-width, initial-scale=1.0",
                     "df:overflow": "true",
                     "df:sync-state": "true",
                     "df:filter-concepts": "true",
-                    "df:sync-config": "true",
                     "df:vjsf": "3",
-                    "{VERSION}": "trigger",
-                    "description": "Visualiser des métriques de haut niveau sur un jeu de données.",
-                    "application-name": "Métriques",
-                    "thumbnail": "thumbnail.png",
-                    "keywords": "indicateurs, kpi, icp, métriques"
+                    "df:sync-config": "true",
+                    "application-name": "Liste et fiches",
+                    "description": "Cette application permet de configurer un petit moteur de recherche multicritère et d'avoir une fiche détaillée pour chaque élément.",
+                    "thumbnail": "%PUBLIC_URL%/thumbnail.png"
                   },
-                  "url": "http://localhost:5888/apps/metrics/1.6/"
-                },
-                "id": "XKyOgQGoiqKMHIDNm6hG7",
-                "href": "http://localhost:5888/data-fair/api/v1/applications/XKyOgQGoiqKMHIDNm6hG7"
-              }
+                  "url": "http://localhost:5888/apps/list-details/1.6/"
+                }
+              },
+              "ignoreFilters": false,
+              "valueMandatory": true,
+              "mandatoryFilters": [
+                "libcom"
+              ],
+              "description": "none"
+            }
+          ]
+        },
+        {
+          "height": 60,
+          "elements": [
+            {
+              "type": "text",
+              "width": 3,
+              "content": "Source : Base Permanente des Équipements 2025 — INSEE."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Sortir & patrimoine",
+      "icon": {
+        "name": "castle",
+        "svg": "<?xml version=\"1.0\" encoding=\"UTF-8\"?><!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 1.1//EN\" \"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd\"><svg xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" version=\"1.1\" width=\"24\" height=\"24\" id=\"mdi-castle\" viewBox=\"0 0 24 24\"><path d=\"M2,13H4V15H6V13H8V15H10V13H12V15H14V10L17,7V1H19L23,3L19,5V7L22,10V22H11V19A2,2 0 0,0 9,17A2,2 0 0,0 7,19V22H2V13M18,10C17.45,10 17,10.54 17,11.2V13H19V11.2C19,10.54 18.55,10 18,10Z\" /></svg>",
+        "svgPath": "M2,13H4V15H6V13H8V15H10V13H12V15H14V10L17,7V1H19L23,3L19,5V7L22,10V22H11V19A2,2 0 0,0 9,17A2,2 0 0,0 7,19V22H2V13M18,10C17.45,10 17,10.54 17,11.2V13H19V11.2C19,10.54 18.55,10 18,10Z"
+      },
+      "rows": [
+        {
+          "height": -1,
+          "elements": [
+            {
+              "type": "application",
+              "source": "root",
+              "title": "Patrimoine ouvert au public — Journées du patrimoine 2024",
+              "width": 3,
+              "application": {
+                "id": "hK8E5UVcPHTY4eucNqQ4a",
+                "title": "Ma commune - Patrimoine à visiter",
+                "href": "https://opendata.koumoul.com/data-fair/api/v1/applications/ma-commune-patrimoine-a-visiter",
+                "baseApp": {
+                  "_id": "6a27d4e15c0e8c6fcd313267",
+                  "id": "https:koumoul.comappslist-details1.6",
+                  "datasetsFilters": [
+                    {
+                      "select": [
+                        "id",
+                        "title",
+                        "schema",
+                        "attachmentsAsImage",
+                        "count"
+                      ],
+                      "sort": [
+                        "createdAt:-1"
+                      ],
+                      "fromUrl": "api/v1/datasets?status=finalized&q={q}&select=id,title,schema,attachmentsAsImage,count&${context.datasetFilter}&sort=createdAt:-1&size=100",
+                      "properties": {
+                        "href": {
+                          "type": "string"
+                        },
+                        "title": {
+                          "type": "string"
+                        },
+                        "id": {
+                          "type": "string"
+                        },
+                        "schema": {
+                          "type": "array"
+                        },
+                        "attachmentsAsImage": {
+                          "type": "boolean"
+                        },
+                        "count": {
+                          "type": "integer"
+                        }
+                      }
+                    }
+                  ],
+                  "meta": {
+                    "title": "Liste et fiches",
+                    "viewport": "width=device-width, initial-scale=1.0",
+                    "df:overflow": "true",
+                    "df:sync-state": "true",
+                    "df:filter-concepts": "true",
+                    "df:vjsf": "3",
+                    "df:sync-config": "true",
+                    "application-name": "Liste et fiches",
+                    "description": "Cette application permet de configurer un petit moteur de recherche multicritère et d'avoir une fiche détaillée pour chaque élément.",
+                    "thumbnail": "%PUBLIC_URL%/thumbnail.png"
+                  },
+                  "url": "http://localhost:5888/apps/list-details/1.6/"
+                }
+              },
+              "ignoreFilters": false,
+              "valueMandatory": true,
+              "mandatoryFilters": [
+                "libcom"
+              ],
+              "description": "none"
+            }
+          ]
+        },
+        {
+          "height": -1,
+          "elements": [
+            {
+              "type": "application",
+              "source": "root",
+              "title": "Événements recensés — Bretagne, historique 2014-2025",
+              "width": 3,
+              "application": {
+                "id": "BJk4csr-dv4rHh-eMafk3",
+                "title": "Ma commune - Événements recensés",
+                "href": "https://opendata.koumoul.com/data-fair/api/v1/applications/ma-commune-evenements-recenses",
+                "baseApp": {
+                  "_id": "6a27d4e15c0e8c6fcd313267",
+                  "id": "https:koumoul.comappslist-details1.6",
+                  "datasetsFilters": [
+                    {
+                      "select": [
+                        "id",
+                        "title",
+                        "schema",
+                        "attachmentsAsImage",
+                        "count"
+                      ],
+                      "sort": [
+                        "createdAt:-1"
+                      ],
+                      "fromUrl": "api/v1/datasets?status=finalized&q={q}&select=id,title,schema,attachmentsAsImage,count&${context.datasetFilter}&sort=createdAt:-1&size=100",
+                      "properties": {
+                        "href": {
+                          "type": "string"
+                        },
+                        "title": {
+                          "type": "string"
+                        },
+                        "id": {
+                          "type": "string"
+                        },
+                        "schema": {
+                          "type": "array"
+                        },
+                        "attachmentsAsImage": {
+                          "type": "boolean"
+                        },
+                        "count": {
+                          "type": "integer"
+                        }
+                      }
+                    }
+                  ],
+                  "meta": {
+                    "title": "Liste et fiches",
+                    "viewport": "width=device-width, initial-scale=1.0",
+                    "df:overflow": "true",
+                    "df:sync-state": "true",
+                    "df:filter-concepts": "true",
+                    "df:vjsf": "3",
+                    "df:sync-config": "true",
+                    "application-name": "Liste et fiches",
+                    "description": "Cette application permet de configurer un petit moteur de recherche multicritère et d'avoir une fiche détaillée pour chaque élément.",
+                    "thumbnail": "%PUBLIC_URL%/thumbnail.png"
+                  },
+                  "url": "http://localhost:5888/apps/list-details/1.6/"
+                }
+              },
+              "ignoreFilters": false,
+              "valueMandatory": true,
+              "mandatoryFilters": [
+                "libcom"
+              ],
+              "description": "none"
+            }
+          ]
+        },
+        {
+          "height": 60,
+          "elements": [
+            {
+              "type": "text",
+              "width": 3,
+              "content": "Sources : Journées Européennes du Patrimoine 2024 — ministère de la Culture · Événements Publics Bretagne — OpenAgenda."
             }
           ]
         }
       ]
     }
   ],
-  "applications": [
-    {
-      "id": "WJRuGkuSXqipa_iXNyMI8",
-      "title": "BEGES Akajoule - KPI Bilan"
-    },
-    {
-      "id": "zoPEx0aIfX8k8bAP_K2rG",
-      "title": "BEGES Akajoule - KPI Postes 1-2"
-    },
-    {
-      "id": "B13vMgHEQbj-SP4o-DuvV",
-      "title": "BEGES Akajoule - Détail"
-    },
-    {
-      "id": "IAHpzSw20-61A9tp6rLl_",
-      "title": "BEGES Akajoule - Evolution"
-    },
-    {
-      "id": "XKyOgQGoiqKMHIDNm6hG7",
-      "title": "BEGES Akajoule - KPI ETP CA"
-    }
-  ],
-  "sectionsTitleStyle": {
-    "tag": "h1",
-    "size": "h5",
-    "center": false,
-    "bold": true,
+  "sectionsGroup": "tabs-button",
+  "showSources": false,
+  "showEmbed": false,
+  "showCapture": false,
+  "allowDuplicate": false,
+  "titleStyle": {
+    "tag": "h2",
+    "size": "h4",
+    "center": true,
+    "bold": false,
     "color": null,
     "line": {
       "position": "none",
       "color": "primary"
     }
-  },
-  "staticFilters": [
-    {
-      "type": "in",
-      "values": [
-        "2024"
-      ],
-      "field": "annee_donnees"
-    }
-  ]
+  }
 }
