@@ -14,11 +14,11 @@ import { computed, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import reactiveSearchParams from '@data-fair/lib-vue/reactive-search-params-global.js'
 import SearchAddress from '@data-fair/lib-vuetify/search-address.vue'
-import DateRangePicker from '@data-fair/lib-vuetify/date-range-picker.vue'
 import { useElementSize } from '@vueuse/core'
 import { useConfig } from '@/composables/config'
 import { useFiltersValues } from '@/composables/useFiltersValues'
 import DashboardFilterItem from './dashboard-filter-item.vue'
+import DateRangeFilter from './date-range-filter.vue'
 import type { FiltersValues, ApplicationFiltersValues } from '@/utils/filters'
 
 const props = defineProps<{
@@ -81,7 +81,7 @@ const colWidth = computed(() => Math.min(Math.max(1, Math.ceil(12 * 250 / (width
       v-if="config.periodFilter"
       :cols="colWidth"
     >
-      <date-range-picker
+      <date-range-filter
         v-model="reactiveSearchParams.period"
         :min="dataset?.timePeriod?.startDate?.slice(0, 10)"
         :max="dataset?.timePeriod?.endDate?.slice(0, 10)"
