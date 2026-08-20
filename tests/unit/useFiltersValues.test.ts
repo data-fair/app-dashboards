@@ -141,4 +141,74 @@ describe('useFiltersValues', () => {
     await flush()
     expect(applicationValues.value).toEqual({ ...values.value })
   })
+
+  it('sérialise un filtre range slider en gte/lte sans appel /values', async () => {
+    reactiveSearchParams._d_ds1_tx_gte = '10'
+    reactiveSearchParams._d_ds1_tx_lte = '20'
+    const state = makeState({
+      filters: ref([{ labelField: 'tx', slider: true }]),
+      dataset: ref({ id: 'ds1', href: 'https://x/ds1', finalizedAt: 'F' }),
+      fields: ref({ tx: fieldWithConcept('tx', 'tauxPauvrete') })
+    })
+    const { values } = setup(state)
+    await nextTick()
+    await flush()
+    expect(ofetchMock).not.toHaveBeenCalled()
+    expect(values.value).toEqual({
+      keys: ['tx'],
+      _d_ds1_tx_gte: '10',
+      _d_ds1_tx_lte: '20',
+      _c_tauxPauvrete_gte: '10',
+      _c_tauxPauvrete_lte: '20',
+      finalizedAt: 'F'
+    })
+  })
+
+  it('sérialise un range slider avec une seule borne', async () => {
+    reactiveSearchParams._d_ds1_tx_lte = '25'
+    const state = makeState({
+      filters: ref([{ labelField: 'tx', slider: true }]),
+      dataset: ref({ id: 'ds1', href: 'https://x/ds1' })
+    })
+    const { values } = setup(state)
+    await nextTick()
+    await flush()
+    expect(values.value).toEqual({
+      keys: ['tx'],
+      _d_ds1_tx_lte: '25',
+      finalizedAt: ''
+    })
+  })
+
+  it('relance la recompute quand le flag slider du filtre change (draft hot reload)', async () => {
+    reactiveSearchParams._d_ds1_tx_gte = '10'
+    reactiveSearchParams._d_ds1_tx_lte = '20'
+    const filters = ref<DashboardFilter[]>([{ labelField: 'tx', slider: true }])
+    let execute = vi.fn()
+    useConfigMock.mockReturnValue(makeState({
+      filters,
+      dataset: ref({ id: 'ds1', href: 'https://x/ds1', finalizedAt: 'F' })
+    }))
+    useAsyncActionMock.mockImplementation((fn: () => Promise<void>) => {
+      execute = vi.fn(() => fn())
+      return { execute, loading: ref(false), error: ref(null) }
+    })
+    const { values } = useFiltersValues({ prefix: '', address: ref(undefined) })
+    await nextTick()
+    await flush()
+    expect(values.value).toEqual({
+      keys: ['tx'],
+      _d_ds1_tx_gte: '10',
+      _d_ds1_tx_lte: '20',
+      finalizedAt: 'F'
+    })
+
+    // Bascule du slider → le flag change, la recompute doit repartir et les
+    // bornes gte/lte doivent disparaître du broadcast.
+    filters.value = [{ labelField: 'tx' }]
+    await nextTick()
+    await flush()
+    expect(execute).toHaveBeenCalledTimes(2)
+    expect(values.value).toEqual({ keys: [], finalizedAt: 'F' })
+  })
 })

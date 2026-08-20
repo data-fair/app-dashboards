@@ -160,10 +160,12 @@ test.describe('Bugs connus (régressions)', () => {
     // Marqueur de mount fiable, indépendant du contenu de la config.
     await expect(page.locator('.v-container').first()).toBeVisible({ timeout: 20_000 })
 
-    // Un autocomplete par filtre dynamique déclaré dans la config.
+    // Un autocomplete par filtre dynamique déclaré dans la config (les filtres
+    // slider rendent un range slider et non un autocomplete).
     const filters = config.filters || []
     if (filters.length) {
-      await expect(page.locator('.v-autocomplete')).toHaveCount(filters.length, { timeout: 5_000 })
+      const autocompleteCount = filters.filter(f => !(f as { slider?: boolean }).slider).length
+      await expect(page.locator('.v-autocomplete')).toHaveCount(autocompleteCount, { timeout: 5_000 })
     }
 
     assertNoInitIssue(consoleEvents)
@@ -274,6 +276,73 @@ test.describe('Bugs connus (régressions)', () => {
         ).toMatch(deprefixedKeyRegex)
       }
     }
+
+    assertNoInitIssue(consoleEvents)
+  })
+
+  test('K3 — basculer un filtre slider en liste (draft) nettoie les bornes gte/lte de l\'URL et des embeds', async ({ page }) => {
+    const consoleEvents = collectConsoleEvents(page)
+
+    await page.goto('/app/')
+    const config = await getDevConfig(page)
+
+    const sliderFilter = (config.filters || []).find(f => (f as { slider?: boolean }).slider)
+    const rootDatasetId = config.datasets?.[0]?.id
+    const frames = expectedFrames(config)
+
+    test.skip(!sliderFilter || !rootDatasetId || frames.length === 0, 'La config courante n\'a pas de filtre slider embarquable')
+
+    // Pose une sélection de bornes dans l'URL puis vérifie qu\'elle est propagée aux embeds.
+    const gteKey = `_d_${rootDatasetId}_${sliderFilter.labelField}_gte`
+    const lteKey = `_d_${rootDatasetId}_${sliderFilter.labelField}_lte`
+    await page.evaluate(({ gteKey, lteKey }) => {
+      const url = new URL(location.href)
+      url.searchParams.set(gteKey, '5')
+      url.searchParams.set(lteKey, '60')
+      history.pushState({}, '', url)
+      window.dispatchEvent(new PopStateEvent('popstate'))
+    }, { gteKey, lteKey })
+
+    const firstFrame = page.locator('d-frame').first()
+    const gteRegex = new RegExp(`(?:^|[?&])${gteKey}=`)
+    await expect.poll(async () => await firstFrame.getAttribute('src'), { timeout: 10_000 }).toMatch(gteRegex)
+
+    // Bascule le filtre en liste (slider off) via le message set-config du draft.
+    await page.evaluate(({ labelField }) => {
+      const cfg = JSON.parse(JSON.stringify(window.APPLICATION.configuration))
+      cfg.filters = (cfg.filters || []).map(f => f.labelField === labelField ? { ...f, slider: false } : { ...f })
+      window.dispatchEvent(new MessageEvent('message', {
+        source: window,
+        data: { type: 'set-config', content: cfg }
+      }))
+    }, { labelField: sliderFilter.labelField })
+
+    // L'URL et les embeds ne doivent plus contenir les bornes gte/lte périmées.
+    await expect.poll(
+      async () => new URL(await page.evaluate(() => location.href)).searchParams.has(gteKey),
+      { timeout: 10_000 }
+    ).toBe(false)
+    await expect.poll(
+      async () => await firstFrame.getAttribute('src'),
+      { timeout: 10_000 }
+    ).not.toMatch(gteRegex)
+
+    // Rebascule en slider : les bornes étant nettoyées, le slider revient sur la plage complète
+    // et l'iframe ne doit pas recevoir de gte/lte orphelin.
+    await page.evaluate(({ labelField }) => {
+      const cfg = JSON.parse(JSON.stringify(window.APPLICATION.configuration))
+      cfg.filters = (cfg.filters || []).map(f => f.labelField === labelField ? { ...f, slider: true } : { ...f })
+      window.dispatchEvent(new MessageEvent('message', {
+        source: window,
+        data: { type: 'set-config', content: cfg }
+      }))
+    }, { labelField: sliderFilter.labelField })
+
+    await expect(page.locator('.v-range-slider')).toBeVisible({ timeout: 10_000 })
+    await expect.poll(
+      async () => await firstFrame.getAttribute('src'),
+      { timeout: 10_000 }
+    ).not.toMatch(gteRegex)
 
     assertNoInitIssue(consoleEvents)
   })

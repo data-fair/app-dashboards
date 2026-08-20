@@ -5,6 +5,10 @@
  * component context (inject works). Vue creates/disposes one instance per
  * configured filter: a draft config change (hot reload) adds/removes
  * autocompletes without any manual effect scope.
+ *
+ * When the filter is configured as a range slider (`slider: true`), the
+ * autocomplete is replaced by a `v-range-slider` bound to the same
+ * `useFilterState` value (a `[min, max]` pair stored as `_gte`/`_lte` keys).
  */
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
@@ -30,8 +34,8 @@ const { t } = useI18n()
 // with a new prop value.
 const address = computed(() => props.address)
 
-const { items, loading, value, searchItems } = useFilterState({
-  filter: props.filter,
+const { items, loading, value, searchItems, sliderMin, sliderMax, step, boundsLoading, formatValue } = useFilterState({
+  filter: () => props.filter,
   prefix: props.prefix,
   datasetId: computed(() => dataset.value?.id),
   datasetHref: computed(() => dataset.value?.href),
@@ -54,7 +58,39 @@ const fieldLabel = computed<string>(() => {
 
 <template>
   <v-col :cols="cols">
+    <div
+      v-if="filter.slider"
+      class="text-body-2 text-medium-emphasis"
+      style="min-width:280px;"
+    >
+      {{ fieldLabel }}
+    </div>
+    <v-range-slider
+      v-if="filter.slider"
+      :model-value="(value ?? [sliderMin ?? 0, sliderMax ?? 0]) as [number, number]"
+      :min="sliderMin ?? 0"
+      :max="sliderMax ?? 0"
+      :step="step"
+      :disabled="sliderMin == null || sliderMax == null"
+      :loading="boundsLoading"
+      density="compact"
+      hide-details
+      show-ticks="always"
+      :ticks="sliderMin != null && sliderMax != null ? [sliderMin, (sliderMin + sliderMax) / 2, sliderMax] : []"
+      :tick-size="4"
+      thumb-label="hover"
+      style="min-width:280px;"
+      @update:model-value="v => value = (v as [number, number])"
+    >
+      <template #tick-label="slotProps">
+        <small>{{ formatValue(slotProps.tick.value) }}</small>
+      </template>
+      <template #thumb-label="slotProps">
+        {{ formatValue(slotProps.modelValue) }}
+      </template>
+    </v-range-slider>
     <v-autocomplete
+      v-else
       v-model="value"
       :loading="loading"
       :items="items"

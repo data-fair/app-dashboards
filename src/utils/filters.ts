@@ -42,6 +42,12 @@ export const fieldConcept = (field: Field | undefined): string | undefined => {
   return field?.['x-concept']?.id as string | undefined
 }
 
+/**
+ * A dynamic filter rendered as a range slider (numeric fields only).
+ * The selection is stored as `_gte` / `_lte` bounds instead of a `_in` list.
+ */
+export const isRangeFilter = (filter: DashboardFilter): boolean => !!filter.slider
+
 export interface SerializeFiltersValuesInput {
   /** Fields whose resolved values are broadcast (`_d_<datasetId>_<f>_in` + concept mirror). */
   emitFields: string[]
@@ -49,6 +55,8 @@ export interface SerializeFiltersValuesInput {
   activeFields: string[]
   /** Resolved values per emitted field (already fetched from `/values/`). */
   resolvedValues: Record<string, string[]>
+  /** Bounds per range-slider field (`_d_<datasetId>_<f>_gte/_lte` + concept mirror). */
+  rangeValues?: Record<string, { min?: string; max?: string }>
   fields: Record<string, Field>
   config: DashboardConfig
   prefix: string
@@ -64,7 +72,7 @@ export interface SerializeFiltersValuesInput {
  * distance and static filters. Pure and testable in isolation.
  */
 export const serializeFiltersValues = (input: SerializeFiltersValuesInput): FiltersValues => {
-  const { emitFields, activeFields, resolvedValues, fields, config, prefix, datasetId, finalizedAt, period, geoDistance } = input
+  const { emitFields, activeFields, resolvedValues, rangeValues, fields, config, prefix, datasetId, finalizedAt, period, geoDistance } = input
   const result: FiltersValues = { keys: activeFields }
 
   for (const f of emitFields) {
@@ -79,6 +87,18 @@ export const serializeFiltersValues = (input: SerializeFiltersValuesInput): Filt
       if (concept) {
         result[conceptFilterKey(concept, 'in')] = serialized
       }
+    }
+  }
+
+  for (const [field, bounds] of Object.entries(rangeValues || {})) {
+    const concept = fieldConcept(fields[field])
+    if (bounds.min) {
+      result[`${prefix}_d_${datasetId}_${field}_gte`] = bounds.min
+      if (concept) result[conceptFilterKey(concept, 'gte')] = bounds.min
+    }
+    if (bounds.max) {
+      result[`${prefix}_d_${datasetId}_${field}_lte`] = bounds.max
+      if (concept) result[conceptFilterKey(concept, 'lte')] = bounds.max
     }
   }
 
@@ -102,8 +122,14 @@ export const collectActiveFields = (filters: DashboardFilter[] | undefined, pref
   if (!filters) return []
   const result: string[] = []
   for (const f of filters) {
-    if (params[datasetFilterKey(datasetId, f.labelField, prefix)]) {
+    const key = datasetFilterKey(datasetId, f.labelField, prefix)
+    if (params[key]) {
       result.push(f.labelField)
+    } else if (isRangeFilter(f)) {
+      // A range filter is active when either bound is set in the URL.
+      const gte = datasetFilterKey(datasetId, f.labelField, prefix, 'gte')
+      const lte = datasetFilterKey(datasetId, f.labelField, prefix, 'lte')
+      if (params[gte] || params[lte]) result.push(f.labelField)
     }
   }
   return result
@@ -117,6 +143,8 @@ export const collectActiveFields = (filters: DashboardFilter[] | undefined, pref
 export const collectFilterEmitFields = (filters: DashboardFilter[]): string[] => {
   const result: string[] = []
   for (const f of filters) {
+    // Range sliders emit raw numeric bounds (`_gte`/`_lte`), no `/values/` resolution needed.
+    if (isRangeFilter(f)) continue
     const fields = f.values?.length ? f.values : [f.labelField]
     for (const field of fields) {
       if (!result.includes(field)) result.push(field)
@@ -196,7 +224,14 @@ export const buildValuesLabelsUrl = (
     stringify: 'true'
   }
   for (const f of otherFilters) {
-    query[`${f.labelField}_in`] = String(params[`${prefix}_d_${datasetId}_${f.labelField}_in`])
+    if (isRangeFilter(f)) {
+      const gte = params[`${prefix}_d_${datasetId}_${f.labelField}_gte`]
+      const lte = params[`${prefix}_d_${datasetId}_${f.labelField}_lte`]
+      if (gte != null) query[`${f.labelField}_gte`] = String(gte)
+      if (lte != null) query[`${f.labelField}_lte`] = String(lte)
+    } else {
+      query[`${f.labelField}_in`] = String(params[`${prefix}_d_${datasetId}_${f.labelField}_in`])
+    }
   }
   Object.assign(query, filters2params(normalizeStaticFilters(config.staticFilters)))
   if (!filter.showAllValues) {
@@ -267,11 +302,25 @@ export const initDefaultFilterValues = (
   prefix = ''
 ): void => {
   for (const filter of filters || []) {
-    const key = datasetFilterKey(datasetId || '', filter.labelField, prefix)
-    if (!reactiveSearchParams[key] && filter.startValue) {
-      reactiveSearchParams[key] = filter.multipleValues
-        ? JSON.stringify([filter.startValue]).slice(1, -1)
-        : filter.startValue
+    if (isRangeFilter(filter)) {
+      // A range slider's startValue is a `min,max` pair written to the `_gte`/`_lte` keys.
+      if (!filter.startValue) continue
+      const [min, max] = filter.startValue.split(',')
+      if (min !== undefined && min !== '') {
+        const gte = datasetFilterKey(datasetId || '', filter.labelField, prefix, 'gte')
+        if (!reactiveSearchParams[gte]) reactiveSearchParams[gte] = min
+      }
+      if (max !== undefined && max !== '') {
+        const lte = datasetFilterKey(datasetId || '', filter.labelField, prefix, 'lte')
+        if (!reactiveSearchParams[lte]) reactiveSearchParams[lte] = max
+      }
+    } else {
+      const key = datasetFilterKey(datasetId || '', filter.labelField, prefix)
+      if (!reactiveSearchParams[key] && filter.startValue) {
+        reactiveSearchParams[key] = filter.multipleValues
+          ? JSON.stringify([filter.startValue]).slice(1, -1)
+          : filter.startValue
+      }
     }
   }
 }

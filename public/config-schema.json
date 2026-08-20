@@ -263,7 +263,7 @@
           "type": "array",
           "title": "Filtres dynamiques du tableau de bord",
           "layout": {
-            "itemTitle": "(data.multipleValues ? 'Contient ' : 'Egal à ') + data.labelField",
+            "itemTitle": "(data.slider ? 'Intervalle : ' : (data.multipleValues ? 'Contient ' : 'Égal à ')) + ((rootData.datasets?.[0]?.schema || []).find(f => f.key === data.labelField)?.label || (rootData.datasets?.[0]?.schema || []).find(f => f.key === data.labelField)?.title || (rootData.datasets?.[0]?.schema || []).find(f => f.key === data.labelField)?.['x-originalName'] || data.labelField)",
             "messages": {
               "addItem": "ajouter un filtre dynamique"
             }
@@ -306,18 +306,34 @@
                     "url": "${rootData.datasets[0].href}/schema?calculated=false",
                     "itemKey": "data.key",
                     "itemTitle": "data.label"
-                  }
+                  },
+                  "if": "!parent.data.slider"
                 }
               },
               "multipleValues": {
                 "title": "Permettre de filtrer par plusieurs valeur",
                 "type": "boolean",
-                "default": false
+                "default": false,
+                "layout": {
+                  "if": "!parent.data.slider"
+                }
               },
               "forceOneValue": {
                 "title": "Toujours filtrer par une valeur",
                 "type": "boolean",
-                "default": false
+                "default": false,
+                "layout": {
+                  "if": "!parent.data.slider"
+                }
+              },
+              "slider": {
+                "title": "Filtre par intervalle (curseur)",
+                "description": "Remplace la liste de valeurs par un range slider (champs numériques uniquement). Les bornes min/max sont calculées automatiquement depuis le jeu de données.",
+                "type": "boolean",
+                "default": false,
+                "layout": {
+                  "if": "['number','integer'].includes((rootData.datasets?.[0]?.schema || []).find(f => f.key === parent.data.labelField)?.type)"
+                }
               },
               "startValue": {
                 "type": "string",

@@ -16,6 +16,7 @@ import { datasetFilterKey } from '@/utils/dataset-filter'
 import {
   collectActiveFields,
   collectFilterEmitFields,
+  isRangeFilter,
   serializeFiltersValues,
   type FiltersValues,
   type ApplicationFiltersValues
@@ -49,6 +50,17 @@ export const useFiltersValues = (opts: UseFiltersValuesOptions) => {
     const allFilters = (filters.value || []) as DashboardFilter[]
     const active = allFilters.filter(f => reactiveSearchParams[datasetFilterKey(datasetId, f.labelField, prefix)])
 
+    // Range-slider filters: raw numeric bounds read from the URL, no `/values/` resolution.
+    const rangeValues: Record<string, { min?: string; max?: string }> = {}
+    for (const f of allFilters.filter(isRangeFilter)) {
+      if (reactiveSearchParams[datasetFilterKey(datasetId, f.labelField, prefix, 'gte')] || reactiveSearchParams[datasetFilterKey(datasetId, f.labelField, prefix, 'lte')]) {
+        rangeValues[f.labelField] = {
+          min: reactiveSearchParams[datasetFilterKey(datasetId, f.labelField, prefix, 'gte')],
+          max: reactiveSearchParams[datasetFilterKey(datasetId, f.labelField, prefix, 'lte')]
+        }
+      }
+    }
+
     let resolvedValues: Record<string, string[]> = {}
     if (active.length) {
       const emitFields = collectFilterEmitFields(active)
@@ -75,6 +87,7 @@ export const useFiltersValues = (opts: UseFiltersValuesOptions) => {
       emitFields: Object.keys(resolvedValues),
       activeFields: collectActiveFields(allFilters, prefix, datasetId, reactiveSearchParams),
       resolvedValues,
+      rangeValues,
       fields: fields.value,
       config: config.value,
       prefix,
@@ -104,8 +117,13 @@ export const useFiltersValues = (opts: UseFiltersValuesOptions) => {
         const ds = dataset.value?.id
         if (!ds) return ''
         return (filters.value || [])
-          .map(f => reactiveSearchParams[datasetFilterKey(ds, f.labelField, prefix)])
-          .join('\u0001')
+          .map(f => [
+            f.slider ? 's' : '',
+            reactiveSearchParams[datasetFilterKey(ds, f.labelField, prefix)],
+            reactiveSearchParams[datasetFilterKey(ds, f.labelField, prefix, 'gte')],
+            reactiveSearchParams[datasetFilterKey(ds, f.labelField, prefix, 'lte')]
+          ].join('\u0001'))
+          .join('\u0002')
       },
       () => reactiveSearchParams.period,
       () => reactiveSearchParams.radius,

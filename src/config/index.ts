@@ -40,6 +40,8 @@ export interface DashboardFilter {
   forceOneValue?: boolean
   startValue?: string
   showAllValues?: boolean
+  /** Rend le filtre comme un range slider (champ numérique uniquement). */
+  slider?: boolean
 }
 
 export interface DashboardStaticFilter {

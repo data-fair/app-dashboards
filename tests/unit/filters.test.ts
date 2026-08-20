@@ -5,6 +5,7 @@ import {
   collectStaticFilterParams,
   fieldConcept,
   initDefaultFilterValues,
+  isRangeFilter,
   mergeAndSortItems,
   computeMandatoryFilterIssues,
   buildValuesLabelsUrl,
@@ -138,6 +139,13 @@ describe('fieldConcept', () => {
   })
 })
 
+describe('isRangeFilter', () => {
+  it('vrai quand slider est activé', () => {
+    expect(isRangeFilter({ labelField: 'tx', slider: true } as any)).toBe(true)
+    expect(isRangeFilter({ labelField: 'tx' } as any)).toBe(false)
+  })
+})
+
 describe('collectActiveFields', () => {
   const filters = [
     { labelField: 'int' },
@@ -157,6 +165,20 @@ describe('collectActiveFields', () => {
 
   it('renvoie [] sans filters', () => {
     expect(collectActiveFields(undefined, '', 'ds1', {})).toEqual([])
+  })
+
+  it('considère un filtre range actif quand une borne gte/lte est présente', () => {
+    const sliders = [{ labelField: 'tx', slider: true }]
+    expect(collectActiveFields(sliders as any, '', 'ds1', { _d_ds1_tx_gte: '10' })).toEqual(['tx'])
+    expect(collectActiveFields(sliders as any, '', 'ds1', { _d_ds1_tx_lte: '20' })).toEqual(['tx'])
+    expect(collectActiveFields(sliders as any, '', 'ds1', { _d_ds1_tx_gte: '10', _d_ds1_tx_lte: '20' })).toEqual(['tx'])
+    expect(collectActiveFields(sliders as any, '', 'ds1', {})).toEqual([])
+  })
+
+  it('un filtre range actif respecte le préfixe', () => {
+    const sliders = [{ labelField: 'tx', slider: true }]
+    expect(collectActiveFields(sliders as any, 'c', 'ds1', { c_d_ds1_tx_gte: '10' })).toEqual(['tx'])
+    expect(collectActiveFields(sliders as any, '', 'ds1', { c_d_ds1_tx_gte: '10' })).toEqual([])
   })
 })
 
@@ -203,6 +225,34 @@ describe('initDefaultFilterValues', () => {
     initDefaultFilterValues([{ labelField: 'an', startValue: '2020' }], 'ds1', params, 'c')
     expect(params.c_d_ds1_an_in).toBe('2020')
     expect(params._d_ds1_an_in).toBeUndefined()
+  })
+
+  it('range slider: écrit min,max dans les clés gte/lte', () => {
+    const params: Record<string, string> = {}
+    initDefaultFilterValues([{ labelField: 'tx', slider: true, startValue: '10,20' }], 'ds1', params)
+    expect(params._d_ds1_tx_gte).toBe('10')
+    expect(params._d_ds1_tx_lte).toBe('20')
+    expect(params._d_ds1_tx_in).toBeUndefined()
+  })
+
+  it('range slider: tolère un seul côté et préfixe', () => {
+    const params: Record<string, string> = {}
+    initDefaultFilterValues([{ labelField: 'tx', slider: true, startValue: '10' }], 'ds1', params, 'c')
+    expect(params.c_d_ds1_tx_gte).toBe('10')
+    expect(params.c_d_ds1_tx_lte).toBeUndefined()
+  })
+
+  it('range slider: n\'écrase pas les bornes déjà présentes', () => {
+    const params: Record<string, string> = { _d_ds1_tx_gte: '5' }
+    initDefaultFilterValues([{ labelField: 'tx', slider: true, startValue: '10,20' }], 'ds1', params)
+    expect(params._d_ds1_tx_gte).toBe('5')
+    expect(params._d_ds1_tx_lte).toBe('20')
+  })
+
+  it('range slider: ignore sans startValue', () => {
+    const params: Record<string, string> = {}
+    initDefaultFilterValues([{ labelField: 'tx', slider: true }], 'ds1', params)
+    expect(params).toEqual({})
   })
 })
 
@@ -388,6 +438,13 @@ describe('collectFilterEmitFields', () => {
   it('retourne [] sans filtre', () => {
     expect(collectFilterEmitFields([])).toEqual([])
   })
+
+  it('ignore les filtres range slider (bornes brutes, pas de /values)', () => {
+    expect(collectFilterEmitFields([
+      { labelField: 'tx', slider: true },
+      { labelField: 'a' }
+    ])).toEqual(['a'])
+  })
 })
 
 describe('serializeFiltersValues', () => {
@@ -518,5 +575,58 @@ describe('serializeFiltersValues', () => {
       _c_codeDepartement_in: '"75"',
       finalizedAt: ''
     })
+  })
+
+  it('émet les bornes d\'un range slider en gte/lte avec mirror concept', () => {
+    const result = serializeFiltersValues({
+      emitFields: [],
+      activeFields: ['tx'],
+      resolvedValues: {},
+      rangeValues: { tx: { min: '10', max: '20' } },
+      fields: { tx: fieldWithConcept('tx', 'tauxPauvrete') },
+      config: {} as DashboardConfig,
+      prefix: '',
+      datasetId: 'ds1'
+    })
+    expect(result).toEqual({
+      keys: ['tx'],
+      _d_ds1_tx_gte: '10',
+      _d_ds1_tx_lte: '20',
+      _c_tauxPauvrete_gte: '10',
+      _c_tauxPauvrete_lte: '20',
+      finalizedAt: ''
+    })
+  })
+
+  it('émet une seule borne quand l\'autre est absente et applique le préfixe', () => {
+    const result = serializeFiltersValues({
+      emitFields: [],
+      activeFields: ['tx'],
+      resolvedValues: {},
+      rangeValues: { tx: { min: '10' } },
+      fields: { tx: plainField('tx') },
+      config: {} as DashboardConfig,
+      prefix: 'c',
+      datasetId: 'ds1'
+    })
+    expect(result).toEqual({
+      keys: ['tx'],
+      c_d_ds1_tx_gte: '10',
+      finalizedAt: ''
+    })
+  })
+
+  it('ignore les bornes vides d\'un range slider', () => {
+    const result = serializeFiltersValues({
+      emitFields: [],
+      activeFields: [],
+      resolvedValues: {},
+      rangeValues: { tx: {} },
+      fields: { tx: plainField('tx') },
+      config: {} as DashboardConfig,
+      prefix: '',
+      datasetId: 'ds1'
+    })
+    expect(result).toEqual({ keys: [], finalizedAt: '' })
   })
 })
