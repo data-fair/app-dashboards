@@ -85,8 +85,10 @@ export const useElementUrls = (opts: UseElementUrlsOptions): ElementUrlsApi => {
   })
 
   // The capture URL is a server-side screenshot of an application. The
-  // application reads its filter params from the URL on capture, so we
-  // use the application-shaped values (no dataset-scoped dynamic filters).
+  // application reads its filter params from the URL on capture, so we reuse
+  // the application-shaped filters (dataset-scoped keys, e.g.
+  // `<prefix>_d_<datasetId>_<field>_in`) prefixed with `app_` and forwarded
+  // as-is by the capture endpoint to the target application.
   const captureHref = computed(() => captureUrl(element.value, applicationFilters.value))
 
   return { dFrameSrc, descriptionHtml, sourcesList, captureHref }

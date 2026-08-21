@@ -346,4 +346,65 @@ test.describe('Bugs connus (régressions)', () => {
 
     assertNoInitIssue(consoleEvents)
   })
+
+  test('K4 — la barre d\'actions (sources) reste dans sa ligne en hauteur automatique', async ({ page }) => {
+    const consoleEvents = collectConsoleEvents(page)
+
+    await page.goto('/app/')
+    const config = await getDevConfig(page)
+
+    const hasAppElement = (config.sections || []).some(s =>
+      (s.rows || []).some(r => (r.elements || []).some(e => e.type === 'application' && e.application?.id))
+    )
+    test.skip(!hasAppElement, 'La config courante n\'a aucun élément application')
+
+    // Force le mode auto (hauteurs -1) et l'affichage des sources : dans
+    // l'état bugué, la barre d'actions d'un élément chevauche l'élément
+    // suivant (hauteur:100% résolu sur une ligne flex wrap).
+    await page.evaluate(() => {
+      const cfg = JSON.parse(JSON.stringify(window.APPLICATION.configuration))
+      cfg.showSources = true
+      ;(cfg.sections || []).forEach(s => (s.rows || []).forEach(r => { r.height = -1 }))
+      window.dispatchEvent(new MessageEvent('message', {
+        source: window,
+        data: { type: 'set-config', content: cfg }
+      }))
+    })
+
+    // La barre « Source » doit apparaître sous les éléments application.
+    await expect(
+      page.locator('.v-card-actions').filter({ hasText: 'Source' }).first()
+    ).toBeVisible({ timeout: 20_000 })
+
+    // Aucune barre d'actions ne doit intersecter le titre ou le d-frame d'un
+    // AUTRE élément (sa propre barre suit exactement son iframe, sans
+    // chevauchement : bar.top === frame.bottom).
+    await expect.poll(async () => {
+      const boxes = await page.evaluate(() => {
+        const rect = (el: Element) => {
+          const r = el.getBoundingClientRect()
+          return { left: r.left, right: r.right, top: r.top, bottom: r.bottom }
+        }
+        return {
+          frames: [...document.querySelectorAll('d-frame')].map(rect),
+          titles: [...document.querySelectorAll('h4')].map(rect),
+          bars: [...document.querySelectorAll('.v-card-actions')]
+            .filter(el => el.textContent?.includes('Source'))
+            .map(rect)
+        }
+      })
+      const intersects = (a: { left: number; right: number; top: number; bottom: number }, b: { left: number; right: number; top: number; bottom: number }) =>
+        a.left < b.right - 1 && a.right > b.left + 1 && a.top < b.bottom - 1 && a.bottom > b.top + 1
+      for (const bar of boxes.bars) {
+        if (boxes.frames.some(frame => intersects(bar, frame))) return false
+        if (boxes.titles.some(title => intersects(bar, title))) return false
+      }
+      return true
+    }, {
+      timeout: 20_000,
+      message: 'La barre d\'actions (sources) chevauche un autre élément (régression hauteur automatique)'
+    }).toBe(true)
+
+    assertNoInitIssue(consoleEvents)
+  })
 })

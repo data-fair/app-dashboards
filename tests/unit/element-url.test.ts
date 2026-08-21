@@ -179,6 +179,18 @@ describe('applicationUrl / descriptionUrl / sourcesUrl', () => {
     expect(applicationUrl({ ...appEl(), application: undefined as any }, app)).toBeUndefined()
   })
 
+  it('préfère apiUrl (contexte config) pour reconstruire l\'URL API', () => {
+    // En mode config, window.APPLICATION.href est l'URL de l'UI (ex. /config)
+    // sans segment /data-fair/ : seule apiUrl permet de rebaser l'app cible.
+    const appWithApi = { href: 'https://host1/config', apiUrl: 'https://host1/data-fair/api/v1' }
+    expect(applicationUrl(appEl(), appWithApi)).toBe('https://host1/data-fair/api/v1/applications/sankey')
+    expect(applicationUrl(appEl({ application: { ...appEl().application!, href: 'https://other/data-fair/app/v2' } }), appWithApi)).toBe('https://host1/data-fair/api/v1/applications/sankey')
+  })
+
+  it('repli sur href quand apiUrl est absent', () => {
+    expect(applicationUrl(appEl(), { href: 'https://host1/data-fair/app/real-app' })).toBe('https://host1/data-fair/app/sankey')
+  })
+
   it('descriptionUrl renvoie l\'URL sauf si description est none', () => {
     expect(descriptionUrl(appEl({ description: 'left' }), app)).toBe('https://host1/data-fair/app/sankey')
     expect(descriptionUrl(appEl({ description: 'none' }), app)).toBeUndefined()
@@ -189,6 +201,11 @@ describe('applicationUrl / descriptionUrl / sourcesUrl', () => {
     expect(sourcesUrl(appEl(), app, false)).toBeUndefined()
     // showSources actif mais URL d'application indisponible → undefined
     expect(sourcesUrl({ ...appEl(), application: undefined as any }, app, true)).toBeUndefined()
+  })
+
+  it('sourcesUrl utilise apiUrl quand elle est disponible', () => {
+    const appWithApi = { href: 'https://host1/config', apiUrl: 'https://host1/data-fair/api/v1' }
+    expect(sourcesUrl(appEl(), appWithApi, true)).toBe('https://host1/data-fair/api/v1/applications/sankey/configuration')
   })
 })
 

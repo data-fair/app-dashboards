@@ -23,7 +23,7 @@
 import type { DashboardElement, ApplicationElement, TablePreviewElement, FormElement } from '@/config'
 import { datasetFilterKey } from './dataset-filter'
 
-export interface ApplicationLike { href: string }
+export interface ApplicationLike { href: string; apiUrl?: string }
 export interface FilterValues { [key: string]: any }
 
 const stripAfterDataFair = (href: string): string => href.split('/data-fair/')[0]
@@ -129,9 +129,25 @@ export const applicationDFrameSrc = (
   return `/data-fair/app/${accessKeyPrefix(accessKey)}${element.application?.id}?${new URLSearchParams(params).toString()}`
 }
 
+/**
+ * URL API de l'application embarquée, rebasée sur le serveur courant.
+ *
+ * Le href de l'application cible (`element.application.href`) porte un
+ * chemin `/data-fair/api/v1/applications/:id` (ou `/data-fair/app/:id`),
+ * mais l'origine peut être celle d'un autre environnement (ex. prod quand
+ * on édite en dev). On préfère `application.apiUrl` — injecté par le proxy
+ * data-fair (`reqPublicBaseUrl + /api/v1`) et par le dev-server — qui est
+ * l'origine fiable du serveur courant, y compris dans le contexte d'édition
+ * (mode config) où `application.href` est l'URL de l'UI de config
+ * (ex. `http://host/config`) sans segment `/data-fair/`. En dernier
+ * recours, on rebase l'ancien chemin sur l'origine de `application.href`.
+ */
 export const applicationUrl = (element: DashboardElement, application: ApplicationLike): string | undefined => {
   if (element.type !== 'application') return undefined
-  const appHref = element.application?.href
+  const app = element.application
+  if (!app) return undefined
+  if (application.apiUrl && app.id) return `${application.apiUrl}/applications/${app.id}`
+  const appHref = app.href
   if (!appHref) return undefined
   return `${stripAfterDataFair(application.href)}/data-fair/${appHref.split('/data-fair/').pop()}`
 }
@@ -170,9 +186,14 @@ export const captureUrl = (
   const params: Record<string, string> = { app_embed: 'true' }
   if (meta['df:capture-width']) params.width = String(meta['df:capture-width'])
   if (meta['df:capture-height']) params.height = String(meta['df:capture-height'])
-  for (const [key, value] of Object.entries(filtersValues || {})) {
-    if (key === 'keys') continue
-    params[`app_${key}`] = String(value)
+  // Consistent with the d-frame embed (`applicationEmbedParams`): an element
+  // configured with `ignoreFilters` must not propagate its filters to the
+  // captured application either.
+  if (!element.ignoreFilters) {
+    for (const [key, value] of Object.entries(filtersValues || {})) {
+      if (key === 'keys') continue
+      params[`app_${key}`] = String(value)
+    }
   }
   return `${app.href}/capture?${new URLSearchParams(params).toString()}`
 }

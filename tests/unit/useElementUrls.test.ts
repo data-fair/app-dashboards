@@ -99,6 +99,24 @@ describe('useElementUrls — capture, sources, description', () => {
     expect(setup(el({ type: 'text' })).captureHref.value).toBeUndefined()
   })
 
+  it('captureHref sans filtre quand ignoreFilters est vrai', () => {
+    const element = el({
+      type: 'application',
+      ignoreFilters: true,
+      application: {
+        id: 'sankey',
+        title: 'S',
+        href: 'https://demo/data-fair/app/sankey',
+        baseApp: { meta: { 'df:capture-width': 1200, 'df:capture-height': 800 } }
+      }
+    })
+    const filters = { keys: [], _d_ds1_int_in: '1' } as FiltersValues
+    const { captureHref } = setup(element, { applicationFiltersValues: ref(filters) })
+    expect(captureHref.value).toContain('app_embed=true')
+    expect(captureHref.value).toContain('width=1200')
+    expect(captureHref.value).not.toContain('app__d_ds1_int_in')
+  })
+
   it('sourcesList d\'un tablePreview : son dataset', () => {
     const element = el({ type: 'tablePreview', dataset: { id: 'ds1', title: 'DS1', href: 'h' } })
     const { sourcesList } = setup(element)

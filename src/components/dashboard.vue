@@ -9,7 +9,7 @@
  *  - render the filters and delegate the sections layout to
  *    `sections-view.vue`.
  */
-import { computed, onMounted, reactive, watch } from 'vue'
+import { computed, reactive, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import reactiveSearchParams from '@data-fair/lib-vue/reactive-search-params-global.js'
 import dashboardFilters from './dashboard-filters.vue'
@@ -51,13 +51,6 @@ watch(
   },
   { immediate: true }
 )
-
-// Signale au service de capture DataFair que le dashboard est rendu.
-// Le service attend ensuite le network idle (chargement des iframes) ou
-// le délai df:capture-delay avant de capturer.
-onMounted(() => {
-  window.triggerCapture?.()
-})
 
 const isCompareView = computed(() => reactiveSearchParams.view === 'compare')
 const compareViewIndices = computed(() => isCompareView.value ? [0, 1] : [0])

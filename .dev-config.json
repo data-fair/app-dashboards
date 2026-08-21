@@ -3,7 +3,7 @@
   "addressFilter": false,
   "sectionsGroup": "accordion",
   "showSources": false,
-  "showEmbed": false,
+  "showEmbed": true,
   "showCapture": true,
   "allowDuplicate": true,
   "sections": [
@@ -20,11 +20,6 @@
               "valueMandatory": false,
               "description": "none",
               "application": {
-                "owner": {
-                  "type": "organization",
-                  "id": "Utr_UkpBy",
-                  "name": "Saintes Grandes Rives, l'Agglo"
-                },
                 "title": "Incitatifs covoit",
                 "baseApp": {
                   "_id": "670e68b78db1ae5c073859f4",
@@ -80,35 +75,7 @@
                   "url": "https://cdn.jsdelivr.net/npm/@data-fair/app-charts@1.2/dist/"
                 },
                 "id": "yiWjZYU8eyKqhDVdsTSIX",
-                "slug": "incitatifs-covoit",
-                "userPermissions": [
-                  "list",
-                  "readDescription",
-                  "readConfig",
-                  "readApiDoc",
-                  "readBaseApp",
-                  "readCapture",
-                  "readPrint",
-                  "downloadAttachment",
-                  "readJournal",
-                  "realtime-draft-error",
-                  "writeDescription",
-                  "writeConfig",
-                  "postAttachment",
-                  "deleteAttachment",
-                  "delete",
-                  "getPermissions",
-                  "setPermissions",
-                  "getKeys",
-                  "setKeys",
-                  "writePublications",
-                  "writePublicationSites"
-                ],
-                "public": false,
-                "visibility": "protected",
-                "href": "http://localhost:5888/data-fair/api/v1/applications/yiWjZYU8eyKqhDVdsTSIX",
-                "page": "http://localhost:5888/data-fair/application/yiWjZYU8eyKqhDVdsTSIX",
-                "exposedUrl": "http://localhost:5888/data-fair/app/yiWjZYU8eyKqhDVdsTSIX"
+                "href": "http://localhost:5888/data-fair/api/v1/applications/yiWjZYU8eyKqhDVdsTSIX"
               },
               "title": "Incitatifs au covoiturage"
             },
@@ -2054,5 +2021,12 @@
       "position": "none",
       "color": "primary"
     }
-  }
+  },
+  "staticFilters": [
+    {
+      "type": "in",
+      "values": [],
+      "field": "id_de_la_reponse"
+    }
+  ]
 }

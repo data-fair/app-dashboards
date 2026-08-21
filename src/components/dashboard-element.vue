@@ -119,7 +119,7 @@ const missingFilterText = computed(() => {
 
   <div
     v-else
-    :style="`overflow-y:auto;height:${height && height > 0 ? height + 'px' : '100%'}`"
+    :style="height && height > 0 ? `overflow-y:auto;height:${height}px` : ''"
   >
     <v-row
       v-if="isApp && isHorizontal"
@@ -156,7 +156,7 @@ const missingFilterText = computed(() => {
     <div
       v-else-if="isApp && isVertical"
       class="d-flex flex-column"
-      style="width:100%;height:100%"
+      :style="`width:100%;${height && height > 0 ? 'height:100%' : ''}`"
     >
       <element-description
         v-if="descriptionPos === 'top' && appElement"
@@ -172,7 +172,7 @@ const missingFilterText = computed(() => {
         :iframe-title="iframeTitle"
         :height="height"
         :actions-height="actionsHeight"
-        style="flex:1 1 0;min-height:0"
+        :style="height && height > 0 ? 'flex:1 1 0;min-height:0' : 'flex:0 0 auto'"
       />
       <element-description
         v-if="descriptionPos === 'bottom' && appElement"
