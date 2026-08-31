@@ -23,7 +23,9 @@ interface SchemaField {
 interface DashboardElementConfig {
   type: string
   dataset?: { id: string }
-  application?: { id: string }
+  application?: { id: string; href?: string }
+  valueMandatory?: boolean
+  mandatoryFilters?: string[]
 }
 
 type StaticFilter =
@@ -33,7 +35,7 @@ type StaticFilter =
   | { type: 'exists' | 'notExists'; field: string | { key: string } }
 
 interface DevConfig {
-  filters?: { labelField?: string; values?: string[]; slider?: boolean; multipleValues?: boolean; forceOneValue?: boolean }[]
+  filters?: { labelField?: string; values?: string[]; slider?: boolean; startValue?: string; multipleValues?: boolean; forceOneValue?: boolean }[]
   staticFilters?: StaticFilter[] | null
   sectionsGroup?: string
   datasets?: { id?: string; schema?: SchemaField[] }[]
@@ -61,12 +63,35 @@ const visibleElements = (config: DevConfig): DashboardElementConfig[] => {
 }
 
 /**
+ * Champs de filtres actifs au chargement : seuls les filtres dynamiques avec
+ * une valeur par défaut (`startValue`) sont actifs avant toute interaction
+ * (miroir de `initDefaultFilterValues`).
+ */
+const initialActiveFields = (config: DevConfig): string[] =>
+  (config.filters || []).flatMap(f => (f.startValue && f.labelField ? [f.labelField] : []))
+
+/**
+ * Un élément `valueMandatory` ne se rend (ni embed ni barre d'actions) qu'une
+ * fois tous ses filtres requis actifs (miroir de `computeMandatoryFilterIssues`).
+ */
+const mandatoryFiltersSatisfied = (el: DashboardElementConfig, activeFields: string[]): boolean => {
+  if (!el.valueMandatory) return true
+  return (el.mandatoryFilters || []).every(f => activeFields.includes(f))
+}
+
+/**
  * Éléments qui produisent réellement un `<d-frame>` : une `application` avec
  * un id, un `tablePreview` (dataset racine en fallback) et un `form` avec un
- * dataset. Un form sans dataset ne rend pas d'embed (état invalide).
+ * dataset. Un form sans dataset ne rend pas d'embed (état invalide), une
+ * application sans id non plus, et un élément `valueMandatory` dont les
+ * filtres requis ne sont pas actifs affiche un placeholder à la place.
+ * `extraActiveFields` porte les champs activés par le test avant le décompte
+ * (sélection dans un filtre dynamique).
  */
-const expectedFrames = (config: DevConfig): { type: 'application' | 'table' | 'form' }[] => {
+const expectedFrames = (config: DevConfig, extraActiveFields: string[] = []): { type: 'application' | 'table' | 'form' }[] => {
+  const activeFields = [...new Set([...initialActiveFields(config), ...extraActiveFields])]
   return visibleElements(config)
+    .filter(el => mandatoryFiltersSatisfied(el, activeFields))
     .map(el => {
       if (el.type === 'application') return el.application?.id ? { type: 'application' as const } : null
       if (el.type === 'tablePreview') return { type: 'table' as const }
@@ -128,6 +153,19 @@ const getDevConfig = async (page: Page): Promise<DevConfig> => {
   return res.json() as Promise<DevConfig>
 }
 
+/**
+ * Sélectionne la première option du filtre dynamique non-slider d'indice
+ * `index` (ordre de la config : un autocomplete par filtre non-slider, les
+ * sliders rendent un range slider).
+ */
+const selectFirstFilterOption = async (page: Page, index: number): Promise<void> => {
+  const autocomplete = page.locator('.v-autocomplete').nth(index)
+  await autocomplete.click()
+  const firstOption = page.locator('.v-list-item').first()
+  await expect(firstOption).toBeVisible({ timeout: 5_000 })
+  await firstOption.click()
+}
+
 const collectConsoleEvents = (page: Page): { type: string; text: string }[] => {
   const events: { type: string; text: string }[] = []
   page.on('console', (msg) => {
@@ -179,7 +217,19 @@ test.describe('Bugs connus (régressions)', () => {
 
     const rootDatasetId = config.datasets?.[0]?.id
     const rootSchema = config.datasets?.[0]?.schema || []
-    const frames = expectedFrames(config)
+
+    // Les éléments `valueMandatory` ne rendent leur embed qu'après sélection
+    // de leurs filtres requis : on sélectionne d'abord une valeur dans le
+    // premier filtre dynamique non-slider, comme en usage réel, puis on
+    // calcule les frames attendues avec cette sélection active.
+    const nonSliderFilters = (config.filters || []).filter(f => f.labelField && !f.slider)
+    let unGateField: string | undefined
+    if (nonSliderFilters.length) {
+      await selectFirstFilterOption(page, 0)
+      unGateField = nonSliderFilters[0].labelField
+    }
+
+    const frames = expectedFrames(config, unGateField ? [unGateField] : [])
 
     test.skip(frames.length === 0, 'La config courante n\'a aucun élément embarquable')
 
@@ -248,26 +298,28 @@ test.describe('Bugs connus (régressions)', () => {
       }
     }
 
-    // 3) Sélection d'une valeur dans le 1er filtre : la valeur résolue doit
-    //    être transmise aux embeds (préfixée par le dataset racine pour les
-    //    applications, dé-préfixée pour les vues dataset).
+    // 3) Sélection d'une valeur dans un filtre dynamique : la valeur résolue
+    //    doit être transmise aux embeds (préfixée par le dataset racine pour
+    //    les applications, dé-préfixée pour les vues dataset).
     //
-    //    ⚠️ Les clés émises suivent `collectFilterEmitFields` : les champs
+    //    ⚠️ Le filtre sondé ne doit PAS être porté par un static filter (la
+    //    clé serait déjà présente dans les src avant toute sélection et le
+    //    poll passerait trivialement), ni être celui utilisé ci-dessus pour
+    //    débloquer les éléments valueMandatory (le re-cliquer pourrait
+    //    désélectionner la valeur). Sans candidat, l'étape est sautée.
+    //
+    //    Les clés émises suivent `collectFilterEmitFields` : les champs
     //    `values` associés au filtre quand ils existent (valeurs résolues via
     //    `/values/`), sinon le labelField lui-même. Un filtre slider émet des
     //    bornes `_gte`/`_lte`, pas de `_in` : on le saute.
-    const firstFilter = (config.filters || [])[0]
-    if (firstFilter?.labelField && rootDatasetId && !firstFilter.slider) {
-      const emitFields = firstFilter.values?.length ? firstFilter.values : [firstFilter.labelField]
-      const firstAutocomplete = page.locator('.v-autocomplete').first()
-      await firstAutocomplete.click()
-      const firstOption = page.locator('.v-list-item').first()
-      await expect(firstOption).toBeVisible({ timeout: 5_000 })
-      await firstOption.click()
+    const staticFields = new Set((config.staticFilters || []).map(sf => fieldKeyOf(sf.field)))
+    const probeFilter = nonSliderFilters.find(f =>
+      f.labelField && !staticFields.has(f.labelField) && f.labelField !== unGateField
+    )
+    if (probeFilter?.labelField && rootDatasetId) {
+      const emitFields = probeFilter.values?.length ? probeFilter.values : [probeFilter.labelField]
+      await selectFirstFilterOption(page, nonSliderFilters.indexOf(probeFilter))
 
-      // ⚠️ La regex cible explicitement les champs émis du filtre dynamique :
-      // une regex générique matcherait immédiatement les static filters déjà
-      // présents et le poll passerait avant la mise à jour des src.
       for (const emitField of emitFields) {
         const scopedKeyRegex = new RegExp(`(?:^|[?&])c?_d_${rootDatasetId}_${emitField}_in=`)
         await expect.poll(
@@ -355,23 +407,43 @@ test.describe('Bugs connus (régressions)', () => {
     assertNoInitIssue(consoleEvents)
   })
 
-  test('K4 — la barre d\'actions (sources) reste dans sa ligne en hauteur automatique', async ({ page }) => {
+  test('K4 — la barre d\'actions reste dans sa ligne en hauteur automatique', async ({ page }) => {
     const consoleEvents = collectConsoleEvents(page)
 
     await page.goto('/app/')
     const config = await getDevConfig(page)
 
-    const hasAppElement = (config.sections || []).some(s =>
-      (s.rows || []).some(r => (r.elements || []).some(e => e.type === 'application' && e.application?.id))
-    )
-    test.skip(!hasAppElement, 'La config courante n\'a aucun élément application')
+    // Comme en K2 : un élément application `valueMandatory` ne rend ni iframe
+    // ni barre d'actions avant la sélection de ses filtres requis. On
+    // sélectionne d'abord une valeur dans le premier filtre dynamique
+    // non-slider, puis on dérive les champs actifs qui en résultent.
+    const nonSliderFilters = (config.filters || []).filter(f => f.labelField && !f.slider)
+    if (nonSliderFilters.length) {
+      await selectFirstFilterOption(page, 0)
+    }
+    const activeFields = [...initialActiveFields(config), ...nonSliderFilters.slice(0, 1).flatMap(f => f.labelField ? [f.labelField] : [])]
 
-    // Force le mode auto (hauteurs -1) et l'affichage des sources : dans
+    // Un barre d'actions n'apparaît que pour un élément application (boutons
+    // embed/capture) ou une vue table (sources en fallback sur le dataset).
+    const hasActionBarElement = visibleElements(config).some(el => {
+      if (!mandatoryFiltersSatisfied(el, activeFields)) return false
+      if (el.type === 'application') return !!el.application?.id && !!el.application.href
+      if (el.type === 'tablePreview') return true
+      return false
+    })
+    test.skip(!hasActionBarElement, 'La config courante n\'a aucun élément avec barre d\'actions rendu')
+
+    // Force le mode auto (hauteurs -1) et l'affichage des actions : dans
     // l'état bugué, la barre d'actions d'un élément chevauche l'élément
-    // suivant (hauteur:100% résolu sur une ligne flex wrap).
+    // suivant (hauteur:100% résolu sur une ligne flex wrap). Les trois flags
+    // sont activés car la liste des sources d'une application peut être
+    // illisible dans certains contextes (permission readConfig manquante) ;
+    // les boutons capture/embed ne dépendent d'aucun fetch.
     await page.evaluate(() => {
       const cfg = JSON.parse(JSON.stringify(window.APPLICATION.configuration))
       cfg.showSources = true
+      cfg.showEmbed = true
+      cfg.showCapture = true
       ;(cfg.sections || []).forEach(s => (s.rows || []).forEach(r => { r.height = -1 }))
       window.dispatchEvent(new MessageEvent('message', {
         source: window,
@@ -379,9 +451,9 @@ test.describe('Bugs connus (régressions)', () => {
       }))
     })
 
-    // La barre « Source » doit apparaître sous les éléments application.
+    // Une barre d'actions doit apparaître sous les éléments éligibles.
     await expect(
-      page.locator('.v-card-actions').filter({ hasText: 'Source' }).first()
+      page.locator('.v-card-actions').first()
     ).toBeVisible({ timeout: 20_000 })
 
     // Aucune barre d'actions ne doit intersecter le titre ou le d-frame d'un
@@ -396,9 +468,7 @@ test.describe('Bugs connus (régressions)', () => {
         return {
           frames: [...document.querySelectorAll('d-frame')].map(rect),
           titles: [...document.querySelectorAll('h4')].map(rect),
-          bars: [...document.querySelectorAll('.v-card-actions')]
-            .filter(el => el.textContent?.includes('Source'))
-            .map(rect)
+          bars: [...document.querySelectorAll('.v-card-actions')].map(rect)
         }
       })
       const intersects = (a: { left: number; right: number; top: number; bottom: number }, b: { left: number; right: number; top: number; bottom: number }) =>

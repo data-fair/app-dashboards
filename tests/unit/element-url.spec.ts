@@ -121,6 +121,14 @@ describe('formDFrameSrc', () => {
 })
 
 describe('applicationDFrameSrc', () => {
+  it('renvoie undefined pour un élément sans application (état invalide)', () => {
+    expect(applicationDFrameSrc(appEl({ application: undefined as any }), null, null, undefined, undefined, undefined)).toBeUndefined()
+  })
+
+  it('renvoie undefined pour une application sans id (état invalide)', () => {
+    expect(applicationDFrameSrc(appEl({ application: { ...appEl().application!, id: '' } }), null, null, undefined, undefined, undefined)).toBeUndefined()
+  })
+
   it('produit une URL minimale sur l\'application', () => {
     expect(applicationDFrameSrc(appEl(), null, null, undefined, undefined, undefined)).toBe(
       '/data-fair/app/sankey?d-frame=true'

@@ -124,9 +124,13 @@ export const applicationDFrameSrc = (
   primary: unknown,
   secondary: unknown,
   print: unknown
-): string => {
+): string | undefined => {
+  // An application is always bound to a resolved application: a missing id is
+  // an invalid state that must not render an embed URL (mirrors formDFrameSrc).
+  const appId = element.application?.id
+  if (!appId) return undefined
   const params = applicationEmbedParams(applicationFiltersValues, primary, secondary, print, element.ignoreFilters)
-  return `/data-fair/app/${accessKeyPrefix(accessKey)}${element.application?.id}?${new URLSearchParams(params).toString()}`
+  return `/data-fair/app/${accessKeyPrefix(accessKey)}${appId}?${new URLSearchParams(params).toString()}`
 }
 
 /**
