@@ -20,6 +20,7 @@ import {
   collectFilterEmitFields,
   isRangeFilter,
   serializeFiltersValues,
+  valueMatchesStaticFilters,
   type FiltersValues,
   type ApplicationFiltersValues
 } from '@/utils/filters'
@@ -85,7 +86,11 @@ export const useFiltersValues = (opts: UseFiltersValuesOptions) => {
       }))
 
       resolvedValues = {}
-      emitFields.forEach((f, i) => { resolvedValues[f] = responses[i] })
+      emitFields.forEach((f, i) => {
+        // Client-side re-filtering of the /values/ resolution: see
+        // valueMatchesStaticFilters (remove once fixed in data-fair).
+        resolvedValues[f] = responses[i].filter((v: unknown) => valueMatchesStaticFilters(v, config.value.staticFilters, f))
+      })
     }
 
     emitted.value = serializeFiltersValues({

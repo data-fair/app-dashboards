@@ -19,7 +19,7 @@ import { useFetch } from '@data-fair/lib-vue/fetch.js'
 import reactiveSearchParams from '@data-fair/lib-vue/reactive-search-params-global.js'
 import type { DashboardConfig, DashboardFilter } from '@/config'
 import { datasetFilterKey } from '@/utils/dataset-filter'
-import { buildMetricsUrl, buildValuesLabelsUrl, isRangeFilter, mergeAndSortItems, type ValueLabel } from '@/utils/filters'
+import { buildMetricsUrl, buildValuesLabelsUrl, isRangeFilter, mergeAndSortItems, valueMatchesStaticFilters, type ValueLabel } from '@/utils/filters'
 
 export interface UseFilterStateOptions {
   /**
@@ -208,6 +208,9 @@ export const useFilterState = (opts: UseFilterStateOptions): FilterStateApi => {
     if (isRange.value) return [] as ValueLabel[]
     const key = datasetFilterKey(datasetId.value || '', filter.value.labelField, prefix)
     return mergeAndSortItems(data.value as ValueLabel[] | null, reactiveSearchParams[key], filter.value.multipleValues)
+      // Client-side re-filtering of the values-labels results: see
+      // valueMatchesStaticFilters (remove once fixed in data-fair).
+      .filter(item => valueMatchesStaticFilters(item.value, config.value.staticFilters, filter.value.labelField))
   })
 
   // Fetch initial + refetch on URL change. Must be created inside the effect

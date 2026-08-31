@@ -295,3 +295,50 @@ describe('useFilterState — range slider', () => {
     expect(reactiveSearchParams._d_ds1_tx_in).toBeUndefined()
   })
 })
+
+describe('useFilterState — items avec staticFilters', () => {
+  beforeEach(() => {
+    delete (window as any).APPLICATION
+  })
+
+  afterEach(() => {
+    for (const key of Object.keys(reactiveSearchParams)) delete reactiveSearchParams[key]
+  })
+
+  const setupWithConfig = (config: DashboardConfig, data: ValueLabel[] | null, filterOverrides: Partial<DashboardFilter> = {}) => {
+    useFetchMock.mockReturnValue({ data: ref(data), loading: ref(false), refresh: vi.fn(), error: ref(null) })
+    return useFilterState({
+      filter: filter(filterOverrides),
+      prefix: '',
+      datasetId: ref('ds1'),
+      datasetHref: ref('https://x/href'),
+      config: ref(config)
+    })
+  }
+
+  it('refiltre les items hors du filtre statique (workaround values-labels multi-valué)', () => {
+    const { items } = setupWithConfig(
+      { staticFilters: [{ type: 'in', field: 'an', values: ['a', 'b'] }] },
+      [{ value: 'a', label: 'A' }, { value: 'c', label: 'C' }]
+    )
+    expect(items.value.map(i => i.value)).toEqual(['a'])
+  })
+
+  it('masque la valeur sélectionnée (URL) hors filtre statique et garde celle qui matche', () => {
+    reactiveSearchParams._d_ds1_an_in = '"b","z"'
+    const { items } = setupWithConfig(
+      { staticFilters: [{ type: 'in', field: 'an', values: ['a', 'b'] }] },
+      [{ value: 'a', label: 'A' }],
+      { multipleValues: true }
+    )
+    expect(items.value.map(i => i.value)).toEqual(['a', 'b'])
+  })
+
+  it('ne filtre pas quand aucun staticFilter ne cible le champ', () => {
+    const { items } = setupWithConfig(
+      { staticFilters: [{ type: 'in', field: 'autre', values: ['a'] }] },
+      [{ value: 'a' }, { value: 'c' }]
+    )
+    expect(items.value.map(i => i.value)).toEqual(['a', 'c'])
+  })
+})

@@ -7,7 +7,7 @@
  */
 import type { Field } from '@data-fair/lib-common-types/application/index.js'
 import { filters2params } from '@data-fair/lib-utils/filters/index.js'
-import type { DashboardConfig, DashboardFilter } from '@/config'
+import type { DashboardConfig, DashboardFilter, DashboardStaticFilter } from '@/config'
 import { datasetFilterKey, conceptFilterKey } from './dataset-filter'
 import { normalizeStaticFilters } from './staticFilters'
 
@@ -271,6 +271,57 @@ export const buildMetricsUrl = (
 
 export const sortByLabel = (a: ValueLabel, b: ValueLabel) =>
   (a.label || a.value).localeCompare(b.label || b.value, 'fr', { sensitivity: 'base' })
+
+/**
+ * Temporary client-side re-filtering of values lists against the static
+ * filters targeting the same field.
+ *
+ * The `/values-labels/` and `/values/` endpoints aggregate values per
+ * document: on a multi-valued field, a document matching the query
+ * contributes ALL of its values to the aggregation, including the ones that
+ * do not satisfy the field's own static filter. The lists are therefore
+ * polluted with out-of-filter values until data-fair filters the buckets
+ * per value server-side.
+ *
+ * TODO: remove this workaround (and its call sites) once the values
+ * aggregation is fixed in data-fair.
+ */
+export const valueMatchesStaticFilters = (
+  value: unknown,
+  staticFilters: DashboardStaticFilter[] | undefined,
+  fieldKey: string
+): boolean => {
+  if (!staticFilters?.length) return true
+  const str = String(value)
+  const num = Number(value)
+  for (const sf of staticFilters) {
+    if (!sf || sf.field !== fieldKey) continue
+    if (sf.type === 'in') {
+      if (sf.values?.length && !sf.values.includes(str)) return false
+    } else if (sf.type === 'nin') {
+      if (sf.values?.length && sf.values.includes(str)) return false
+    } else if (sf.type === 'starts') {
+      if (sf.value && !str.startsWith(sf.value)) return false
+    } else if (sf.type === 'interval') {
+      const hasMin = ![null, undefined, ''].includes(sf.minValue)
+      const hasMax = ![null, undefined, ''].includes(sf.maxValue)
+      if (hasMin) {
+        const min = sf.minValue as string
+        const numeric = !Number.isNaN(num) && !Number.isNaN(Number(min))
+        if (numeric ? num < Number(min) : str < min) return false
+      }
+      if (hasMax) {
+        const max = sf.maxValue as string
+        const numeric = !Number.isNaN(num) && !Number.isNaN(Number(max))
+        if (numeric ? num > Number(max) : str > max) return false
+      }
+    }
+    // exists / notExists: no per-value restriction is possible or needed
+    // (the aggregation only returns existing values, and the notExists
+    // subset has none).
+  }
+  return true
+}
 
 /**
  * Merge the values currently selected in the URL into the fetched
