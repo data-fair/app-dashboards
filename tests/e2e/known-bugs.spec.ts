@@ -33,7 +33,7 @@ type StaticFilter =
   | { type: 'exists' | 'notExists'; field: string | { key: string } }
 
 interface DevConfig {
-  filters?: { labelField?: string; multipleValues?: boolean; forceOneValue?: boolean }[]
+  filters?: { labelField?: string; values?: string[]; slider?: boolean; multipleValues?: boolean; forceOneValue?: boolean }[]
   staticFilters?: StaticFilter[] | null
   sectionsGroup?: string
   datasets?: { id?: string; schema?: SchemaField[] }[]
@@ -251,29 +251,37 @@ test.describe('Bugs connus (régressions)', () => {
     // 3) Sélection d'une valeur dans le 1er filtre : la valeur résolue doit
     //    être transmise aux embeds (préfixée par le dataset racine pour les
     //    applications, dé-préfixée pour les vues dataset).
+    //
+    //    ⚠️ Les clés émises suivent `collectFilterEmitFields` : les champs
+    //    `values` associés au filtre quand ils existent (valeurs résolues via
+    //    `/values/`), sinon le labelField lui-même. Un filtre slider émet des
+    //    bornes `_gte`/`_lte`, pas de `_in` : on le saute.
     const firstFilter = (config.filters || [])[0]
-    if (firstFilter?.labelField && rootDatasetId) {
+    if (firstFilter?.labelField && rootDatasetId && !firstFilter.slider) {
+      const emitFields = firstFilter.values?.length ? firstFilter.values : [firstFilter.labelField]
       const firstAutocomplete = page.locator('.v-autocomplete').first()
       await firstAutocomplete.click()
       const firstOption = page.locator('.v-list-item').first()
       await expect(firstOption).toBeVisible({ timeout: 5_000 })
       await firstOption.click()
 
-      // ⚠️ La regex cible explicitement le champ du filtre dynamique : une
-      // regex générique matcherait immédiatement les static filters déjà
+      // ⚠️ La regex cible explicitement les champs émis du filtre dynamique :
+      // une regex générique matcherait immédiatement les static filters déjà
       // présents et le poll passerait avant la mise à jour des src.
-      const scopedKeyRegex = new RegExp(`(?:^|[?&])c?_d_${rootDatasetId}_${firstFilter.labelField}_in=`)
-      await expect.poll(
-        async () => await firstAppFrame.getAttribute('src'),
-        { timeout: 10_000, message: 'L\'iframe de l\'application doit recevoir le filtre résolu préfixé par le dataset racine' }
-      ).toMatch(scopedKeyRegex)
-
-      if (firstTableFormFrame) {
-        const deprefixedKeyRegex = new RegExp(`(?:^|[?&])${firstFilter.labelField}_in=`)
+      for (const emitField of emitFields) {
+        const scopedKeyRegex = new RegExp(`(?:^|[?&])c?_d_${rootDatasetId}_${emitField}_in=`)
         await expect.poll(
-          async () => await firstTableFormFrame.getAttribute('src'),
-          { timeout: 10_000, message: 'L\'iframe de la vue dataset doit recevoir le filtre dé-préfixé' }
-        ).toMatch(deprefixedKeyRegex)
+          async () => await firstAppFrame.getAttribute('src'),
+          { timeout: 10_000, message: `L'iframe de l'application doit recevoir le filtre résolu préfixé par le dataset racine (${emitField})` }
+        ).toMatch(scopedKeyRegex)
+
+        if (firstTableFormFrame) {
+          const deprefixedKeyRegex = new RegExp(`(?:^|[?&])${emitField}_in=`)
+          await expect.poll(
+            async () => await firstTableFormFrame.getAttribute('src'),
+            { timeout: 10_000, message: `L'iframe de la vue dataset doit recevoir le filtre dé-préfixé (${emitField})` }
+          ).toMatch(deprefixedKeyRegex)
+        }
       }
     }
 
