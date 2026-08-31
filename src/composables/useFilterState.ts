@@ -19,7 +19,7 @@ import { useFetch } from '@data-fair/lib-vue/fetch.js'
 import reactiveSearchParams from '@data-fair/lib-vue/reactive-search-params-global.js'
 import type { DashboardConfig, DashboardFilter } from '@/config'
 import { datasetFilterKey } from '@/utils/dataset-filter'
-import { buildValuesLabelsUrl, isRangeFilter, mergeAndSortItems, type ValueLabel } from '@/utils/filters'
+import { buildMetricsUrl, buildValuesLabelsUrl, isRangeFilter, mergeAndSortItems, type ValueLabel } from '@/utils/filters'
 
 export interface UseFilterStateOptions {
   /**
@@ -35,6 +35,12 @@ export interface UseFilterStateOptions {
   config: Ref<DashboardConfig>
   /** Optional reactive address (used by geo filters) */
   address?: Ref<{ lon: number; lat: number } | undefined>
+  /**
+   * Number formatter injected by the calling component (i18n-aware, e.g.
+   * `(v, d) => n(v, { maximumFractionDigits: d })`). Defaults to a plain
+   * `toFixed`-based rounding for one-shot setups (tests).
+   */
+  formatNumber?: (v: number, decimals: number) => string
 }
 
 export interface FilterStateApi {
@@ -67,14 +73,10 @@ export const useFilterState = (opts: UseFilterStateOptions): FilterStateApi => {
   const isRange = computed(() => isRangeFilter(filter.value))
 
   // Range-slider mode: fetch the field bounds (min/max) in a single request.
+  // Static filters are included so the bounds match the filtered subset.
   const metricsUrl = computed(() => {
     if (!datasetId.value || !datasetHref.value || !isRange.value) return null
-    const query = new URLSearchParams({
-      fields: filter.value.labelField,
-      metrics: 'min,max',
-      finalizedAt: config.value.datasets?.[0]?.finalizedAt || ''
-    })
-    return `${datasetHref.value}/simple_metrics_agg?${query.toString()}`
+    return buildMetricsUrl(filter.value, datasetHref.value, config.value)
   })
   const { data: metrics, loading: boundsLoading, refresh: refreshMetrics } = useFetch(() => metricsUrl.value, { watch: false })
 
@@ -117,8 +119,12 @@ export const useFilterState = (opts: UseFilterStateOptions): FilterStateApi => {
   })
 
   // Format a value for the slider thumb labels (rounded to the relevant
-  // precision, trailing ".0" stripped so 5.0 displays as "5").
-  const formatValue = (v: number): string => String(parseFloat(v.toFixed(decimals.value)))
+  // precision, trailing ".0" stripped so 5.0 displays as "5"). The formatter
+  // is injected by the component so the locale of the session applies.
+  const formatValue = (v: number): string =>
+    opts.formatNumber
+      ? opts.formatNumber(v, decimals.value)
+      : String(parseFloat(v.toFixed(decimals.value)))
 
   // Range-slider value: [min, max] stored as `_gte` / `_lte` URL keys.
   const rangeValue = computed<[number, number] | undefined>({

@@ -1,4 +1,5 @@
 import type { Application } from '@data-fair/lib-common-types/application/index.js'
+import type { FullSiteInfo } from '@data-fair/lib-vue/session.js'
 import type { DashboardConfig } from '@/config'
 
 declare global {
@@ -11,6 +12,8 @@ declare global {
       configuration: DashboardConfig
       baseApp: { id: string; url: string; meta: Record<string, unknown> }
     }
+    /** Posé par _public.js, lu par la session à la place du fetch déprécié. */
+    __PUBLIC_SITE_INFO?: FullSiteInfo
     iFrameResizer: {
       heightCalculationMethod: string
     }

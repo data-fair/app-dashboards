@@ -27,7 +27,7 @@ const props = defineProps<{
 }>()
 
 const { config, dataset, fields } = useConfig()
-const { t } = useI18n()
+const { t, n } = useI18n()
 
 // Reactive stand-in for the parent's `address` ref: a computed is a Ref, so
 // `useFilterState` tracks it (geo filters) while the parent only re-renders
@@ -40,7 +40,8 @@ const { items, loading, value, searchItems, sliderMin, sliderMax, step, boundsLo
   datasetId: computed(() => dataset.value?.id),
   datasetHref: computed(() => dataset.value?.href),
   config,
-  address
+  address,
+  formatNumber: (v, decimals) => n(v, { maximumFractionDigits: decimals })
 })
 
 const onFilterSearch = (search: string | undefined) => {
@@ -72,7 +73,6 @@ const fieldLabel = computed<string>(() => {
       :max="sliderMax ?? 0"
       :step="step"
       :disabled="sliderMin == null || sliderMax == null"
-      :loading="boundsLoading"
       density="compact"
       hide-details
       show-ticks="always"
@@ -89,8 +89,13 @@ const fieldLabel = computed<string>(() => {
         {{ formatValue(slotProps.modelValue) }}
       </template>
     </v-range-slider>
+    <v-progress-linear
+      v-if="filter.slider && boundsLoading"
+      indeterminate
+      height="2"
+    />
     <v-autocomplete
-      v-else
+      v-if="!filter.slider"
       v-model="value"
       :loading="loading"
       :items="items"

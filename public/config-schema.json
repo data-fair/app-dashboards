@@ -1,5 +1,6 @@
 {
   "type": "object",
+  "layout": "tabs",
   "allOf": [
     {
       "title": "Filtres",
@@ -38,7 +39,7 @@
               },
               "layout": {
                 "getItems": {
-                  "url": "api/v1/datasets?status=finalized&q={q}&select=id,title,slug,schema,timePeriod,bbox&${context.datasetFilter}&sort=createdAt:-1",
+                  "url": "api/v1/datasets?status=finalized&q={q}&size=50&select=id,title,slug,schema,timePeriod,bbox&${context.datasetFilter}&sort=createdAt:-1",
                   "itemKey": "data.href",
                   "itemTitle": "data.title",
                   "itemsResults": "data.results"
@@ -52,7 +53,7 @@
           "type": "array",
           "layout": {
             "messages": {
-              "addItem": "ajouter un filtre"
+              "addItem": "Ajouter un filtre"
             }
           },
           "items": {
@@ -61,6 +62,9 @@
               "type": "in"
             },
             "required": [],
+            "discriminator": {
+              "propertyName": "type"
+            },
             "oneOf": [
               {
                 "title": "Restreindre à des valeurs",
@@ -101,7 +105,7 @@
                 }
               },
               {
-                "title": "Restreindre à un interval de valeurs",
+                "title": "Restreindre à un intervalle de valeurs",
                 "required": [
                   "field"
                 ],
@@ -265,7 +269,7 @@
           "layout": {
             "itemTitle": "(data.slider ? 'Intervalle : ' : (data.multipleValues ? 'Contient ' : 'Égal à ')) + ((rootData.datasets?.[0]?.schema || []).find(f => f.key === data.labelField)?.label || (rootData.datasets?.[0]?.schema || []).find(f => f.key === data.labelField)?.title || (rootData.datasets?.[0]?.schema || []).find(f => f.key === data.labelField)?.['x-originalName'] || data.labelField)",
             "messages": {
-              "addItem": "ajouter un filtre dynamique"
+              "addItem": "Ajouter un filtre dynamique"
             }
           },
           "items": {
@@ -294,7 +298,7 @@
                 }
               },
               "values": {
-                "title": "Valeurs Associées",
+                "title": "Valeurs associées",
                 "description": "Si vide utilise la valeur du libellé",
                 "type": "array",
                 "items": {
@@ -311,7 +315,7 @@
                 }
               },
               "multipleValues": {
-                "title": "Permettre de filtrer par plusieurs valeur",
+                "title": "Permettre de filtrer par plusieurs valeurs",
                 "type": "boolean",
                 "default": false,
                 "layout": {
@@ -373,7 +377,7 @@
           "layout": {
             "itemTitle": "(data.title || 'Section') + ' - ' + ([].concat(...(data.rows||[]).map(r => [].concat(...(r.elements||[])))).length || 0) + ' éléments'",
             "messages": {
-              "addItem": "ajouter une section"
+              "addItem": "Ajouter une section"
             }
           },
           "items": {
@@ -410,8 +414,7 @@
               },
               "icon": {
                 "type": "object",
-                "title": "Icone",
-                "x-itemIcon": "svg",
+                "title": "Icône",
                 "properties": {
                   "name": {
                     "type": "string"
@@ -425,7 +428,7 @@
                 },
                 "layout": {
                   "getItems": {
-                    "url": "https://koumoul.com/data-fair/api/v1/datasets/icons-mdi-latest/lines?q={q}",
+                    "url": "https://koumoul.com/data-fair/api/v1/datasets/icons-mdi-latest/lines?q={q}&size=50&select=name,svg,svgPath",
                     "itemKey": "data.name",
                     "itemTitle": "data.name",
                     "itemIcon": "data.svg",
@@ -439,7 +442,7 @@
                 "layout": {
                   "itemTitle": "'Hauteur : '+data.height",
                   "messages": {
-                    "addItem": "ajouter une ligne"
+                    "addItem": "Ajouter une ligne"
                   }
                 },
                 "items": {
@@ -514,6 +517,9 @@
                             "default": 2
                           }
                         },
+                        "discriminator": {
+                          "propertyName": "type"
+                        },
                         "oneOf": [
                           {
                             "title": "Prévisualisation table",
@@ -523,6 +529,9 @@
                                 "const": "tablePreview",
                                 "title": "Type de l'élément"
                               }
+                            },
+                            "discriminator": {
+                              "propertyName": "source"
                             },
                             "oneOf": [
                               {
@@ -639,7 +648,7 @@
                                     },
                                     "layout": {
                                       "getItems": {
-                                        "url": "api/v1/datasets?q={q}&${context.datasetFilter}&select=id,title,slug,schema&sort=createdAt:-1",
+                                        "url": "api/v1/datasets?q={q}&size=50&${context.datasetFilter}&select=id,title,slug,schema&sort=createdAt:-1",
                                         "itemKey": "data.id",
                                         "itemTitle": "data.title",
                                         "itemsResults": "data.results"
@@ -731,6 +740,9 @@
                                 "title": "Type de l'élément"
                               }
                             },
+                            "discriminator": {
+                              "propertyName": "source"
+                            },
                             "oneOf": [
                               {
                                 "title": "Jeu de données des filtres",
@@ -757,7 +769,7 @@
                                     },
                                     "layout": {
                                       "getItems": {
-                                        "url": "api/v1/applications?q={q}&${context.datasetFilter}&dataset=${rootData.datasets[0].id}&filterConcepts=true&select=id,title,baseApp&sort=createdAt:-1",
+                                        "url": "api/v1/applications?q={q}&size=50&${context.datasetFilter}&dataset=${rootData.datasets[0].id}&filterConcepts=true&select=id,title,baseApp&sort=createdAt:-1",
                                         "itemKey": "data.id",
                                         "itemTitle": "data.title",
                                         "itemsResults": "data.results"
@@ -846,7 +858,7 @@
                                     },
                                     "layout": {
                                       "getItems": {
-                                        "url": "api/v1/applications?q={q}&${context.datasetFilter}&filterConcepts=true&select=id,title,baseApp&sort=createdAt:-1",
+                                        "url": "api/v1/applications?q={q}&size=50&${context.datasetFilter}&filterConcepts=true&select=id,title,baseApp&sort=createdAt:-1",
                                         "itemKey": "data.id",
                                         "itemTitle": "data.title",
                                         "itemsResults": "data.results"
@@ -956,6 +968,9 @@
                                       }
                                     ]
                                   },
+                                  "discriminator": {
+                                    "propertyName": "type"
+                                  },
                                   "oneOf": [
                                     {
                                       "title": "Prévisualisation table",
@@ -965,6 +980,9 @@
                                           "const": "tablePreview",
                                           "title": "Type de l'élément"
                                         }
+                                      },
+                                      "discriminator": {
+                                        "propertyName": "source"
                                       },
                                       "oneOf": [
                                         {
@@ -1081,7 +1099,7 @@
                                               },
                                               "layout": {
                                                 "getItems": {
-                                                  "url": "api/v1/datasets?q={q}&${context.datasetFilter}&select=id,title,slug,schema&sort=createdAt:-1",
+                                                  "url": "api/v1/datasets?q={q}&size=50&${context.datasetFilter}&select=id,title,slug,schema&sort=createdAt:-1",
                                                   "itemKey": "data.id",
                                                   "itemTitle": "data.title",
                                                   "itemsResults": "data.results"
@@ -1173,6 +1191,9 @@
                                           "title": "Type de l'élément"
                                         }
                                       },
+                                      "discriminator": {
+                                        "propertyName": "source"
+                                      },
                                       "oneOf": [
                                         {
                                           "title": "Jeu de données des filtres",
@@ -1199,7 +1220,7 @@
                                               },
                                               "layout": {
                                                 "getItems": {
-                                                  "url": "api/v1/applications?q={q}&${context.datasetFilter}&dataset=${rootData.datasets[0].id}&filterConcepts=true&select=id,title,baseApp&sort=createdAt:-1",
+                                                  "url": "api/v1/applications?q={q}&size=50&${context.datasetFilter}&dataset=${rootData.datasets[0].id}&filterConcepts=true&select=id,title,baseApp&sort=createdAt:-1",
                                                   "itemKey": "data.id",
                                                   "itemTitle": "data.title",
                                                   "itemsResults": "data.results"
@@ -1288,7 +1309,7 @@
                                               },
                                               "layout": {
                                                 "getItems": {
-                                                  "url": "api/v1/applications?q={q}&${context.datasetFilter}&filterConcepts=true&select=id,title,baseApp&sort=createdAt:-1",
+                                                  "url": "api/v1/applications?q={q}&size=50&${context.datasetFilter}&filterConcepts=true&select=id,title,baseApp&sort=createdAt:-1",
                                                   "itemKey": "data.id",
                                                   "itemTitle": "data.title",
                                                   "itemsResults": "data.results"
@@ -1400,7 +1421,7 @@
                                           },
                                           "layout": {
                                             "getItems": {
-                                              "url": "api/v1/datasets?q={q}&${context.datasetFilter}&rest=true&select=id,title,schema&sort=createdAt:-1",
+                                              "url": "api/v1/datasets?q={q}&size=50&${context.datasetFilter}&rest=true&select=id,title,schema&sort=createdAt:-1",
                                               "itemKey": "data.id",
                                               "itemTitle": "data.title",
                                               "itemsResults": "data.results"
@@ -1452,7 +1473,7 @@
                                 },
                                 "layout": {
                                   "getItems": {
-                                    "url": "api/v1/datasets?q={q}&${context.datasetFilter}&rest=true&select=id,title,schema&sort=createdAt:-1",
+                                    "url": "api/v1/datasets?q={q}&size=50&${context.datasetFilter}&rest=true&select=id,title,schema&sort=createdAt:-1",
                                     "itemKey": "data.id",
                                     "itemTitle": "data.title",
                                     "itemsResults": "data.results"
@@ -1704,7 +1725,7 @@
             },
             {
               "const": "tabs-button",
-              "title": "Dans des onglets (sélection par boutton)"
+              "title": "Dans des onglets (sélection par bouton)"
             },
             {
               "const": "flow",
@@ -1931,6 +1952,9 @@
           "title": "Type de l'élément"
         }
       },
+      "discriminator": {
+        "propertyName": "source"
+      },
       "oneOf": [
         {
           "title": "Jeu de données des filtres",
@@ -2046,7 +2070,7 @@
               },
               "layout": {
                 "getItems": {
-                  "url": "api/v1/datasets?q={q}&${context.datasetFilter}&select=id,title,slug,schema&sort=createdAt:-1",
+                  "url": "api/v1/datasets?q={q}&size=50&${context.datasetFilter}&select=id,title,slug,schema&sort=createdAt:-1",
                   "itemKey": "data.id",
                   "itemTitle": "data.title",
                   "itemsResults": "data.results"
@@ -2138,6 +2162,9 @@
           "title": "Type de l'élément"
         }
       },
+      "discriminator": {
+        "propertyName": "source"
+      },
       "oneOf": [
         {
           "title": "Jeu de données des filtres",
@@ -2164,7 +2191,7 @@
               },
               "layout": {
                 "getItems": {
-                  "url": "api/v1/applications?q={q}&${context.datasetFilter}&dataset=${rootData.datasets[0].id}&filterConcepts=true&select=id,title,baseApp&sort=createdAt:-1",
+                  "url": "api/v1/applications?q={q}&size=50&${context.datasetFilter}&dataset=${rootData.datasets[0].id}&filterConcepts=true&select=id,title,baseApp&sort=createdAt:-1",
                   "itemKey": "data.id",
                   "itemTitle": "data.title",
                   "itemsResults": "data.results"
@@ -2253,7 +2280,7 @@
               },
               "layout": {
                 "getItems": {
-                  "url": "api/v1/applications?q={q}&${context.datasetFilter}&filterConcepts=true&select=id,title,baseApp&sort=createdAt:-1",
+                  "url": "api/v1/applications?q={q}&size=50&${context.datasetFilter}&filterConcepts=true&select=id,title,baseApp&sort=createdAt:-1",
                   "itemKey": "data.id",
                   "itemTitle": "data.title",
                   "itemsResults": "data.results"
@@ -2365,7 +2392,7 @@
           },
           "layout": {
             "getItems": {
-              "url": "api/v1/datasets?q={q}&${context.datasetFilter}&rest=true&select=id,title,schema&sort=createdAt:-1",
+              "url": "api/v1/datasets?q={q}&size=50&${context.datasetFilter}&rest=true&select=id,title,schema&sort=createdAt:-1",
               "itemKey": "data.id",
               "itemTitle": "data.title",
               "itemsResults": "data.results"
@@ -2403,6 +2430,9 @@
                 }
               ]
             },
+            "discriminator": {
+              "propertyName": "type"
+            },
             "oneOf": [
               {
                 "title": "Prévisualisation table",
@@ -2412,6 +2442,9 @@
                     "const": "tablePreview",
                     "title": "Type de l'élément"
                   }
+                },
+                "discriminator": {
+                  "propertyName": "source"
                 },
                 "oneOf": [
                   {
@@ -2528,7 +2561,7 @@
                         },
                         "layout": {
                           "getItems": {
-                            "url": "api/v1/datasets?q={q}&${context.datasetFilter}&select=id,title,slug,schema&sort=createdAt:-1",
+                            "url": "api/v1/datasets?q={q}&size=50&${context.datasetFilter}&select=id,title,slug,schema&sort=createdAt:-1",
                             "itemKey": "data.id",
                             "itemTitle": "data.title",
                             "itemsResults": "data.results"
@@ -2620,6 +2653,9 @@
                     "title": "Type de l'élément"
                   }
                 },
+                "discriminator": {
+                  "propertyName": "source"
+                },
                 "oneOf": [
                   {
                     "title": "Jeu de données des filtres",
@@ -2646,7 +2682,7 @@
                         },
                         "layout": {
                           "getItems": {
-                            "url": "api/v1/applications?q={q}&${context.datasetFilter}&dataset=${rootData.datasets[0].id}&filterConcepts=true&select=id,title,baseApp&sort=createdAt:-1",
+                            "url": "api/v1/applications?q={q}&size=50&${context.datasetFilter}&dataset=${rootData.datasets[0].id}&filterConcepts=true&select=id,title,baseApp&sort=createdAt:-1",
                             "itemKey": "data.id",
                             "itemTitle": "data.title",
                             "itemsResults": "data.results"
@@ -2735,7 +2771,7 @@
                         },
                         "layout": {
                           "getItems": {
-                            "url": "api/v1/applications?q={q}&${context.datasetFilter}&filterConcepts=true&select=id,title,baseApp&sort=createdAt:-1",
+                            "url": "api/v1/applications?q={q}&size=50&${context.datasetFilter}&filterConcepts=true&select=id,title,baseApp&sort=createdAt:-1",
                             "itemKey": "data.id",
                             "itemTitle": "data.title",
                             "itemsResults": "data.results"
@@ -2847,7 +2883,7 @@
                     },
                     "layout": {
                       "getItems": {
-                        "url": "api/v1/datasets?q={q}&${context.datasetFilter}&rest=true&select=id,title,schema&sort=createdAt:-1",
+                        "url": "api/v1/datasets?q={q}&size=50&${context.datasetFilter}&rest=true&select=id,title,schema&sort=createdAt:-1",
                         "itemKey": "data.id",
                         "itemTitle": "data.title",
                         "itemsResults": "data.results"
@@ -2878,7 +2914,7 @@
       "type": "array",
       "layout": {
         "messages": {
-          "addItem": "ajouter un filtre"
+          "addItem": "Ajouter un filtre"
         }
       },
       "items": {
@@ -2887,6 +2923,9 @@
           "type": "in"
         },
         "required": [],
+        "discriminator": {
+          "propertyName": "type"
+        },
         "oneOf": [
           {
             "title": "Restreindre à des valeurs",
@@ -2927,7 +2966,7 @@
             }
           },
           {
-            "title": "Restreindre à un interval de valeurs",
+            "title": "Restreindre à un intervalle de valeurs",
             "required": [
               "field"
             ],

@@ -1,5 +1,8 @@
 import { createApp } from 'vue'
-import 'vuetify/styles'
+// global.scss REMPLACE 'vuetify/styles' — jamais les deux.
+// Il compile Vuetify avec $body-font-family: var(--d-body-font-family), variable
+// posée par _theme.css : c'est ce qui applique la police du site à la visualisation.
+import '@data-fair/lib-vuetify/style/global.scss'
 import { createVuetify } from 'vuetify'
 import { createI18n } from 'vue-i18n'
 import { createSession } from '@data-fair/lib-vue/session.js'
@@ -18,42 +21,48 @@ window.iFrameResizer = {
   heightCalculationMethod: 'taggedElement'
 }
 
-// L'instance i18n DOIT être créée au niveau module, avant l'évaluation des
-// composants de @data-fair/lib-vuetify qui appellent useI18n() (ui-notif,
-// layout-empty-state, ...), sinon ils reçoivent une instance non initialisée.
-// `escapeParameterHtml` assainit les paramètres interpolés (labels de champs,
-// ...) tandis que le HTML des messages (ex. <strong>) est conservé.
-const i18n = createI18n({
-  legacy: false,
-  locale: 'fr',
-  fallbackLocale: 'en',
-  messages: { fr, en },
-  escapeParameterHtml: true
-})
-
 // Permet au shim v-iframe-compat (injecté par DataFair quand l'app est
 // embarquée via d-frame) d'appliquer les updateSrc sans recharger l'iframe.
+// À poser au niveau module, AVANT createApp().
 window.vIframeOptions = { reactiveParams: reactiveSearchParams }
 
 async function init () {
-  const session = await createSession({ directoryUrl: '/simple-directory', siteInfo: true })
+  // Le <script> _public.js d'index.html pose window.__PUBLIC_SITE_INFO, lu sans
+  // fetch ; l'option siteInfo déclenche refreshSiteInfo, déprécié, et ne reste
+  // qu'en repli si le script n'a pas été servi. vuetifySessionOptions lève si la
+  // session n'a pas ses infos de site : createSession doit donc être await.
+  const session = await createSession({
+    directoryUrl: '/simple-directory',
+    siteInfo: !window.__PUBLIC_SITE_INFO
+  })
 
-  const vuetifyOptions = vuetifySessionOptions(session)
-  vuetifyOptions.icons = {
-    defaultSet: 'mdi',
-    aliases,
-    sets: { mdi }
-  }
+  // createI18n APRÈS la session, avec la locale définitive ; app.use(i18n)
+  // avant mount(). Ne jamais réassigner i18n.global.locale.value : un changement
+  // de langue recharge le document. fallbackLocale: 'en' obligatoire —
+  // simple-directory sert six langues, les messages de lib-vuetify n'ont que
+  // fr et en ; sans repli, une session d'une autre langue affiche les clés brutes.
+  // escapeParameterHtml assainit les paramètres interpolés (labels de champs,
+  // ...) tandis que le HTML des messages (ex. <strong>) est conservé.
+  const i18n = createI18n({
+    legacy: false,
+    locale: session.lang.value as 'fr' | 'en',
+    fallbackLocale: 'en',
+    messages: { fr, en },
+    escapeParameterHtml: true
+  })
 
-  i18n.global.locale.value = session.lang.value as 'fr' | 'en'
+  const vuetify = createVuetify({
+    ...vuetifySessionOptions(session),
+    icons: { defaultSet: 'mdi', aliases, sets: { mdi } }
+  })
 
   const app = createApp(App)
-  app.use(i18n)
-  app.use(createVuetify(vuetifyOptions))
-  app.use(session)
-  app.use(createLocaleDayjs(session.lang.value))
-  app.use(createUiNotif())
-  app.use(createConfig())
+  app.use(vuetify)
+    .use(session)
+    .use(i18n)
+    .use(createLocaleDayjs(session.lang.value))
+    .use(createUiNotif())
+    .use(createConfig())
   app.mount('#app')
 }
 

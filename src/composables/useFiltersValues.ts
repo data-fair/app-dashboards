@@ -8,11 +8,13 @@
  */
 import { computed, ref, watch, type Ref } from 'vue'
 import { ofetch } from 'ofetch'
+import { filters2params } from '@data-fair/lib-utils/filters/index.js'
 import { useAsyncAction } from '@data-fair/lib-vue/async-action.js'
 import reactiveSearchParams from '@data-fair/lib-vue/reactive-search-params-global.js'
 import type { DashboardFilter } from '@/config'
 import { useConfig } from './config'
 import { datasetFilterKey } from '@/utils/dataset-filter'
+import { normalizeStaticFilters } from '@/utils/staticFilters'
 import {
   collectActiveFields,
   collectFilterEmitFields,
@@ -69,6 +71,9 @@ export const useFiltersValues = (opts: UseFiltersValuesOptions) => {
       for (const f of active) {
         baseParams[`${f.labelField}_in`] = String(reactiveSearchParams[datasetFilterKey(datasetId, f.labelField, prefix)])
       }
+      // Static filters scope the /values/ resolution to the same subset as
+      // the values-labels lists and the data queries.
+      Object.assign(baseParams, filters2params(normalizeStaticFilters(config.value.staticFilters)))
 
       const responses = await Promise.all(emitFields.map(f => {
         const filter = active.find(fwf => fwf.labelField === f || fwf.values?.includes(f))

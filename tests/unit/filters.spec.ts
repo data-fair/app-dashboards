@@ -8,6 +8,7 @@ import {
   isRangeFilter,
   mergeAndSortItems,
   computeMandatoryFilterIssues,
+  buildMetricsUrl,
   buildValuesLabelsUrl,
   serializeFiltersValues
 } from '@/utils/filters'
@@ -413,6 +414,37 @@ describe('buildValuesLabelsUrl', () => {
     const url = buildValuesLabelsUrl(filter, 'ds1', 'https://x/href', cfg as DashboardConfig, '', undefined, undefined, {})!
     expect(url).toContain('_c_date_match=')
     expect(url).not.toContain('_c_geo_distance')
+  })
+})
+
+describe('buildMetricsUrl', () => {
+  const slider = { labelField: 'tx', slider: true }
+
+  it('renvoie null sans dataset', () => {
+    expect(buildMetricsUrl(slider, undefined, {})).toBeNull()
+  })
+
+  it('build l\'URL minimale', () => {
+    const url = buildMetricsUrl(slider, 'https://x/href', {})!
+    expect(url.startsWith('https://x/href/simple_metrics_agg?')).toBe(true)
+    expect(url).toContain('fields=tx')
+    expect(url).toContain('metrics=min%2Cmax')
+    expect(url).toContain('finalizedAt=')
+  })
+
+  it('applique les staticFilters pour borner sur le sous-ensemble filtré', () => {
+    const cfg = {
+      datasets: [{ finalizedAt: 'F' }],
+      staticFilters: [
+        { type: 'in', field: 'dep', values: ['75'] },
+        { type: 'interval', field: 'an', minValue: '2010', maxValue: '2020' }
+      ]
+    } as DashboardConfig
+    const url = buildMetricsUrl(slider, 'https://x/href', cfg)!
+    expect(url).toContain('finalizedAt=F')
+    expect(url).toContain('dep_in=75')
+    expect(url).toContain('an_gte=2010')
+    expect(url).toContain('an_lte=2020')
   })
 })
 

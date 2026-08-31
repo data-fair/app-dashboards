@@ -3,13 +3,11 @@ import { ref } from 'vue'
 import { useEmbedCode } from '@/composables/useEmbedCode'
 import type { DashboardElement } from '@/config'
 
-const { useConfigMock, useI18nMock, useUiNotifMock } = vi.hoisted(() => ({
+const { useConfigMock, useUiNotifMock } = vi.hoisted(() => ({
   useConfigMock: vi.fn(),
-  useI18nMock: vi.fn(),
   useUiNotifMock: vi.fn()
 }))
 vi.mock('@/composables/config', () => ({ useConfig: () => useConfigMock() }))
-vi.mock('vue-i18n', () => ({ useI18n: () => useI18nMock() }))
 vi.mock('@data-fair/lib-vue/ui-notif.js', () => ({
   useUiNotif: () => useUiNotifMock(),
   getErrorMsg: (err: unknown) => (typeof err === 'string' ? err : (err as Error)?.message ?? String(err))
@@ -26,9 +24,8 @@ const setup = (element: DashboardElement, accessKey: string | null = null) => {
     application: { exposedUrl: 'https://host/data-fair/app/abc' },
     accessKey: ref(accessKey)
   })
-  useI18nMock.mockReturnValue({ t: (key: string) => `translated:${key}` })
   useUiNotifMock.mockReturnValue({ sendUiNotif })
-  const api = useEmbedCode(ref(element))
+  const api = useEmbedCode(ref(element), (key: string) => `translated:${key}`)
   return { ...api, sendUiNotif }
 }
 

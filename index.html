@@ -1,29 +1,30 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html><!-- pas de lang : posé par le proxy data-fair -->
 
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="df:capture-delay" content="5">
-  <meta name="df:overflow" content="true">
-  <meta name="df:sync-state" content="true">
-  <meta name="df:filter-concepts" content="false">
-  <meta name="application-name" content="Dashboards">
-  <meta name="title" content="Dashboards">
-  <meta name="description" lang="fr" content="Une application de dashboards génériques.">
-  <meta name="keywords" lang="fr" content="Dashboards">
-  <meta name="thumbnail" content="thumbnail.png">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <style>@layer vuetify-core, vuetify-components, vuetify-overrides, vuetify-utilities, vuetify-final;</style>
+  <link href="/simple-directory/api/sites/_theme.css" rel="stylesheet">
+  <script src="/simple-directory/api/sites/_public.js"></script>
+
+  <title>Dashboards</title>
+
+  <!-- contrat data-fair, lu à l'exécution -->
   <meta name="df:vjsf" content="3">
+  <meta name="df:filter-concepts" content="false">
   <meta name="df:sync-config" content="true">
+  <meta name="df:sync-state" content="true">
+  <meta name="df:overflow" content="true">
+  <meta name="df:capture-delay" content="5">
 
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..1000;1,200..1000&display=swap" rel="stylesheet">
+  <!-- catalogue, lu à l'import — migrera vers registry -->
+  <meta name="application-name" content="Dashboards">
+  <meta name="description" content="Une application de dashboards génériques.">
 
-  <title lang="fr">Dashboards</title>
-
-  <!-- Capture a global variable defined by data-fair's reverse proxy. -->
-  <script type="text/javascript">window.APPLICATION=%APPLICATION%;</script>
+  <!-- contrat data-fair, lu à l'exécution -->
+  <script>window.APPLICATION=%APPLICATION%;</script>
 </head>
 
 <body>

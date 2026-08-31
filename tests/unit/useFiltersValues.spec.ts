@@ -93,6 +93,29 @@ describe('useFiltersValues', () => {
     })
   })
 
+  it('transmet les staticFilters à la résolution /values', async () => {
+    reactiveSearchParams._d_ds1_libelle_in = '"X"'
+    ofetchMock.mockResolvedValue(['c1'])
+    const state = makeState({
+      config: ref({ staticFilters: [{ type: 'in', field: 'dep', values: ['75'] }] }),
+      filters: ref([{ labelField: 'libelle', values: ['code'] }]),
+      dataset: ref({ id: 'ds1', href: 'https://x/ds1' }),
+      fields: ref({ code: plainField('code'), libelle: plainField('libelle') })
+    })
+    const { values } = setup(state)
+    await nextTick()
+    await flush()
+    expect(ofetchMock).toHaveBeenCalledWith('https://x/ds1/values/code', expect.objectContaining({
+      params: expect.objectContaining({ libelle_in: '"X"', dep_in: '75' })
+    }))
+    expect(values.value).toEqual({
+      keys: ['libelle'],
+      _d_ds1_code_in: '"c1"',
+      _d_ds1_dep_in: '75',
+      finalizedAt: ''
+    })
+  })
+
   it('fusionne les staticFilters (clés dataset-scopées + mirror concept)', async () => {
     const state = makeState({
       config: ref({ staticFilters: [{ type: 'in', field: 'dep', values: ['75'] }] }),

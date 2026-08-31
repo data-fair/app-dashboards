@@ -20,7 +20,7 @@ const props = defineProps<{
 
 const { config } = useConfig()
 const { t } = useI18n()
-const { copyToClipboard } = useEmbedCode(computed(() => props.element))
+const { copyToClipboard } = useEmbedCode(computed(() => props.element), t)
 
 const isApp = computed(() => isApplicationElement(props.element))
 const showSources = computed(() => Boolean(config.value.showSources && props.sources.length))

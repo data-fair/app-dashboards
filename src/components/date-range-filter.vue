@@ -58,7 +58,7 @@ const displayText = computed(() => {
   <v-menu
     v-model="menu"
     :close-on-content-click="false"
-    offset-y
+    location="bottom"
     min-width="auto"
   >
     <template #activator="{ props: menuProps }">

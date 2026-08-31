@@ -145,6 +145,24 @@ describe('useFilterState — range slider', () => {
     expect(step.value).toBe(0.2)
   })
 
+  it('inclut les staticFilters dans l\'URL metrics des bornes', async () => {
+    useFetchMock
+      .mockReturnValueOnce({ data: ref(null), loading: ref(false), refresh: vi.fn(), error: ref(null) })
+      .mockReturnValue({ data: ref(null), loading: ref(false), refresh: vi.fn(), error: ref(null) })
+    const datasetId = ref<string | undefined>('ds1')
+    const datasetHref = ref<string | undefined>('https://x/href')
+    const config = ref<DashboardConfig>({ staticFilters: [{ type: 'in', field: 'dep', values: ['75'] }] })
+    useFilterState({ filter: slider(), prefix: '', datasetId, datasetHref, config })
+    await nextTick()
+    // useFetchMock is shared across the file: this test's calls are the last
+    // two (metrics first, then values-labels).
+    const metricsUrlGetter = useFetchMock.mock.calls.at(-2)![0] as () => string | null
+    const url = metricsUrlGetter()
+    expect(url).toContain('simple_metrics_agg')
+    expect(url).toContain('fields=tx')
+    expect(url).toContain('dep_in=75')
+  })
+
   it('step propre pour une plage étroite', async () => {
     const { step } = setupSlider({ min: 10.5, max: 32.7 })
     await nextTick()

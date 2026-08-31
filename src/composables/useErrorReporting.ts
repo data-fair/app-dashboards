@@ -13,7 +13,6 @@ export const useErrorReporting = (error: Ref<string | null>) => {
     if (!message) return
     ofetch(`${window.APPLICATION.href}/error`, { body: { message }, method: 'POST' })
       .catch((e: unknown) => {
-        // eslint-disable-next-line no-console
         console.error('Failed to send error to backend', getErrorMsg(e) || e)
       })
   }, { immediate: true })

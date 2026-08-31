@@ -89,8 +89,7 @@ export function createConfig () {
 const CONFIG_KEYS = [
   'datasets', 'filters', 'staticFilters', 'sections', 'periodFilter',
   'addressFilter', 'title', 'titleStyle', 'sectionsTitleStyle', 'description',
-  'allowDuplicate', 'showSources', 'showEmbed', 'showCapture', 'sectionsGroup',
-  'applications'
+  'allowDuplicate', 'showSources', 'showEmbed', 'showCapture', 'sectionsGroup'
 ]
 
 let messageHandler: ((event: MessageEvent) => void) | null = null

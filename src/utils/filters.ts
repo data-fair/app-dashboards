@@ -248,6 +248,27 @@ export const buildValuesLabelsUrl = (
   return `${datasetHref}/values-labels/${filter.labelField}?${new URLSearchParams(query).toString()}`
 }
 
+/**
+ * URL of the `simple_metrics_agg` endpoint fetching the numeric bounds
+ * (min/max) of a range-slider filter's field. The static filters are applied
+ * so the bounds are computed on the filtered subset of the filters dataset,
+ * consistently with the `/values-labels/` lists and the data queries.
+ */
+export const buildMetricsUrl = (
+  filter: DashboardFilter,
+  datasetHref: string | undefined,
+  config: DashboardConfig
+): string | null => {
+  if (!datasetHref) return null
+  const query: Record<string, string> = {
+    fields: filter.labelField,
+    metrics: 'min,max',
+    finalizedAt: config.datasets?.[0]?.finalizedAt || ''
+  }
+  Object.assign(query, filters2params(normalizeStaticFilters(config.staticFilters)))
+  return `${datasetHref}/simple_metrics_agg?${new URLSearchParams(query).toString()}`
+}
+
 export const sortByLabel = (a: ValueLabel, b: ValueLabel) =>
   (a.label || a.value).localeCompare(b.label || b.value, 'fr', { sensitivity: 'base' })
 
