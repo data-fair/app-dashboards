@@ -265,17 +265,19 @@ test.describe('Bugs connus (régressions)', () => {
     //    - en clés concept `_c_<conceptId>_<op>` sur les deux, quand le champ
     //      porte un concept (pour qu'une visu sur un AUTRE dataset les lise).
     const staticFilters = config.staticFilters || []
+    const activeDynamicFields = new Set(unGateField ? [unGateField] : [])
     if (staticFilters.length && rootDatasetId) {
       for (const sf of staticFilters) {
         const params = staticFilterParams(sf)
         const query = queryOf(await firstAppFrame.getAttribute('src') || '')
         for (const [restKey, value] of Object.entries(params)) {
+          const split = splitRestKey(restKey)
+          if (split && activeDynamicFields.has(split.field)) continue
           const scoped = findParam(query, new RegExp(`^c?_d_${rootDatasetId}_${restKey}$`))
           expect(
             scoped,
             `L'URL de l'application doit contenir la clé dataset-scopée _d_${rootDatasetId}_${restKey} (${sf.type}). src=${query}`
           ).toBe(value)
-          const split = splitRestKey(restKey)
           const conceptId = split ? rootSchema.find(f => f.key === split.field)?.['x-concept']?.id : undefined
           if (conceptId) {
             expect(
@@ -289,6 +291,8 @@ test.describe('Bugs connus (régressions)', () => {
         const tableQuery = queryOf(await firstTableFormFrame.getAttribute('src') || '')
         for (const sf of staticFilters) {
           for (const [restKey, value] of Object.entries(staticFilterParams(sf))) {
+            const split = splitRestKey(restKey)
+            if (split && activeDynamicFields.has(split.field)) continue
             expect(
               tableQuery.get(restKey),
               `L'URL de la vue table doit contenir la clé dé-préfixée ${restKey}. src=${tableQuery}`

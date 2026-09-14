@@ -234,54 +234,24 @@ describe('useFiltersValues', () => {
     expect(execute).toHaveBeenCalledTimes(2)
     expect(values.value).toEqual({ keys: [], finalizedAt: 'F' })
   })
-})
 
-describe('useFiltersValues — refiltrage des valeurs contre les staticFilters', () => {
-  beforeEach(() => {
-    ofetchMock.mockReset()
-  })
-
-  afterEach(() => {
-    for (const key of Object.keys(reactiveSearchParams)) delete reactiveSearchParams[key]
-  })
-
-  it('refiltre la résolution /values/ (workaround values multi-valué)', async () => {
-    reactiveSearchParams._d_ds1_libelle_in = '"X"'
-    ofetchMock.mockResolvedValue(['c1', 'c3'])
+  it('la sélection dynamique l\'emporte sur le static in du même champ', async () => {
+    reactiveSearchParams._d_ds1_type_in = '"a"'
+    ofetchMock.mockResolvedValue(['a'])
     const state = makeState({
-      config: ref({ staticFilters: [{ type: 'starts', field: 'code', value: 'c1' }] }),
-      filters: ref([{ labelField: 'libelle', values: ['code'] }]),
-      dataset: ref({ id: 'ds1', href: 'https://x/ds1' }),
-      fields: ref({ code: fieldWithConcept('code', 'codeEPCI'), libelle: plainField('libelle') })
-    })
-    const { values } = setup(state)
-    await nextTick()
-    await flush()
-    expect(values.value).toEqual({
-      keys: ['libelle'],
-      _d_ds1_code_in: '"c1"',
-      _c_codeEPCI_in: '"c1"',
-      _d_ds1_code_starts: 'c1',
-      _c_codeEPCI_starts: 'c1',
-      finalizedAt: ''
-    })
-  })
-
-  it('refiltre aussi la sélection URL hors filtre statique (branche sans /values)', async () => {
-    reactiveSearchParams._d_ds1_an_in = '"a","z"'
-    const state = makeState({
-      config: ref({ staticFilters: [{ type: 'starts', field: 'an', value: 'a' }] }),
-      filters: ref([{ labelField: 'an', multipleValues: true }]),
+      config: ref({ staticFilters: [{ type: 'in', field: 'type', values: ['a', 'b'] }] }),
+      filters: ref([{ labelField: 'type', values: ['type'], multipleValues: true }]),
       dataset: ref({ id: 'ds1', href: 'https://x/ds1', finalizedAt: 'F' })
     })
     const { values } = setup(state)
     await nextTick()
     await flush()
-    expect(ofetchMock).not.toHaveBeenCalled()
+    expect(ofetchMock).toHaveBeenCalledWith('https://x/ds1/values/type', expect.objectContaining({
+      params: expect.objectContaining({ type_in: '"a"' })
+    }))
     expect(values.value).toEqual({
-      keys: ['an'],
-      _d_ds1_an_in: '"a"',
-      _d_ds1_an_starts: 'a',
+      keys: ['type'],
+      _d_ds1_type_in: '"a"',
       finalizedAt: 'F'
     })
   })

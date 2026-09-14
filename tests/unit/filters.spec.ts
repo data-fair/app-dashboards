@@ -7,13 +7,12 @@ import {
   initDefaultFilterValues,
   isRangeFilter,
   mergeAndSortItems,
-  valueMatchesStaticFilters,
   computeMandatoryFilterIssues,
   buildMetricsUrl,
   buildValuesLabelsUrl,
   serializeFiltersValues
 } from '@/utils/filters'
-import type { DashboardConfig, DashboardStaticFilter } from '@/config'
+import type { DashboardConfig } from '@/config'
 
 const fieldWithConcept = (key: string, concept: string) => ({ key, title: key, 'x-concept': { id: concept, title: concept } })
 const plainField = (key: string) => ({ key, title: key })
@@ -287,66 +286,6 @@ describe('mergeAndSortItems', () => {
   it('trie sans label (comparaison sur les valeurs brutes)', () => {
     const items = mergeAndSortItems([{ value: 'z' }, { value: 'y' }], undefined, false)
     expect(items.map(i => i.value)).toEqual(['y', 'z'])
-  })
-})
-
-describe('valueMatchesStaticFilters', () => {
-  it('in : ne garde que les valeurs autorisées (cohersion string)', () => {
-    const sfs = [{ type: 'in', field: 'dep', values: ['75', '92'] }] as DashboardStaticFilter[]
-    expect(valueMatchesStaticFilters('75', sfs, 'dep')).toBe(true)
-    expect(valueMatchesStaticFilters(75, sfs, 'dep')).toBe(true)
-    expect(valueMatchesStaticFilters('93', sfs, 'dep')).toBe(false)
-  })
-
-  it('nin : exclut les valeurs listées', () => {
-    const sfs = [{ type: 'nin', field: 'dep', values: ['75'] }] as DashboardStaticFilter[]
-    expect(valueMatchesStaticFilters('75', sfs, 'dep')).toBe(false)
-    expect(valueMatchesStaticFilters('93', sfs, 'dep')).toBe(true)
-  })
-
-  it('starts : garde les valeurs commençant par le préfixe', () => {
-    const sfs = [{ type: 'starts', field: 'dep', value: '75' }] as DashboardStaticFilter[]
-    expect(valueMatchesStaticFilters('75056', sfs, 'dep')).toBe(true)
-    expect(valueMatchesStaticFilters('93001', sfs, 'dep')).toBe(false)
-  })
-
-  it('interval : comparaison numérique quand les deux côtés sont numériques', () => {
-    const sfs = [{ type: 'interval', field: 'dep', minValue: '10', maxValue: '20' }] as DashboardStaticFilter[]
-    expect(valueMatchesStaticFilters('15', sfs, 'dep')).toBe(true)
-    expect(valueMatchesStaticFilters('9', sfs, 'dep')).toBe(false)
-    expect(valueMatchesStaticFilters('21', sfs, 'dep')).toBe(false)
-  })
-
-  it('interval : comparaison lexicographique sinon, bornes partielles acceptées', () => {
-    const minSeul = [{ type: 'interval', field: 'm', minValue: 'b' }] as DashboardStaticFilter[]
-    expect(valueMatchesStaticFilters('bc', minSeul, 'm')).toBe(true)
-    expect(valueMatchesStaticFilters('ab', minSeul, 'm')).toBe(false)
-    const maxSeul = [{ type: 'interval', field: 'm', maxValue: 'b' }] as DashboardStaticFilter[]
-    expect(valueMatchesStaticFilters('ab', maxSeul, 'm')).toBe(true)
-    expect(valueMatchesStaticFilters('c', maxSeul, 'm')).toBe(false)
-  })
-
-  it('combine plusieurs filtres sur le même champ (AND)', () => {
-    const sfs = [
-      { type: 'in', field: 'dep', values: ['75056', '93001'] },
-      { type: 'starts', field: 'dep', value: '75' }
-    ] as DashboardStaticFilter[]
-    expect(valueMatchesStaticFilters('75056', sfs, 'dep')).toBe(true)
-    expect(valueMatchesStaticFilters('93001', sfs, 'dep')).toBe(false)
-  })
-
-  it('ignore les filtres sur les autres champs et les types exists/notExists', () => {
-    const sfs = [
-      { type: 'in', field: 'autre', values: ['x'] },
-      { type: 'exists', field: 'dep' },
-      { type: 'notExists', field: 'dep' }
-    ] as unknown as DashboardStaticFilter[]
-    expect(valueMatchesStaticFilters('75', sfs, 'dep')).toBe(true)
-  })
-
-  it('retourne true sans filtre sur le champ ou sans staticFilters', () => {
-    expect(valueMatchesStaticFilters('75', undefined, 'dep')).toBe(true)
-    expect(valueMatchesStaticFilters('75', [], 'dep')).toBe(true)
   })
 })
 
@@ -634,6 +573,45 @@ describe('serializeFiltersValues', () => {
       keys: [],
       _d_ds1_dep_in: '75',
       _c_codeDepartement_in: '75',
+      finalizedAt: ''
+    })
+  })
+
+  it('un filtre dynamique actif l\'emporte sur un static in du même champ', () => {
+    const result = serializeFiltersValues({
+      emitFields: ['dep'],
+      activeFields: ['dep'],
+      resolvedValues: { dep: ['75'] },
+      fields,
+      config: { staticFilters: [{ type: 'in', field: 'dep', values: ['75', '92'] }] } as DashboardConfig,
+      prefix: '',
+      datasetId: 'ds1'
+    })
+    expect(result).toEqual({
+      keys: ['dep'],
+      _d_ds1_dep_in: '"75"',
+      _c_codeDepartement_in: '"75"',
+      finalizedAt: ''
+    })
+  })
+
+  it('un range slider actif l\'emporte sur un static interval du même champ', () => {
+    const result = serializeFiltersValues({
+      emitFields: [],
+      activeFields: ['tx'],
+      resolvedValues: {},
+      rangeValues: { tx: { min: '10', max: '20' } },
+      fields: { tx: fieldWithConcept('tx', 'tauxPauvrete') },
+      config: { staticFilters: [{ type: 'interval', field: 'tx', minValue: '0', maxValue: '100' }] } as DashboardConfig,
+      prefix: '',
+      datasetId: 'ds1'
+    })
+    expect(result).toEqual({
+      keys: ['tx'],
+      _d_ds1_tx_gte: '10',
+      _d_ds1_tx_lte: '20',
+      _c_tauxPauvrete_gte: '10',
+      _c_tauxPauvrete_lte: '20',
       finalizedAt: ''
     })
   })

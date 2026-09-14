@@ -20,7 +20,6 @@ import {
   collectFilterEmitFields,
   isRangeFilter,
   serializeFiltersValues,
-  valueMatchesStaticFilters,
   type FiltersValues,
   type ApplicationFiltersValues
 } from '@/utils/filters'
@@ -69,12 +68,12 @@ export const useFiltersValues = (opts: UseFiltersValuesOptions) => {
       const emitFields = collectFilterEmitFields(active)
 
       const baseParams: Record<string, string> = { finalizedAt: dataset.value?.finalizedAt || '' }
-      for (const f of active) {
-        baseParams[`${f.labelField}_in`] = String(reactiveSearchParams[datasetFilterKey(datasetId, f.labelField, prefix)])
-      }
       // Static filters scope the /values/ resolution to the same subset as
       // the values-labels lists and the data queries.
       Object.assign(baseParams, filters2params(normalizeStaticFilters(config.value.staticFilters)))
+      for (const f of active) {
+        baseParams[`${f.labelField}_in`] = String(reactiveSearchParams[datasetFilterKey(datasetId, f.labelField, prefix)])
+      }
 
       const responses = await Promise.all(emitFields.map(f => {
         const filter = active.find(fwf => fwf.labelField === f || fwf.values?.includes(f))
@@ -87,9 +86,7 @@ export const useFiltersValues = (opts: UseFiltersValuesOptions) => {
 
       resolvedValues = {}
       emitFields.forEach((f, i) => {
-        // Client-side re-filtering of the /values/ resolution: see
-        // valueMatchesStaticFilters (remove once fixed in data-fair).
-        resolvedValues[f] = responses[i].filter((v: unknown) => valueMatchesStaticFilters(v, config.value.staticFilters, f))
+        resolvedValues[f] = responses[i]
       })
     }
 
