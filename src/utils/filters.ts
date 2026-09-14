@@ -29,10 +29,11 @@ export interface FiltersValues { [key: string]: any; keys: string[] }
 /**
  * Filters values shaped for an embedded application (`/data-fair/app/...`).
  *
- * Applications receive the full `FiltersValues` object, with dataset-scoped
- * keys preserved (`<prefix>_d_<datasetId>_<field>_in`, etc.) so the
- * application can decide which ones apply to its own dataset and ignore
- * the rest.
+ * Applications receive the dataset-scoped keys with the compare-view column
+ * prefix stripped (`_d_<datasetId>_<field>_<op>`), which is the format read by
+ * `getConceptFilters` (`@data-fair/lib-vue/concept-filters.js`), plus the
+ * already-unprefixed concept mirrors (`_c_<conceptId>_<op>`). The application
+ * picks the ones that target its own dataset and ignores the rest.
  */
 export interface ApplicationFiltersValues { [key: string]: any }
 

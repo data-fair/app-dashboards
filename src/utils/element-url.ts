@@ -14,11 +14,12 @@
  *    field names (e.g. `int_in=...` rather than `_d_<datasetId>_int_in=...`).
  *    Concept params (`_c_date_match`, `_c_geo_distance`) and `finalizedAt`
  *    are passed through unchanged.
- *  - The application embed (`/data-fair/app/...`) receives the full
- *    `filtersValues` map with dataset-scoped keys preserved
- *    (`<prefix>_d_<datasetId>_<field>_in`, etc.). The application is
- *    responsible for picking the ones that target its own dataset and
- *    ignoring the rest.
+ *  - The application embed (`/data-fair/app/...`) receives the
+ *    application-shaped `filtersValues` map: dataset-scoped keys without
+ *    the compare-view column prefix (`_d_<datasetId>_<field>_<op>`, the
+ *    compare prefix is stripped at emission in `useFiltersValues`), plus
+ *    the concept mirrors (`_c_*`). The application picks the ones that
+ *    target its own dataset and ignores the rest.
  */
 import type { DashboardElement, ApplicationElement, TablePreviewElement, FormElement } from '@/config'
 import { datasetFilterKey } from './dataset-filter'
@@ -69,9 +70,9 @@ const datasetEmbedParams = (filtersValues: FilterValues | null, primary: unknown
 /**
  * Param set for embedded applications. The `filtersValues` passed here is
  * the application-shaped object emitted by `useFiltersValues` →
- * `applicationValues`: keys are dataset-scoped
- * (`<prefix>_d_<datasetId>_<field>_in`, etc.), the application picks the
- * ones that target its own dataset.
+ * `applicationValues`: dataset-scoped keys without the compare-view column
+ * prefix (`_d_<datasetId>_<field>_<op>`), concept mirrors (`_c_*`) and
+ * `finalizedAt`. The application picks the ones that target its own dataset.
  */
 const applicationEmbedParams = (filtersValues: FilterValues | null, primary: unknown, secondary: unknown, print: unknown, ignoreFilters: boolean | undefined): Record<string, string> => {
   const params: Record<string, string> = {}

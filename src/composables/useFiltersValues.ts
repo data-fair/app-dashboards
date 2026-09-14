@@ -146,20 +146,29 @@ export const useFiltersValues = (opts: UseFiltersValuesOptions) => {
 
   /**
    * Build the filter object broadcast to an embedded application
-   * (`/data-fair/app/...`). The application must scope the parameters to
-   * its own dataset, so we keep the dataset prefix on dynamic and static
-   * filters (`<prefix>_d_<datasetId>_<field>_in`, etc.). The application
-   * is expected to ignore any filter that targets a dataset it does not
-   * use.
+   * (`/data-fair/app/...`).
+   *
+   * The dashboard keeps the compare-view column prefix on its dataset-scoped
+   * keys (`<prefix>_d_<datasetId>_<field>_<op>`) so the left and right columns
+   * do not collide in the dashboard URL. Applications do not know that
+   * convention: they read `<prefix>`-less keys (`_d_<datasetId>_<field>_<op>`
+   * or `_c_<conceptId>_<op>`, see `getConceptFilters` in
+   * `@data-fair/lib-vue/concept-filters`), so the column prefix is stripped
+   * here. Concept keys (`_c_*`) are already unprefixed and pass through.
    *
    * Note: an application that uses a *different* dataset from the
-   * dashboard's root will simply drop the prefixed params. This is
-   * intentional: it is the only way to forward resolved values (codes
-   * resolved from labels via the dataset's `/values/` endpoint) to an
-   * app that does not know the dashboard's root dataset id.
+   * dashboard's root will simply drop the dataset-scoped params unless the
+   * field carries a concept. This is intentional: it is the only way to
+   * forward resolved values (codes resolved from labels via the dataset's
+   * `/values/` endpoint) to an app that does not know the dashboard's root
+   * dataset id.
    */
   const applicationValues = computed<ApplicationFiltersValues>(() => {
-    return { ...emitted.value }
+    const out: ApplicationFiltersValues = {}
+    for (const [key, value] of Object.entries(emitted.value)) {
+      out[key.startsWith(`${prefix}_d_`) ? key.slice(prefix.length) : key] = value
+    }
+    return out
   })
 
   return {

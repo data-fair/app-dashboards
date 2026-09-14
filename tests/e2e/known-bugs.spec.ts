@@ -489,4 +489,70 @@ test.describe('Bugs connus (régressions)', () => {
 
     assertNoInitIssue(consoleEvents)
   })
+
+  test('K5 — mode comparaison : les filtres transmis aux embeds sont dé-préfixés', async ({ page }) => {
+    const consoleEvents = collectConsoleEvents(page)
+
+    // Le mode comparaison se pilote par l'URL (`view=compare`) : le switch
+    // n'est visible que si `allowDuplicate`, mais l'URL suffit à rendre les
+    // deux colonnes (préfixe de colonne `c` à droite).
+    await page.goto('/app/?view=compare')
+    const config = await getDevConfig(page)
+
+    await expect(page.locator('.v-container').first()).toBeVisible({ timeout: 20_000 })
+
+    // Débloque les éléments `valueMandatory` dans les DEUX colonnes : un
+    // autocomplete par filtre non-slider et par colonne (les filtres de la
+    // colonne gauche précèdent ceux de la colonne droite dans le DOM).
+    const nonSliderFilters = (config.filters || []).filter(f => f.labelField && !f.slider)
+    let unGateField: string | undefined
+    if (nonSliderFilters.length) {
+      await selectFirstFilterOption(page, 0)
+      await selectFirstFilterOption(page, nonSliderFilters.length)
+      unGateField = nonSliderFilters[0].labelField
+    }
+
+    const virtualFrames = expectedFrames(config, unGateField ? [unGateField] : [])
+    test.skip(virtualFrames.length === 0, 'La config courante n\'a aucun élément embarquable')
+
+    const allFrames = page.locator('d-frame')
+    await expect(allFrames).toHaveCount(virtualFrames.length * 2, { timeout: 20_000 })
+    const srcs = await allFrames.evaluateAll(els => els.map(el => el.getAttribute('src') || ''))
+
+    // 1) Aucun embed ne doit porter de clé préfixée par la colonne compare
+    //    (`c_d_...`) : les applications lisent le format `_d_<datasetId>_...`
+    //    (`getConceptFilters`) et les vues dataset sont dé-préfixées par
+    //    `stripDatasetScope`.
+    for (const src of srcs) {
+      const query = queryOf(src)
+      for (const key of query.keys()) {
+        expect(key, `Aucun embed ne doit porter une clé c_d_* (mode comparaison). src=${query}`).not.toMatch(/^c_d_/)
+      }
+    }
+
+    // 2) Les static filters sont transmis aux applications des deux colonnes
+    //    sous la forme `_d_<rootDatasetId>_<field>_<op>` (les champs dont le
+    //    filtre dynamique est actif l'emportent et sont sautés).
+    const rootDatasetId = config.datasets?.[0]?.id
+    const staticFilters = config.staticFilters || []
+    const hasFilteredApp = visibleElements(config).some(el => el.type === 'application' && !!el.application?.id && !el.ignoreFilters)
+    if (staticFilters.length && rootDatasetId && hasFilteredApp) {
+      const activeFields = new Set([...initialActiveFields(config), ...(unGateField ? [unGateField] : [])])
+      for (const src of srcs.filter(s => s.includes('/data-fair/app/'))) {
+        const query = queryOf(src)
+        for (const sf of staticFilters) {
+          for (const [restKey, value] of Object.entries(staticFilterParams(sf))) {
+            const split = splitRestKey(restKey)
+            if (split && activeFields.has(split.field)) continue
+            expect(
+              findParam(query, new RegExp(`^_d_${rootDatasetId}_${restKey}$`)),
+              `L'application doit recevoir le static filter dé-préfixé _d_${rootDatasetId}_${restKey}. src=${query}`
+            ).toBe(value)
+          }
+        }
+      }
+    }
+
+    assertNoInitIssue(consoleEvents)
+  })
 })

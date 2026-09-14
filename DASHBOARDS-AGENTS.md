@@ -110,7 +110,7 @@ Le dashboard propage les filtres aux éléments embarqués via **deux canaux dis
 
 **Canal « application »** (éléments `application`)
 - URL cible : `/data-fair/app/<id>`.
-- Les filtres dynamiques et statiques dataset-scopés sont conservés (`<prefix>_d_<rootDatasetId>_<field>_<op>`) pour les apps qui partagent le dataset racine.
+- Les filtres dynamiques et statiques dataset-scopés sont transmis avec leur scope dataset mais **sans** le préfixe de colonne du mode comparaison (`_d_<rootDatasetId>_<field>_<op>`) : c'est le format lu par les apps (`useConceptFilters`). Le préfixe de colonne n'est retiré qu'à l'émission (`applicationValues`) ; le dashboard, lui, le conserve dans sa propre URL pour séparer les deux colonnes.
 - Les filtres dynamiques et statiques liés à un concept sont **aussi** mirorés en `_c_<conceptId>_<op>=<valeur>` (sans préfixe) : l'app les lit via `useConceptFilters` (`@data-fair/lib-vue/concept-filters.js`) qui extrait les clés `_c_*` indépendamment du dataset id.
 - Les concepts universels (`_c_date_match`, `_c_geo_distance`, `finalizedAt`) sont également transmis.
 - **Conséquence** : une visu sur un autre dataset peut recevoir un filtre du dashboard dès lors que ses champs portent les concepts correspondants. Les apps qui ne déclarent pas de concepts (`df:filter-concepts` côté base-app) ignorent simplement ces clés.
@@ -119,7 +119,7 @@ Le dashboard propage les filtres aux éléments embarqués via **deux canaux dis
 |----------------|----------------|------------------------------|----------------|---------------------|
 | `tablePreview` | `/data-fair/embed/dataset/<id>/table` | `_d_<rootDatasetId>_` (présent) | préfixés | oui |
 | `form` | `/data-fair/embed/dataset/<id>/form` | `_d_<rootDatasetId>_` (présent) | préfixés | oui |
-| `application` | `/data-fair/app/<id>` | **absent** (géré via d-frame state) | re-scopés (non préfixés) | oui |
+| `application` | `/data-fair/app/<id>` | `_d_<rootDatasetId>_` (préfixe de colonne retiré) | idem (préfixe de colonne retiré) | oui |
 
 ### 2.4 Modes d'affichage des sections
 

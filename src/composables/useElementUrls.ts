@@ -4,13 +4,14 @@
  * and the type-narrowing per element type.
  *
  * Two filter shapes are accepted:
- *  - `datasetFiltersValues` (dataset-scoped, with `prefix_d_<datasetId>_…`
- *    keys) for `tablePreview` and `form` elements. The dataset scope is
- *    stripped before forwarding to the embed REST API.
- *  - `applicationFiltersValues` (same shape, dataset-scoped) for
- *    `application` elements. The scope is preserved: the application is
- *    expected to pick the filters that target its own dataset and ignore
- *    the rest.
+ *  - `datasetFiltersValues` (dashboard-shaped, with
+ *    `<prefix>_d_<datasetId>_…` keys) for `tablePreview` and `form`
+ *    elements. The dataset scope is stripped before forwarding to the
+ *    embed REST API.
+ *  - `applicationFiltersValues` (application-shaped, with
+ *    `_d_<datasetId>_…` keys: the compare-view column prefix is stripped
+ *    at emission, see `useFiltersValues`) for `application` elements. The
+ *    application picks the filters that target its own dataset.
  */
 import { computed, ref, type ComputedRef, type Ref } from 'vue'
 import reactiveSearchParams from '@data-fair/lib-vue/reactive-search-params-global.js'

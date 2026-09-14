@@ -26,14 +26,14 @@ const makeState = (overrides: Record<string, unknown> = {}) => ({
   ...overrides
 })
 
-const setup = (state: ReturnType<typeof makeState>, address?: { lon: number; lat: number }) => {
+const setup = (state: ReturnType<typeof makeState>, address?: { lon: number; lat: number }, prefix = '') => {
   useConfigMock.mockReturnValue(state)
   useAsyncActionMock.mockImplementation((fn: () => Promise<void>) => ({
     execute: vi.fn(() => fn()),
     loading: ref(false),
     error: ref(null)
   }))
-  return useFiltersValues({ prefix: '', address: ref(address) })
+  return useFiltersValues({ prefix, address: ref(address) })
 }
 
 const flush = () => new Promise(resolve => setTimeout(resolve, 0))
@@ -163,6 +163,36 @@ describe('useFiltersValues', () => {
     await nextTick()
     await flush()
     expect(applicationValues.value).toEqual({ ...values.value })
+  })
+
+  it('applicationValues retire le préfixe de colonne compare sur les clés dataset', async () => {
+    reactiveSearchParams.c_d_ds1_dep_in = '75'
+    reactiveSearchParams.c_d_ds1_tx_gte = '10'
+    const state = makeState({
+      filters: ref([{ labelField: 'dep' }, { labelField: 'tx', slider: true }]),
+      dataset: ref({ id: 'ds1', href: 'https://x/ds1', finalizedAt: 'F' }),
+      fields: ref({ dep: fieldWithConcept('dep', 'codeDepartement'), tx: plainField('tx') })
+    })
+    const { values, applicationValues } = setup(state, undefined, 'c')
+    await nextTick()
+    await flush()
+    // Le dashboard conserve le préfixe de colonne dans ses propres valeurs
+    // (URL, embeds dataset)…
+    expect(values.value).toEqual({
+      keys: ['dep', 'tx'],
+      c_d_ds1_dep_in: '"75"',
+      _c_codeDepartement_in: '"75"',
+      c_d_ds1_tx_gte: '10',
+      finalizedAt: 'F'
+    })
+    // …mais les applications ne connaissent que les clés dé-préfixées.
+    expect(applicationValues.value).toEqual({
+      keys: ['dep', 'tx'],
+      _d_ds1_dep_in: '"75"',
+      _c_codeDepartement_in: '"75"',
+      _d_ds1_tx_gte: '10',
+      finalizedAt: 'F'
+    })
   })
 
   it('sérialise un filtre range slider en gte/lte sans appel /values', async () => {
