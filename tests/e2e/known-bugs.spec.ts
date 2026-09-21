@@ -555,4 +555,47 @@ test.describe('Bugs connus (régressions)', () => {
 
     assertNoInitIssue(consoleEvents)
   })
+
+  test('K6 — dimensionnement des d-frame : respect de la hauteur fixe (même avec df:overflow) et ratio d\'aspect en repli', async ({ page }) => {
+    const consoleEvents = collectConsoleEvents(page)
+
+    await page.goto('/app/')
+    await expect(page.locator('.v-container').first()).toBeVisible({ timeout: 20_000 })
+
+    const firstFrame = page.locator('d-frame').first()
+    await expect(firstFrame).toBeVisible({ timeout: 20_000 })
+
+    // 1) En hauteur fixe (800px), le d-frame doit porter une hauteur explicite et aucun aspect-ratio
+    await page.evaluate(() => {
+      const cfg = JSON.parse(JSON.stringify(window.APPLICATION.configuration))
+      if (cfg.sections?.[0]?.rows?.[0]) {
+        cfg.sections[0].rows[0].height = 800
+      }
+      window.dispatchEvent(new MessageEvent('message', {
+        source: window,
+        data: { type: 'set-config', content: cfg }
+      }))
+    })
+
+    await expect(firstFrame).toHaveAttribute('style', /height:\s*\d+px/)
+    expect(await firstFrame.getAttribute('aspect-ratio')).toBeNull()
+
+    // 2) En hauteur auto (indéfinie), le d-frame doit porter aspect-ratio="" pour le repli responsif
+    await page.evaluate(() => {
+      const cfg = JSON.parse(JSON.stringify(window.APPLICATION.configuration))
+      if (cfg.sections?.[0]?.rows?.[0]) {
+        delete cfg.sections[0].rows[0].height
+      }
+      window.dispatchEvent(new MessageEvent('message', {
+        source: window,
+        data: { type: 'set-config', content: cfg }
+      }))
+    })
+
+    await expect(firstFrame).toHaveAttribute('aspect-ratio', '')
+    const autoStyle = (await firstFrame.getAttribute('style')) || ''
+    expect(autoStyle).not.toContain('height:')
+
+    assertNoInitIssue(consoleEvents)
+  })
 })

@@ -7,7 +7,6 @@
  */
 import { computed } from 'vue'
 import { useConfig } from '@/composables/config'
-import { isApplicationElement } from '@/config'
 import type { DashboardElement } from '@/config'
 
 const props = defineProps<{
@@ -20,40 +19,31 @@ const props = defineProps<{
 
 const { dFrameAdapter } = useConfig()
 
-// ⚠️ Fuite de watchers connue (côté lib @data-fair/frame) :
-// `connectedCallback` de DFrameElement crée un `watch(reactiveParams, ...)`
-// via l'adapter partagé, et `disconnectedCallback` ne le stoppe jamais. Chaque
-// destruction/re-création d'un <d-frame> (édition config draft, toggle du mode
-// compare) accumule donc un watcher permanent sur reactiveSearchParams.
-// Impact : perf mineure (updateSrc sur des éléments détachés), pas de bug de
-// correction. Le correctif est à faire en amont dans @data-fair/frame
-// (retourner le stop handle de `watch`/`afterEach`/`popstate` et l'appeler
-// dans disconnectedCallback). Côté app, les clés stables des éléments
-// (utils/layout.ts → elementKey) limitent les recréations inutiles.
+// Note : La fuite de watchers côté @data-fair/frame a été corrigée dans 0.18.7
+// (unregister de onStateChange lors du disconnectedCallback). Les clés stables
+// (utils/layout.ts → elementKey) évitent également les recréations inutiles.
 
-const allowOverflow = computed(() => {
-  if (!isApplicationElement(props.element)) return false
-  const meta = props.element.application?.baseApp?.meta as Record<string, unknown> | undefined
-  return meta?.['df:overflow'] === 'true'
+const availableHeight = computed(() => {
+  if (props.height && props.height > 0) {
+    const available = props.height - (props.actionsHeight || 0)
+    return available > 0 ? available : props.height
+  }
+  return undefined
 })
 
 const containerStyle = computed(() => {
-  if (allowOverflow.value) return ''
-  if (props.height && props.height > 0) {
-    const available = props.height - (props.actionsHeight || 0)
-    return `height:${available > 0 ? available + 'px' : '100%'}`
+  if (availableHeight.value) {
+    return `height:${availableHeight.value}px`
   }
   return ''
 })
 
-// En hauteur automatique, l'iframe se dimensionne par elle-même : hauteur
-// remontée par l'application embarquée (df:overflow / data-iframe-height),
-// sinon repli sur le ratio d'aspect par défaut du <d-frame> (1, 4/3, 16/9
-// ou 21/9 selon la largeur). Le `height:100%` y est interdit : il se résout
-// contre une ligne flex sans hauteur définie et casse la mise en page.
+// En hauteur automatique, l'iframe se dimensionne par elle-même si elle remonte
+// sa hauteur (df:overflow / data-iframe-height), sinon repli sur le ratio d'aspect
+// par défaut du <d-frame> (1, 4/3, 16/9 ou 21/9 selon la largeur).
+// En hauteur fixe, l'aspect ratio est désactivé pour laisser la hauteur explicite s'appliquer.
 const aspectRatio = computed(() => {
-  if (allowOverflow.value) return undefined
-  if (props.height && props.height > 0) return undefined
+  if (availableHeight.value) return undefined
   return ''
 })
 </script>
