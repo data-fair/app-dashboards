@@ -157,7 +157,7 @@
                 "additionalProperties": false,
                 "properties": {
                   "type": {
-                    "const": "nin"
+                    "const": "out"
                   },
                   "field": {
                     "type": "string",
@@ -3018,7 +3018,7 @@
             "additionalProperties": false,
             "properties": {
               "type": {
-                "const": "nin"
+                "const": "out"
               },
               "field": {
                 "type": "string",

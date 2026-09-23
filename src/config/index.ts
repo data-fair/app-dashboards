@@ -45,7 +45,8 @@ export interface DashboardFilter {
 }
 
 export interface DashboardStaticFilter {
-  type: 'in' | 'interval' | 'nin' | 'starts' | 'exists' | 'notExists'
+  /** `nin` est la forme historique de `out`, normalisée au runtime. */
+  type: 'in' | 'interval' | 'out' | 'nin' | 'starts' | 'exists' | 'notExists'
   field: string
   values?: string[]
   minValue?: string

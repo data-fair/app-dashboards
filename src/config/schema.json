@@ -992,7 +992,7 @@
             "additionalProperties": false,
             "properties": {
               "type": {
-                "const": "nin"
+                "const": "out"
               },
               "field": {
                 "$ref": "#/definitions/filterField"
