@@ -117,7 +117,9 @@
                 "title": "Valeur initiale",
                 "layout": {
                   "getItems": {
-                    "url": "${rootData.datasets[0].href}/values/${parent.data.labelField}?q={q}&q_mode=complete&size=100&stringify=true"
+                    "url": "${rootData.datasets[0].href}/values-labels/${parent.data.labelField}?q={q}&q_mode=complete&size=100&stringify=true",
+                    "itemKey": "data.value",
+                    "itemTitle": "data.label"
                   }
                 }
               },
