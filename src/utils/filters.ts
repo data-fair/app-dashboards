@@ -220,10 +220,10 @@ export const buildValuesLabelsUrl = (
   const otherFilters = (config.filters || [])
     .filter(f => f.labelField !== filter.labelField && params[`${prefix}_d_${datasetId}_${f.labelField}_in`])
 
-  const query: Record<string, string> = {
-    finalizedAt: '',
-    stringify: 'true'
-  }
+  // finalizedAt is omitted rather than sent empty: data-fair's service worker
+  // caches any `finalizedAt=` URL forever (cache-first), even with no value.
+  const query: Record<string, string> = { stringify: 'true' }
+  if (config.datasets?.[0]?.finalizedAt) query.finalizedAt = config.datasets[0].finalizedAt
   for (const f of otherFilters) {
     if (isRangeFilter(f)) {
       const gte = params[`${prefix}_d_${datasetId}_${f.labelField}_gte`]
@@ -263,9 +263,9 @@ export const buildMetricsUrl = (
   if (!datasetHref) return null
   const query: Record<string, string> = {
     fields: filter.labelField,
-    metrics: 'min,max',
-    finalizedAt: config.datasets?.[0]?.finalizedAt || ''
+    metrics: 'min,max'
   }
+  if (config.datasets?.[0]?.finalizedAt) query.finalizedAt = config.datasets[0].finalizedAt
   Object.assign(query, filters2params(normalizeStaticFilters(config.staticFilters)))
   return `${datasetHref}/simple_metrics_agg?${new URLSearchParams(query).toString()}`
 }

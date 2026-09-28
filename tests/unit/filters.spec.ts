@@ -328,8 +328,13 @@ describe('buildValuesLabelsUrl', () => {
   it('build l\'URL minimale', () => {
     const url = buildValuesLabelsUrl(filter, 'ds1', 'https://x/href', config, '', undefined, undefined, {})!
     expect(url.startsWith('https://x/href/values-labels/equipement?')).toBe(true)
-    expect(url).toContain('finalizedAt=')
+    expect(url).not.toContain('finalizedAt')
     expect(url).toContain('stringify=true')
+  })
+
+  it('horodate l\'URL avec le finalizedAt du dataset', () => {
+    const url = buildValuesLabelsUrl(filter, 'ds1', 'https://x/href', { datasets: [{ finalizedAt: 'F' }] } as DashboardConfig, '', undefined, undefined, {})!
+    expect(url).toContain('finalizedAt=F')
   })
 
   it('applique les autres filtres actifs', () => {
@@ -429,7 +434,7 @@ describe('buildMetricsUrl', () => {
     expect(url.startsWith('https://x/href/simple_metrics_agg?')).toBe(true)
     expect(url).toContain('fields=tx')
     expect(url).toContain('metrics=min%2Cmax')
-    expect(url).toContain('finalizedAt=')
+    expect(url).not.toContain('finalizedAt')
   })
 
   it('applique les staticFilters pour borner sur le sous-ensemble filtré', () => {

@@ -67,7 +67,8 @@ export const useFiltersValues = (opts: UseFiltersValuesOptions) => {
     if (active.length) {
       const emitFields = collectFilterEmitFields(active)
 
-      const baseParams: Record<string, string> = { finalizedAt: dataset.value?.finalizedAt || '' }
+      const baseParams: Record<string, string> = {}
+      if (dataset.value?.finalizedAt) baseParams.finalizedAt = dataset.value.finalizedAt
       // Static filters scope the /values/ resolution to the same subset as
       // the values-labels lists and the data queries.
       Object.assign(baseParams, filters2params(normalizeStaticFilters(config.value.staticFilters)))
