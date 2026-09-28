@@ -1,4 +1,5 @@
-import { describe, it, expect, vi, afterEach } from 'vitest'
+import { test, expect } from '@playwright/test'
+import { fn, stubGlobal, unstubAllGlobals } from './helpers/spy'
 import {
   flattenElements,
   extractReferencedApplications,
@@ -8,24 +9,24 @@ import {
 } from '@/utils/draft-sync'
 import type { DashboardConfig, DashboardElement, DashboardSection } from '@/config'
 
-const el = (element: Partial<DashboardElement> & { type: DashboardElement['type'] }): DashboardElement => element as DashboardElement
+const el = (element: { type: DashboardElement['type'] } & Record<string, unknown>): DashboardElement => element as unknown as DashboardElement
 
-describe('flattenElements', () => {
+test.describe('flattenElements', () => {
   const section = (rows: DashboardSection['rows']): DashboardSection => ({ rows })
 
-  it('renvoie [] sans sections', () => {
+  test('renvoie [] sans sections', () => {
     expect(flattenElements(undefined)).toEqual([])
   })
 
-  it('renvoie [] pour une section sans rows', () => {
-    expect(flattenElements([{ rows: undefined } as DashboardSection])).toEqual([])
+  test('renvoie [] pour une section sans rows', () => {
+    expect(flattenElements([{ rows: undefined } as unknown as DashboardSection])).toEqual([])
   })
 
-  it('renvoie [] pour une row sans elements', () => {
-    expect(flattenElements([{ rows: [{ height: 0, elements: undefined }] } as DashboardSection])).toEqual([])
+  test('renvoie [] pour une row sans elements', () => {
+    expect(flattenElements([{ rows: [{ height: 0, elements: undefined }] } as unknown as DashboardSection])).toEqual([])
   })
 
-  it('aplatit les éléments simples', () => {
+  test('aplatit les éléments simples', () => {
     const elements = flattenElements([
       section([{ height: 0, elements: [el({ type: 'text', content: 'a' }), el({ type: 'application' })] }])
     ])
@@ -33,7 +34,7 @@ describe('flattenElements', () => {
     expect(elements.map(e => e.type)).toEqual(['text', 'application'])
   })
 
-  it('aplatit les colonnes imbriquées (les éléments internes remplacent la colonne)', () => {
+  test('aplatit les colonnes imbriquées (les éléments internes remplacent la colonne)', () => {
     const inner1 = el({ type: 'tablePreview' })
     const inner2 = el({ type: 'form' })
     const elements = flattenElements([
@@ -42,7 +43,7 @@ describe('flattenElements', () => {
     expect(elements).toEqual([inner1, inner2])
   })
 
-  it('aplatit récursivement les colonnes de colonnes', () => {
+  test('aplatit récursivement les colonnes de colonnes', () => {
     const leaf = el({ type: 'application' })
     const nested = el({ type: 'column', elements: [leaf] })
     const deep = el({ type: 'column', elements: [nested, el({ type: 'text', content: 't' })] })
@@ -53,8 +54,8 @@ describe('flattenElements', () => {
   })
 })
 
-describe('extractReferencedApplications', () => {
-  it('collecte les applications avec id + title, déduplique', () => {
+test.describe('extractReferencedApplications', () => {
+  test('collecte les applications avec id + title, déduplique', () => {
     const app = (id: string, title = id) => ({ type: 'application', application: { id, title } })
     const refs = extractReferencedApplications([
       app('a', 'A'), app('a', 'A'), app('b', 'B'), el({ type: 'text' })
@@ -62,23 +63,23 @@ describe('extractReferencedApplications', () => {
     expect(refs).toEqual([{ id: 'a', title: 'A' }, { id: 'b', title: 'B' }])
   })
 
-  it('ignore les applications sans id ou sans title', () => {
+  test('ignore les applications sans id ou sans title', () => {
     expect(extractReferencedApplications([
       { type: 'application', application: { id: 'a' } },
       { type: 'application', application: { title: 'B' } }
-    ] as DashboardElement[])).toEqual([])
+    ] as unknown as DashboardElement[])).toEqual([])
   })
 })
 
-describe('extractReferencedDatasets', () => {
+test.describe('extractReferencedDatasets', () => {
   const filtersDataset = { id: 'root', title: 'Root', href: '/root' }
-  const ds = (id: string, title = id) => ({ type: 'tablePreview', dataset: { id, title, href: `/${id}` } })
+  const ds = (id: string, title = id) => el({ type: 'tablePreview', dataset: { id, title, href: `/${id}` } })
 
-  it('renvoie [] sans filtersDataset', () => {
+  test('renvoie [] sans filtersDataset', () => {
     expect(extractReferencedDatasets([ds('a')] as DashboardElement[], undefined)).toEqual([])
   })
 
-  it('collecte les datasets des tablePreview/form, hors dataset racine, racine en tête', () => {
+  test('collecte les datasets des tablePreview/form, hors dataset racine, racine en tête', () => {
     const refs = extractReferencedDatasets(
       [ds('a'), ds('root'), el({ type: 'form', dataset: { id: 'b', title: 'B', href: '/b' } }), el({ type: 'text' })] as DashboardElement[],
       filtersDataset
@@ -90,9 +91,9 @@ describe('extractReferencedDatasets', () => {
     ])
   })
 
-  it('déduplique par id et ignore les datasets incomplets', () => {
+  test('déduplique par id et ignore les datasets incomplets', () => {
     const refs = extractReferencedDatasets(
-      [ds('a'), ds('a'), { type: 'tablePreview', dataset: { id: 'x' } } as DashboardElement],
+      [ds('a'), ds('a'), el({ type: 'tablePreview', dataset: { id: 'x' } })],
       filtersDataset
     )
     expect(refs).toEqual([
@@ -102,18 +103,18 @@ describe('extractReferencedDatasets', () => {
   })
 })
 
-describe('buildSyncDeltas', () => {
+test.describe('buildSyncDeltas', () => {
   const base: DashboardConfig = {
     applications: [{ id: 'a', title: 'A' }],
     datasets: [{ id: 'root', title: 'Root', href: '/root' }],
     sections: [{ rows: [{ height: 0, elements: [el({ type: 'application', application: { id: 'a', title: 'A' } })] }] }]
   } as any
 
-  it('renvoie {} sans changement', () => {
+  test('renvoie {} sans changement', () => {
     expect(buildSyncDeltas(base, JSON.parse(JSON.stringify(base)))).toEqual({})
   })
 
-  it('signale un delta applications quand une application est ajoutée', () => {
+  test('signale un delta applications quand une application est ajoutée', () => {
     const next: DashboardConfig = JSON.parse(JSON.stringify(base))
     next.sections![0].rows[0].elements.push(el({ type: 'application', application: { id: 'b', title: 'B' } }))
     expect(buildSyncDeltas(base, next)).toEqual({
@@ -121,7 +122,7 @@ describe('buildSyncDeltas', () => {
     })
   })
 
-  it('signale un delta datasets quand un dataset d\'élément est ajouté', () => {
+  test('signale un delta datasets quand un dataset d\'élément est ajouté', () => {
     const next: DashboardConfig = JSON.parse(JSON.stringify(base))
     next.sections![0].rows[0].elements.push(el({ type: 'tablePreview', dataset: { id: 'ext', title: 'Ext', href: '/ext' } }))
     expect(buildSyncDeltas(base, next)).toEqual({
@@ -132,14 +133,14 @@ describe('buildSyncDeltas', () => {
     })
   })
 
-  it('ne signale pas de delta datasets si la config n\'a pas de dataset racine', () => {
+  test('ne signale pas de delta datasets si la config n\'a pas de dataset racine', () => {
     const prev = { applications: [{ id: 'a', title: 'A' }] }
     const next: DashboardConfig = JSON.parse(JSON.stringify(prev))
     next.sections = [{ rows: [{ height: 0, elements: [el({ type: 'application', application: { id: 'a', title: 'A' } })] }] }]
     expect(buildSyncDeltas(prev as DashboardConfig, next)).toEqual({})
   })
 
-  it('signale un delta applications quand next déclare des applications absentes de prev', () => {
+  test('signale un delta applications quand next déclare des applications absentes de prev', () => {
     const prev: DashboardConfig = { sections: base.sections }
     const next: DashboardConfig = JSON.parse(JSON.stringify(prev))
     next.applications = [{ id: 'a', title: 'A' }]
@@ -148,7 +149,7 @@ describe('buildSyncDeltas', () => {
     })
   })
 
-  it('ne signale pas de delta applications quand prev et next déclarent les mêmes ids', () => {
+  test('ne signale pas de delta applications quand prev et next déclarent les mêmes ids', () => {
     const prev: DashboardConfig = { applications: [{ id: 'a', title: 'A' }], sections: base.sections }
     const next: DashboardConfig = JSON.parse(JSON.stringify(prev))
     // Seuls les ids sont comparés : un changement de titre n'est pas détecté.
@@ -157,25 +158,25 @@ describe('buildSyncDeltas', () => {
   })
 })
 
-describe('postConfigField', () => {
-  afterEach(() => vi.unstubAllGlobals())
+test.describe('postConfigField', () => {
+  test.afterEach(() => unstubAllGlobals())
 
-  it('ne poste rien quand l\'app est la page racine', () => {
-    const postMessage = vi.fn()
+  test('ne poste rien quand l\'app est la page racine', () => {
+    const postMessage = fn()
     const windowObj: any = { postMessage }
     windowObj.parent = windowObj
-    vi.stubGlobal('window', windowObj)
+    stubGlobal('window', windowObj)
     postConfigField('applications', [])
-    expect(postMessage).not.toHaveBeenCalled()
+    expect(postMessage.calls).toHaveLength(0)
   })
 
-  it('poste set-config à window.parent sinon', () => {
-    const postMessage = vi.fn()
-    vi.stubGlobal('window', { parent: { postMessage }, postMessage } as any)
+  test('poste set-config à window.parent sinon', () => {
+    const postMessage = fn()
+    stubGlobal('window', { parent: { postMessage }, postMessage } as any)
     postConfigField('applications', [{ id: 'a', title: 'A' }])
-    expect(postMessage).toHaveBeenCalledWith(
+    expect(postMessage.calls).toContainEqual([
       { type: 'set-config', content: { field: 'applications', value: [{ id: 'a', title: 'A' }] } },
       '*'
-    )
+    ])
   })
 })

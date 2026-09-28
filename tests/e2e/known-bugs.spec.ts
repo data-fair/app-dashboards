@@ -5,7 +5,7 @@ import { test, expect, type Page } from '@playwright/test'
  *
  * Chaque test est écrit pour asserter le comportement ATTENDU.
  * Si le test échoue, c'est que la régression est de retour : il faut
- * corriger le code source puis relancer `npm run test:e2e`.
+ * corriger le code source puis relancer `npm run test-e2e`.
  *
  * ⚠️ Les attentes ne sont PLUS couplées à `.dev-config.json` : la config
  * live est lue depuis l'endpoint `GET /config` du dev-server, et toutes les
@@ -24,6 +24,7 @@ interface DashboardElementConfig {
   type: string
   dataset?: { id: string }
   application?: { id: string; href?: string }
+  ignoreFilters?: boolean
   valueMandatory?: boolean
   mandatoryFilters?: string[]
 }
@@ -357,8 +358,8 @@ test.describe('Bugs connus (régressions)', () => {
     test.skip(!sliderFilter || !rootDatasetId || frames.length === 0, 'La config courante n\'a pas de filtre slider embarquable')
 
     // Pose une sélection de bornes dans l'URL puis vérifie qu\'elle est propagée aux embeds.
-    const gteKey = `_d_${rootDatasetId}_${sliderFilter.labelField}_gte`
-    const lteKey = `_d_${rootDatasetId}_${sliderFilter.labelField}_lte`
+    const gteKey = `_d_${rootDatasetId}_${sliderFilter!.labelField}_gte`
+    const lteKey = `_d_${rootDatasetId}_${sliderFilter!.labelField}_lte`
     await page.evaluate(({ gteKey, lteKey }) => {
       const url = new URL(location.href)
       url.searchParams.set(gteKey, '5')
@@ -374,12 +375,12 @@ test.describe('Bugs connus (régressions)', () => {
     // Bascule le filtre en liste (slider off) via le message set-config du draft.
     await page.evaluate(({ labelField }) => {
       const cfg = JSON.parse(JSON.stringify(window.APPLICATION.configuration))
-      cfg.filters = (cfg.filters || []).map(f => f.labelField === labelField ? { ...f, slider: false } : { ...f })
+      cfg.filters = (cfg.filters || []).map((f: { labelField: string }) => f.labelField === labelField ? { ...f, slider: false } : { ...f })
       window.dispatchEvent(new MessageEvent('message', {
         source: window,
         data: { type: 'set-config', content: cfg }
       }))
-    }, { labelField: sliderFilter.labelField })
+    }, { labelField: sliderFilter!.labelField })
 
     // L'URL et les embeds ne doivent plus contenir les bornes gte/lte périmées.
     await expect.poll(
@@ -395,12 +396,12 @@ test.describe('Bugs connus (régressions)', () => {
     // et l'iframe ne doit pas recevoir de gte/lte orphelin.
     await page.evaluate(({ labelField }) => {
       const cfg = JSON.parse(JSON.stringify(window.APPLICATION.configuration))
-      cfg.filters = (cfg.filters || []).map(f => f.labelField === labelField ? { ...f, slider: true } : { ...f })
+      cfg.filters = (cfg.filters || []).map((f: { labelField: string }) => f.labelField === labelField ? { ...f, slider: true } : { ...f })
       window.dispatchEvent(new MessageEvent('message', {
         source: window,
         data: { type: 'set-config', content: cfg }
       }))
-    }, { labelField: sliderFilter.labelField })
+    }, { labelField: sliderFilter!.labelField })
 
     await expect(page.locator('.v-range-slider')).toBeVisible({ timeout: 10_000 })
     await expect.poll(
@@ -448,7 +449,7 @@ test.describe('Bugs connus (régressions)', () => {
       cfg.showSources = true
       cfg.showEmbed = true
       cfg.showCapture = true
-      ;(cfg.sections || []).forEach(s => (s.rows || []).forEach(r => { r.height = -1 }))
+      ;(cfg.sections || []).forEach((s: { rows?: { height?: number }[] }) => (s.rows || []).forEach(r => { r.height = -1 }))
       window.dispatchEvent(new MessageEvent('message', {
         source: window,
         data: { type: 'set-config', content: cfg }

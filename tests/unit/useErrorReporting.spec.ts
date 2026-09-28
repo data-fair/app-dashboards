@@ -1,74 +1,86 @@
-import { describe, it, expect, vi, afterEach } from 'vitest'
+import './helpers/dom'
+import { test, expect } from '@playwright/test'
 import { ref, nextTick } from 'vue'
 import { useErrorReporting } from '@/composables/useErrorReporting'
 import reactiveSearchParams from '@data-fair/lib-vue/reactive-search-params-global.js'
+import { FetchStub } from './helpers/fetch-mock'
+import { fn, settle, stubGlobal, unstubAllGlobals, type Recorder } from './helpers/spy'
 
-const { ofetchMock } = vi.hoisted(() => ({
-  ofetchMock: vi.fn()
-}))
-vi.mock('ofetch', () => ({ ofetch: ofetchMock }))
+const fetchStub = new FetchStub()
 
-const windowStub = (postMessage: ReturnType<typeof vi.fn>, parent: unknown = null) => ({
+const windowStub = (postMessage: Recorder, parent: unknown = null) => ({
   postMessage,
   parent,
   APPLICATION: { href: 'https://host/data-fair/app/dash' },
   location: { search: '', pathname: '/' },
-  history: { replaceState: vi.fn(), state: null },
+  history: { replaceState: fn(), state: null },
   document: { title: '' }
 })
 
-describe('useErrorReporting', () => {
-  afterEach(() => {
-    vi.unstubAllGlobals()
-    vi.restoreAllMocks()
-    ofetchMock.mockReset()
+test.describe('useErrorReporting', () => {
+  test.beforeEach(() => {
+    fetchStub.reset()
+    fetchStub.install()
+  })
+
+  test.afterEach(() => {
+    unstubAllGlobals()
+    fetchStub.restore()
     delete reactiveSearchParams.draft
   })
 
-  it('ne poste rien hors mode draft', async () => {
-    const postMessage = vi.fn()
-    vi.stubGlobal('window', windowStub(postMessage, { postMessage }))
+  test('ne poste rien hors mode draft', async () => {
+    const postMessage = fn()
+    stubGlobal('window', windowStub(postMessage, { postMessage }))
     const error = ref('erreur')
     useErrorReporting(error)
     error.value = 'autre erreur'
     await nextTick()
-    expect(ofetchMock).not.toHaveBeenCalled()
+    await settle()
+    expect(fetchStub.calls).toHaveLength(0)
   })
 
-  it('poste l\'erreur au backend en mode draft (watch immédiat)', async () => {
-    const postMessage = vi.fn()
-    vi.stubGlobal('window', windowStub(postMessage, { postMessage }))
+  test('poste l\'erreur au backend en mode draft (watch immédiat)', async () => {
+    const postMessage = fn()
+    stubGlobal('window', windowStub(postMessage, { postMessage }))
     reactiveSearchParams.draft = 'true'
-    ofetchMock.mockResolvedValue(undefined)
     const error = ref('config invalide')
     useErrorReporting(error)
     await nextTick()
-    expect(ofetchMock).toHaveBeenCalledWith('https://host/data-fair/app/dash/error', {
-      body: { message: 'config invalide' },
-      method: 'POST'
-    })
+    await settle()
+    expect(fetchStub.calls).toHaveLength(1)
+    expect(fetchStub.calls[0].url).toBe('https://host/data-fair/app/dash/error')
+    expect(fetchStub.calls[0].method).toBe('POST')
+    expect(fetchStub.calls[0].json()).toEqual({ message: 'config invalide' })
   })
 
-  it('ne poste pas quand l\'erreur est vide', async () => {
-    const postMessage = vi.fn()
-    vi.stubGlobal('window', windowStub(postMessage, { postMessage }))
+  test('ne poste pas quand l\'erreur est vide', async () => {
+    const postMessage = fn()
+    stubGlobal('window', windowStub(postMessage, { postMessage }))
     reactiveSearchParams.draft = 'true'
     const error = ref<string | null>(null)
     useErrorReporting(error)
     await nextTick()
-    expect(ofetchMock).not.toHaveBeenCalled()
+    await settle()
+    expect(fetchStub.calls).toHaveLength(0)
   })
 
-  it('log l\'erreur en console quand l\'envoi échoue', async () => {
-    const postMessage = vi.fn()
-    vi.stubGlobal('window', windowStub(postMessage, { postMessage }))
+  test('log l\'erreur en console quand l\'envoi échoue', async () => {
+    const postMessage = fn()
+    stubGlobal('window', windowStub(postMessage, { postMessage }))
     reactiveSearchParams.draft = 'true'
-    ofetchMock.mockRejectedValue(new Error('network down'))
-    const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {})
-    const error = ref('boom')
-    useErrorReporting(error)
-    await nextTick()
-    await nextTick()
-    expect(consoleError).toHaveBeenCalledWith('Failed to send error to backend', expect.stringContaining('network down'))
+    fetchStub.on('/error', () => { throw new Error('network down') })
+    const consoleError = fn()
+    const originalConsoleError = console.error
+    console.error = consoleError
+    try {
+      const error = ref('boom')
+      useErrorReporting(error)
+      await nextTick()
+      await settle()
+    } finally {
+      console.error = originalConsoleError
+    }
+    expect(consoleError.calls).toContainEqual(['Failed to send error to backend', expect.stringContaining('network down')])
   })
 })

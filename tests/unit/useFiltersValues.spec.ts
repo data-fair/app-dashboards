@@ -1,18 +1,24 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
-import { ref, nextTick } from 'vue'
+import './helpers/dom'
+import { test, expect } from '@playwright/test'
+import { ref, nextTick, watch } from 'vue'
+import { createUiNotif } from '@data-fair/lib-vue/ui-notif.js'
 import { useFiltersValues } from '@/composables/useFiltersValues'
 import reactiveSearchParams from '@data-fair/lib-vue/reactive-search-params-global.js'
 import type { DashboardConfig, DashboardFilter } from '@/config'
 import type { Field } from '@data-fair/lib-common-types/application/index.js'
+import { FetchStub } from './helpers/fetch-mock'
+import { probe, unmountProbes } from './helpers/probe'
+import { settle } from './helpers/spy'
 
-const { useConfigMock, useAsyncActionMock, ofetchMock } = vi.hoisted(() => ({
-  useConfigMock: vi.fn(),
-  useAsyncActionMock: vi.fn(),
-  ofetchMock: vi.fn()
-}))
-vi.mock('@/composables/config', () => ({ useConfig: () => useConfigMock() }))
-vi.mock('@data-fair/lib-vue/async-action.js', () => ({ useAsyncAction: useAsyncActionMock }))
-vi.mock('ofetch', () => ({ ofetch: ofetchMock }))
+const fetchStub = new FetchStub()
+
+/** Query params of the /values/<field> requests, keyed by URL path. */
+const valuesCalls = () => fetchStub.calls
+  .filter(c => c.url.includes('/values/'))
+  .map(c => {
+    const url = new URL(c.url)
+    return { path: url.origin + url.pathname, params: Object.fromEntries(url.searchParams) }
+  })
 
 const fieldWithConcept = (key: string, concept: string): Field =>
   ({ key, title: key, 'x-concept': { id: concept, title: concept } }) as Field
@@ -27,34 +33,32 @@ const makeState = (overrides: Record<string, unknown> = {}) => ({
 })
 
 const setup = (state: ReturnType<typeof makeState>, address?: { lon: number; lat: number }, prefix = '') => {
-  useConfigMock.mockReturnValue(state)
-  useAsyncActionMock.mockImplementation((fn: () => Promise<void>) => ({
-    execute: vi.fn(() => fn()),
-    loading: ref(false),
-    error: ref(null)
-  }))
-  return useFiltersValues({ prefix, address: ref(address) })
+  return probe(() => useFiltersValues({ prefix, address: ref(address) }), (app) => {
+    app.provide('data-fair-app-config', state)
+    app.use(createUiNotif())
+  })
 }
 
-const flush = () => new Promise(resolve => setTimeout(resolve, 0))
-
-describe('useFiltersValues', () => {
-  beforeEach(() => {
-    ofetchMock.mockReset()
+test.describe('useFiltersValues', () => {
+  test.beforeEach(() => {
+    fetchStub.reset()
+    fetchStub.install()
   })
 
-  afterEach(() => {
+  test.afterEach(() => {
+    unmountProbes()
+    fetchStub.restore()
     for (const key of Object.keys(reactiveSearchParams)) delete reactiveSearchParams[key]
   })
 
-  it('émet { keys: [] } sans dataset', async () => {
+  test('émet { keys: [] } sans dataset', async () => {
     const { values } = setup(makeState())
     await nextTick()
-    await flush()
+    await settle()
     expect(values.value).toEqual({ keys: [] })
   })
 
-  it('sérialise un filtre actif simple sans appel /values', async () => {
+  test('sérialise un filtre actif simple sans appel /values', async () => {
     reactiveSearchParams._d_ds1_an_in = '2020'
     const state = makeState({
       filters: ref([{ labelField: 'an' }]),
@@ -62,18 +66,18 @@ describe('useFiltersValues', () => {
     })
     const { values } = setup(state)
     await nextTick()
-    await flush()
+    await settle()
     expect(values.value).toEqual({
       keys: ['an'],
       _d_ds1_an_in: '"2020"',
       finalizedAt: 'F'
     })
-    expect(ofetchMock).not.toHaveBeenCalled()
+    expect(valuesCalls()).toHaveLength(0)
   })
 
-  it('résout les champs associés via /values et les sérialise avec le mirror concept', async () => {
+  test('résout les champs associés via /values et les sérialise avec le mirror concept', async () => {
     reactiveSearchParams._d_ds1_libelle_in = '"X"'
-    ofetchMock.mockResolvedValue(['c1', 'c2'])
+    fetchStub.on('/values/code', { json: ['c1', 'c2'] })
     const state = makeState({
       filters: ref([{ labelField: 'libelle', values: ['code'] }]),
       dataset: ref({ id: 'ds1', href: 'https://x/ds1' }),
@@ -81,10 +85,11 @@ describe('useFiltersValues', () => {
     })
     const { values } = setup(state)
     await nextTick()
-    await flush()
-    expect(ofetchMock).toHaveBeenCalledWith('https://x/ds1/values/code', expect.objectContaining({
+    await settle()
+    expect(valuesCalls()).toContainEqual({
+      path: 'https://x/ds1/values/code',
       params: expect.objectContaining({ libelle_in: '"X"' })
-    }))
+    })
     expect(values.value).toEqual({
       keys: ['libelle'],
       _d_ds1_code_in: '"c1","c2"',
@@ -93,9 +98,9 @@ describe('useFiltersValues', () => {
     })
   })
 
-  it('transmet les staticFilters à la résolution /values', async () => {
+  test('transmet les staticFilters à la résolution /values', async () => {
     reactiveSearchParams._d_ds1_libelle_in = '"X"'
-    ofetchMock.mockResolvedValue(['c1'])
+    fetchStub.on('/values/code', { json: ['c1'] })
     const state = makeState({
       config: ref({ staticFilters: [{ type: 'in', field: 'dep', values: ['75'] }] }),
       filters: ref([{ labelField: 'libelle', values: ['code'] }]),
@@ -104,10 +109,11 @@ describe('useFiltersValues', () => {
     })
     const { values } = setup(state)
     await nextTick()
-    await flush()
-    expect(ofetchMock).toHaveBeenCalledWith('https://x/ds1/values/code', expect.objectContaining({
+    await settle()
+    expect(valuesCalls()).toContainEqual({
+      path: 'https://x/ds1/values/code',
       params: expect.objectContaining({ libelle_in: '"X"', dep_in: '75' })
-    }))
+    })
     expect(values.value).toEqual({
       keys: ['libelle'],
       _d_ds1_code_in: '"c1"',
@@ -116,7 +122,7 @@ describe('useFiltersValues', () => {
     })
   })
 
-  it('fusionne les staticFilters (clés dataset-scopées + mirror concept)', async () => {
+  test('fusionne les staticFilters (clés dataset-scopées + mirror concept)', async () => {
     const state = makeState({
       config: ref({ staticFilters: [{ type: 'in', field: 'dep', values: ['75'] }] }),
       filters: ref([]),
@@ -125,7 +131,7 @@ describe('useFiltersValues', () => {
     })
     const { values } = setup(state)
     await nextTick()
-    await flush()
+    await settle()
     expect(values.value).toEqual({
       keys: [],
       _d_ds1_dep_in: '75',
@@ -134,7 +140,7 @@ describe('useFiltersValues', () => {
     })
   })
 
-  it('émet période et géo quand activées', async () => {
+  test('émet période et géo quand activées', async () => {
     reactiveSearchParams.period = '2020-01-01,2020-12-31'
     reactiveSearchParams.radius = '5'
     const state = makeState({
@@ -144,7 +150,7 @@ describe('useFiltersValues', () => {
     })
     const { values } = setup(state, { lon: 1.5, lat: 48.8 })
     await nextTick()
-    await flush()
+    await settle()
     expect(values.value).toEqual({
       keys: [],
       _c_date_match: '2020-01-01,2020-12-31',
@@ -153,7 +159,7 @@ describe('useFiltersValues', () => {
     })
   })
 
-  it('applicationValues est une copie de values', async () => {
+  test('applicationValues est une copie de values', async () => {
     reactiveSearchParams._d_ds1_an_in = '2020'
     const state = makeState({
       filters: ref([{ labelField: 'an' }]),
@@ -161,11 +167,11 @@ describe('useFiltersValues', () => {
     })
     const { values, applicationValues } = setup(state)
     await nextTick()
-    await flush()
+    await settle()
     expect(applicationValues.value).toEqual({ ...values.value })
   })
 
-  it('applicationValues retire le préfixe de colonne compare sur les clés dataset', async () => {
+  test('applicationValues retire le préfixe de colonne compare sur les clés dataset', async () => {
     reactiveSearchParams.c_d_ds1_dep_in = '75'
     reactiveSearchParams.c_d_ds1_tx_gte = '10'
     const state = makeState({
@@ -175,7 +181,7 @@ describe('useFiltersValues', () => {
     })
     const { values, applicationValues } = setup(state, undefined, 'c')
     await nextTick()
-    await flush()
+    await settle()
     // Le dashboard conserve le préfixe de colonne dans ses propres valeurs
     // (URL, embeds dataset)…
     expect(values.value).toEqual({
@@ -195,7 +201,7 @@ describe('useFiltersValues', () => {
     })
   })
 
-  it('sérialise un filtre range slider en gte/lte sans appel /values', async () => {
+  test('sérialise un filtre range slider en gte/lte sans appel /values', async () => {
     reactiveSearchParams._d_ds1_tx_gte = '10'
     reactiveSearchParams._d_ds1_tx_lte = '20'
     const state = makeState({
@@ -205,8 +211,8 @@ describe('useFiltersValues', () => {
     })
     const { values } = setup(state)
     await nextTick()
-    await flush()
-    expect(ofetchMock).not.toHaveBeenCalled()
+    await settle()
+    expect(valuesCalls()).toHaveLength(0)
     expect(values.value).toEqual({
       keys: ['tx'],
       _d_ds1_tx_gte: '10',
@@ -217,7 +223,7 @@ describe('useFiltersValues', () => {
     })
   })
 
-  it('sérialise un range slider avec une seule borne', async () => {
+  test('sérialise un range slider avec une seule borne', async () => {
     reactiveSearchParams._d_ds1_tx_lte = '25'
     const state = makeState({
       filters: ref([{ labelField: 'tx', slider: true }]),
@@ -225,7 +231,7 @@ describe('useFiltersValues', () => {
     })
     const { values } = setup(state)
     await nextTick()
-    await flush()
+    await settle()
     expect(values.value).toEqual({
       keys: ['tx'],
       _d_ds1_tx_lte: '25',
@@ -233,22 +239,20 @@ describe('useFiltersValues', () => {
     })
   })
 
-  it('relance la recompute quand le flag slider du filtre change (draft hot reload)', async () => {
+  test('relance la recompute quand le flag slider du filtre change (draft hot reload)', async () => {
     reactiveSearchParams._d_ds1_tx_gte = '10'
     reactiveSearchParams._d_ds1_tx_lte = '20'
     const filters = ref<DashboardFilter[]>([{ labelField: 'tx', slider: true }])
-    let execute = vi.fn()
-    useConfigMock.mockReturnValue(makeState({
+    const { values, loading } = setup(makeState({
       filters,
       dataset: ref({ id: 'ds1', href: 'https://x/ds1', finalizedAt: 'F' })
     }))
-    useAsyncActionMock.mockImplementation((fn: () => Promise<void>) => {
-      execute = vi.fn(() => fn())
-      return { execute, loading: ref(false), error: ref(null) }
-    })
-    const { values } = useFiltersValues({ prefix: '', address: ref(undefined) })
+    // every execute() of the async action flips loading to true synchronously
+    let executions = 0
+    watch(loading, (l) => { if (l) executions++ }, { flush: 'sync' })
+    executions = loading.value ? 1 : 0
     await nextTick()
-    await flush()
+    await settle()
     expect(values.value).toEqual({
       keys: ['tx'],
       _d_ds1_tx_gte: '10',
@@ -260,14 +264,14 @@ describe('useFiltersValues', () => {
     // bornes gte/lte doivent disparaître du broadcast.
     filters.value = [{ labelField: 'tx' }]
     await nextTick()
-    await flush()
-    expect(execute).toHaveBeenCalledTimes(2)
+    await settle()
+    expect(executions).toBe(2)
     expect(values.value).toEqual({ keys: [], finalizedAt: 'F' })
   })
 
-  it('la sélection dynamique l\'emporte sur le static in du même champ', async () => {
+  test('la sélection dynamique l\'emporte sur le static in du même champ', async () => {
     reactiveSearchParams._d_ds1_type_in = '"a"'
-    ofetchMock.mockResolvedValue(['a'])
+    fetchStub.on('/values/type', { json: ['a'] })
     const state = makeState({
       config: ref({ staticFilters: [{ type: 'in', field: 'type', values: ['a', 'b'] }] }),
       filters: ref([{ labelField: 'type', values: ['type'], multipleValues: true }]),
@@ -275,10 +279,11 @@ describe('useFiltersValues', () => {
     })
     const { values } = setup(state)
     await nextTick()
-    await flush()
-    expect(ofetchMock).toHaveBeenCalledWith('https://x/ds1/values/type', expect.objectContaining({
+    await settle()
+    expect(valuesCalls()).toContainEqual({
+      path: 'https://x/ds1/values/type',
       params: expect.objectContaining({ type_in: '"a"' })
-    }))
+    })
     expect(values.value).toEqual({
       keys: ['type'],
       _d_ds1_type_in: '"a"',

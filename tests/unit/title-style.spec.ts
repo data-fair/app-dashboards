@@ -1,8 +1,8 @@
-import { describe, it, expect } from 'vitest'
+import { test, expect } from '@playwright/test'
 import { pageTitleDefaults, sectionTitleDefaults } from '@/utils/title-style'
 
-describe('title-style defaults', () => {
-  it('définit les défauts du titre de page', () => {
+test.describe('title-style defaults', () => {
+  test('définit les défauts du titre de page', () => {
     expect(pageTitleDefaults).toEqual({
       tag: 'h2',
       size: 'h4',
@@ -12,7 +12,7 @@ describe('title-style defaults', () => {
     })
   })
 
-  it('définit les défauts du titre de section', () => {
+  test('définit les défauts du titre de section', () => {
     expect(sectionTitleDefaults).toEqual({
       tag: 'h3',
       size: 'h4',

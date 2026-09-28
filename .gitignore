@@ -30,6 +30,3 @@ pnpm-debug.log*
 /tests/output
 /playwright/.cache
 .playwright-mcp/
-
-# Vitest coverage
-/coverage

@@ -23,5 +23,5 @@ export default [
     files: ['**/*.vue'],
     languageOptions: { parserOptions: { parser: '@typescript-eslint/parser' } }
   },
-  { ignores: ['dist/', 'node_modules/', 'src/config/.type/', 'tests/output/', 'coverage/', 'playwright-report/', 'public/'] }
+  { ignores: ['dist/', 'node_modules/', 'src/config/.type/', 'tests/output/', 'playwright-report/', 'public/'] }
 ]

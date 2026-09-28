@@ -1,6 +1,8 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest'
+import './helpers/dom'
+import { test, expect } from '@playwright/test'
 import { nextTick } from 'vue'
 import { createConfig, type ConfigState } from '@/composables/config'
+import { fn } from './helpers/spy'
 
 const makeApplication = (overrides: Record<string, unknown> = {}) => ({
   id: 'dash',
@@ -41,12 +43,12 @@ const createState = (application = makeApplication()): ConfigState => {
   return state!
 }
 
-describe('createConfig', () => {
-  beforeEach(() => {
+test.describe('createConfig', () => {
+  test.beforeEach(() => {
     delete (window as any).APPLICATION
   })
 
-  it('expose les computed config, dataset, datasets, fields, filters, sections', () => {
+  test('expose les computed config, dataset, datasets, fields, filters, sections', () => {
     const state = createState()
     expect(state.dataset.value?.id).toBe('ds1')
     expect(state.datasets.value.map(d => d.id)).toEqual(['ds1'])
@@ -56,38 +58,44 @@ describe('createConfig', () => {
     expect(state.error.value).toBeNull()
   })
 
-  it('compute l\'erreur de configuration', () => {
+  test('compute l\'erreur de configuration', () => {
     const state = createState(makeApplication({ datasets: [{ id: 'ds1', title: 'DS1', href: 'h' }] }))
     expect(state.error.value).toBe('La source de données n\'a pas de schéma')
   })
 
-  it('extrait l\'accessKey de l\'exposedUrl', () => {
+  test('extrait l\'accessKey de l\'exposedUrl', () => {
     const state = createState()
     expect(state.accessKey.value).toBe('abc')
   })
 
-  it('setConfig remplace la configuration', () => {
+  test('setConfig remplace la configuration', () => {
     const state = createState()
     state.setConfig({ datasets: [{ id: 'other', title: 'Other', href: 'h', schema: [] }] } as any)
     expect(state.dataset.value?.id).toBe('other')
   })
 
-  it('install fournit l\'état et branche le listener de message', () => {
-    const app = { provide: vi.fn() }
+  test('install fournit l\'état et branche le listener de message', () => {
+    const app = { provide: fn() }
     const cfg = createConfig()
-    const addEventListener = vi.spyOn(window, 'addEventListener')
-    cfg.install(app as any)
-    expect(app.provide).toHaveBeenCalledWith('data-fair-app-config', expect.objectContaining({
+    const originalAddEventListener = window.addEventListener
+    const addEventListener = fn((...args: Parameters<Window['addEventListener']>) => originalAddEventListener.apply(window, args))
+    window.addEventListener = addEventListener
+    try {
+      cfg.install(app as any)
+    } finally {
+      window.addEventListener = originalAddEventListener
+    }
+    expect(app.provide.calls).toContainEqual(['data-fair-app-config', expect.objectContaining({
       dataset: expect.any(Object),
       config: expect.any(Object),
       accessKey: expect.any(Object)
-    }))
-    expect(addEventListener).toHaveBeenCalledWith('message', expect.any(Function))
+    })])
+    expect(addEventListener.calls).toContainEqual(['message', expect.any(Function)])
   })
 })
 
-describe('createConfig — messages set-config', () => {
-  it('fusionne un payload de configuration complet et retire les clés absentes', async () => {
+test.describe('createConfig — messages set-config', () => {
+  test('fusionne un payload de configuration complet et retire les clés absentes', async () => {
     const state = createState()
     send({ type: 'set-config', content: { filters: [{ labelField: 'an' }], title: 'Nouveau' } })
     await nextTick()
@@ -96,21 +104,21 @@ describe('createConfig — messages set-config', () => {
     expect(state.config.value.sections).toBeUndefined()
   })
 
-  it('met à jour un champ par path', async () => {
+  test('met à jour un champ par path', async () => {
     const state = createState()
     send({ type: 'set-config', content: { field: 'datasets.0.title', value: 'Renommé' } })
     await nextTick()
     expect(state.config.value.datasets?.[0].title).toBe('Renommé')
   })
 
-  it('accepte le format enveloppé { configuration }', async () => {
+  test('accepte le format enveloppé { configuration }', async () => {
     const state = createState()
     send({ type: 'set-config', content: { configuration: { title: 'Enveloppé' } } })
     await nextTick()
     expect(state.config.value.title).toBe('Enveloppé')
   })
 
-  it('ignore les messages dont la source n\'est pas le parent', async () => {
+  test('ignore les messages dont la source n\'est pas le parent', async () => {
     const state = createState()
     send({ type: 'set-config', content: { title: 'X' } }, null)
     send({ type: 'other', content: { title: 'Y' } })
