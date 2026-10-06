@@ -18,6 +18,7 @@ import { normalizeStaticFilters } from '@/utils/staticFilters'
 import {
   collectActiveFields,
   collectFilterEmitFields,
+  collectReceivedFilters,
   isRangeFilter,
   serializeFiltersValues,
   type FiltersValues,
@@ -33,6 +34,12 @@ export const useFiltersValues = (opts: UseFiltersValuesOptions) => {
   const { prefix, address } = opts
   const { config, filters, dataset, fields } = useConfig()
   const emitted = ref<FiltersValues>({ keys: [] })
+
+  // Filters put in this dashboard's URL by a parent (portals page static
+  // filters, outer dashboard, shareable link). They are relayed to the child
+  // embeds, which is what lets a page drive a dashboard configured without
+  // any dynamic filter.
+  const received = computed(() => collectReceivedFilters(reactiveSearchParams, fields.value))
 
   // Abort the previous resolution when a new one starts: rapid filter/period/
   // radius changes must not leave a stale response winning the race on
@@ -96,6 +103,7 @@ export const useFiltersValues = (opts: UseFiltersValuesOptions) => {
       activeFields: collectActiveFields(allFilters, prefix, datasetId, reactiveSearchParams),
       resolvedValues,
       rangeValues,
+      received: received.value,
       fields: fields.value,
       config: config.value,
       prefix,
@@ -133,6 +141,9 @@ export const useFiltersValues = (opts: UseFiltersValuesOptions) => {
           ].join('\u0001'))
           .join('\u0002')
       },
+      // A parent can update the received filters without reloading the iframe
+      // (d-frame state change): re-broadcast when their signature changes.
+      () => Object.entries(received.value.values).sort().map(([key, value]) => `${key}=${value}`).join('\u0001'),
       () => reactiveSearchParams.period,
       () => reactiveSearchParams.radius,
       () => address.value,

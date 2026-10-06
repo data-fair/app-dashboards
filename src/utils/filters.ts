@@ -49,6 +49,49 @@ export const fieldConcept = (field: Field | undefined): string | undefined => {
  */
 export const isRangeFilter = (filter: DashboardFilter): boolean => !!filter.slider
 
+/**
+ * Filters received from a parent (a portals page `staticFilters` entry, an
+ * outer dashboard, a shareable URL): concept keys `_c_<conceptId>_<op>`. They
+ * are relayed as-is to the child embeds, so a dashboard configured without
+ * any dynamic filter can still be driven by the page that embeds it.
+ *
+ * Only concept keys are collected: dataset-scoped keys (`_d_<datasetId>_…`)
+ * are ambiguous with the dashboard's own dynamic filter values, which live in
+ * the same URL namespace, and are therefore left alone.
+ */
+export interface ReceivedFilters {
+  /** Raw filter keys to relay, ready for the embeds. */
+  values: Record<string, string>
+  /** Root dataset fields touched by these filters (deduplicated). */
+  fields: string[]
+}
+
+/** Trailing REST operator of a filter key (`codeCommune_in` → `codeCommune`). */
+const FILTER_OP_SUFFIX = /_(in|nin|eq|neq|lt|lte|gt|gte|starts|exists|nexists|contains|search)$/
+
+/**
+ * Collect the concept filters a parent put in this dashboard's URL, and
+ * resolve the root dataset fields that carry them (used for `keys`, i.e. the
+ * `valueMandatory` checks).
+ */
+export const collectReceivedFilters = (
+  params: ReactiveParams,
+  fields: Record<string, Field>
+): ReceivedFilters => {
+  const values: Record<string, string> = {}
+  const receivedFields: string[] = []
+  for (const key of Object.keys(params)) {
+    if (!key.startsWith('_c_')) continue
+    const value = params[key]
+    if (value == null || value === '') continue
+    values[key] = String(value)
+    const concept = key.slice(3).replace(FILTER_OP_SUFFIX, '')
+    const field = Object.keys(fields).find(f => fieldConcept(fields[f]) === concept)
+    if (field && !receivedFields.includes(field)) receivedFields.push(field)
+  }
+  return { values, fields: receivedFields }
+}
+
 export interface SerializeFiltersValuesInput {
   /** Fields whose resolved values are broadcast (`_d_<datasetId>_<f>_in` + concept mirror). */
   emitFields: string[]
@@ -58,6 +101,8 @@ export interface SerializeFiltersValuesInput {
   resolvedValues: Record<string, string[]>
   /** Bounds per range-slider field (`_d_<datasetId>_<f>_gte/_lte` + concept mirror). */
   rangeValues?: Record<string, { min?: string; max?: string }>
+  /** Filters received from a parent, relayed to the child embeds (lower priority). */
+  received?: ReceivedFilters
   fields: Record<string, Field>
   config: DashboardConfig
   prefix: string
@@ -73,8 +118,14 @@ export interface SerializeFiltersValuesInput {
  * distance and static filters. Pure and testable in isolation.
  */
 export const serializeFiltersValues = (input: SerializeFiltersValuesInput): FiltersValues => {
-  const { emitFields, activeFields, resolvedValues, rangeValues, fields, config, prefix, datasetId, finalizedAt, period, geoDistance } = input
+  const { emitFields, activeFields, resolvedValues, rangeValues, received, fields, config, prefix, datasetId, finalizedAt, period, geoDistance } = input
   const result: FiltersValues = { keys: activeFields }
+  for (const field of received?.fields || []) {
+    if (!result.keys.includes(field)) result.keys.push(field)
+  }
+  // Relayed first: a filter configured on this dashboard (static below,
+  // dynamic further down) overrides a received value on the same key.
+  Object.assign(result, received?.values || {})
   Object.assign(result, collectStaticFilterParams(config, datasetId, prefix, fields))
 
   for (const f of emitFields) {

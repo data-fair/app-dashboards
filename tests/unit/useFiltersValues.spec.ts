@@ -290,4 +290,65 @@ test.describe('useFiltersValues', () => {
       finalizedAt: 'F'
     })
   })
+
+  test('relaie les filtres reçus de la page sans filtre configuré', async () => {
+    reactiveSearchParams._c_codeCommune_in = '86222'
+    const state = makeState({
+      dataset: ref({ id: 'ds1', href: 'https://x/ds1', finalizedAt: 'F' })
+    })
+    const { values, applicationValues } = setup(state)
+    await nextTick()
+    await settle()
+    expect(values.value).toEqual({
+      keys: [],
+      _c_codeCommune_in: '86222',
+      finalizedAt: 'F'
+    })
+    expect(applicationValues.value).toEqual({
+      keys: [],
+      _c_codeCommune_in: '86222',
+      finalizedAt: 'F'
+    })
+    expect(fetchStub.calls).toHaveLength(0)
+  })
+
+  test('la sélection dynamique l\'emporte sur un filtre reçu du même concept', async () => {
+    reactiveSearchParams._c_codeCommune_in = '86222'
+    reactiveSearchParams._d_ds1_type_in = '"a"'
+    fetchStub.on('/values/type', { json: ['a'] })
+    const state = makeState({
+      filters: ref([{ labelField: 'type', values: ['type'], multipleValues: true }]),
+      dataset: ref({ id: 'ds1', href: 'https://x/ds1', finalizedAt: 'F' }),
+      fields: ref({ type: fieldWithConcept('type', 'codeCommune') })
+    })
+    const { values } = setup(state)
+    await nextTick()
+    await settle()
+    expect(values.value).toEqual({
+      keys: ['type'],
+      _d_ds1_type_in: '"a"',
+      _c_codeCommune_in: '"a"',
+      finalizedAt: 'F'
+    })
+  })
+
+  test('relance la recompute quand un filtre reçu change (sync sans reload)', async () => {
+    reactiveSearchParams._c_codeCommune_in = '86222'
+    const { values, loading } = setup(makeState({
+      dataset: ref({ id: 'ds1', href: 'https://x/ds1' })
+    }))
+    let executions = 0
+    watch(loading, (l) => { if (l) executions++ }, { flush: 'sync' })
+    executions = loading.value ? 1 : 0
+    await nextTick()
+    await settle()
+    expect(executions).toBe(1)
+    expect(values.value._c_codeCommune_in).toBe('86222')
+
+    reactiveSearchParams._c_codeCommune_in = '86194'
+    await nextTick()
+    await settle()
+    expect(executions).toBe(2)
+    expect(values.value._c_codeCommune_in).toBe('86194')
+  })
 })

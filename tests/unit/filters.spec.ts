@@ -2,6 +2,7 @@ import { test, expect } from '@playwright/test'
 import {
   collectActiveFields,
   collectFilterEmitFields,
+  collectReceivedFilters,
   collectStaticFilterParams,
   fieldConcept,
   initDefaultFilterValues,
@@ -486,6 +487,43 @@ test.describe('collectFilterEmitFields', () => {
   })
 })
 
+test.describe('collectReceivedFilters', () => {
+  const fields = {
+    dep: fieldWithConcept('dep', 'codeDepartement'),
+    an: plainField('an')
+  }
+
+  test('relaie les clés concept, résout le champ porteur et ignore le reste', () => {
+    const received = collectReceivedFilters({
+      _c_codeDepartement_in: '75',
+      _d_ds1_dep_in: '75',
+      finalizedAt: 'F',
+      'd-frame': 'true',
+      q: 'x'
+    }, fields)
+    expect(received).toEqual({
+      values: { _c_codeDepartement_in: '75' },
+      fields: ['dep']
+    })
+  })
+
+  test('relaie les concepts universels sans champ', () => {
+    const received = collectReceivedFilters({ _c_date_match: '2020-01-01,2020-12-31' }, fields)
+    expect(received).toEqual({
+      values: { _c_date_match: '2020-01-01,2020-12-31' },
+      fields: []
+    })
+  })
+
+  test('ignore les valeurs vides et les concepts inconnus', () => {
+    const received = collectReceivedFilters({ _c_vide_in: '', _c_inconnu_in: '1' }, fields)
+    expect(received).toEqual({
+      values: { _c_inconnu_in: '1' },
+      fields: []
+    })
+  })
+})
+
 test.describe('serializeFiltersValues', () => {
   const fields = {
     dep: fieldWithConcept('dep', 'codeDepartement'),
@@ -706,5 +744,43 @@ test.describe('serializeFiltersValues', () => {
       datasetId: 'ds1'
     })
     expect(result).toEqual({ keys: [], finalizedAt: '' })
+  })
+
+  test('relaie un filtre concept reçu sans filtre configuré', () => {
+    const result = serializeFiltersValues({
+      emitFields: [],
+      activeFields: [],
+      resolvedValues: {},
+      received: { values: { _c_codeCommune_in: '86222' }, fields: ['commune'] },
+      fields,
+      config: {} as DashboardConfig,
+      prefix: '',
+      datasetId: 'ds1'
+    })
+    expect(result).toEqual({
+      keys: ['commune'],
+      _c_codeCommune_in: '86222',
+      finalizedAt: ''
+    })
+  })
+
+  test('les filtres configurés l\'emportent sur les filtres reçus', () => {
+    const result = serializeFiltersValues({
+      emitFields: ['dep'],
+      activeFields: ['dep'],
+      resolvedValues: { dep: ['75'] },
+      received: { values: { _c_codeCommune_in: '86222', _c_codeDepartement_in: '92' }, fields: ['dep'] },
+      fields,
+      config: { staticFilters: [{ type: 'in', field: 'dep', values: ['75'] }] } as DashboardConfig,
+      prefix: '',
+      datasetId: 'ds1'
+    })
+    expect(result).toEqual({
+      keys: ['dep'],
+      _c_codeCommune_in: '86222',
+      _d_ds1_dep_in: '"75"',
+      _c_codeDepartement_in: '"75"',
+      finalizedAt: ''
+    })
   })
 })
