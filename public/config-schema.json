@@ -442,13 +442,18 @@
                 "title": "Lignes",
                 "type": "array",
                 "layout": {
-                  "itemTitle": "'Hauteur : '+data.height",
+                  "itemTitle": "'Hauteur : '+((data.heights && (data.heights.md || data.heights.default || data.heights.lg || data.heights.sm || data.heights.xl)) || data.height || 'auto')",
                   "messages": {
                     "addItem": "Ajouter une ligne"
                   }
                 },
                 "items": {
                   "type": "object",
+                  "default": {
+                    "heights": {
+                      "default": 400
+                    }
+                  },
                   "layout": {
                     "switch": [
                       {
@@ -457,6 +462,7 @@
                           {
                             "children": [
                               "height",
+                              "heights",
                               "elements"
                             ]
                           }
@@ -472,9 +478,40 @@
                   "properties": {
                     "height": {
                       "title": "Hauteur (px)",
-                      "description": "Mettez une valeur négative pour un redimensionnement automatique",
+                      "description": "Hauteur unique en pixels, conservée pour les configurations existantes. Une valeur négative force le redimensionnement automatique.",
+                      "default": 400,
                       "type": "integer",
-                      "default": 400
+                      "layout": {
+                        "if": "false"
+                      }
+                    },
+                    "heights": {
+                      "title": "Hauteur par breakpoint (px)",
+                      "description": "Remplace l'ancienne hauteur unique. Chaque breakpoint reprend la valeur du breakpoint inférieur quand il n'est pas défini ; une valeur négative force le redimensionnement automatique.",
+                      "type": "object",
+                      "additionalProperties": false,
+                      "properties": {
+                        "default": {
+                          "title": "Par défaut (mobile)",
+                          "type": "integer"
+                        },
+                        "sm": {
+                          "title": "sm (≥ 600 px)",
+                          "type": "integer"
+                        },
+                        "md": {
+                          "title": "md (≥ 960 px)",
+                          "type": "integer"
+                        },
+                        "lg": {
+                          "title": "lg (≥ 1280 px)",
+                          "type": "integer"
+                        },
+                        "xl": {
+                          "title": "xl (≥ 1920 px)",
+                          "type": "integer"
+                        }
+                      }
                     },
                     "elements": {
                       "title": "Éléments",

@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test'
-import { computeSectionBreakpoints, dedupeKeys, elementKey } from '@/utils/layout'
+import { computeSectionBreakpoints, dedupeKeys, elementKey, resolveRowHeight } from '@/utils/layout'
 import type { DashboardElement, DashboardRow } from '@/config'
 
 const el = (type: DashboardElement['type'], width?: 1 | 2 | 3): DashboardElement =>
@@ -82,6 +82,50 @@ test.describe('computeSectionBreakpoints', () => {
     // md : 4 + 4 = 8 ≤ 12 → spans 6/6
     expect(rows[1].layouts[0].md).toBe(6)
     expect(rows[1].layouts[1].md).toBe(6)
+  })
+
+  test('conserve height et heights pour la résolution par breakpoint', () => {
+    const rows = computeSectionBreakpoints([{ height: 400, heights: { md: 800 }, elements: [] }])
+    expect(rows[0].height).toBe(400)
+    expect(rows[0].heights).toEqual({ md: 800 })
+  })
+})
+
+test.describe('resolveRowHeight', () => {
+  test('sans hauteur par breakpoint, renvoie la hauteur unique ou undefined', () => {
+    expect(resolveRowHeight({ height: 400 }, 'md')).toBe(400)
+    expect(resolveRowHeight({}, 'md')).toBeUndefined()
+  })
+
+  test('default couvre xs/sm, md et au-delà reprennent la valeur définie', () => {
+    const row = { heights: { default: -1, md: 717 } }
+    expect(resolveRowHeight(row, 'xs')).toBe(-1)
+    expect(resolveRowHeight(row, 'sm')).toBe(-1)
+    expect(resolveRowHeight(row, 'md')).toBe(717)
+    expect(resolveRowHeight(row, 'lg')).toBe(717)
+    expect(resolveRowHeight(row, 'xl')).toBe(717)
+  })
+
+  test('cascade mobile-first : sm s\'applique à md si md est absent', () => {
+    const row = { heights: { sm: 300, lg: 500 } }
+    expect(resolveRowHeight(row, 'xs')).toBeUndefined()
+    expect(resolveRowHeight(row, 'sm')).toBe(300)
+    expect(resolveRowHeight(row, 'md')).toBe(300)
+    expect(resolveRowHeight(row, 'lg')).toBe(500)
+    expect(resolveRowHeight(row, 'xl')).toBe(500)
+  })
+
+  test('la hauteur unique sert de repli quand heights n\'a pas de default', () => {
+    const row = { height: 400, heights: { md: 800 } }
+    expect(resolveRowHeight(row, 'xs')).toBe(400)
+    expect(resolveRowHeight(row, 'sm')).toBe(400)
+    expect(resolveRowHeight(row, 'md')).toBe(800)
+  })
+
+  test('heights.default prime sur la hauteur unique et xxl vaut xl', () => {
+    const row = { height: 400, heights: { default: -1, xl: 900 } }
+    expect(resolveRowHeight(row, 'xs')).toBe(-1)
+    expect(resolveRowHeight(row, 'xxl')).toBe(900)
   })
 })
 

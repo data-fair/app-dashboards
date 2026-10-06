@@ -599,4 +599,39 @@ test.describe('Bugs connus (régressions)', () => {
 
     assertNoInitIssue(consoleEvents)
   })
+
+  test('K7 — hauteur par breakpoint : valeur du breakpoint courant, repli auto en mobile', async ({ page }) => {
+    const consoleEvents = collectConsoleEvents(page)
+
+    await page.goto('/app/')
+    await expect(page.locator('.v-container').first()).toBeVisible({ timeout: 20_000 })
+
+    const firstFrame = page.locator('d-frame').first()
+    await expect(firstFrame).toBeVisible({ timeout: 20_000 })
+
+    // Desktop (>= md) : la valeur md s'applique, le d-frame porte une hauteur explicite.
+    await page.setViewportSize({ width: 1400, height: 900 })
+    await page.evaluate(() => {
+      const cfg = JSON.parse(JSON.stringify(window.APPLICATION.configuration))
+      if (cfg.sections?.[0]?.rows?.[0]) {
+        cfg.sections[0].rows[0].heights = { default: -1, md: 800 }
+        delete cfg.sections[0].rows[0].height
+      }
+      window.dispatchEvent(new MessageEvent('message', {
+        source: window,
+        data: { type: 'set-config', content: cfg }
+      }))
+    })
+
+    await expect(firstFrame).toHaveAttribute('style', /height:\s*800px/)
+    expect(await firstFrame.getAttribute('aspect-ratio')).toBeNull()
+
+    // Mobile (xs) : default -1 → hauteur automatique et repli sur le ratio d'aspect.
+    await page.setViewportSize({ width: 390, height: 800 })
+    await expect(firstFrame).toHaveAttribute('aspect-ratio', '')
+    const autoStyle = (await firstFrame.getAttribute('style')) || ''
+    expect(autoStyle).not.toContain('height:')
+
+    assertNoInitIssue(consoleEvents)
+  })
 })

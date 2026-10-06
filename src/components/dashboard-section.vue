@@ -6,9 +6,10 @@
  * `computeSectionBreakpoints` utility.
  */
 import { computed } from 'vue'
+import { useDisplay } from 'vuetify'
 import type { DashboardSection } from '@/config'
 import { useConfig } from '@/composables/config'
-import { computeSectionBreakpoints, dedupeKeys, elementKey } from '@/utils/layout'
+import { computeSectionBreakpoints, dedupeKeys, elementKey, resolveRowHeight } from '@/utils/layout'
 import { sectionTitleDefaults } from '@/utils/title-style'
 import type { FiltersValues, ApplicationFiltersValues } from '@/utils/filters'
 import dashboardColumn from './dashboard-column.vue'
@@ -23,6 +24,7 @@ const props = defineProps<{
 }>()
 
 const { config } = useConfig()
+const { name: breakpoint } = useDisplay()
 
 const processedRows = computed(() => computeSectionBreakpoints(props.section.rows))
 
@@ -73,7 +75,7 @@ const rowsWithKeys = computed(() => processedRows.value.map(row => ({
       </h4>
       <dashboard-column
         :element="element"
-        :height="row.height"
+        :height="resolveRowHeight(row, breakpoint)"
         :filters-values="filtersValues"
         :application-filters-values="applicationFiltersValues"
         :prefix="prefix"

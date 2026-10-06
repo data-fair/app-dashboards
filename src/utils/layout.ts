@@ -11,7 +11,7 @@
  * its computed layout, so we don't have to mutate the `DashboardElement`
  * type (which is a discriminated union and can't be extended directly).
  */
-import type { DashboardElement, DashboardRow, DashboardElementWidth } from '@/config'
+import type { DashboardElement, DashboardRow, DashboardElementWidth, DashboardRowHeights } from '@/config'
 
 const widths: Record<'sm' | 'md' | 'lg' | 'xl', number[]> = {
   sm: [6, 12, 12],
@@ -31,9 +31,31 @@ export interface ElementLayout {
 }
 
 export interface ProcessedRow {
-  height: number
+  height?: number
+  heights?: DashboardRowHeights
   elements: DashboardElement[]
   layouts: ElementLayout[]
+}
+
+const BREAKPOINT_ORDER: Breakpoint[] = ['sm', 'md', 'lg', 'xl']
+
+/**
+ * Resolve a row height for the current breakpoint (mobile-first cascade): a
+ * breakpoint without a value inherits the closest smaller breakpoint that
+ * defines one, falling back on `heights.default`, then on the legacy
+ * `height`, then on auto (`undefined`). `xs` (absent from the grid) uses the
+ * same fallback, `xxl` behaves like `xl`.
+ */
+export const resolveRowHeight = (row: Pick<DashboardRow, 'height' | 'heights'>, breakpoint: string): number | undefined => {
+  const heights = row.heights
+  if (!heights) return row.height
+  const fallback = heights.default !== undefined ? heights.default : row.height
+  const bp = breakpoint === 'xxl' ? 'xl' : breakpoint
+  for (let i = BREAKPOINT_ORDER.indexOf(bp as Breakpoint); i >= 0; i--) {
+    const value = heights[BREAKPOINT_ORDER[i]]
+    if (value !== undefined) return value
+  }
+  return fallback
 }
 
 const elementWidth = (el: DashboardElement): DashboardElementWidth => el.width || 2
@@ -72,7 +94,7 @@ const computeRowLayout = (row: DashboardRow): ProcessedRow => {
     }
   }
 
-  return { height: row.height, elements, layouts }
+  return { height: row.height, heights: row.heights, elements, layouts }
 }
 
 export const computeSectionBreakpoints = (rows: DashboardRow[] | undefined): ProcessedRow[] => {

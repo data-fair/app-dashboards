@@ -129,8 +129,17 @@ export type DashboardElement =
   | FormElement
   | ({ type: 'column' } & Omit<BaseElement, 'type'> & { elements?: DashboardElement[] })
 
+export interface DashboardRowHeights {
+  default?: number
+  sm?: number
+  md?: number
+  lg?: number
+  xl?: number
+}
+
 export interface DashboardRow {
-  height: number
+  height?: number
+  heights?: DashboardRowHeights
   elements: DashboardElement[]
 }
 
