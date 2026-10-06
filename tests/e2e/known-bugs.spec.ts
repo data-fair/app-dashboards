@@ -27,6 +27,7 @@ interface DashboardElementConfig {
   ignoreFilters?: boolean
   valueMandatory?: boolean
   mandatoryFilters?: string[]
+  elements?: DashboardElementConfig[]
 }
 
 type StaticFilter =
@@ -45,9 +46,13 @@ interface DevConfig {
 
 const fieldKeyOf = (f: StaticFilter['field']): string => (typeof f === 'string' ? f : f.key)
 
+/** Un `column` n'est pas un embed : seuls ses enfants sont rendus dans le DOM. */
+const flattenElements = (elements: DashboardElementConfig[]): DashboardElementConfig[] =>
+  elements.flatMap(el => el.type === 'column' ? flattenElements(el.elements || []) : [el])
+
 const flatElements = (config: DevConfig): DashboardElementConfig[] =>
   (config.sections || [])
-    .flatMap(section => (section.rows || []).flatMap(row => row.elements || []))
+    .flatMap(section => (section.rows || []).flatMap(row => flattenElements(row.elements || [])))
 
 /**
  * Éléments réellement montés dans le DOM : avec un groupement par onglets
@@ -600,37 +605,41 @@ test.describe('Bugs connus (régressions)', () => {
     assertNoInitIssue(consoleEvents)
   })
 
-  test('K7 — hauteur par breakpoint : valeur du breakpoint courant, repli auto en mobile', async ({ page }) => {
+  test('K7 — hauteur par breakpoint : fixe à partir de md, repli auto en mobile', async ({ page }) => {
     const consoleEvents = collectConsoleEvents(page)
 
     await page.goto('/app/')
     await expect(page.locator('.v-container').first()).toBeVisible({ timeout: 20_000 })
 
-    const firstFrame = page.locator('d-frame').first()
-    await expect(firstFrame).toBeVisible({ timeout: 20_000 })
+    const frames = page.locator('d-frame')
+    await expect(frames.first()).toBeVisible({ timeout: 20_000 })
 
-    // Desktop (>= md) : la valeur md s'applique, le d-frame porte une hauteur explicite.
+    // Toutes les lignes passent en hauteur par breakpoint : le test reste
+    // indépendant de la structure (les colonnes répartissent la hauteur de
+    // ligne entre leurs enfants, un d-frame n'y porte donc pas la valeur md).
     await page.setViewportSize({ width: 1400, height: 900 })
     await page.evaluate(() => {
       const cfg = JSON.parse(JSON.stringify(window.APPLICATION.configuration))
-      if (cfg.sections?.[0]?.rows?.[0]) {
-        cfg.sections[0].rows[0].heights = { default: -1, md: 800 }
-        delete cfg.sections[0].rows[0].height
-      }
+      ;(cfg.sections || []).forEach((s: { rows?: { height?: number, heights?: unknown }[] }) => (s.rows || []).forEach(r => {
+        r.heights = { default: -1, md: 800 }
+        delete r.height
+      }))
       window.dispatchEvent(new MessageEvent('message', {
         source: window,
         data: { type: 'set-config', content: cfg }
       }))
     })
 
-    await expect(firstFrame).toHaveAttribute('style', /height:\s*800px/)
-    expect(await firstFrame.getAttribute('aspect-ratio')).toBeNull()
+    const frameStyles = () => frames.evaluateAll(els => els.map(el => ({
+      style: el.getAttribute('style') || '',
+      aspectRatio: el.getAttribute('aspect-ratio')
+    })))
+    // Desktop (lg) : la valeur md s'applique par cascade, chaque embed a une hauteur explicite.
+    await expect.poll(async () => (await frameStyles()).every(f => /height:\s*\d+px/.test(f.style) && f.aspectRatio === null)).toBe(true)
 
     // Mobile (xs) : default -1 → hauteur automatique et repli sur le ratio d'aspect.
     await page.setViewportSize({ width: 390, height: 800 })
-    await expect(firstFrame).toHaveAttribute('aspect-ratio', '')
-    const autoStyle = (await firstFrame.getAttribute('style')) || ''
-    expect(autoStyle).not.toContain('height:')
+    await expect.poll(async () => (await frameStyles()).every(f => f.aspectRatio === '' && !f.style.includes('height:'))).toBe(true)
 
     assertNoInitIssue(consoleEvents)
   })
