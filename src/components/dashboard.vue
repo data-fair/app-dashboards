@@ -16,12 +16,18 @@ import dashboardFilters from './dashboard-filters.vue'
 import sectionsView from './sections-view.vue'
 import dTitle from './d-title.vue'
 import { useConfig } from '@/composables/config'
+import { useEmissionsProjection } from '@/composables/useEmissionsProjection'
 import { initDefaultFilterValues } from '@/utils/filters'
 import type { FiltersValues, ApplicationFiltersValues } from '@/utils/filters'
 import { pageTitleDefaults } from '@/utils/title-style'
 
 const { config, dataset, error } = useConfig()
 const { t } = useI18n()
+
+// Les visus embarqués écrivent leurs sélections et filtres dans un canal privé
+// (namespace par élément) : on les reprojette ici vers le namespace propre
+// `_c_*` / `_s_*` / `_d_*` de l'URL du dashboard.
+useEmissionsProjection()
 
 const filtersValues = reactive<Record<number, FiltersValues>>({ 0: { keys: [] }, 1: { keys: [] } })
 const applicationFiltersValues = reactive<Record<number, ApplicationFiltersValues>>({ 0: {}, 1: {} })

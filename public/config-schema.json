@@ -624,6 +624,37 @@
                                     "type": "boolean",
                                     "default": false
                                   },
+                                  "propagation": {
+                                    "title": "Propagation aux autres visus",
+                                    "description": "Ce que ce visu transmet aux autres visus du tableau de bord : une sélection (clic sur une entité) et/ou ses filtres. Le visu émetteur garde son propre état ; ce réglage ne change pas ce qu'il reçoit.",
+                                    "type": "object",
+                                    "properties": {
+                                      "selection": {
+                                        "title": "Sélection (clic sur une entité)",
+                                        "type": "string",
+                                        "default": "filter",
+                                        "oneOf": [
+                                          {
+                                            "const": "none",
+                                            "title": "Ne pas propager"
+                                          },
+                                          {
+                                            "const": "filter",
+                                            "title": "Propager en filtre : les autres se restreignent"
+                                          },
+                                          {
+                                            "const": "selection",
+                                            "title": "Propager en sélection : les autres mettent en évidence"
+                                          }
+                                        ]
+                                      },
+                                      "filter": {
+                                        "title": "Filtres du visu (recherche, facette interne)",
+                                        "type": "boolean",
+                                        "default": false
+                                      }
+                                    }
+                                  },
                                   "valueMandatory": {
                                     "title": "Nécessite une valeur dans des filtres",
                                     "type": "boolean",
@@ -738,6 +769,37 @@
                                     "type": "boolean",
                                     "default": false
                                   },
+                                  "propagation": {
+                                    "title": "Propagation aux autres visus",
+                                    "description": "Ce que ce visu transmet aux autres visus du tableau de bord : une sélection (clic sur une entité) et/ou ses filtres. Le visu émetteur garde son propre état ; ce réglage ne change pas ce qu'il reçoit.",
+                                    "type": "object",
+                                    "properties": {
+                                      "selection": {
+                                        "title": "Sélection (clic sur une entité)",
+                                        "type": "string",
+                                        "default": "filter",
+                                        "oneOf": [
+                                          {
+                                            "const": "none",
+                                            "title": "Ne pas propager"
+                                          },
+                                          {
+                                            "const": "filter",
+                                            "title": "Propager en filtre : les autres se restreignent"
+                                          },
+                                          {
+                                            "const": "selection",
+                                            "title": "Propager en sélection : les autres mettent en évidence"
+                                          }
+                                        ]
+                                      },
+                                      "filter": {
+                                        "title": "Filtres du visu (recherche, facette interne)",
+                                        "type": "boolean",
+                                        "default": false
+                                      }
+                                    }
+                                  },
                                   "valueMandatory": {
                                     "title": "Nécessite une valeur dans des filtres",
                                     "type": "boolean",
@@ -819,6 +881,37 @@
                                     "title": "Ignorer les filtres",
                                     "type": "boolean",
                                     "default": false
+                                  },
+                                  "propagation": {
+                                    "title": "Propagation aux autres visus",
+                                    "description": "Ce que ce visu transmet aux autres visus du tableau de bord : une sélection (clic sur une entité) et/ou ses filtres. Le visu émetteur garde son propre état ; ce réglage ne change pas ce qu'il reçoit.",
+                                    "type": "object",
+                                    "properties": {
+                                      "selection": {
+                                        "title": "Sélection (clic sur une entité)",
+                                        "type": "string",
+                                        "default": "filter",
+                                        "oneOf": [
+                                          {
+                                            "const": "none",
+                                            "title": "Ne pas propager"
+                                          },
+                                          {
+                                            "const": "filter",
+                                            "title": "Propager en filtre : les autres se restreignent"
+                                          },
+                                          {
+                                            "const": "selection",
+                                            "title": "Propager en sélection : les autres mettent en évidence"
+                                          }
+                                        ]
+                                      },
+                                      "filter": {
+                                        "title": "Filtres du visu (recherche, facette interne)",
+                                        "type": "boolean",
+                                        "default": false
+                                      }
+                                    }
                                   },
                                   "valueMandatory": {
                                     "title": "Nécessite une valeur dans des filtres",
@@ -908,6 +1001,37 @@
                                     "title": "Ignorer les filtres",
                                     "type": "boolean",
                                     "default": false
+                                  },
+                                  "propagation": {
+                                    "title": "Propagation aux autres visus",
+                                    "description": "Ce que ce visu transmet aux autres visus du tableau de bord : une sélection (clic sur une entité) et/ou ses filtres. Le visu émetteur garde son propre état ; ce réglage ne change pas ce qu'il reçoit.",
+                                    "type": "object",
+                                    "properties": {
+                                      "selection": {
+                                        "title": "Sélection (clic sur une entité)",
+                                        "type": "string",
+                                        "default": "filter",
+                                        "oneOf": [
+                                          {
+                                            "const": "none",
+                                            "title": "Ne pas propager"
+                                          },
+                                          {
+                                            "const": "filter",
+                                            "title": "Propager en filtre : les autres se restreignent"
+                                          },
+                                          {
+                                            "const": "selection",
+                                            "title": "Propager en sélection : les autres mettent en évidence"
+                                          }
+                                        ]
+                                      },
+                                      "filter": {
+                                        "title": "Filtres du visu (recherche, facette interne)",
+                                        "type": "boolean",
+                                        "default": false
+                                      }
+                                    }
                                   },
                                   "valueMandatory": {
                                     "title": "Nécessite une valeur dans des filtres",
@@ -1075,6 +1199,37 @@
                                               "type": "boolean",
                                               "default": false
                                             },
+                                            "propagation": {
+                                              "title": "Propagation aux autres visus",
+                                              "description": "Ce que ce visu transmet aux autres visus du tableau de bord : une sélection (clic sur une entité) et/ou ses filtres. Le visu émetteur garde son propre état ; ce réglage ne change pas ce qu'il reçoit.",
+                                              "type": "object",
+                                              "properties": {
+                                                "selection": {
+                                                  "title": "Sélection (clic sur une entité)",
+                                                  "type": "string",
+                                                  "default": "filter",
+                                                  "oneOf": [
+                                                    {
+                                                      "const": "none",
+                                                      "title": "Ne pas propager"
+                                                    },
+                                                    {
+                                                      "const": "filter",
+                                                      "title": "Propager en filtre : les autres se restreignent"
+                                                    },
+                                                    {
+                                                      "const": "selection",
+                                                      "title": "Propager en sélection : les autres mettent en évidence"
+                                                    }
+                                                  ]
+                                                },
+                                                "filter": {
+                                                  "title": "Filtres du visu (recherche, facette interne)",
+                                                  "type": "boolean",
+                                                  "default": false
+                                                }
+                                              }
+                                            },
                                             "valueMandatory": {
                                               "title": "Nécessite une valeur dans des filtres",
                                               "type": "boolean",
@@ -1189,6 +1344,37 @@
                                               "type": "boolean",
                                               "default": false
                                             },
+                                            "propagation": {
+                                              "title": "Propagation aux autres visus",
+                                              "description": "Ce que ce visu transmet aux autres visus du tableau de bord : une sélection (clic sur une entité) et/ou ses filtres. Le visu émetteur garde son propre état ; ce réglage ne change pas ce qu'il reçoit.",
+                                              "type": "object",
+                                              "properties": {
+                                                "selection": {
+                                                  "title": "Sélection (clic sur une entité)",
+                                                  "type": "string",
+                                                  "default": "filter",
+                                                  "oneOf": [
+                                                    {
+                                                      "const": "none",
+                                                      "title": "Ne pas propager"
+                                                    },
+                                                    {
+                                                      "const": "filter",
+                                                      "title": "Propager en filtre : les autres se restreignent"
+                                                    },
+                                                    {
+                                                      "const": "selection",
+                                                      "title": "Propager en sélection : les autres mettent en évidence"
+                                                    }
+                                                  ]
+                                                },
+                                                "filter": {
+                                                  "title": "Filtres du visu (recherche, facette interne)",
+                                                  "type": "boolean",
+                                                  "default": false
+                                                }
+                                              }
+                                            },
                                             "valueMandatory": {
                                               "title": "Nécessite une valeur dans des filtres",
                                               "type": "boolean",
@@ -1270,6 +1456,37 @@
                                               "title": "Ignorer les filtres",
                                               "type": "boolean",
                                               "default": false
+                                            },
+                                            "propagation": {
+                                              "title": "Propagation aux autres visus",
+                                              "description": "Ce que ce visu transmet aux autres visus du tableau de bord : une sélection (clic sur une entité) et/ou ses filtres. Le visu émetteur garde son propre état ; ce réglage ne change pas ce qu'il reçoit.",
+                                              "type": "object",
+                                              "properties": {
+                                                "selection": {
+                                                  "title": "Sélection (clic sur une entité)",
+                                                  "type": "string",
+                                                  "default": "filter",
+                                                  "oneOf": [
+                                                    {
+                                                      "const": "none",
+                                                      "title": "Ne pas propager"
+                                                    },
+                                                    {
+                                                      "const": "filter",
+                                                      "title": "Propager en filtre : les autres se restreignent"
+                                                    },
+                                                    {
+                                                      "const": "selection",
+                                                      "title": "Propager en sélection : les autres mettent en évidence"
+                                                    }
+                                                  ]
+                                                },
+                                                "filter": {
+                                                  "title": "Filtres du visu (recherche, facette interne)",
+                                                  "type": "boolean",
+                                                  "default": false
+                                                }
+                                              }
                                             },
                                             "valueMandatory": {
                                               "title": "Nécessite une valeur dans des filtres",
@@ -1359,6 +1576,37 @@
                                               "title": "Ignorer les filtres",
                                               "type": "boolean",
                                               "default": false
+                                            },
+                                            "propagation": {
+                                              "title": "Propagation aux autres visus",
+                                              "description": "Ce que ce visu transmet aux autres visus du tableau de bord : une sélection (clic sur une entité) et/ou ses filtres. Le visu émetteur garde son propre état ; ce réglage ne change pas ce qu'il reçoit.",
+                                              "type": "object",
+                                              "properties": {
+                                                "selection": {
+                                                  "title": "Sélection (clic sur une entité)",
+                                                  "type": "string",
+                                                  "default": "filter",
+                                                  "oneOf": [
+                                                    {
+                                                      "const": "none",
+                                                      "title": "Ne pas propager"
+                                                    },
+                                                    {
+                                                      "const": "filter",
+                                                      "title": "Propager en filtre : les autres se restreignent"
+                                                    },
+                                                    {
+                                                      "const": "selection",
+                                                      "title": "Propager en sélection : les autres mettent en évidence"
+                                                    }
+                                                  ]
+                                                },
+                                                "filter": {
+                                                  "title": "Filtres du visu (recherche, facette interne)",
+                                                  "type": "boolean",
+                                                  "default": false
+                                                }
+                                              }
                                             },
                                             "valueMandatory": {
                                               "title": "Nécessite une valeur dans des filtres",
@@ -2046,6 +2294,37 @@
               "type": "boolean",
               "default": false
             },
+            "propagation": {
+              "title": "Propagation aux autres visus",
+              "description": "Ce que ce visu transmet aux autres visus du tableau de bord : une sélection (clic sur une entité) et/ou ses filtres. Le visu émetteur garde son propre état ; ce réglage ne change pas ce qu'il reçoit.",
+              "type": "object",
+              "properties": {
+                "selection": {
+                  "title": "Sélection (clic sur une entité)",
+                  "type": "string",
+                  "default": "filter",
+                  "oneOf": [
+                    {
+                      "const": "none",
+                      "title": "Ne pas propager"
+                    },
+                    {
+                      "const": "filter",
+                      "title": "Propager en filtre : les autres se restreignent"
+                    },
+                    {
+                      "const": "selection",
+                      "title": "Propager en sélection : les autres mettent en évidence"
+                    }
+                  ]
+                },
+                "filter": {
+                  "title": "Filtres du visu (recherche, facette interne)",
+                  "type": "boolean",
+                  "default": false
+                }
+              }
+            },
             "valueMandatory": {
               "title": "Nécessite une valeur dans des filtres",
               "type": "boolean",
@@ -2160,6 +2439,37 @@
               "type": "boolean",
               "default": false
             },
+            "propagation": {
+              "title": "Propagation aux autres visus",
+              "description": "Ce que ce visu transmet aux autres visus du tableau de bord : une sélection (clic sur une entité) et/ou ses filtres. Le visu émetteur garde son propre état ; ce réglage ne change pas ce qu'il reçoit.",
+              "type": "object",
+              "properties": {
+                "selection": {
+                  "title": "Sélection (clic sur une entité)",
+                  "type": "string",
+                  "default": "filter",
+                  "oneOf": [
+                    {
+                      "const": "none",
+                      "title": "Ne pas propager"
+                    },
+                    {
+                      "const": "filter",
+                      "title": "Propager en filtre : les autres se restreignent"
+                    },
+                    {
+                      "const": "selection",
+                      "title": "Propager en sélection : les autres mettent en évidence"
+                    }
+                  ]
+                },
+                "filter": {
+                  "title": "Filtres du visu (recherche, facette interne)",
+                  "type": "boolean",
+                  "default": false
+                }
+              }
+            },
             "valueMandatory": {
               "title": "Nécessite une valeur dans des filtres",
               "type": "boolean",
@@ -2241,6 +2551,37 @@
               "title": "Ignorer les filtres",
               "type": "boolean",
               "default": false
+            },
+            "propagation": {
+              "title": "Propagation aux autres visus",
+              "description": "Ce que ce visu transmet aux autres visus du tableau de bord : une sélection (clic sur une entité) et/ou ses filtres. Le visu émetteur garde son propre état ; ce réglage ne change pas ce qu'il reçoit.",
+              "type": "object",
+              "properties": {
+                "selection": {
+                  "title": "Sélection (clic sur une entité)",
+                  "type": "string",
+                  "default": "filter",
+                  "oneOf": [
+                    {
+                      "const": "none",
+                      "title": "Ne pas propager"
+                    },
+                    {
+                      "const": "filter",
+                      "title": "Propager en filtre : les autres se restreignent"
+                    },
+                    {
+                      "const": "selection",
+                      "title": "Propager en sélection : les autres mettent en évidence"
+                    }
+                  ]
+                },
+                "filter": {
+                  "title": "Filtres du visu (recherche, facette interne)",
+                  "type": "boolean",
+                  "default": false
+                }
+              }
             },
             "valueMandatory": {
               "title": "Nécessite une valeur dans des filtres",
@@ -2330,6 +2671,37 @@
               "title": "Ignorer les filtres",
               "type": "boolean",
               "default": false
+            },
+            "propagation": {
+              "title": "Propagation aux autres visus",
+              "description": "Ce que ce visu transmet aux autres visus du tableau de bord : une sélection (clic sur une entité) et/ou ses filtres. Le visu émetteur garde son propre état ; ce réglage ne change pas ce qu'il reçoit.",
+              "type": "object",
+              "properties": {
+                "selection": {
+                  "title": "Sélection (clic sur une entité)",
+                  "type": "string",
+                  "default": "filter",
+                  "oneOf": [
+                    {
+                      "const": "none",
+                      "title": "Ne pas propager"
+                    },
+                    {
+                      "const": "filter",
+                      "title": "Propager en filtre : les autres se restreignent"
+                    },
+                    {
+                      "const": "selection",
+                      "title": "Propager en sélection : les autres mettent en évidence"
+                    }
+                  ]
+                },
+                "filter": {
+                  "title": "Filtres du visu (recherche, facette interne)",
+                  "type": "boolean",
+                  "default": false
+                }
+              }
             },
             "valueMandatory": {
               "title": "Nécessite une valeur dans des filtres",
@@ -2537,6 +2909,37 @@
                         "type": "boolean",
                         "default": false
                       },
+                      "propagation": {
+                        "title": "Propagation aux autres visus",
+                        "description": "Ce que ce visu transmet aux autres visus du tableau de bord : une sélection (clic sur une entité) et/ou ses filtres. Le visu émetteur garde son propre état ; ce réglage ne change pas ce qu'il reçoit.",
+                        "type": "object",
+                        "properties": {
+                          "selection": {
+                            "title": "Sélection (clic sur une entité)",
+                            "type": "string",
+                            "default": "filter",
+                            "oneOf": [
+                              {
+                                "const": "none",
+                                "title": "Ne pas propager"
+                              },
+                              {
+                                "const": "filter",
+                                "title": "Propager en filtre : les autres se restreignent"
+                              },
+                              {
+                                "const": "selection",
+                                "title": "Propager en sélection : les autres mettent en évidence"
+                              }
+                            ]
+                          },
+                          "filter": {
+                            "title": "Filtres du visu (recherche, facette interne)",
+                            "type": "boolean",
+                            "default": false
+                          }
+                        }
+                      },
                       "valueMandatory": {
                         "title": "Nécessite une valeur dans des filtres",
                         "type": "boolean",
@@ -2651,6 +3054,37 @@
                         "type": "boolean",
                         "default": false
                       },
+                      "propagation": {
+                        "title": "Propagation aux autres visus",
+                        "description": "Ce que ce visu transmet aux autres visus du tableau de bord : une sélection (clic sur une entité) et/ou ses filtres. Le visu émetteur garde son propre état ; ce réglage ne change pas ce qu'il reçoit.",
+                        "type": "object",
+                        "properties": {
+                          "selection": {
+                            "title": "Sélection (clic sur une entité)",
+                            "type": "string",
+                            "default": "filter",
+                            "oneOf": [
+                              {
+                                "const": "none",
+                                "title": "Ne pas propager"
+                              },
+                              {
+                                "const": "filter",
+                                "title": "Propager en filtre : les autres se restreignent"
+                              },
+                              {
+                                "const": "selection",
+                                "title": "Propager en sélection : les autres mettent en évidence"
+                              }
+                            ]
+                          },
+                          "filter": {
+                            "title": "Filtres du visu (recherche, facette interne)",
+                            "type": "boolean",
+                            "default": false
+                          }
+                        }
+                      },
                       "valueMandatory": {
                         "title": "Nécessite une valeur dans des filtres",
                         "type": "boolean",
@@ -2732,6 +3166,37 @@
                         "title": "Ignorer les filtres",
                         "type": "boolean",
                         "default": false
+                      },
+                      "propagation": {
+                        "title": "Propagation aux autres visus",
+                        "description": "Ce que ce visu transmet aux autres visus du tableau de bord : une sélection (clic sur une entité) et/ou ses filtres. Le visu émetteur garde son propre état ; ce réglage ne change pas ce qu'il reçoit.",
+                        "type": "object",
+                        "properties": {
+                          "selection": {
+                            "title": "Sélection (clic sur une entité)",
+                            "type": "string",
+                            "default": "filter",
+                            "oneOf": [
+                              {
+                                "const": "none",
+                                "title": "Ne pas propager"
+                              },
+                              {
+                                "const": "filter",
+                                "title": "Propager en filtre : les autres se restreignent"
+                              },
+                              {
+                                "const": "selection",
+                                "title": "Propager en sélection : les autres mettent en évidence"
+                              }
+                            ]
+                          },
+                          "filter": {
+                            "title": "Filtres du visu (recherche, facette interne)",
+                            "type": "boolean",
+                            "default": false
+                          }
+                        }
                       },
                       "valueMandatory": {
                         "title": "Nécessite une valeur dans des filtres",
@@ -2821,6 +3286,37 @@
                         "title": "Ignorer les filtres",
                         "type": "boolean",
                         "default": false
+                      },
+                      "propagation": {
+                        "title": "Propagation aux autres visus",
+                        "description": "Ce que ce visu transmet aux autres visus du tableau de bord : une sélection (clic sur une entité) et/ou ses filtres. Le visu émetteur garde son propre état ; ce réglage ne change pas ce qu'il reçoit.",
+                        "type": "object",
+                        "properties": {
+                          "selection": {
+                            "title": "Sélection (clic sur une entité)",
+                            "type": "string",
+                            "default": "filter",
+                            "oneOf": [
+                              {
+                                "const": "none",
+                                "title": "Ne pas propager"
+                              },
+                              {
+                                "const": "filter",
+                                "title": "Propager en filtre : les autres se restreignent"
+                              },
+                              {
+                                "const": "selection",
+                                "title": "Propager en sélection : les autres mettent en évidence"
+                              }
+                            ]
+                          },
+                          "filter": {
+                            "title": "Filtres du visu (recherche, facette interne)",
+                            "type": "boolean",
+                            "default": false
+                          }
+                        }
                       },
                       "valueMandatory": {
                         "title": "Nécessite une valeur dans des filtres",

@@ -10,6 +10,7 @@ import { filters2params } from '@data-fair/lib-utils/filters/index.js'
 import type { DashboardConfig, DashboardFilter } from '@/config'
 import { datasetFilterKey, conceptFilterKey } from './dataset-filter'
 import { normalizeStaticFilters } from './staticFilters'
+import { isFilterKey, isMarkerKey, keyWithoutOp, stripOp } from './emissions'
 
 export interface ReactiveParams { [key: string]: any }
 
@@ -51,13 +52,15 @@ export const isRangeFilter = (filter: DashboardFilter): boolean => !!filter.slid
 
 /**
  * Filters received from a parent (a portals page `staticFilters` entry, an
- * outer dashboard, a shareable URL): concept keys `_c_<conceptId>_<op>`. They
- * are relayed as-is to the child embeds, so a dashboard configured without
- * any dynamic filter can still be driven by the page that embeds it.
+ * outer dashboard, a shareable URL) or projected from an embedded visu's
+ * emissions: concept keys `_c_<conceptId>_<op>`, dataset-scoped keys
+ * `_d_<datasetId>_<field>_<op>`, and selection markers `_s_<x>`.
  *
- * Only concept keys are collected: dataset-scoped keys (`_d_<datasetId>_…`)
- * are ambiguous with the dashboard's own dynamic filter values, which live in
- * the same URL namespace, and are therefore left alone.
+ * They are relayed as-is to the child embeds, so a dashboard configured
+ * without any dynamic filter can still be driven by the page that embeds it.
+ * A key that collides with one of the dashboard's own filters is not dropped
+ * here: `serializeFiltersValues` relays the received values first and then
+ * writes the configured ones, so the dashboard's own values win.
  */
 export interface ReceivedFilters {
   /** Raw filter keys to relay, ready for the embeds. */
@@ -66,30 +69,103 @@ export interface ReceivedFilters {
   fields: string[]
 }
 
-/** Trailing REST operator of a filter key (`codeCommune_in` → `codeCommune`). */
-const FILTER_OP_SUFFIX = /_(in|nin|eq|neq|lt|lte|gt|gte|starts|exists|nexists|contains|search)$/
+export interface CollectReceivedFiltersInput {
+  params: ReactiveParams
+  fields: Record<string, Field>
+  config: DashboardConfig
+  /** Dynamic filters in use (defaults to `config.filters`). */
+  filters?: DashboardFilter[]
+  /** Root dataset id (defaults to `config.datasets[0].id`). */
+  datasetId?: string
+}
 
 /**
- * Collect the concept filters a parent put in this dashboard's URL, and
- * resolve the root dataset fields that carry them (used for `keys`, i.e. the
- * `valueMandatory` checks).
+ * Collect the filters a parent or an embedded visu put in this dashboard's URL,
+ * and resolve the root dataset fields that carry them (used for `keys`, i.e.
+ * the `valueMandatory` checks). Selection markers carry no field: they only
+ * tell the child visus that the matching filter is a selection.
  */
-export const collectReceivedFilters = (
-  params: ReactiveParams,
-  fields: Record<string, Field>
-): ReceivedFilters => {
+export const collectReceivedFilters = (input: CollectReceivedFiltersInput): ReceivedFilters => {
+  const { params, fields, config } = input
+  const datasetId = input.datasetId ?? config.datasets?.[0]?.id ?? ''
+  const internal = dynamicFilterUrlKeys(input.filters ?? config.filters, datasetId)
+  const rootScope = `_d_${datasetId}_`
   const values: Record<string, string> = {}
   const receivedFields: string[] = []
   for (const key of Object.keys(params)) {
-    if (!key.startsWith('_c_')) continue
+    if (!isFilterKey(key) && !isMarkerKey(key)) continue
     const value = params[key]
     if (value == null || value === '') continue
+    if (internal.has(key)) continue
     values[key] = String(value)
-    const concept = key.slice(3).replace(FILTER_OP_SUFFIX, '')
-    const field = Object.keys(fields).find(f => fieldConcept(fields[f]) === concept)
-    if (field && !receivedFields.includes(field)) receivedFields.push(field)
+    // Only the fields of the root dataset can be matched against the schema.
+    const conceptKey = key.startsWith('_c_')
+    const rootField = key.startsWith(rootScope) ? key.slice(rootScope.length) : undefined
+    const fieldName = conceptKey
+      ? Object.keys(fields).find(f => fieldConcept(fields[f]) === keyWithoutOp(key))
+      : rootField ? stripOp(rootField) : undefined
+    if (fieldName && fields[fieldName] && !receivedFields.includes(fieldName)) receivedFields.push(fieldName)
   }
   return { values, fields: receivedFields }
+}
+
+/**
+ * Keys the dashboard itself manages in its URL: the configured dynamic filters
+ * (label field and resolved value fields, `_in` / `_gte` / `_lte`) with their
+ * concept mirrors, the dataset-scoped keys of the static filters, the period
+ * and geo distance filters, and `finalizedAt`.
+ *
+ * Used by the emissions projection (`useEmissionsProjection`): a visu emission
+ * must never overwrite one of them — the dashboard's own filters win.
+ */
+/**
+ * URL keys of the dashboard's own dynamic filters, for both compare-view
+ * columns: their value is the dashboard's internal representation (the label
+ * field value, quoted CSV for multiple values), never a REST-ready value. They
+ * are excluded from the relay; the resolved values (`_d_<ds>_<valueField>_in`)
+ * are what the child embeds receive.
+ */
+export const dynamicFilterUrlKeys = (filters: DashboardFilter[] | undefined, datasetId: string): Set<string> => {
+  const keys = new Set<string>()
+  for (const prefix of ['', 'c']) {
+    for (const filter of filters || []) {
+      keys.add(datasetFilterKey(datasetId, filter.labelField, prefix))
+      keys.add(datasetFilterKey(datasetId, filter.labelField, prefix, 'gte'))
+      keys.add(datasetFilterKey(datasetId, filter.labelField, prefix, 'lte'))
+    }
+  }
+  return keys
+}
+
+export interface OwnedFilterKeysInput {
+  config: DashboardConfig
+  fields: Record<string, Field>
+  /** Dynamic filters in use (defaults to `config.filters`). */
+  filters?: DashboardFilter[]
+  /** Root dataset id (defaults to `config.datasets[0].id`). */
+  datasetId?: string
+}
+
+export const ownedFilterKeys = (input: OwnedFilterKeysInput): Set<string> => {
+  const { config, fields } = input
+  const filters = input.filters ?? config.filters
+  const datasetId = input.datasetId ?? config.datasets?.[0]?.id ?? ''
+  const owned = dynamicFilterUrlKeys(filters, datasetId)
+  for (const filter of filters || []) {
+    for (const field of [filter.labelField, ...(filter.values || [])]) {
+      const concept = fieldConcept(fields[field])
+      if (concept) owned.add(conceptFilterKey(concept))
+    }
+  }
+  for (const prefix of ['', 'c']) {
+    for (const key of Object.keys(collectStaticFilterParams(config, datasetId, prefix, fields))) {
+      owned.add(key)
+    }
+  }
+  if (config.periodFilter) owned.add('_c_date_match')
+  if (config.addressFilter) owned.add('_c_geo_distance')
+  owned.add('finalizedAt')
+  return owned
 }
 
 export interface SerializeFiltersValuesInput {
@@ -125,6 +201,9 @@ export const serializeFiltersValues = (input: SerializeFiltersValuesInput): Filt
   }
   // Relayed first: a filter configured on this dashboard (static below,
   // dynamic further down) overrides a received value on the same key.
+  // Selection markers (`_s_*`) are relayed with them — they are what makes a
+  // relayed filter a selection rather than a restriction — but they never
+  // count in `keys` (`valueMandatory` checks).
   Object.assign(result, received?.values || {})
   Object.assign(result, collectStaticFilterParams(config, datasetId, prefix, fields))
 

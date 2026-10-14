@@ -58,6 +58,16 @@ export type DashboardElementType = 'tablePreview' | 'application' | 'text' | 'fo
 
 export type DashboardElementWidth = 1 | 2 | 3
 
+/** What an element transmits to the other visus of the dashboard. */
+export type SelectionPropagation = 'none' | 'selection' | 'filter'
+
+export interface ElementPropagation {
+  /** Clic sur une entité : ne pas propager, propager en sélection, ou en filtre. */
+  selection?: SelectionPropagation
+  /** Propager les filtres simples émis par le visu (recherche, facette interne). */
+  filter?: boolean
+}
+
 export type DashboardDescriptionPosition = 'none' | 'left' | 'right' | 'top' | 'bottom'
 
 export type TitleTag = 'h1' | 'h2' | 'h3' | 'h4'
@@ -92,6 +102,7 @@ export interface TablePreviewElement extends BaseElement {
   display?: 'table' | 'table-dense' | 'list'
   noInteractions?: boolean
   ignoreFilters?: boolean
+  propagation?: ElementPropagation
   valueMandatory?: boolean
   mandatoryFilters?: string[]
 }
@@ -106,6 +117,7 @@ export interface ApplicationElement extends BaseElement {
     baseApp: { meta: Record<string, unknown> }
   }
   ignoreFilters?: boolean
+  propagation?: ElementPropagation
   valueMandatory?: boolean
   mandatoryFilters?: string[]
   description?: DashboardDescriptionPosition

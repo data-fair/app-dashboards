@@ -36,10 +36,17 @@ export const useFiltersValues = (opts: UseFiltersValuesOptions) => {
   const emitted = ref<FiltersValues>({ keys: [] })
 
   // Filters put in this dashboard's URL by a parent (portals page static
-  // filters, outer dashboard, shareable link). They are relayed to the child
-  // embeds, which is what lets a page drive a dashboard configured without
-  // any dynamic filter.
-  const received = computed(() => collectReceivedFilters(reactiveSearchParams, fields.value))
+  // filters, outer dashboard, shareable link) or projected from an embedded
+  // visu's emissions. They are relayed to the child embeds, which is what lets
+  // a page drive a dashboard configured without any dynamic filter, and what
+  // carries a selection from one visu to the others.
+  const received = computed(() => collectReceivedFilters({
+    params: reactiveSearchParams,
+    fields: fields.value,
+    config: config.value,
+    filters: filters.value,
+    datasetId: dataset.value?.id
+  }))
 
   // Abort the previous resolution when a new one starts: rapid filter/period/
   // radius changes must not leave a stale response winning the race on

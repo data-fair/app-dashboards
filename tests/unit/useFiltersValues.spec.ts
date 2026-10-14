@@ -351,4 +351,41 @@ test.describe('useFiltersValues', () => {
     expect(executions).toBe(2)
     expect(values.value._c_codeCommune_in).toBe('86194')
   })
+
+  test('relaie les marqueurs et les filtres dataset-scopés reçus', async () => {
+    reactiveSearchParams._c_codeCommune_in = '86222'
+    reactiveSearchParams._s_codeCommune = 'app_sankey'
+    reactiveSearchParams._d_autre_dep_in = '75'
+    const state = makeState({
+      dataset: ref({ id: 'ds1', href: 'https://x/ds1', finalizedAt: 'F' })
+    })
+    const { values, applicationValues } = setup(state)
+    await nextTick()
+    await settle()
+    expect(values.value).toEqual({
+      keys: [],
+      _c_codeCommune_in: '86222',
+      _s_codeCommune: 'app_sankey',
+      _d_autre_dep_in: '75',
+      finalizedAt: 'F'
+    })
+    expect(applicationValues.value).toEqual({ ...values.value })
+  })
+
+  test('une clé dataset-scopée reçue du dataset racine compte dans les filtres actifs', async () => {
+    reactiveSearchParams._d_ds1_type_in = '"a"'
+    const state = makeState({
+      config: ref({ datasets: [{ id: 'ds1' }] }),
+      dataset: ref({ id: 'ds1', href: 'https://x/ds1' }),
+      fields: ref({ type: plainField('type') })
+    })
+    const { values } = setup(state)
+    await nextTick()
+    await settle()
+    expect(values.value).toEqual({
+      keys: ['type'],
+      _d_ds1_type_in: '"a"',
+      finalizedAt: ''
+    })
+  })
 })

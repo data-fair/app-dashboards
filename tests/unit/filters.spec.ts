@@ -1,6 +1,7 @@
 import { test, expect } from '@playwright/test'
 import {
   collectActiveFields,
+  ownedFilterKeys,
   collectFilterEmitFields,
   collectReceivedFilters,
   collectStaticFilterParams,
@@ -13,7 +14,7 @@ import {
   buildValuesLabelsUrl,
   serializeFiltersValues
 } from '@/utils/filters'
-import type { DashboardConfig } from '@/config'
+import type { DashboardConfig, DashboardFilter } from '@/config'
 import type { Field } from '@data-fair/lib-common-types/application/index.js'
 
 const fieldWithConcept = (key: string, concept: string): Field =>
@@ -492,23 +493,91 @@ test.describe('collectReceivedFilters', () => {
     dep: fieldWithConcept('dep', 'codeDepartement'),
     an: plainField('an')
   }
+  const config = { datasets: [{ id: 'ds1' }] } as DashboardConfig
 
   test('relaie les clés concept, résout le champ porteur et ignore le reste', () => {
     const received = collectReceivedFilters({
-      _c_codeDepartement_in: '75',
-      _d_ds1_dep_in: '75',
-      finalizedAt: 'F',
-      'd-frame': 'true',
-      q: 'x'
-    }, fields)
+      params: {
+        _c_codeDepartement_in: '75',
+        finalizedAt: 'F',
+        'd-frame': 'true',
+        q: 'x'
+      },
+      fields,
+      config: {} as DashboardConfig
+    })
     expect(received).toEqual({
       values: { _c_codeDepartement_in: '75' },
       fields: ['dep']
     })
   })
 
+  test('relaie les clés dataset-scopées du dataset racine et résout leur champ', () => {
+    const received = collectReceivedFilters({
+      params: { _d_ds1_an_gte: '10', _d_ds1_dep_in: '75' },
+      fields,
+      config
+    })
+    expect(received).toEqual({
+      values: { _d_ds1_an_gte: '10', _d_ds1_dep_in: '75' },
+      fields: ['an', 'dep']
+    })
+  })
+
+  test('relaie les clés dataset-scopées d\'un autre dataset sans résoudre de champ', () => {
+    const received = collectReceivedFilters({
+      params: { _d_autre_an_in: '2020' },
+      fields,
+      config
+    })
+    expect(received).toEqual({
+      values: { _d_autre_an_in: '2020' },
+      fields: []
+    })
+  })
+
+  test('relaie les marqueurs de sélection sans les compter dans les champs', () => {
+    const received = collectReceivedFilters({
+      params: { _s_codeDepartement: 'app_sankey', _s_ds1_an: 'app_table' },
+      fields,
+      config
+    })
+    expect(received).toEqual({
+      values: { _s_codeDepartement: 'app_sankey', _s_ds1_an: 'app_table' },
+      fields: []
+    })
+  })
+
+  test('ne relaie pas les clés internes de ses filtres dynamiques (labels, CSV quoté)', () => {
+    const filteredConfig = {
+      datasets: [{ id: 'ds1' }],
+      filters: [{ labelField: 'dep', values: ['dep'] }],
+      periodFilter: true
+    } as DashboardConfig
+    const received = collectReceivedFilters({
+      params: {
+        _d_ds1_dep_in: '"75","92"',
+        c_d_ds1_dep_in: '"75"',
+        _d_ds1_dep_gte: '10',
+        _c_date_match: '2019-01-01,2019-12-31'
+      },
+      fields,
+      config: filteredConfig
+    })
+    // Les valeurs résolues des filtres partent par la sérialisation ; une clé
+    // de filtre dynamique dans l'URL n'est jamais relayée telle quelle.
+    expect(received).toEqual({
+      values: { _c_date_match: '2019-01-01,2019-12-31' },
+      fields: []
+    })
+  })
+
   test('relaie les concepts universels sans champ', () => {
-    const received = collectReceivedFilters({ _c_date_match: '2020-01-01,2020-12-31' }, fields)
+    const received = collectReceivedFilters({
+      params: { _c_date_match: '2020-01-01,2020-12-31' },
+      fields,
+      config
+    })
     expect(received).toEqual({
       values: { _c_date_match: '2020-01-01,2020-12-31' },
       fields: []
@@ -516,11 +585,46 @@ test.describe('collectReceivedFilters', () => {
   })
 
   test('ignore les valeurs vides et les concepts inconnus', () => {
-    const received = collectReceivedFilters({ _c_vide_in: '', _c_inconnu_in: '1' }, fields)
+    const received = collectReceivedFilters({
+      params: { _c_vide_in: '', _c_inconnu_in: '1' },
+      fields,
+      config
+    })
     expect(received).toEqual({
       values: { _c_inconnu_in: '1' },
       fields: []
     })
+  })
+})
+
+test.describe('ownedFilterKeys', () => {
+  const fields = {
+    dep: fieldWithConcept('dep', 'codeDepartement'),
+    an: plainField('an')
+  }
+
+  test('couvre les filtres dynamiques, leurs valeurs associées, static, période et géo', () => {
+    const filters: DashboardFilter[] = [{ labelField: 'an' }, { labelField: 'dep', values: ['dep'] }, { labelField: 'tx', slider: true }]
+    const config = {
+      datasets: [{ id: 'ds1' }],
+      filters,
+      staticFilters: [{ type: 'in', field: 'dep', values: ['75'] }],
+      periodFilter: true,
+      addressFilter: true
+    } as unknown as DashboardConfig
+    const owned = ownedFilterKeys({ config, fields, filters })
+    expect([...owned].sort()).toEqual([
+      '_c_codeDepartement_in',
+      '_c_date_match',
+      '_c_geo_distance',
+      '_d_ds1_an_in', '_d_ds1_an_gte', '_d_ds1_an_lte',
+      '_d_ds1_dep_in', '_d_ds1_dep_gte', '_d_ds1_dep_lte',
+      '_d_ds1_tx_in', '_d_ds1_tx_gte', '_d_ds1_tx_lte',
+      'c_d_ds1_an_in', 'c_d_ds1_an_gte', 'c_d_ds1_an_lte',
+      'c_d_ds1_dep_in', 'c_d_ds1_dep_gte', 'c_d_ds1_dep_lte',
+      'c_d_ds1_tx_in', 'c_d_ds1_tx_gte', 'c_d_ds1_tx_lte',
+      'finalizedAt'
+    ].sort())
   })
 })
 

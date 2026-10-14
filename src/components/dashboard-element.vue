@@ -23,6 +23,7 @@ import ElementActions from './element-actions.vue'
 import ElementDescription from './element-description.vue'
 import { computeMandatoryFilterIssues } from '@/utils/filters'
 import type { FiltersValues, ApplicationFiltersValues } from '@/utils/filters'
+import { emissionScope } from '@/utils/emissions'
 
 const props = defineProps<{
   element: DashboardElement
@@ -81,6 +82,15 @@ const missingFilterText = computed(() => {
   const key = requiredFilter.value.length > 1 ? 'element.missingFilterPlural' : 'element.missingFilter'
   return t(key, { labels: missingFilterLabels.value })
 })
+
+// Canal privé de l'élément (remontée de son état) : la clé d'instance encode le
+// chemin de colonnes, le préfixe sépare les deux colonnes du mode comparaison.
+// shortcut: deux éléments identiques (même application, même dataset) dans deux
+// lignes partagent ce namespace et donc leur état ; dédupliquer globalement le
+// jour où le cas se présente.
+const scope = computed(() => props.instanceKey
+  ? emissionScope(props.prefix || '', props.instanceKey)
+  : undefined)
 </script>
 
 <template>
@@ -114,6 +124,7 @@ const missingFilterText = computed(() => {
       :iframe-title="iframeTitle"
       :height="height"
       :actions-height="actionsHeight"
+      :scope="scope"
     />
   </template>
 
@@ -144,6 +155,7 @@ const missingFilterText = computed(() => {
           :iframe-title="iframeTitle"
           :height="height"
           :actions-height="actionsHeight"
+          :scope="scope"
         />
       </v-col>
       <v-col
@@ -172,6 +184,7 @@ const missingFilterText = computed(() => {
         :iframe-title="iframeTitle"
         :height="height"
         :actions-height="actionsHeight"
+        :scope="scope"
         :style="height && height > 0 ? 'flex:1 1 0;min-height:0' : 'flex:0 0 auto'"
       />
       <element-description
@@ -189,6 +202,7 @@ const missingFilterText = computed(() => {
       :iframe-title="iframeTitle"
       :height="height"
       :actions-height="actionsHeight"
+      :scope="scope"
     />
     <div
       v-else-if="isTextElement(element)"

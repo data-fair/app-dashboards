@@ -26,6 +26,7 @@ import {
   captureUrl
 } from '@/utils/element-url'
 import type { FiltersValues, ApplicationFiltersValues } from '@/utils/filters'
+import { propagationsByApplicationId, stripEmissions } from '@/utils/emissions'
 import { useConfig } from './config'
 
 export interface UseElementUrlsOptions {
@@ -53,18 +54,33 @@ export const useElementUrls = (opts: UseElementUrlsOptions): ElementUrlsApi => {
   const secondary = computed(() => reactiveSearchParams.secondary)
   const print = computed(() => reactiveSearchParams.print)
 
+  const isNativeEmbed = computed(() => element.value.type !== 'application')
+  const applicationId = computed(() => element.value.type === 'application' ? element.value.application?.id : undefined)
+
+  // Selections propagated "en filtre" restrict the other visus (their marker is
+  // dropped here) and a native dataset embed has nothing to highlight with, so
+  // every marker is dropped from what it receives. Markers set by the page stay
+  // selections for everyone. The emitter keeps its own marker: it is what tells
+  // the visu not to restrict on its own selection.
+  const emitters = computed(() => propagationsByApplicationId(config.value?.sections))
+  const stripForElement = (filters: FiltersValues | ApplicationFiltersValues | null): { [key: string]: string } | null => filters && stripEmissions(filters, {
+    applicationId: applicationId.value,
+    nativeEmbed: isNativeEmbed.value,
+    emitters: emitters.value
+  })
+
   const dFrameSrc = computed<string | undefined>(() => {
     const el = element.value
     if (el.type === 'tablePreview') {
       const dsId = el.dataset?.id || fallbackDataset?.value?.id
       if (!dsId) return undefined
-      return tableDFrameSrc(el, dsId, accessKey.value, datasetFilters.value, primary.value, secondary.value, print.value, prefix)
+      return tableDFrameSrc(el, dsId, accessKey.value, stripForElement(datasetFilters.value), primary.value, secondary.value, print.value, prefix)
     }
     if (el.type === 'form') {
-      return formDFrameSrc(el, accessKey.value, datasetFilters.value, primary.value, secondary.value, print.value, prefix)
+      return formDFrameSrc(el, accessKey.value, stripForElement(datasetFilters.value), primary.value, secondary.value, print.value, prefix)
     }
     if (el.type === 'application') {
-      return applicationDFrameSrc(el, accessKey.value, applicationFilters.value, primary.value, secondary.value, print.value)
+      return applicationDFrameSrc(el, accessKey.value, stripForElement(applicationFilters.value), primary.value, secondary.value, print.value)
     }
     return undefined
   })
@@ -89,8 +105,9 @@ export const useElementUrls = (opts: UseElementUrlsOptions): ElementUrlsApi => {
   // application reads its filter params from the URL on capture, so we reuse
   // the application-shaped filters (dataset-scoped keys, e.g.
   // `<prefix>_d_<datasetId>_<field>_in`) prefixed with `app_` and forwarded
-  // as-is by the capture endpoint to the target application.
-  const captureHref = computed(() => captureUrl(element.value, applicationFilters.value))
+  // as-is by the capture endpoint to the target application. Same stripping as
+  // the embed: the capture shows what the visu actually receives.
+  const captureHref = computed(() => captureUrl(element.value, stripForElement(applicationFilters.value)))
 
   return { dFrameSrc, descriptionHtml, sourcesList, captureHref }
 }

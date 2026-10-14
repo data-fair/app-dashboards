@@ -4,7 +4,7 @@ import { ref, computed } from 'vue'
 import { createUiNotif } from '@data-fair/lib-vue/ui-notif.js'
 import { useElementUrls } from '@/composables/useElementUrls'
 import type { DashboardElement } from '@/config'
-import type { FiltersValues } from '@/utils/filters'
+import type { FiltersValues, ApplicationFiltersValues } from '@/utils/filters'
 import { FetchStub } from './helpers/fetch-mock'
 import { probe, unmountProbes } from './helpers/probe'
 import { settle } from './helpers/spy'
@@ -84,6 +84,71 @@ test.describe('useElementUrls — dFrameSrc', () => {
     const config = useConfigValue({ accessKey: ref('abc') })
     const { dFrameSrc } = setup(el({ type: 'tablePreview', dataset: { id: 'ds1', title: 'DS1', href: 'h' } }), {}, config)
     expect(dFrameSrc.value).toMatch(/^\/data-fair\/embed\/dataset\/abc%3Ads1\/table\?/)
+  })
+})
+
+test.describe('useElementUrls — marqueurs de sélection et clés dataset', () => {
+  const appEl = (id: string, propagation?: Record<string, unknown>) => ({
+    type: 'application',
+    application: { id, title: id, href: 'h', baseApp: { meta: {} } },
+    propagation
+  })
+  const configWith = (emitterPropagation?: Record<string, unknown>) => useConfigValue({
+    config: ref({
+      sections: [{
+        rows: [{
+          elements: [
+            appEl('autre', emitterPropagation),
+            appEl('sankey')
+          ]
+        }]
+      }]
+    })
+  })
+
+  test('retire le marqueur d\'une sélection propagée en filtre par un autre visu', () => {
+    const filters = { keys: [], _c_codeCommune_in: '86194', _s_codeCommune: 'app_autre' } as ApplicationFiltersValues
+    const { dFrameSrc } = setup(appEl('sankey') as DashboardElement, { applicationFiltersValues: ref(filters) }, configWith())
+    expect(dFrameSrc.value).toContain('_c_codeCommune_in=86194')
+    expect(dFrameSrc.value).not.toContain('_s_codeCommune')
+  })
+
+  test('garde le marqueur d\'une sélection propagée en sélection, et le sien', () => {
+    const filters = { keys: [], _c_codeCommune_in: '86194', _s_codeCommune: 'app_autre' } as ApplicationFiltersValues
+    const selection = setup(appEl('sankey') as DashboardElement, { applicationFiltersValues: ref(filters) }, configWith({ selection: 'selection' }))
+    expect(selection.dFrameSrc.value).toContain('_s_codeCommune=app_autre')
+
+    const own = setup(appEl('autre') as DashboardElement, { applicationFiltersValues: ref({ keys: [], _s_codeCommune: 'app_autre' }) }, configWith())
+    expect(own.dFrameSrc.value).toContain('_s_codeCommune=app_autre')
+  })
+
+  test('la capture hérite du même nettoyage que l\'embed', () => {
+    const filters = { keys: [], _s_codeCommune: 'app_autre' } as ApplicationFiltersValues
+    const element = {
+      ...appEl('sankey'),
+      application: { id: 'sankey', title: 'S', href: 'https://demo/data-fair/app/sankey', baseApp: { meta: {} } }
+    } as DashboardElement
+    const { captureHref } = setup(element, { applicationFiltersValues: ref(filters) }, configWith())
+    expect(captureHref.value).not.toContain('app__s_codeCommune')
+  })
+
+  test('un embed natif ne reçoit ni marqueur ni clé dataset d\'un autre jeu de données', () => {
+    const filters = {
+      keys: [],
+      _c_codeCommune_in: '86194',
+      _s_codeCommune: 'app_autre',
+      _d_ds1_dep_in: '75',
+      _d_autre_x_in: '1'
+    } as FiltersValues
+    const { dFrameSrc } = setup(
+      el({ type: 'tablePreview', dataset: { id: 'ds1', title: 'DS1', href: 'h' } }),
+      { datasetFiltersValues: ref(filters) },
+      configWith()
+    )
+    expect(dFrameSrc.value).toContain('dep_in=75')
+    expect(dFrameSrc.value).toContain('_c_codeCommune_in=86194')
+    expect(dFrameSrc.value).not.toContain('_s_codeCommune')
+    expect(dFrameSrc.value).not.toContain('_d_autre_x')
   })
 })
 

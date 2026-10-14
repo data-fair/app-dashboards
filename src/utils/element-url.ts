@@ -12,14 +12,22 @@
  *    the `<prefix>_d_<datasetId>_` part from dynamic and static filter
  *    keys before forwarding them: the embed REST API expects unprefixed
  *    field names (e.g. `int_in=...` rather than `_d_<datasetId>_int_in=...`).
- *    Concept params (`_c_date_match`, `_c_geo_distance`) and `finalizedAt`
- *    are passed through unchanged.
+ *    Keys without the column prefix (received from a parent page) are stripped
+ *    the same way; dataset-scoped keys of another dataset or of the other
+ *    compare-view column are dropped rather than forwarded raw. Concept params
+ *    (`_c_date_match`, `_c_geo_distance`) and `finalizedAt` are passed through
+ *    unchanged.
  *  - The application embed (`/data-fair/app/...`) receives the
  *    application-shaped `filtersValues` map: dataset-scoped keys without
  *    the compare-view column prefix (`_d_<datasetId>_<field>_<op>`, the
  *    compare prefix is stripped at emission in `useFiltersValues`), plus
  *    the concept mirrors (`_c_*`). The application picks the ones that
  *    target its own dataset and ignores the rest.
+ *  - Selection markers (`_s_<x>`) are relayed with the filters, except to the
+ *    visus that should not render a selection: `stripEmissions`
+ *    (composable `useElementUrls`) removes the markers of the visus whose
+ *    `propagation.selection` is `filter`, and every marker for a native
+ *    dataset embed (it has nothing to highlight with).
  */
 import type { DashboardElement, ApplicationElement, TablePreviewElement, FormElement } from '@/config'
 import { datasetFilterKey } from './dataset-filter'
@@ -42,17 +50,33 @@ const toStringRecord = (obj: FilterValues | null | undefined): Record<string, st
   return out
 }
 
+/** `c_d_…` / `x_d_…`: a dataset-scoped key of another compare-view column. */
+const OTHER_COLUMN_SCOPE = /^[a-z]+_d_/
+
 /**
  * Strip the `<prefix>_d_<datasetId>_` dataset scope from filter keys.
- * Concept params (`_c_*`) and `finalizedAt` are kept as-is.
+ * Concept params (`_c_*`) and `finalizedAt` are kept as-is. Dataset-scoped
+ * keys of ANOTHER dataset (or of the other compare-view column) are dropped: a
+ * native embed REST API only knows unprefixed field names of its own dataset, a
+ * foreign `_d_*` key is at best ignored, at worst a 400. Applications keep them
+ * (they read only the ones that target their own dataset), so this stripping is
+ * for the native embed URLs only.
+ *
+ * Two families are stripped: the keys of the element's own column
+ * (`<prefix>_d_<id>_…`, which win) and the unprefixed keys of the same dataset
+ * (received from a parent page or projected from a visu's emission).
  */
 const stripDatasetScope = (filtersValues: FilterValues | null | undefined, prefix: string, datasetId: string): Record<string, string> => {
   const record = toStringRecord(filtersValues)
-  const scope = `${prefix}_d_${datasetId}_`
+  const datasetScope = `_d_${datasetId}_`
+  const columnScope = `${prefix}_d_${datasetId}_`
   const out: Record<string, string> = {}
   for (const [k, v] of Object.entries(record)) {
-    if (k.startsWith(scope)) out[k.slice(scope.length)] = v
-    else out[k] = v
+    if (k.startsWith(datasetScope)) out[k.slice(datasetScope.length)] = v
+    else if (!k.startsWith('_d_') && !OTHER_COLUMN_SCOPE.test(k)) out[k] = v
+  }
+  for (const [k, v] of Object.entries(record)) {
+    if (k.startsWith(columnScope)) out[k.slice(columnScope.length)] = v
   }
   return out
 }

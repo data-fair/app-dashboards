@@ -50,14 +50,24 @@ test.describe('tableDFrameSrc', () => {
     expect(src).not.toContain('nullValue=')
   })
 
-  test('strippe le préfixe de colonne (compare-view) ; les clés d\'un autre préfixe passent telles quelles', () => {
-    const filters = { keys: [], c_d_ds1_int_in: '1', _d_ds1_int_in: '2' }
+  test('compare-view : le préfixe de colonne est strippé et les clés des autres colonnes/JDD sont écartées', () => {
+    const filters = { keys: [], c_d_ds1_int_in: '1', _d_ds1_int_in: '2', _d_autre_cat_in: 'b', x_d_ds1_an_in: '3' }
     const src = tableDFrameSrc(tableEl(), 'ds1', null, filters, undefined, undefined, undefined, 'c')
     expect(src).toContain('int_in=1')
     expect(src).not.toContain('c_d_ds1_int_in')
-    // Comportement actuel : seul le scope exact `<prefix>_d_<id>_` est strippé,
-    // une clé sans ce préfixe est forwardée inchangée.
-    expect(src).toContain('_d_ds1_int_in=2')
+    // Une clé reçue (sans préfixe de colonne) sur le dataset de l'élément est
+    // reprise, mais la clé de la colonne de l'élément l'emporte.
+    expect(src).not.toContain('_d_ds1_int_in=2')
+    // Les clés d'un autre dataset ou d'une autre colonne ne sont jamais
+    // transmises à un embed natif (son API REST ne connaît que ses champs).
+    expect(src).not.toContain('_d_autre_cat_in')
+    expect(src).not.toContain('x_d_ds1_an_in')
+  })
+
+  test('transmet les clés reçues (sans préfixe) du dataset de l\'élément', () => {
+    const filters = { keys: [], _d_ds1_int_in: '2', _s_ds1_int: 'app_table' }
+    const src = tableDFrameSrc(tableEl(), 'ds1', null, filters, undefined, undefined, undefined, '')
+    expect(src).toContain('int_in=2')
   })
 
   test('préfixe le dataset id avec l\'accessKey', () => {

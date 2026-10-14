@@ -15,9 +15,22 @@ const props = defineProps<{
   iframeTitle: string
   height: number | undefined
   actionsHeight: number | undefined
+  /**
+   * Canal privé de l'élément : tout ce que le visu écrit dans son URL remonte
+   * namespacé dans l'URL du dashboard (`<scope>_<clé>`), et lui est renvoyé
+   * dé-namespacé. Le dashboard reprojette ensuite les clés utiles vers le
+   * namespace propre `_c_*` / `_s_*` / `_d_*` (cf. useEmissionsProjection).
+   */
+  scope?: string
 }>()
 
 const { dFrameAdapter } = useConfig()
+
+// `*:<scope>_` est le seul pattern sûr ici : il n'injecte dans l'enfant que ses
+// propres clés et ne supprime, dans l'URL du dashboard, que les siennes. Les
+// patterns partagés (`_c*`…) casseraient ignoreFilters et la purge des clés
+// absentes de l'enfant (cf. @data-fair/frame utils/sync-params).
+const syncParams = computed(() => props.scope ? `*:${props.scope}_` : undefined)
 
 // Note : La fuite de watchers côté @data-fair/frame a été corrigée dans 0.18.7
 // (unregister de onStateChange lors du disconnectedCallback). Les clés stables
@@ -52,6 +65,7 @@ const aspectRatio = computed(() => {
   <d-frame
     :adapter="dFrameAdapter"
     :src="src"
+    :sync-params="syncParams"
     :iframe-title="iframeTitle"
     :aspect-ratio="aspectRatio"
     :style="containerStyle"
