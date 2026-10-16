@@ -10,7 +10,7 @@ import { filters2params } from '@data-fair/lib-utils/filters/index.js'
 import type { DashboardConfig, DashboardFilter } from '@/config'
 import { datasetFilterKey, conceptFilterKey } from './dataset-filter'
 import { normalizeStaticFilters } from './staticFilters'
-import { isFilterKey, isMarkerKey, keyWithoutOp, stripOp } from './emissions'
+import { isFilterKey, keyWithoutOp, stripOp } from './emissions'
 
 export interface ReactiveParams { [key: string]: any }
 
@@ -53,8 +53,8 @@ export const isRangeFilter = (filter: DashboardFilter): boolean => !!filter.slid
 /**
  * Filters received from a parent (a portals page `staticFilters` entry, an
  * outer dashboard, a shareable URL) or projected from an embedded visu's
- * emissions: concept keys `_c_<conceptId>_<op>`, dataset-scoped keys
- * `_d_<datasetId>_<field>_<op>`, and selection markers `_s_<x>`.
+ * emissions: concept keys `_c_<conceptId>_<op>` and dataset-scoped keys
+ * `_d_<datasetId>_<field>_<op>`.
  *
  * They are relayed as-is to the child embeds, so a dashboard configured
  * without any dynamic filter can still be driven by the page that embeds it.
@@ -82,8 +82,7 @@ export interface CollectReceivedFiltersInput {
 /**
  * Collect the filters a parent or an embedded visu put in this dashboard's URL,
  * and resolve the root dataset fields that carry them (used for `keys`, i.e.
- * the `valueMandatory` checks). Selection markers carry no field: they only
- * tell the child visus that the matching filter is a selection.
+ * the `valueMandatory` checks).
  */
 export const collectReceivedFilters = (input: CollectReceivedFiltersInput): ReceivedFilters => {
   const { params, fields, config } = input
@@ -93,7 +92,7 @@ export const collectReceivedFilters = (input: CollectReceivedFiltersInput): Rece
   const values: Record<string, string> = {}
   const receivedFields: string[] = []
   for (const key of Object.keys(params)) {
-    if (!isFilterKey(key) && !isMarkerKey(key)) continue
+    if (!isFilterKey(key)) continue
     const value = params[key]
     if (value == null || value === '') continue
     if (internal.has(key)) continue
@@ -201,9 +200,6 @@ export const serializeFiltersValues = (input: SerializeFiltersValuesInput): Filt
   }
   // Relayed first: a filter configured on this dashboard (static below,
   // dynamic further down) overrides a received value on the same key.
-  // Selection markers (`_s_*`) are relayed with them — they are what makes a
-  // relayed filter a selection rather than a restriction — but they never
-  // count in `keys` (`valueMandatory` checks).
   Object.assign(result, received?.values || {})
   Object.assign(result, collectStaticFilterParams(config, datasetId, prefix, fields))
 

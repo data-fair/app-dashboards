@@ -1,16 +1,17 @@
 import { test, expect, type Page } from '@playwright/test'
 
 /**
- * Relais des filtres et sélections émis par un visu embarqué (convention `_s_`).
+ * Relais des filtres émis par un visu embarqué (canal privé par élément).
  *
- * Le visu écrit dans son URL un filtre `_d_<datasetId>_<champ>_<op>` et, pour
- * une sélection, le marqueur `_s_<datasetId>_<champ>=app_<applicationId>`. Ses
- * clés remontent namespacées (`<clé d'élément>_…`) puis sont reprojetées par le
- * dashboard selon `propagation` :
- *  - « en filtre » (défaut) : les autres visus reçoivent le filtre sans le
- *    marqueur, et se restreignent ;
- *  - « en sélection » : ils reçoivent aussi le marqueur ;
- *  - « aucune » : rien ne sort (le visu garde son état dans son canal privé).
+ * Le visu écrit dans son URL un filtre `_d_<datasetId>_<champ>_<op>` (sans
+ * marqueur). Ses clés remontent namespacées (`<clé d'élément>_…`) puis le
+ * dashboard les reprojette vers le namespace propre `_c*`/`_d*` selon le mode
+ * `syncParams` de l'élément :
+ *  - « partage des filtres » (défaut) : la clé est publiée et atteint les autres
+ *    visus, qui décident de la traiter en filtre ou en mise en évidence ;
+ *  - « cloisonné » : la clé reste dans le canal privé de l'émetteur, rien n'est
+ *    partagé ;
+ *  - « aucune synchronisation » : aucun canal, l'état du visu n'est pas conservé.
  *
  * La visu réelle n'émet pas encore (chantier visus) : le test simule le clic en
  * écrivant l'URL de l'iframe, ce que fait exactement une visu à la sélection.
@@ -26,8 +27,7 @@ interface DevConfig {
 interface ElementConfig {
   type: string
   application?: { id?: string }
-  ignoreFilters?: boolean
-  propagation?: { selection?: string; filter?: boolean }
+  syncParams?: string
   elements?: ElementConfig[]
 }
 
@@ -60,13 +60,13 @@ const frames = async (page: Page): Promise<{ src: string, query: Record<string, 
     }
   })).then(list => list.map(frame => ({ ...frame, appId: appIdOf(frame.src) })))
 
-/** Change la propagation de l'élément portant cette application (config draft). */
-const setPropagation = async (page: Page, appId: string, propagation: Record<string, unknown>): Promise<void> => {
-  await page.evaluate(({ appId, propagation }) => {
+/** Change le mode de sync de l'élément portant cette application (config draft). */
+const setSyncParams = async (page: Page, appId: string, syncParams: string): Promise<void> => {
+  await page.evaluate(({ appId, syncParams }) => {
     const cfg = JSON.parse(JSON.stringify(window.APPLICATION.configuration))
     const walk = (elements: any[]): void => {
       for (const el of elements) {
-        if (el.application?.id === appId) el.propagation = propagation
+        if (el.application?.id === appId) el.syncParams = syncParams
         if (el.elements) walk(el.elements)
       }
     }
@@ -75,11 +75,11 @@ const setPropagation = async (page: Page, appId: string, propagation: Record<str
       source: window,
       data: { type: 'set-config', content: cfg }
     }))
-  }, { appId, propagation })
+  }, { appId, syncParams })
 }
 
-/** Simule une sélection dans la visu : la clé de filtre + son marqueur dans son URL. */
-const emitSelection = async (page: Page, appId: string, params: Record<string, string>): Promise<void> => {
+/** Simule une émission dans la visu : la clé de filtre dans son URL. */
+const emitFilter = async (page: Page, appId: string, params: Record<string, string>): Promise<void> => {
   const frame = page.frames().find(f => f.url().includes(`/data-fair/app/${appId}`))
   expect(frame, `iframe de ${appId} introuvable`).toBeTruthy()
   await frame!.evaluate((params) => {
@@ -90,14 +90,14 @@ const emitSelection = async (page: Page, appId: string, params: Record<string, s
 }
 
 test.describe('Relais des filtres émis par un visu', () => {
-  test('R1 — la sélection d\'un visu remonte et se propage selon sa configuration', async ({ page }) => {
+  test('R1 — un filtre émis remonte et se propage selon le mode syncParams', async ({ page }) => {
     await page.goto('/app/')
     const config = await getDevConfig(page)
     await expect(page.locator('.v-container').first()).toBeVisible({ timeout: 20_000 })
 
     // Ingrédients : un dataset racine, un visu émetteur (application) et un
-    // autre visu qui n'ignore pas les filtres, avec un champ non utilisé par
-    // les filtres du dashboard (la clé émise ne doit pas être « possédée »).
+    // autre visu avec un champ non utilisé par les filtres du dashboard (la clé
+    // émise ne doit pas être « possédée »).
     const rootDatasetId = config.datasets?.[0]?.id
     const usedFields = new Set([
       ...(config.filters || []).flatMap(f => [f.labelField, ...(f.values || [])]),
@@ -109,64 +109,57 @@ test.describe('Relais des filtres émis par un visu', () => {
 
     const elements = flatElements(config)
     const emitter = elements.find(el => el.type === 'application' && el.application?.id)
-    const receiver = elements.find(el => el !== emitter && !el.ignoreFilters && ((el.type === 'application' && el.application?.id) || el.type === 'tablePreview'))
+    const receiver = elements.find(el => el !== emitter && ((el.type === 'application' && el.application?.id) || el.type === 'tablePreview'))
 
     test.skip(!rootDatasetId || !field || !emitter || !receiver, 'config de dev sans visu émetteur/récepteur exploitable')
 
     await expect(page.locator('d-frame').first()).toBeVisible({ timeout: 20_000 })
     const emitterAppId = emitter!.application!.id!
     const key = `_d_${rootDatasetId}_${field}_in`
-    const marker = `_s_${rootDatasetId}_${field}`
-    const value = 'ValeurSélection'
-    const markerValue = `app_${emitterAppId}`
+    const value = 'ValeurFiltre'
 
-    // Le visu émetteur écrit sa sélection dans sa propre URL.
-    await emitSelection(page, emitterAppId, { [key]: value, [marker]: markerValue })
+    // Clé de l'état privé de l'émetteur : `<scope>_<clé>` (le scope encode le
+    // chemin de colonnes, ex. `column-0-application-<id>`).
+    const dashboardParams = async () => new URL(await page.evaluate(() => location.href)).searchParams
+    const hasNamespaced = (params: URLSearchParams): boolean => [...params.keys()].some(k => k !== key && k.endsWith(`_${key}`))
 
-    // 1) L'URL du dashboard reçoit le filtre ET le marqueur (projection).
-    await expect.poll(
-      async () => Object.fromEntries(new URL(await page.evaluate(() => location.href)).searchParams.entries()),
-      { timeout: 10_000, message: 'le filtre émis doit être projeté dans l\'URL du dashboard' }
-    ).toMatchObject({ [key]: value, [marker]: markerValue })
-    // …et le canal privé de l'émetteur conserve son état.
-    const dashboardUrl = new URL(await page.evaluate(() => location.href))
-    expect([...dashboardUrl.searchParams.keys()].some(k => k.includes('__d_' + rootDatasetId)), 'le canal privé namespacé doit être conservé').toBe(true)
-
-    // 2) Le récepteur se restreint (défaut « en filtre ») : filtre sans marqueur.
-    const checkRelay = async (expectMarker: boolean) => {
+    const receiverFrame = async () => {
       const all = await frames(page)
-      const receiverFrame = all.find(f => f.appId !== emitterAppId && (receiver!.type === 'application' ? f.appId : f.src.startsWith('/data-fair/embed/dataset/')))
-      expect(receiverFrame, 'iframe réceptrice introuvable').toBeTruthy()
-      expect(receiverFrame!.query[key], 'le filtre émis doit atteindre le récepteur').toBe(value)
-      if (expectMarker) expect(receiverFrame!.query[marker]).toBe(markerValue)
-      else expect(receiverFrame!.query[marker]).toBeUndefined()
-      const emitterFrame = all.find(f => f.appId === emitterAppId)
-      expect(emitterFrame!.query[marker], 'l\'émetteur garde son propre marqueur').toBe(markerValue)
+      return all.find(f => f.appId !== emitterAppId && (receiver!.type === 'application' ? f.appId : f.src.startsWith('/data-fair/embed/dataset/')))
     }
-    await expect.poll(async () => (await frames(page)).some(f => f.query[key] === value), { timeout: 10_000 }).toBe(true)
-    await checkRelay(false)
 
-    // 3) Aucun aller-retour d'URL : deux relevés espacés sont identiques.
+    // Le visu émetteur écrit son filtre dans sa propre URL.
+    await emitFilter(page, emitterAppId, { [key]: value })
+
+    // 1) « partage des filtres » (défaut) : la clé est projetée dans l'URL du
+    //    dashboard et atteint le récepteur.
+    await expect.poll(
+      async () => Object.fromEntries((await dashboardParams()).entries()),
+      { timeout: 10_000, message: 'le filtre émis doit être projeté dans l\'URL du dashboard' }
+    ).toMatchObject({ [key]: value })
+    expect(hasNamespaced(await dashboardParams()), 'le canal privé namespacé doit être conservé').toBe(true)
+    await expect.poll(async () => (await receiverFrame())?.query[key], { timeout: 10_000, message: 'le récepteur doit recevoir la clé' }).toBe(value)
+
+    // 2) Aucun aller-retour d'URL : deux relevés espacés sont identiques.
     const first = await page.evaluate(() => location.search)
     await page.waitForTimeout(700)
     expect(await page.evaluate(() => location.search)).toBe(first)
 
-    // 4) Sélection propagée en sélection : le marqueur suit.
-    await setPropagation(page, emitterAppId, { selection: 'selection' })
-    await expect.poll(async () => {
-      const all = await frames(page)
-      return all.filter(f => f.appId !== emitterAppId).some(f => f.query[marker] === markerValue)
-    }, { timeout: 10_000, message: 'en mode sélection, le marqueur doit atteindre les autres visus' }).toBe(true)
-    await checkRelay(true)
-
-    // 5) Aucune propagation : plus rien dans l'URL du dashboard, l'émetteur
-    //    garde son état dans son canal privé.
-    await setPropagation(page, emitterAppId, { selection: 'none' })
+    // 3) « cloisonné » : plus de clé propre dans l'URL du dashboard, le
+    //    récepteur ne la reçoit plus, l'émetteur garde son état dans son canal.
+    await setSyncParams(page, emitterAppId, 'sandboxed')
     await expect.poll(
-      async () => new URL(await page.evaluate(() => location.href)).searchParams.has(key),
-      { timeout: 10_000, message: 'en mode « aucune », la clé projetée doit disparaître de l\'URL' }
+      async () => (await dashboardParams()).has(key),
+      { timeout: 10_000, message: 'en mode cloisonné, la clé projetée doit disparaître de l\'URL' }
     ).toBe(false)
-    const afterNone = new URL(await page.evaluate(() => location.href))
-    expect(afterNone.searchParams.has(marker)).toBe(false)
+    await expect.poll(async () => (await receiverFrame())?.query[key], { timeout: 10_000, message: 'le récepteur ne doit plus recevoir la clé' }).toBeUndefined()
+    expect(hasNamespaced(await dashboardParams()), 'le canal privé de l\'émetteur reste').toBe(true)
+
+    // 4) « aucune synchronisation » : le canal privé est purgé.
+    await setSyncParams(page, emitterAppId, 'none')
+    await expect.poll(
+      async () => hasNamespaced(await dashboardParams()),
+      { timeout: 10_000, message: 'en mode none, le canal privé doit être purgé' }
+    ).toBe(false)
   })
 })

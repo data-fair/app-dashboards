@@ -3,46 +3,36 @@ import {
   collectElementEmissions,
   collectEmissionsTargets,
   computeProjections,
-  elementPropagation,
+  elementSyncParams,
   emissionScope,
   emissionsSignature,
   isFilterKey,
-  isMarkerKey,
   keyWithoutOp,
-  markerKeyOf,
   projectEmissions,
-  propagationsByApplicationId,
-  seedProjected,
-  stripEmissions
+  seedProjected
 } from '@/utils/emissions'
-import type { ApplicationElement, DashboardElement, DashboardSection, ElementPropagation, TablePreviewElement } from '@/config'
+import type { ApplicationElement, DashboardElement, DashboardSection, FormElement, SyncParams, TablePreviewElement } from '@/config'
 
-const app = (id: string, propagation?: ElementPropagation): ApplicationElement =>
-  ({ type: 'application', application: { id, title: id, href: 'h', baseApp: { meta: {} } }, propagation })
-const table = (): TablePreviewElement => ({ type: 'tablePreview' })
+const app = (id: string, syncParams?: SyncParams): ApplicationElement =>
+  ({ type: 'application', application: { id, title: id, href: 'h', baseApp: { meta: {} } }, syncParams })
+const table = (syncParams?: SyncParams): TablePreviewElement => ({ type: 'tablePreview', syncParams })
+const form = (syncParams?: SyncParams): FormElement => ({ type: 'form', syncParams })
 
 const sections = (rows: DashboardElement[][]): DashboardSection[] =>
   [{ rows: rows.map(elements => ({ elements })) }] as DashboardSection[]
 
-test.describe('clés de filtre et marqueurs', () => {
-  test('isFilterKey / isMarkerKey', () => {
+test.describe('clés de filtre', () => {
+  test('isFilterKey', () => {
     expect(isFilterKey('_c_codeDepartement_in')).toBe(true)
     expect(isFilterKey('_d_ds1_dep_in')).toBe(true)
     expect(isFilterKey('_s_codeDepartement')).toBe(false)
-    expect(isMarkerKey('_s_codeDepartement')).toBe(true)
-    expect(isMarkerKey('_c_codeDepartement_in')).toBe(false)
+    expect(isFilterKey('page')).toBe(false)
   })
 
   test('keyWithoutOp retire l\'opérateur REST, du plus long au plus court', () => {
     expect(keyWithoutOp('_c_codeDepartement_nin')).toBe('codeDepartement')
     expect(keyWithoutOp('_d_ds1_an_nexists')).toBe('ds1_an')
     expect(keyWithoutOp('_c_codeCommune')).toBe('codeCommune')
-  })
-
-  test('markerKeyOf mappe clé de filtre → marqueur', () => {
-    expect(markerKeyOf('_c_codeCommune_in')).toBe('_s_codeCommune')
-    expect(markerKeyOf('_d_ds1__id_eq')).toBe('_s_ds1__id')
-    expect(markerKeyOf('_s_codeCommune')).toBeUndefined()
   })
 })
 
@@ -53,30 +43,36 @@ test.describe('emissionScope', () => {
   })
 })
 
-test.describe('elementPropagation', () => {
-  test('applique les défauts : sélection propagée en filtre, filtres simples non propagés', () => {
-    expect(elementPropagation(app('sankey'))).toEqual({
-      selection: 'filter',
-      filter: false,
-      applicationId: 'sankey'
-    })
+test.describe('elementSyncParams', () => {
+  test('applique le défaut : partage des filtres', () => {
+    expect(elementSyncParams(app('sankey'))).toBe('shared-filters')
+    expect(elementSyncParams(table())).toBe('shared-filters')
+    expect(elementSyncParams(form())).toBe('shared-filters')
   })
 
   test('respecte la configuration explicite', () => {
-    expect(elementPropagation(app('sankey', { selection: 'selection', filter: true }))).toEqual({
-      selection: 'selection',
-      filter: true,
-      applicationId: 'sankey'
-    })
-    expect(elementPropagation(app('sankey', { selection: 'none' })).selection).toBe('none')
-    expect(elementPropagation(table()).applicationId).toBeUndefined()
+    expect(elementSyncParams(app('sankey', 'sandboxed'))).toBe('sandboxed')
+    expect(elementSyncParams(app('sankey', 'none'))).toBe('none')
   })
 })
 
 test.describe('collectEmissionsTargets', () => {
-  test('collecte applications et tables, avec les deux préfixes de colonne', () => {
-    const targets = collectEmissionsTargets(sections([[app('a'), table()]]), ['', 'c'])
-    expect(targets.map(t => t.scope)).toEqual(['application-a', 'c_application-a', 'tablePreview-root', 'c_tablePreview-root'])
+  test('collecte applications, tables et formulaires, avec les deux préfixes de colonne', () => {
+    const targets = collectEmissionsTargets(sections([[app('a'), table(), form()]]), ['', 'c'])
+    expect(targets.map(t => t.scope)).toEqual([
+      'application-a',
+      'c_application-a',
+      'tablePreview-root',
+      'c_tablePreview-root',
+      'form-root',
+      'c_form-root'
+    ])
+    expect(targets.every(t => t.syncParams === 'shared-filters')).toBe(true)
+  })
+
+  test('reprend le mode configuré de l\'élément', () => {
+    const targets = collectEmissionsTargets(sections([[app('a', 'sandboxed')]]), [''])
+    expect(targets).toEqual([{ scope: 'application-a', syncParams: 'sandboxed' }])
   })
 
   test('suit le chemin des colonnes et la déduplication par ligne', () => {
@@ -91,26 +87,10 @@ test.describe('collectEmissionsTargets', () => {
   })
 })
 
-test.describe('propagationsByApplicationId', () => {
-  test('associe l\'id d\'application à sa propagation, première occurrence gagnante', () => {
-    const rows = [[
-      app('a', { selection: 'selection' }),
-      app('a'),
-      app('b', { selection: 'none', filter: true })
-    ]]
-    const byId = propagationsByApplicationId(sections(rows))
-    expect(byId).toEqual({
-      a: { selection: 'selection', filter: false, applicationId: 'a' },
-      b: { selection: 'none', filter: true, applicationId: 'b' }
-    })
-  })
-})
-
 test.describe('collectElementEmissions', () => {
   test('dé-namespace les clés du scope, ignore les autres et les valeurs vides', () => {
     const params = {
       'application-a__c_codeCommune_in': '86194',
-      'application-a__s_codeCommune': 'app_a',
       'application-a_page': '2',
       'application-a_vide': '',
       'application-b_page': '3',
@@ -118,72 +98,34 @@ test.describe('collectElementEmissions', () => {
     }
     expect(collectElementEmissions(params, 'application-a')).toEqual({
       _c_codeCommune_in: '86194',
-      _s_codeCommune: 'app_a',
       page: '2'
     })
   })
 })
 
 test.describe('projectEmissions', () => {
-  const selection = {
-    _c_codeCommune_in: '86194',
-    _s_codeCommune: 'app_a',
-    page: '2'
-  }
-  const filter = { _c_q: 'velo', page: '2' }
+  const emissions = { _c_codeCommune_in: '86194', _d_ds1_an_in: '2020', page: '2' }
 
-  test('en filtre : la sélection sort, marqueur inclus (retiré par récepteur)', () => {
-    // Le marqueur est publié (auto-exclusion après rechargement) ; c'est le
-    // `stripEmissions` de chaque récepteur qui décide de le retirer.
-    expect(projectEmissions(selection, { selection: 'filter', filter: false })).toEqual({
+  test('shared-filters : publie les clés de filtre, ignore l\'état interne', () => {
+    expect(projectEmissions(emissions, 'shared-filters')).toEqual({
       _c_codeCommune_in: '86194',
-      _s_codeCommune: 'app_a'
+      _d_ds1_an_in: '2020'
     })
   })
 
-  test('en sélection : identique', () => {
-    expect(projectEmissions(selection, { selection: 'selection', filter: false })).toEqual({
-      _c_codeCommune_in: '86194',
-      _s_codeCommune: 'app_a'
-    })
-  })
-
-  test('sans propagation : rien, pas même le marqueur', () => {
-    expect(projectEmissions(selection, { selection: 'none', filter: false })).toEqual({})
-    expect(projectEmissions({ ...selection, _d_ds1_an_in: '2020' }, { selection: 'none', filter: false })).toEqual({})
-  })
-
-  test('les filtres simples ne sortent que si filter est actif', () => {
-    expect(projectEmissions(filter, { selection: 'filter', filter: false })).toEqual({})
-    expect(projectEmissions(filter, { selection: 'filter', filter: true })).toEqual({ _c_q: 'velo' })
-  })
-
-  test('sans propagation de sélection, un filtre simple sort quand même si filter est actif', () => {
-    expect(projectEmissions(filter, { selection: 'none', filter: true })).toEqual({ _c_q: 'velo' })
-    expect(projectEmissions(selection, { selection: 'none', filter: true })).toEqual({})
-  })
-
-  test('un filtre marqué (sélection) suit la sélection, pas le booléen filter', () => {
-    const marked = { _d_ds1_an_eq: '2020', _s_ds1_an: 'app_a' }
-    expect(projectEmissions(marked, { selection: 'filter', filter: false })).toEqual(marked)
-    expect(projectEmissions(marked, { selection: 'none', filter: true })).toEqual({})
-  })
-
-  test('ignore l\'état interne des visus', () => {
-    expect(projectEmissions({ page: '2', sort: 'desc', _c_date_match: '2020-01-01,2020-12-31' }, { selection: 'filter', filter: false }))
-      .toEqual({})
-    expect(projectEmissions({ _c_date_match: '2020-01-01,2020-12-31' }, { selection: 'filter', filter: true }))
-      .toEqual({ _c_date_match: '2020-01-01,2020-12-31' })
+  test('sandboxed / none : rien', () => {
+    expect(projectEmissions(emissions, 'sandboxed')).toEqual({})
+    expect(projectEmissions(emissions, 'none')).toEqual({})
   })
 })
 
 test.describe('computeProjections', () => {
-  const targets = [{ scope: 'application-a', selection: 'filter' as const, filter: false, applicationId: 'a' }]
+  const targets = [{ scope: 'application-a', syncParams: 'shared-filters' as const }]
 
   test('projette les émissions de chaque élément dans le namespace propre', () => {
-    const params = { 'application-a__c_codeCommune_in': '86194', 'application-a__s_codeCommune': 'app_a' }
+    const params = { 'application-a__c_codeCommune_in': '86194' }
     expect(computeProjections(params, targets, new Set(), {})).toEqual({
-      values: { _c_codeCommune_in: '86194', _s_codeCommune: 'app_a' },
+      values: { _c_codeCommune_in: '86194' },
       remove: []
     })
   })
@@ -201,25 +143,47 @@ test.describe('computeProjections', () => {
 
   test('le dernier émetteur gagne sur une clé partagée', () => {
     const both = [
-      { scope: 'application-a', selection: 'filter' as const, filter: false },
-      { scope: 'application-b', selection: 'filter' as const, filter: false }
+      { scope: 'application-a', syncParams: 'shared-filters' as const },
+      { scope: 'application-b', syncParams: 'shared-filters' as const }
     ]
     const params = { 'application-a__c_q': 'a', 'application-b__c_q': 'b' }
-    const projected = computeProjections(params, both.map(t => ({ ...t, filter: true })), new Set(), {})
-    expect(projected.values).toEqual({ _c_q: 'b' })
+    expect(computeProjections(params, both, new Set(), {}).values).toEqual({ _c_q: 'b' })
+  })
+
+  test('un élément sandboxed ne publie rien mais garde ses clés namespacées', () => {
+    const sandbox = [{ scope: 'application-a', syncParams: 'sandboxed' as const }]
+    const params = { 'application-a__c_codeCommune_in': '86194' }
+    expect(computeProjections(params, sandbox, new Set(), {})).toEqual({ values: {}, remove: [] })
+  })
+
+  test('un élément none voit ses clés namespacées résiduelles purgées', () => {
+    const none = [{ scope: 'application-a', syncParams: 'none' as const }]
+    const params = { 'application-a__c_codeCommune_in': '86194', 'application-b__c_q': 'b' }
+    expect(computeProjections(params, none, new Set(), {})).toEqual({
+      values: {},
+      remove: ['application-a__c_codeCommune_in']
+    })
   })
 })
 
 test.describe('seedProjected', () => {
-  test('adopte les clés propres qui doublonnent une émission d\'élément', () => {
-    const targets = [{ scope: 'application-a', selection: 'filter' as const, filter: false }]
+  test('adopte les clés propres qui doublonnent une émission d\'élément partagée', () => {
+    const targets = [{ scope: 'application-a', syncParams: 'shared-filters' as const }]
     const params = { 'application-a__c_q': 'a', _c_q: 'a', _c_codeCommune_in: '86194' }
     expect(seedProjected(params, targets)).toEqual({ _c_q: 'a' })
+  })
+
+  test('n\'adopte rien pour un élément non partagé', () => {
+    const targets = [{ scope: 'application-a', syncParams: 'sandboxed' as const }]
+    expect(seedProjected({ 'application-a__c_q': 'a', _c_q: 'a' }, targets)).toEqual({})
   })
 })
 
 test.describe('emissionsSignature', () => {
-  const targets = [{ scope: 'application-a', selection: 'filter' as const, filter: false }, { scope: 'application-b', selection: 'filter' as const, filter: false }]
+  const targets = [
+    { scope: 'application-a', syncParams: 'shared-filters' as const },
+    { scope: 'application-b', syncParams: 'shared-filters' as const }
+  ]
 
   test('suit les émissions des cibles, pas le reste de l\'URL', () => {
     const params: Record<string, string> = { 'application-a_page': '2', period: '2020-01-01,2020-12-31' }
@@ -231,50 +195,16 @@ test.describe('emissionsSignature', () => {
     expect(emissionsSignature(params, targets)).toBe(after)
   })
 
-  test('change quand une propagation est reconfigurée', () => {
+  test('change quand un mode de sync est reconfiguré ou qu\'une cible apparaît', () => {
     const params = { 'application-a_page': '2' }
     const before = emissionsSignature(params, targets)
     expect(emissionsSignature(params, [
-      { ...targets[0], selection: 'selection' },
+      { ...targets[0], syncParams: 'sandboxed' },
       targets[1]
     ])).not.toBe(before)
     expect(emissionsSignature(params, [
-      { ...targets[0], filter: true },
+      { scope: 'application-b', syncParams: 'shared-filters' },
       targets[1]
     ])).not.toBe(before)
-    expect(emissionsSignature(params, [
-      { scope: 'application-b', selection: 'filter', filter: false },
-      targets[1]
-    ])).not.toBe(before)
-  })
-})
-
-test.describe('stripEmissions', () => {
-  const emitters = {
-    a: { selection: 'filter' as const, filter: false, applicationId: 'a' },
-    b: { selection: 'selection' as const, filter: false, applicationId: 'b' },
-    c: { selection: 'none' as const, filter: false, applicationId: 'c' }
-  }
-
-  test('retire le marqueur d\'un émetteur « en filtre » pour les autres, le garde pour lui', () => {
-    const filters = { _c_codeCommune_in: '86194', _s_codeCommune: 'app_a' }
-    expect(stripEmissions(filters, { applicationId: 'z', emitters })).toEqual({ _c_codeCommune_in: '86194' })
-    expect(stripEmissions(filters, { applicationId: 'a', emitters })).toEqual(filters)
-  })
-
-  test('garde le marqueur d\'un émetteur « en sélection »', () => {
-    const filters = { _s_codeCommune: 'app_b' }
-    expect(stripEmissions(filters, { applicationId: 'z', emitters })).toEqual(filters)
-  })
-
-  test('retire un marqueur « aucune propagation » et tout marqueur d\'un embed natif', () => {
-    expect(stripEmissions({ _s_codeCommune: 'app_c' }, { applicationId: 'z', emitters })).toEqual({})
-    expect(stripEmissions({ _c_codeCommune_in: '86194', _s_codeCommune: 'app_b' }, { nativeEmbed: true, emitters }))
-      .toEqual({ _c_codeCommune_in: '86194' })
-  })
-
-  test('garde un marqueur posé par la page (valeur libre ou app inconnue)', () => {
-    expect(stripEmissions({ _s_codeCommune: '86194' }, { applicationId: 'z', emitters })).toEqual({ _s_codeCommune: '86194' })
-    expect(stripEmissions({ _s_codeCommune: 'app_inconnue' }, { applicationId: 'z', emitters })).toEqual({ _s_codeCommune: 'app_inconnue' })
   })
 })

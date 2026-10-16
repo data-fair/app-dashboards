@@ -23,11 +23,6 @@
  *    compare prefix is stripped at emission in `useFiltersValues`), plus
  *    the concept mirrors (`_c_*`). The application picks the ones that
  *    target its own dataset and ignores the rest.
- *  - Selection markers (`_s_<x>`) are relayed with the filters, except to the
- *    visus that should not render a selection: `stripEmissions`
- *    (composable `useElementUrls`) removes the markers of the visus whose
- *    `propagation.selection` is `filter`, and every marker for a native
- *    dataset embed (it has nothing to highlight with).
  */
 import type { DashboardElement, ApplicationElement, TablePreviewElement, FormElement } from '@/config'
 import { datasetFilterKey } from './dataset-filter'
@@ -81,9 +76,9 @@ const stripDatasetScope = (filtersValues: FilterValues | null | undefined, prefi
   return out
 }
 
-const datasetEmbedParams = (filtersValues: FilterValues | null, primary: unknown, secondary: unknown, print: unknown, ignoreFilters: boolean | undefined, prefix: string, datasetId: string): Record<string, string> => {
+const datasetEmbedParams = (filtersValues: FilterValues | null, primary: unknown, secondary: unknown, print: unknown, prefix: string, datasetId: string): Record<string, string> => {
   const params: Record<string, string> = {}
-  if (!ignoreFilters) Object.assign(params, stripDatasetScope(filtersValues, prefix, datasetId))
+  Object.assign(params, stripDatasetScope(filtersValues, prefix, datasetId))
   params['d-frame'] = 'true'
   if (primary) params.primary = String(primary)
   if (secondary) params.secondary = String(secondary)
@@ -98,9 +93,9 @@ const datasetEmbedParams = (filtersValues: FilterValues | null, primary: unknown
  * prefix (`_d_<datasetId>_<field>_<op>`), concept mirrors (`_c_*`) and
  * `finalizedAt`. The application picks the ones that target its own dataset.
  */
-const applicationEmbedParams = (filtersValues: FilterValues | null, primary: unknown, secondary: unknown, print: unknown, ignoreFilters: boolean | undefined): Record<string, string> => {
+const applicationEmbedParams = (filtersValues: FilterValues | null, primary: unknown, secondary: unknown, print: unknown): Record<string, string> => {
   const params: Record<string, string> = {}
-  if (!ignoreFilters) Object.assign(params, toStringRecord(filtersValues))
+  Object.assign(params, toStringRecord(filtersValues))
   params['d-frame'] = 'true'
   if (primary) params.primary = String(primary)
   if (secondary) params.secondary = String(secondary)
@@ -118,7 +113,7 @@ export const tableDFrameSrc = (
   print: unknown,
   prefix: string
 ): string => {
-  const params: Record<string, string> = datasetEmbedParams(filtersValues, primary, secondary, print, element.ignoreFilters, prefix, datasetId)
+  const params: Record<string, string> = datasetEmbedParams(filtersValues, primary, secondary, print, prefix, datasetId)
   if (element.display) params.display = element.display
   params.interaction = String(!element.noInteractions)
   if (element.fields?.length) params.cols = element.fields.join(',')
@@ -138,7 +133,7 @@ export const formDFrameSrc = (
   // A form is always bound to a dataset: a missing dataset is an invalid
   // state that must not render an embed URL.
   if (!datasetId) return undefined
-  const params = datasetEmbedParams(filtersValues, primary, secondary, print, element.ignoreFilters, prefix, datasetId)
+  const params = datasetEmbedParams(filtersValues, primary, secondary, print, prefix, datasetId)
   return `/data-fair/embed/dataset/${accessKeyPrefix(accessKey)}${datasetId}/form?${new URLSearchParams(params).toString()}`
 }
 
@@ -154,7 +149,7 @@ export const applicationDFrameSrc = (
   // an invalid state that must not render an embed URL (mirrors formDFrameSrc).
   const appId = element.application?.id
   if (!appId) return undefined
-  const params = applicationEmbedParams(applicationFiltersValues, primary, secondary, print, element.ignoreFilters)
+  const params = applicationEmbedParams(applicationFiltersValues, primary, secondary, print)
   return `/data-fair/app/${accessKeyPrefix(accessKey)}${appId}?${new URLSearchParams(params).toString()}`
 }
 
@@ -215,14 +210,9 @@ export const captureUrl = (
   const params: Record<string, string> = { app_embed: 'true' }
   if (meta['df:capture-width']) params.width = String(meta['df:capture-width'])
   if (meta['df:capture-height']) params.height = String(meta['df:capture-height'])
-  // Consistent with the d-frame embed (`applicationEmbedParams`): an element
-  // configured with `ignoreFilters` must not propagate its filters to the
-  // captured application either.
-  if (!element.ignoreFilters) {
-    for (const [key, value] of Object.entries(filtersValues || {})) {
-      if (key === 'keys') continue
-      params[`app_${key}`] = String(value)
-    }
+  for (const [key, value] of Object.entries(filtersValues || {})) {
+    if (key === 'keys') continue
+    params[`app_${key}`] = String(value)
   }
   return `${app.href}/capture?${new URLSearchParams(params).toString()}`
 }

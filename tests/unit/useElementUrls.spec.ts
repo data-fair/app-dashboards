@@ -87,67 +87,31 @@ test.describe('useElementUrls — dFrameSrc', () => {
   })
 })
 
-test.describe('useElementUrls — marqueurs de sélection et clés dataset', () => {
-  const appEl = (id: string, propagation?: Record<string, unknown>) => ({
+test.describe('useElementUrls — filtres relayés', () => {
+  const appEl = (id: string) => ({
     type: 'application',
-    application: { id, title: id, href: 'h', baseApp: { meta: {} } },
-    propagation
-  })
-  const configWith = (emitterPropagation?: Record<string, unknown>) => useConfigValue({
-    config: ref({
-      sections: [{
-        rows: [{
-          elements: [
-            appEl('autre', emitterPropagation),
-            appEl('sankey')
-          ]
-        }]
-      }]
-    })
+    application: { id, title: id, href: 'h', baseApp: { meta: {} } }
   })
 
-  test('retire le marqueur d\'une sélection propagée en filtre par un autre visu', () => {
-    const filters = { keys: [], _c_codeCommune_in: '86194', _s_codeCommune: 'app_autre' } as ApplicationFiltersValues
-    const { dFrameSrc } = setup(appEl('sankey') as DashboardElement, { applicationFiltersValues: ref(filters) }, configWith())
+  test('une application reçoit les filtres tels quels', () => {
+    const filters = { keys: [], _c_codeCommune_in: '86194' } as ApplicationFiltersValues
+    const { dFrameSrc } = setup(appEl('sankey') as DashboardElement, { applicationFiltersValues: ref(filters) })
     expect(dFrameSrc.value).toContain('_c_codeCommune_in=86194')
-    expect(dFrameSrc.value).not.toContain('_s_codeCommune')
   })
 
-  test('garde le marqueur d\'une sélection propagée en sélection, et le sien', () => {
-    const filters = { keys: [], _c_codeCommune_in: '86194', _s_codeCommune: 'app_autre' } as ApplicationFiltersValues
-    const selection = setup(appEl('sankey') as DashboardElement, { applicationFiltersValues: ref(filters) }, configWith({ selection: 'selection' }))
-    expect(selection.dFrameSrc.value).toContain('_s_codeCommune=app_autre')
-
-    const own = setup(appEl('autre') as DashboardElement, { applicationFiltersValues: ref({ keys: [], _s_codeCommune: 'app_autre' }) }, configWith())
-    expect(own.dFrameSrc.value).toContain('_s_codeCommune=app_autre')
-  })
-
-  test('la capture hérite du même nettoyage que l\'embed', () => {
-    const filters = { keys: [], _s_codeCommune: 'app_autre' } as ApplicationFiltersValues
-    const element = {
-      ...appEl('sankey'),
-      application: { id: 'sankey', title: 'S', href: 'https://demo/data-fair/app/sankey', baseApp: { meta: {} } }
-    } as DashboardElement
-    const { captureHref } = setup(element, { applicationFiltersValues: ref(filters) }, configWith())
-    expect(captureHref.value).not.toContain('app__s_codeCommune')
-  })
-
-  test('un embed natif ne reçoit ni marqueur ni clé dataset d\'un autre jeu de données', () => {
+  test('un embed natif reçoit les clés de son dataset (scope retiré), pas celles d\'un autre jeu', () => {
     const filters = {
       keys: [],
       _c_codeCommune_in: '86194',
-      _s_codeCommune: 'app_autre',
       _d_ds1_dep_in: '75',
       _d_autre_x_in: '1'
     } as FiltersValues
     const { dFrameSrc } = setup(
       el({ type: 'tablePreview', dataset: { id: 'ds1', title: 'DS1', href: 'h' } }),
-      { datasetFiltersValues: ref(filters) },
-      configWith()
+      { datasetFiltersValues: ref(filters) }
     )
     expect(dFrameSrc.value).toContain('dep_in=75')
     expect(dFrameSrc.value).toContain('_c_codeCommune_in=86194')
-    expect(dFrameSrc.value).not.toContain('_s_codeCommune')
     expect(dFrameSrc.value).not.toContain('_d_autre_x')
   })
 })
@@ -175,22 +139,19 @@ test.describe('useElementUrls — capture, sources, description', () => {
     expect(setup(el({ type: 'text' })).captureHref.value).toBeUndefined()
   })
 
-  test('captureHref sans filtre quand ignoreFilters est vrai', () => {
+  test('captureHref reprend les filtres de l\'application', () => {
     const element = el({
       type: 'application',
-      ignoreFilters: true,
       application: {
         id: 'sankey',
         title: 'S',
         href: 'https://demo/data-fair/app/sankey',
-        baseApp: { meta: { 'df:capture-width': 1200, 'df:capture-height': 800 } }
+        baseApp: { meta: {} }
       }
     })
     const filters = { keys: [], _d_ds1_int_in: '1' } as FiltersValues
     const { captureHref } = setup(element, { applicationFiltersValues: ref(filters) })
-    expect(captureHref.value).toContain('app_embed=true')
-    expect(captureHref.value).toContain('width=1200')
-    expect(captureHref.value).not.toContain('app__d_ds1_int_in')
+    expect(captureHref.value).toContain('app__d_ds1_int_in=1')
   })
 
   test('sourcesList d\'un tablePreview : son dataset', () => {

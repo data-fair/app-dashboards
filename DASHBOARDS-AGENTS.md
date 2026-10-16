@@ -121,41 +121,40 @@ Le dashboard propage les filtres aux éléments embarqués via **deux canaux dis
 | `form` | `/data-fair/embed/dataset/<id>/form` | `_d_<rootDatasetId>_` (présent) | préfixés | oui |
 | `application` | `/data-fair/app/<id>` | `_d_<rootDatasetId>_` (préfixe de colonne retiré) | idem (préfixe de colonne retiré) | oui |
 
-#### 2.3.2 Remontée : les filtres et sélections émis par un visu
+#### 2.3.2 Remontée : les filtres émis par un visu
 
-Un visu embarqué qui écrit un filtre ou une sélection dans sa propre URL
-(convention `_c_` / `_d_` / `_s_`) remonte au dashboard par un **canal privé par
-élément** (`sync-params="*:<clé d'élément>_"` sur son `d-frame`) : ses clés
-arrivent **namespacées** dans l'URL du dashboard (`<clé d'élément>_<clé>`), ce qui
+Un visu embarqué qui écrit un filtre dans sa propre URL (convention `_c_` / `_d_`)
+remonte au dashboard par un **canal privé par élément**
+(`sync-params="*:<clé d'élément>_"` sur son `d-frame`) : ses clés arrivent
+**namespacées** dans l'URL du dashboard (`<clé d'élément>_<clé>`), ce qui
 conserve son état à travers chaque mise à jour de filtre et garantit qu'il se
-reconnaît à la place de la page.
+reconnaît à la place de la page. Le préfixe de colonne du mode comparaison fait
+partie du namespace, ce qui sépare les deux colonnes.
 
-Le dashboard **reprojette** ensuite ces clés vers le namespace propre, selon le
-réglage `propagation` de l'élément (section « Propagation aux autres visus » du
-formulaire) :
+Le dashboard **reprojette** ensuite les clés `_c_*`/`_d_*` vers le namespace
+propre, selon le réglage `syncParams` de l'élément (section « Synchronisation
+des filtres » du formulaire). Les mêmes modes que les blocs de page de portail :
 
-| `propagation.selection` | Ce que reçoivent les autres visus |
+| `syncParams` | Ce que reçoivent les autres visus |
 |---|---|
-| `none` | rien (le visu garde son état pour lui) |
-| `filter` (défaut) | les clés `_c_`/`_d_` **sans** le marqueur → ils se restreignent |
-| `selection` | les clés **et** le marqueur → ils mettent la sélection en évidence |
+| `shared-filters` (défaut) | les clés `_c_`/`_d_` émises, publiées dans le namespace propre |
+| `sandboxed` | rien (le visu garde son état pour lui) |
+| `none` | rien, et l'état du visu n'est pas conservé (aucun canal privé) |
 
-| `propagation.filter` | Ce que reçoivent les autres visus |
-|---|---|
-| `false` (défaut) | rien (une recherche ou une facette interne au visu reste locale) |
-| `true` | les filtres simples émis (`_c_`/`_d_` sans marqueur) |
-
+- La clé `_s_` (marqueur de sélection) n'existe plus : une clé `_c_`/`_d_` est un
+  filtre partagé, libre à chaque visu de la traiter en restriction ou en mise en
+  évidence selon son propre champ de sélection.
 - L'état interne du visu (page, tri, recherche…) reste dans son namespace : il
   n'est jamais publié dans le namespace propre mais survit aux filtrages.
 - Les clés du dashboard (filtres dynamiques, statiques, période, géo) gagnent
   toujours : une projection ne les écrase jamais.
 - L'URL du dashboard porte donc, en plus des filtres ci-dessus, les canaux
   privés des visus (`<clé d'élément>_…`) : c'est ce qui rend un lien partagé
-  fidèle, y compris les sélections croisées.
-- Les visus configurés « en filtre » gardent leur propre marqueur (auto-exclusion
-  au rechargement), mais il est retiré de la `src` des autres visus du dashboard ;
-  un embed natif (`tablePreview`, `form`) ne reçoit jamais de marqueur (il ne sait
-  pas surligner : la sélection y arrive en filtre).
+  fidèle, y compris les filtres croisés.
+- Dans tous les modes, un élément **reçoit** les filtres du dashboard (le
+  réglage `ignoreFilters` n'existe plus) : pour un encart de référence
+  indépendant en lecture, utiliser une visu sans `df:filter-concepts`, ou ne pas
+  l'exposer aux filtres du dashboard.
 
 ### 2.4 Modes d'affichage des sections
 
@@ -779,7 +778,7 @@ Une `section` = un thème ou une étape du récit. Pour chaque section :
 - **Cohérence des filtres** : les `filters[]` se basent sur le dataset racine. Si une visu utilise un dataset externe, ses filtres propres ne s'appliquent pas au dashboard global — le préciser à l'utilisateur.
 - **`source: 'root'` vs `'external'`** : par défaut `'root'` pour `tablePreview` et `application`. Mettre `'external'` quand la visu doit afficher un dataset **non filtré** (par exemple un référentiel).
 - **Distinction embed dataset vs application (transmission des filtres)** : les `filters[]` du dashboard s'appliquent différemment selon le type d'élément — voir § 2.3.1. Pour un élément `application`, les filtres dynamiques ne sont PAS injectés dans l'URL (l'app ne connaît pas le dataset racine) ; ils sont poussés via le state-change adapter d-frame. Si l'application doit recevoir les filtres, vérifier qu'elle déclare `df:filter-concepts: true` (et un `df:sync-state: true`) dans sa metadata. Sans cela, les filtres du dashboard n'atteindront pas l'application.
-- **Propagation par visu** : par défaut un clic dans une visu (`selection`) filtre les autres visus du dashboard, et ses filtres simples (recherche, facette interne) restent locaux — voir § 2.3.2. Pour une visu qui doit rester indépendante en lecture (ex. un encart de référence), mettre `propagation.selection: none` ; pour que les autres mettent en évidence plutôt que de se restreindre, `selection`. Ne pas oublier `ignoreFilters: true` pour une visu qui ne doit pas recevoir les filtres du dashboard.
+- **Synchronisation par visu** (`syncParams`) : par défaut (`shared-filters`) les filtres émis par une visu alimentent les autres visus du dashboard — voir § 2.3.2. Pour qu'une visu garde ses filtres pour elle, mettre `syncParams: 'sandboxed'` ; pour qu'elle ne conserve pas son état, `none`. Tous les éléments reçoivent les filtres du dashboard (`ignoreFilters` n'existe plus).
 - **`valueMandatory` + `mandatoryFilters`** : indispensable pour les visus qui n'ont aucun sens sans un filtre actif (ex. : carte centrée sur un territoire, fiche d'un item). Sans cela, la viz affiche un état vide.
 - **`height` négatif** des rows : à privilégier pour les visus à hauteur variable (tableaux, cartes). À fixer en px seulement pour les graphes en hauteur définie.
 - **`width: 3`** : à réserver aux visus qui doivent dominer (carte plein écran, timeline large). Combiné à `width: 1` sur la même row, cela donne un layout 1/3 + 2/3.

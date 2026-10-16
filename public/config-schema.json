@@ -619,49 +619,30 @@
                                     "type": "boolean",
                                     "default": false
                                   },
-                                  "ignoreFilters": {
-                                    "title": "Ignorer les filtres",
-                                    "type": "boolean",
-                                    "default": false
-                                  },
-                                  "propagation": {
-                                    "title": "Propagation aux autres visus",
-                                    "description": "Ce que ce visu transmet aux autres visus du tableau de bord : une sélection (clic sur une entité) et/ou ses filtres. Le visu émetteur garde son propre état ; ce réglage ne change pas ce qu'il reçoit.",
-                                    "type": "object",
-                                    "properties": {
-                                      "selection": {
-                                        "title": "Sélection (clic sur une entité)",
-                                        "type": "string",
-                                        "default": "filter",
-                                        "oneOf": [
-                                          {
-                                            "const": "none",
-                                            "title": "Ne pas propager"
-                                          },
-                                          {
-                                            "const": "filter",
-                                            "title": "Propager en filtre : les autres se restreignent"
-                                          },
-                                          {
-                                            "const": "selection",
-                                            "title": "Propager en sélection : les autres mettent en évidence"
-                                          }
-                                        ]
+                                  "syncParams": {
+                                    "title": "Synchronisation des filtres",
+                                    "description": "Ce que ce visu transmet aux autres visus du tableau de bord. Dans tous les cas il reçoit les filtres du dashboard.",
+                                    "type": "string",
+                                    "default": "shared-filters",
+                                    "oneOf": [
+                                      {
+                                        "const": "shared-filters",
+                                        "title": "Partage des filtres : ses filtres et sélections alimentent les autres visus"
                                       },
-                                      "filter": {
-                                        "title": "Filtres du visu (recherche, facette interne)",
-                                        "type": "boolean",
-                                        "default": false
+                                      {
+                                        "const": "sandboxed",
+                                        "title": "Cloisonné : il garde son état pour lui, rien n'est partagé"
+                                      },
+                                      {
+                                        "const": "none",
+                                        "title": "Aucune synchronisation : son état n'est pas conservé, rien n'est partagé"
                                       }
-                                    }
+                                    ]
                                   },
                                   "valueMandatory": {
                                     "title": "Nécessite une valeur dans des filtres",
                                     "type": "boolean",
-                                    "default": false,
-                                    "layout": {
-                                      "if": "!parent.data.ignoreFilters"
-                                    }
+                                    "default": false
                                   },
                                   "mandatoryFilters": {
                                     "title": "Filtres requis",
@@ -764,49 +745,30 @@
                                     "type": "boolean",
                                     "default": false
                                   },
-                                  "ignoreFilters": {
-                                    "title": "Ignorer les filtres",
-                                    "type": "boolean",
-                                    "default": false
-                                  },
-                                  "propagation": {
-                                    "title": "Propagation aux autres visus",
-                                    "description": "Ce que ce visu transmet aux autres visus du tableau de bord : une sélection (clic sur une entité) et/ou ses filtres. Le visu émetteur garde son propre état ; ce réglage ne change pas ce qu'il reçoit.",
-                                    "type": "object",
-                                    "properties": {
-                                      "selection": {
-                                        "title": "Sélection (clic sur une entité)",
-                                        "type": "string",
-                                        "default": "filter",
-                                        "oneOf": [
-                                          {
-                                            "const": "none",
-                                            "title": "Ne pas propager"
-                                          },
-                                          {
-                                            "const": "filter",
-                                            "title": "Propager en filtre : les autres se restreignent"
-                                          },
-                                          {
-                                            "const": "selection",
-                                            "title": "Propager en sélection : les autres mettent en évidence"
-                                          }
-                                        ]
+                                  "syncParams": {
+                                    "title": "Synchronisation des filtres",
+                                    "description": "Ce que ce visu transmet aux autres visus du tableau de bord. Dans tous les cas il reçoit les filtres du dashboard.",
+                                    "type": "string",
+                                    "default": "shared-filters",
+                                    "oneOf": [
+                                      {
+                                        "const": "shared-filters",
+                                        "title": "Partage des filtres : ses filtres et sélections alimentent les autres visus"
                                       },
-                                      "filter": {
-                                        "title": "Filtres du visu (recherche, facette interne)",
-                                        "type": "boolean",
-                                        "default": false
+                                      {
+                                        "const": "sandboxed",
+                                        "title": "Cloisonné : il garde son état pour lui, rien n'est partagé"
+                                      },
+                                      {
+                                        "const": "none",
+                                        "title": "Aucune synchronisation : son état n'est pas conservé, rien n'est partagé"
                                       }
-                                    }
+                                    ]
                                   },
                                   "valueMandatory": {
                                     "title": "Nécessite une valeur dans des filtres",
                                     "type": "boolean",
-                                    "default": false,
-                                    "layout": {
-                                      "if": "!parent.data.ignoreFilters"
-                                    }
+                                    "default": false
                                   },
                                   "mandatoryFilters": {
                                     "title": "Filtres requis",
@@ -877,49 +839,30 @@
                                       }
                                     }
                                   },
-                                  "ignoreFilters": {
-                                    "title": "Ignorer les filtres",
-                                    "type": "boolean",
-                                    "default": false
-                                  },
-                                  "propagation": {
-                                    "title": "Propagation aux autres visus",
-                                    "description": "Ce que ce visu transmet aux autres visus du tableau de bord : une sélection (clic sur une entité) et/ou ses filtres. Le visu émetteur garde son propre état ; ce réglage ne change pas ce qu'il reçoit.",
-                                    "type": "object",
-                                    "properties": {
-                                      "selection": {
-                                        "title": "Sélection (clic sur une entité)",
-                                        "type": "string",
-                                        "default": "filter",
-                                        "oneOf": [
-                                          {
-                                            "const": "none",
-                                            "title": "Ne pas propager"
-                                          },
-                                          {
-                                            "const": "filter",
-                                            "title": "Propager en filtre : les autres se restreignent"
-                                          },
-                                          {
-                                            "const": "selection",
-                                            "title": "Propager en sélection : les autres mettent en évidence"
-                                          }
-                                        ]
+                                  "syncParams": {
+                                    "title": "Synchronisation des filtres",
+                                    "description": "Ce que ce visu transmet aux autres visus du tableau de bord. Dans tous les cas il reçoit les filtres du dashboard.",
+                                    "type": "string",
+                                    "default": "shared-filters",
+                                    "oneOf": [
+                                      {
+                                        "const": "shared-filters",
+                                        "title": "Partage des filtres : ses filtres et sélections alimentent les autres visus"
                                       },
-                                      "filter": {
-                                        "title": "Filtres du visu (recherche, facette interne)",
-                                        "type": "boolean",
-                                        "default": false
+                                      {
+                                        "const": "sandboxed",
+                                        "title": "Cloisonné : il garde son état pour lui, rien n'est partagé"
+                                      },
+                                      {
+                                        "const": "none",
+                                        "title": "Aucune synchronisation : son état n'est pas conservé, rien n'est partagé"
                                       }
-                                    }
+                                    ]
                                   },
                                   "valueMandatory": {
                                     "title": "Nécessite une valeur dans des filtres",
                                     "type": "boolean",
-                                    "default": false,
-                                    "layout": {
-                                      "if": "!parent.data.ignoreFilters"
-                                    }
+                                    "default": false
                                   },
                                   "mandatoryFilters": {
                                     "title": "Filtres requis",
@@ -997,49 +940,30 @@
                                       }
                                     }
                                   },
-                                  "ignoreFilters": {
-                                    "title": "Ignorer les filtres",
-                                    "type": "boolean",
-                                    "default": false
-                                  },
-                                  "propagation": {
-                                    "title": "Propagation aux autres visus",
-                                    "description": "Ce que ce visu transmet aux autres visus du tableau de bord : une sélection (clic sur une entité) et/ou ses filtres. Le visu émetteur garde son propre état ; ce réglage ne change pas ce qu'il reçoit.",
-                                    "type": "object",
-                                    "properties": {
-                                      "selection": {
-                                        "title": "Sélection (clic sur une entité)",
-                                        "type": "string",
-                                        "default": "filter",
-                                        "oneOf": [
-                                          {
-                                            "const": "none",
-                                            "title": "Ne pas propager"
-                                          },
-                                          {
-                                            "const": "filter",
-                                            "title": "Propager en filtre : les autres se restreignent"
-                                          },
-                                          {
-                                            "const": "selection",
-                                            "title": "Propager en sélection : les autres mettent en évidence"
-                                          }
-                                        ]
+                                  "syncParams": {
+                                    "title": "Synchronisation des filtres",
+                                    "description": "Ce que ce visu transmet aux autres visus du tableau de bord. Dans tous les cas il reçoit les filtres du dashboard.",
+                                    "type": "string",
+                                    "default": "shared-filters",
+                                    "oneOf": [
+                                      {
+                                        "const": "shared-filters",
+                                        "title": "Partage des filtres : ses filtres et sélections alimentent les autres visus"
                                       },
-                                      "filter": {
-                                        "title": "Filtres du visu (recherche, facette interne)",
-                                        "type": "boolean",
-                                        "default": false
+                                      {
+                                        "const": "sandboxed",
+                                        "title": "Cloisonné : il garde son état pour lui, rien n'est partagé"
+                                      },
+                                      {
+                                        "const": "none",
+                                        "title": "Aucune synchronisation : son état n'est pas conservé, rien n'est partagé"
                                       }
-                                    }
+                                    ]
                                   },
                                   "valueMandatory": {
                                     "title": "Nécessite une valeur dans des filtres",
                                     "type": "boolean",
-                                    "default": false,
-                                    "layout": {
-                                      "if": "!parent.data.ignoreFilters"
-                                    }
+                                    "default": false
                                   },
                                   "mandatoryFilters": {
                                     "title": "Filtres requis",
@@ -1194,49 +1118,30 @@
                                               "type": "boolean",
                                               "default": false
                                             },
-                                            "ignoreFilters": {
-                                              "title": "Ignorer les filtres",
-                                              "type": "boolean",
-                                              "default": false
-                                            },
-                                            "propagation": {
-                                              "title": "Propagation aux autres visus",
-                                              "description": "Ce que ce visu transmet aux autres visus du tableau de bord : une sélection (clic sur une entité) et/ou ses filtres. Le visu émetteur garde son propre état ; ce réglage ne change pas ce qu'il reçoit.",
-                                              "type": "object",
-                                              "properties": {
-                                                "selection": {
-                                                  "title": "Sélection (clic sur une entité)",
-                                                  "type": "string",
-                                                  "default": "filter",
-                                                  "oneOf": [
-                                                    {
-                                                      "const": "none",
-                                                      "title": "Ne pas propager"
-                                                    },
-                                                    {
-                                                      "const": "filter",
-                                                      "title": "Propager en filtre : les autres se restreignent"
-                                                    },
-                                                    {
-                                                      "const": "selection",
-                                                      "title": "Propager en sélection : les autres mettent en évidence"
-                                                    }
-                                                  ]
+                                            "syncParams": {
+                                              "title": "Synchronisation des filtres",
+                                              "description": "Ce que ce visu transmet aux autres visus du tableau de bord. Dans tous les cas il reçoit les filtres du dashboard.",
+                                              "type": "string",
+                                              "default": "shared-filters",
+                                              "oneOf": [
+                                                {
+                                                  "const": "shared-filters",
+                                                  "title": "Partage des filtres : ses filtres et sélections alimentent les autres visus"
                                                 },
-                                                "filter": {
-                                                  "title": "Filtres du visu (recherche, facette interne)",
-                                                  "type": "boolean",
-                                                  "default": false
+                                                {
+                                                  "const": "sandboxed",
+                                                  "title": "Cloisonné : il garde son état pour lui, rien n'est partagé"
+                                                },
+                                                {
+                                                  "const": "none",
+                                                  "title": "Aucune synchronisation : son état n'est pas conservé, rien n'est partagé"
                                                 }
-                                              }
+                                              ]
                                             },
                                             "valueMandatory": {
                                               "title": "Nécessite une valeur dans des filtres",
                                               "type": "boolean",
-                                              "default": false,
-                                              "layout": {
-                                                "if": "!parent.data.ignoreFilters"
-                                              }
+                                              "default": false
                                             },
                                             "mandatoryFilters": {
                                               "title": "Filtres requis",
@@ -1339,49 +1244,30 @@
                                               "type": "boolean",
                                               "default": false
                                             },
-                                            "ignoreFilters": {
-                                              "title": "Ignorer les filtres",
-                                              "type": "boolean",
-                                              "default": false
-                                            },
-                                            "propagation": {
-                                              "title": "Propagation aux autres visus",
-                                              "description": "Ce que ce visu transmet aux autres visus du tableau de bord : une sélection (clic sur une entité) et/ou ses filtres. Le visu émetteur garde son propre état ; ce réglage ne change pas ce qu'il reçoit.",
-                                              "type": "object",
-                                              "properties": {
-                                                "selection": {
-                                                  "title": "Sélection (clic sur une entité)",
-                                                  "type": "string",
-                                                  "default": "filter",
-                                                  "oneOf": [
-                                                    {
-                                                      "const": "none",
-                                                      "title": "Ne pas propager"
-                                                    },
-                                                    {
-                                                      "const": "filter",
-                                                      "title": "Propager en filtre : les autres se restreignent"
-                                                    },
-                                                    {
-                                                      "const": "selection",
-                                                      "title": "Propager en sélection : les autres mettent en évidence"
-                                                    }
-                                                  ]
+                                            "syncParams": {
+                                              "title": "Synchronisation des filtres",
+                                              "description": "Ce que ce visu transmet aux autres visus du tableau de bord. Dans tous les cas il reçoit les filtres du dashboard.",
+                                              "type": "string",
+                                              "default": "shared-filters",
+                                              "oneOf": [
+                                                {
+                                                  "const": "shared-filters",
+                                                  "title": "Partage des filtres : ses filtres et sélections alimentent les autres visus"
                                                 },
-                                                "filter": {
-                                                  "title": "Filtres du visu (recherche, facette interne)",
-                                                  "type": "boolean",
-                                                  "default": false
+                                                {
+                                                  "const": "sandboxed",
+                                                  "title": "Cloisonné : il garde son état pour lui, rien n'est partagé"
+                                                },
+                                                {
+                                                  "const": "none",
+                                                  "title": "Aucune synchronisation : son état n'est pas conservé, rien n'est partagé"
                                                 }
-                                              }
+                                              ]
                                             },
                                             "valueMandatory": {
                                               "title": "Nécessite une valeur dans des filtres",
                                               "type": "boolean",
-                                              "default": false,
-                                              "layout": {
-                                                "if": "!parent.data.ignoreFilters"
-                                              }
+                                              "default": false
                                             },
                                             "mandatoryFilters": {
                                               "title": "Filtres requis",
@@ -1452,49 +1338,30 @@
                                                 }
                                               }
                                             },
-                                            "ignoreFilters": {
-                                              "title": "Ignorer les filtres",
-                                              "type": "boolean",
-                                              "default": false
-                                            },
-                                            "propagation": {
-                                              "title": "Propagation aux autres visus",
-                                              "description": "Ce que ce visu transmet aux autres visus du tableau de bord : une sélection (clic sur une entité) et/ou ses filtres. Le visu émetteur garde son propre état ; ce réglage ne change pas ce qu'il reçoit.",
-                                              "type": "object",
-                                              "properties": {
-                                                "selection": {
-                                                  "title": "Sélection (clic sur une entité)",
-                                                  "type": "string",
-                                                  "default": "filter",
-                                                  "oneOf": [
-                                                    {
-                                                      "const": "none",
-                                                      "title": "Ne pas propager"
-                                                    },
-                                                    {
-                                                      "const": "filter",
-                                                      "title": "Propager en filtre : les autres se restreignent"
-                                                    },
-                                                    {
-                                                      "const": "selection",
-                                                      "title": "Propager en sélection : les autres mettent en évidence"
-                                                    }
-                                                  ]
+                                            "syncParams": {
+                                              "title": "Synchronisation des filtres",
+                                              "description": "Ce que ce visu transmet aux autres visus du tableau de bord. Dans tous les cas il reçoit les filtres du dashboard.",
+                                              "type": "string",
+                                              "default": "shared-filters",
+                                              "oneOf": [
+                                                {
+                                                  "const": "shared-filters",
+                                                  "title": "Partage des filtres : ses filtres et sélections alimentent les autres visus"
                                                 },
-                                                "filter": {
-                                                  "title": "Filtres du visu (recherche, facette interne)",
-                                                  "type": "boolean",
-                                                  "default": false
+                                                {
+                                                  "const": "sandboxed",
+                                                  "title": "Cloisonné : il garde son état pour lui, rien n'est partagé"
+                                                },
+                                                {
+                                                  "const": "none",
+                                                  "title": "Aucune synchronisation : son état n'est pas conservé, rien n'est partagé"
                                                 }
-                                              }
+                                              ]
                                             },
                                             "valueMandatory": {
                                               "title": "Nécessite une valeur dans des filtres",
                                               "type": "boolean",
-                                              "default": false,
-                                              "layout": {
-                                                "if": "!parent.data.ignoreFilters"
-                                              }
+                                              "default": false
                                             },
                                             "mandatoryFilters": {
                                               "title": "Filtres requis",
@@ -1572,49 +1439,30 @@
                                                 }
                                               }
                                             },
-                                            "ignoreFilters": {
-                                              "title": "Ignorer les filtres",
-                                              "type": "boolean",
-                                              "default": false
-                                            },
-                                            "propagation": {
-                                              "title": "Propagation aux autres visus",
-                                              "description": "Ce que ce visu transmet aux autres visus du tableau de bord : une sélection (clic sur une entité) et/ou ses filtres. Le visu émetteur garde son propre état ; ce réglage ne change pas ce qu'il reçoit.",
-                                              "type": "object",
-                                              "properties": {
-                                                "selection": {
-                                                  "title": "Sélection (clic sur une entité)",
-                                                  "type": "string",
-                                                  "default": "filter",
-                                                  "oneOf": [
-                                                    {
-                                                      "const": "none",
-                                                      "title": "Ne pas propager"
-                                                    },
-                                                    {
-                                                      "const": "filter",
-                                                      "title": "Propager en filtre : les autres se restreignent"
-                                                    },
-                                                    {
-                                                      "const": "selection",
-                                                      "title": "Propager en sélection : les autres mettent en évidence"
-                                                    }
-                                                  ]
+                                            "syncParams": {
+                                              "title": "Synchronisation des filtres",
+                                              "description": "Ce que ce visu transmet aux autres visus du tableau de bord. Dans tous les cas il reçoit les filtres du dashboard.",
+                                              "type": "string",
+                                              "default": "shared-filters",
+                                              "oneOf": [
+                                                {
+                                                  "const": "shared-filters",
+                                                  "title": "Partage des filtres : ses filtres et sélections alimentent les autres visus"
                                                 },
-                                                "filter": {
-                                                  "title": "Filtres du visu (recherche, facette interne)",
-                                                  "type": "boolean",
-                                                  "default": false
+                                                {
+                                                  "const": "sandboxed",
+                                                  "title": "Cloisonné : il garde son état pour lui, rien n'est partagé"
+                                                },
+                                                {
+                                                  "const": "none",
+                                                  "title": "Aucune synchronisation : son état n'est pas conservé, rien n'est partagé"
                                                 }
-                                              }
+                                              ]
                                             },
                                             "valueMandatory": {
                                               "title": "Nécessite une valeur dans des filtres",
                                               "type": "boolean",
-                                              "default": false,
-                                              "layout": {
-                                                "if": "!parent.data.ignoreFilters"
-                                              }
+                                              "default": false
                                             },
                                             "mandatoryFilters": {
                                               "title": "Filtres requis",
@@ -1715,10 +1563,25 @@
                                             }
                                           }
                                         },
-                                        "ignoreFilters": {
-                                          "title": "Ignorer les filtres",
-                                          "type": "boolean",
-                                          "default": false
+                                        "syncParams": {
+                                          "title": "Synchronisation des filtres",
+                                          "description": "Ce que ce formulaire transmet aux autres visus du tableau de bord. Dans tous les cas il reçoit les filtres du dashboard.",
+                                          "type": "string",
+                                          "default": "shared-filters",
+                                          "oneOf": [
+                                            {
+                                              "const": "shared-filters",
+                                              "title": "Partage des filtres : ses filtres alimentent les autres visus"
+                                            },
+                                            {
+                                              "const": "sandboxed",
+                                              "title": "Cloisonné : il garde son état pour lui, rien n'est partagé"
+                                            },
+                                            {
+                                              "const": "none",
+                                              "title": "Aucune synchronisation : son état n'est pas conservé, rien n'est partagé"
+                                            }
+                                          ]
                                         }
                                       }
                                     }
@@ -1767,10 +1630,25 @@
                                   }
                                 }
                               },
-                              "ignoreFilters": {
-                                "title": "Ignorer les filtres",
-                                "type": "boolean",
-                                "default": false
+                              "syncParams": {
+                                "title": "Synchronisation des filtres",
+                                "description": "Ce que ce formulaire transmet aux autres visus du tableau de bord. Dans tous les cas il reçoit les filtres du dashboard.",
+                                "type": "string",
+                                "default": "shared-filters",
+                                "oneOf": [
+                                  {
+                                    "const": "shared-filters",
+                                    "title": "Partage des filtres : ses filtres alimentent les autres visus"
+                                  },
+                                  {
+                                    "const": "sandboxed",
+                                    "title": "Cloisonné : il garde son état pour lui, rien n'est partagé"
+                                  },
+                                  {
+                                    "const": "none",
+                                    "title": "Aucune synchronisation : son état n'est pas conservé, rien n'est partagé"
+                                  }
+                                ]
                               }
                             }
                           }
@@ -2289,49 +2167,30 @@
               "type": "boolean",
               "default": false
             },
-            "ignoreFilters": {
-              "title": "Ignorer les filtres",
-              "type": "boolean",
-              "default": false
-            },
-            "propagation": {
-              "title": "Propagation aux autres visus",
-              "description": "Ce que ce visu transmet aux autres visus du tableau de bord : une sélection (clic sur une entité) et/ou ses filtres. Le visu émetteur garde son propre état ; ce réglage ne change pas ce qu'il reçoit.",
-              "type": "object",
-              "properties": {
-                "selection": {
-                  "title": "Sélection (clic sur une entité)",
-                  "type": "string",
-                  "default": "filter",
-                  "oneOf": [
-                    {
-                      "const": "none",
-                      "title": "Ne pas propager"
-                    },
-                    {
-                      "const": "filter",
-                      "title": "Propager en filtre : les autres se restreignent"
-                    },
-                    {
-                      "const": "selection",
-                      "title": "Propager en sélection : les autres mettent en évidence"
-                    }
-                  ]
+            "syncParams": {
+              "title": "Synchronisation des filtres",
+              "description": "Ce que ce visu transmet aux autres visus du tableau de bord. Dans tous les cas il reçoit les filtres du dashboard.",
+              "type": "string",
+              "default": "shared-filters",
+              "oneOf": [
+                {
+                  "const": "shared-filters",
+                  "title": "Partage des filtres : ses filtres et sélections alimentent les autres visus"
                 },
-                "filter": {
-                  "title": "Filtres du visu (recherche, facette interne)",
-                  "type": "boolean",
-                  "default": false
+                {
+                  "const": "sandboxed",
+                  "title": "Cloisonné : il garde son état pour lui, rien n'est partagé"
+                },
+                {
+                  "const": "none",
+                  "title": "Aucune synchronisation : son état n'est pas conservé, rien n'est partagé"
                 }
-              }
+              ]
             },
             "valueMandatory": {
               "title": "Nécessite une valeur dans des filtres",
               "type": "boolean",
-              "default": false,
-              "layout": {
-                "if": "!parent.data.ignoreFilters"
-              }
+              "default": false
             },
             "mandatoryFilters": {
               "title": "Filtres requis",
@@ -2434,49 +2293,30 @@
               "type": "boolean",
               "default": false
             },
-            "ignoreFilters": {
-              "title": "Ignorer les filtres",
-              "type": "boolean",
-              "default": false
-            },
-            "propagation": {
-              "title": "Propagation aux autres visus",
-              "description": "Ce que ce visu transmet aux autres visus du tableau de bord : une sélection (clic sur une entité) et/ou ses filtres. Le visu émetteur garde son propre état ; ce réglage ne change pas ce qu'il reçoit.",
-              "type": "object",
-              "properties": {
-                "selection": {
-                  "title": "Sélection (clic sur une entité)",
-                  "type": "string",
-                  "default": "filter",
-                  "oneOf": [
-                    {
-                      "const": "none",
-                      "title": "Ne pas propager"
-                    },
-                    {
-                      "const": "filter",
-                      "title": "Propager en filtre : les autres se restreignent"
-                    },
-                    {
-                      "const": "selection",
-                      "title": "Propager en sélection : les autres mettent en évidence"
-                    }
-                  ]
+            "syncParams": {
+              "title": "Synchronisation des filtres",
+              "description": "Ce que ce visu transmet aux autres visus du tableau de bord. Dans tous les cas il reçoit les filtres du dashboard.",
+              "type": "string",
+              "default": "shared-filters",
+              "oneOf": [
+                {
+                  "const": "shared-filters",
+                  "title": "Partage des filtres : ses filtres et sélections alimentent les autres visus"
                 },
-                "filter": {
-                  "title": "Filtres du visu (recherche, facette interne)",
-                  "type": "boolean",
-                  "default": false
+                {
+                  "const": "sandboxed",
+                  "title": "Cloisonné : il garde son état pour lui, rien n'est partagé"
+                },
+                {
+                  "const": "none",
+                  "title": "Aucune synchronisation : son état n'est pas conservé, rien n'est partagé"
                 }
-              }
+              ]
             },
             "valueMandatory": {
               "title": "Nécessite une valeur dans des filtres",
               "type": "boolean",
-              "default": false,
-              "layout": {
-                "if": "!parent.data.ignoreFilters"
-              }
+              "default": false
             },
             "mandatoryFilters": {
               "title": "Filtres requis",
@@ -2547,49 +2387,30 @@
                 }
               }
             },
-            "ignoreFilters": {
-              "title": "Ignorer les filtres",
-              "type": "boolean",
-              "default": false
-            },
-            "propagation": {
-              "title": "Propagation aux autres visus",
-              "description": "Ce que ce visu transmet aux autres visus du tableau de bord : une sélection (clic sur une entité) et/ou ses filtres. Le visu émetteur garde son propre état ; ce réglage ne change pas ce qu'il reçoit.",
-              "type": "object",
-              "properties": {
-                "selection": {
-                  "title": "Sélection (clic sur une entité)",
-                  "type": "string",
-                  "default": "filter",
-                  "oneOf": [
-                    {
-                      "const": "none",
-                      "title": "Ne pas propager"
-                    },
-                    {
-                      "const": "filter",
-                      "title": "Propager en filtre : les autres se restreignent"
-                    },
-                    {
-                      "const": "selection",
-                      "title": "Propager en sélection : les autres mettent en évidence"
-                    }
-                  ]
+            "syncParams": {
+              "title": "Synchronisation des filtres",
+              "description": "Ce que ce visu transmet aux autres visus du tableau de bord. Dans tous les cas il reçoit les filtres du dashboard.",
+              "type": "string",
+              "default": "shared-filters",
+              "oneOf": [
+                {
+                  "const": "shared-filters",
+                  "title": "Partage des filtres : ses filtres et sélections alimentent les autres visus"
                 },
-                "filter": {
-                  "title": "Filtres du visu (recherche, facette interne)",
-                  "type": "boolean",
-                  "default": false
+                {
+                  "const": "sandboxed",
+                  "title": "Cloisonné : il garde son état pour lui, rien n'est partagé"
+                },
+                {
+                  "const": "none",
+                  "title": "Aucune synchronisation : son état n'est pas conservé, rien n'est partagé"
                 }
-              }
+              ]
             },
             "valueMandatory": {
               "title": "Nécessite une valeur dans des filtres",
               "type": "boolean",
-              "default": false,
-              "layout": {
-                "if": "!parent.data.ignoreFilters"
-              }
+              "default": false
             },
             "mandatoryFilters": {
               "title": "Filtres requis",
@@ -2667,49 +2488,30 @@
                 }
               }
             },
-            "ignoreFilters": {
-              "title": "Ignorer les filtres",
-              "type": "boolean",
-              "default": false
-            },
-            "propagation": {
-              "title": "Propagation aux autres visus",
-              "description": "Ce que ce visu transmet aux autres visus du tableau de bord : une sélection (clic sur une entité) et/ou ses filtres. Le visu émetteur garde son propre état ; ce réglage ne change pas ce qu'il reçoit.",
-              "type": "object",
-              "properties": {
-                "selection": {
-                  "title": "Sélection (clic sur une entité)",
-                  "type": "string",
-                  "default": "filter",
-                  "oneOf": [
-                    {
-                      "const": "none",
-                      "title": "Ne pas propager"
-                    },
-                    {
-                      "const": "filter",
-                      "title": "Propager en filtre : les autres se restreignent"
-                    },
-                    {
-                      "const": "selection",
-                      "title": "Propager en sélection : les autres mettent en évidence"
-                    }
-                  ]
+            "syncParams": {
+              "title": "Synchronisation des filtres",
+              "description": "Ce que ce visu transmet aux autres visus du tableau de bord. Dans tous les cas il reçoit les filtres du dashboard.",
+              "type": "string",
+              "default": "shared-filters",
+              "oneOf": [
+                {
+                  "const": "shared-filters",
+                  "title": "Partage des filtres : ses filtres et sélections alimentent les autres visus"
                 },
-                "filter": {
-                  "title": "Filtres du visu (recherche, facette interne)",
-                  "type": "boolean",
-                  "default": false
+                {
+                  "const": "sandboxed",
+                  "title": "Cloisonné : il garde son état pour lui, rien n'est partagé"
+                },
+                {
+                  "const": "none",
+                  "title": "Aucune synchronisation : son état n'est pas conservé, rien n'est partagé"
                 }
-              }
+              ]
             },
             "valueMandatory": {
               "title": "Nécessite une valeur dans des filtres",
               "type": "boolean",
-              "default": false,
-              "layout": {
-                "if": "!parent.data.ignoreFilters"
-              }
+              "default": false
             },
             "mandatoryFilters": {
               "title": "Filtres requis",
@@ -2810,10 +2612,25 @@
             }
           }
         },
-        "ignoreFilters": {
-          "title": "Ignorer les filtres",
-          "type": "boolean",
-          "default": false
+        "syncParams": {
+          "title": "Synchronisation des filtres",
+          "description": "Ce que ce formulaire transmet aux autres visus du tableau de bord. Dans tous les cas il reçoit les filtres du dashboard.",
+          "type": "string",
+          "default": "shared-filters",
+          "oneOf": [
+            {
+              "const": "shared-filters",
+              "title": "Partage des filtres : ses filtres alimentent les autres visus"
+            },
+            {
+              "const": "sandboxed",
+              "title": "Cloisonné : il garde son état pour lui, rien n'est partagé"
+            },
+            {
+              "const": "none",
+              "title": "Aucune synchronisation : son état n'est pas conservé, rien n'est partagé"
+            }
+          ]
         }
       }
     },
@@ -2904,49 +2721,30 @@
                         "type": "boolean",
                         "default": false
                       },
-                      "ignoreFilters": {
-                        "title": "Ignorer les filtres",
-                        "type": "boolean",
-                        "default": false
-                      },
-                      "propagation": {
-                        "title": "Propagation aux autres visus",
-                        "description": "Ce que ce visu transmet aux autres visus du tableau de bord : une sélection (clic sur une entité) et/ou ses filtres. Le visu émetteur garde son propre état ; ce réglage ne change pas ce qu'il reçoit.",
-                        "type": "object",
-                        "properties": {
-                          "selection": {
-                            "title": "Sélection (clic sur une entité)",
-                            "type": "string",
-                            "default": "filter",
-                            "oneOf": [
-                              {
-                                "const": "none",
-                                "title": "Ne pas propager"
-                              },
-                              {
-                                "const": "filter",
-                                "title": "Propager en filtre : les autres se restreignent"
-                              },
-                              {
-                                "const": "selection",
-                                "title": "Propager en sélection : les autres mettent en évidence"
-                              }
-                            ]
+                      "syncParams": {
+                        "title": "Synchronisation des filtres",
+                        "description": "Ce que ce visu transmet aux autres visus du tableau de bord. Dans tous les cas il reçoit les filtres du dashboard.",
+                        "type": "string",
+                        "default": "shared-filters",
+                        "oneOf": [
+                          {
+                            "const": "shared-filters",
+                            "title": "Partage des filtres : ses filtres et sélections alimentent les autres visus"
                           },
-                          "filter": {
-                            "title": "Filtres du visu (recherche, facette interne)",
-                            "type": "boolean",
-                            "default": false
+                          {
+                            "const": "sandboxed",
+                            "title": "Cloisonné : il garde son état pour lui, rien n'est partagé"
+                          },
+                          {
+                            "const": "none",
+                            "title": "Aucune synchronisation : son état n'est pas conservé, rien n'est partagé"
                           }
-                        }
+                        ]
                       },
                       "valueMandatory": {
                         "title": "Nécessite une valeur dans des filtres",
                         "type": "boolean",
-                        "default": false,
-                        "layout": {
-                          "if": "!parent.data.ignoreFilters"
-                        }
+                        "default": false
                       },
                       "mandatoryFilters": {
                         "title": "Filtres requis",
@@ -3049,49 +2847,30 @@
                         "type": "boolean",
                         "default": false
                       },
-                      "ignoreFilters": {
-                        "title": "Ignorer les filtres",
-                        "type": "boolean",
-                        "default": false
-                      },
-                      "propagation": {
-                        "title": "Propagation aux autres visus",
-                        "description": "Ce que ce visu transmet aux autres visus du tableau de bord : une sélection (clic sur une entité) et/ou ses filtres. Le visu émetteur garde son propre état ; ce réglage ne change pas ce qu'il reçoit.",
-                        "type": "object",
-                        "properties": {
-                          "selection": {
-                            "title": "Sélection (clic sur une entité)",
-                            "type": "string",
-                            "default": "filter",
-                            "oneOf": [
-                              {
-                                "const": "none",
-                                "title": "Ne pas propager"
-                              },
-                              {
-                                "const": "filter",
-                                "title": "Propager en filtre : les autres se restreignent"
-                              },
-                              {
-                                "const": "selection",
-                                "title": "Propager en sélection : les autres mettent en évidence"
-                              }
-                            ]
+                      "syncParams": {
+                        "title": "Synchronisation des filtres",
+                        "description": "Ce que ce visu transmet aux autres visus du tableau de bord. Dans tous les cas il reçoit les filtres du dashboard.",
+                        "type": "string",
+                        "default": "shared-filters",
+                        "oneOf": [
+                          {
+                            "const": "shared-filters",
+                            "title": "Partage des filtres : ses filtres et sélections alimentent les autres visus"
                           },
-                          "filter": {
-                            "title": "Filtres du visu (recherche, facette interne)",
-                            "type": "boolean",
-                            "default": false
+                          {
+                            "const": "sandboxed",
+                            "title": "Cloisonné : il garde son état pour lui, rien n'est partagé"
+                          },
+                          {
+                            "const": "none",
+                            "title": "Aucune synchronisation : son état n'est pas conservé, rien n'est partagé"
                           }
-                        }
+                        ]
                       },
                       "valueMandatory": {
                         "title": "Nécessite une valeur dans des filtres",
                         "type": "boolean",
-                        "default": false,
-                        "layout": {
-                          "if": "!parent.data.ignoreFilters"
-                        }
+                        "default": false
                       },
                       "mandatoryFilters": {
                         "title": "Filtres requis",
@@ -3162,49 +2941,30 @@
                           }
                         }
                       },
-                      "ignoreFilters": {
-                        "title": "Ignorer les filtres",
-                        "type": "boolean",
-                        "default": false
-                      },
-                      "propagation": {
-                        "title": "Propagation aux autres visus",
-                        "description": "Ce que ce visu transmet aux autres visus du tableau de bord : une sélection (clic sur une entité) et/ou ses filtres. Le visu émetteur garde son propre état ; ce réglage ne change pas ce qu'il reçoit.",
-                        "type": "object",
-                        "properties": {
-                          "selection": {
-                            "title": "Sélection (clic sur une entité)",
-                            "type": "string",
-                            "default": "filter",
-                            "oneOf": [
-                              {
-                                "const": "none",
-                                "title": "Ne pas propager"
-                              },
-                              {
-                                "const": "filter",
-                                "title": "Propager en filtre : les autres se restreignent"
-                              },
-                              {
-                                "const": "selection",
-                                "title": "Propager en sélection : les autres mettent en évidence"
-                              }
-                            ]
+                      "syncParams": {
+                        "title": "Synchronisation des filtres",
+                        "description": "Ce que ce visu transmet aux autres visus du tableau de bord. Dans tous les cas il reçoit les filtres du dashboard.",
+                        "type": "string",
+                        "default": "shared-filters",
+                        "oneOf": [
+                          {
+                            "const": "shared-filters",
+                            "title": "Partage des filtres : ses filtres et sélections alimentent les autres visus"
                           },
-                          "filter": {
-                            "title": "Filtres du visu (recherche, facette interne)",
-                            "type": "boolean",
-                            "default": false
+                          {
+                            "const": "sandboxed",
+                            "title": "Cloisonné : il garde son état pour lui, rien n'est partagé"
+                          },
+                          {
+                            "const": "none",
+                            "title": "Aucune synchronisation : son état n'est pas conservé, rien n'est partagé"
                           }
-                        }
+                        ]
                       },
                       "valueMandatory": {
                         "title": "Nécessite une valeur dans des filtres",
                         "type": "boolean",
-                        "default": false,
-                        "layout": {
-                          "if": "!parent.data.ignoreFilters"
-                        }
+                        "default": false
                       },
                       "mandatoryFilters": {
                         "title": "Filtres requis",
@@ -3282,49 +3042,30 @@
                           }
                         }
                       },
-                      "ignoreFilters": {
-                        "title": "Ignorer les filtres",
-                        "type": "boolean",
-                        "default": false
-                      },
-                      "propagation": {
-                        "title": "Propagation aux autres visus",
-                        "description": "Ce que ce visu transmet aux autres visus du tableau de bord : une sélection (clic sur une entité) et/ou ses filtres. Le visu émetteur garde son propre état ; ce réglage ne change pas ce qu'il reçoit.",
-                        "type": "object",
-                        "properties": {
-                          "selection": {
-                            "title": "Sélection (clic sur une entité)",
-                            "type": "string",
-                            "default": "filter",
-                            "oneOf": [
-                              {
-                                "const": "none",
-                                "title": "Ne pas propager"
-                              },
-                              {
-                                "const": "filter",
-                                "title": "Propager en filtre : les autres se restreignent"
-                              },
-                              {
-                                "const": "selection",
-                                "title": "Propager en sélection : les autres mettent en évidence"
-                              }
-                            ]
+                      "syncParams": {
+                        "title": "Synchronisation des filtres",
+                        "description": "Ce que ce visu transmet aux autres visus du tableau de bord. Dans tous les cas il reçoit les filtres du dashboard.",
+                        "type": "string",
+                        "default": "shared-filters",
+                        "oneOf": [
+                          {
+                            "const": "shared-filters",
+                            "title": "Partage des filtres : ses filtres et sélections alimentent les autres visus"
                           },
-                          "filter": {
-                            "title": "Filtres du visu (recherche, facette interne)",
-                            "type": "boolean",
-                            "default": false
+                          {
+                            "const": "sandboxed",
+                            "title": "Cloisonné : il garde son état pour lui, rien n'est partagé"
+                          },
+                          {
+                            "const": "none",
+                            "title": "Aucune synchronisation : son état n'est pas conservé, rien n'est partagé"
                           }
-                        }
+                        ]
                       },
                       "valueMandatory": {
                         "title": "Nécessite une valeur dans des filtres",
                         "type": "boolean",
-                        "default": false,
-                        "layout": {
-                          "if": "!parent.data.ignoreFilters"
-                        }
+                        "default": false
                       },
                       "mandatoryFilters": {
                         "title": "Filtres requis",
@@ -3425,10 +3166,25 @@
                       }
                     }
                   },
-                  "ignoreFilters": {
-                    "title": "Ignorer les filtres",
-                    "type": "boolean",
-                    "default": false
+                  "syncParams": {
+                    "title": "Synchronisation des filtres",
+                    "description": "Ce que ce formulaire transmet aux autres visus du tableau de bord. Dans tous les cas il reçoit les filtres du dashboard.",
+                    "type": "string",
+                    "default": "shared-filters",
+                    "oneOf": [
+                      {
+                        "const": "shared-filters",
+                        "title": "Partage des filtres : ses filtres alimentent les autres visus"
+                      },
+                      {
+                        "const": "sandboxed",
+                        "title": "Cloisonné : il garde son état pour lui, rien n'est partagé"
+                      },
+                      {
+                        "const": "none",
+                        "title": "Aucune synchronisation : son état n'est pas conservé, rien n'est partagé"
+                      }
+                    ]
                   }
                 }
               }

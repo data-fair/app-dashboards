@@ -58,15 +58,17 @@ export type DashboardElementType = 'tablePreview' | 'application' | 'text' | 'fo
 
 export type DashboardElementWidth = 1 | 2 | 3
 
-/** What an element transmits to the other visus of the dashboard. */
-export type SelectionPropagation = 'none' | 'selection' | 'filter'
-
-export interface ElementPropagation {
-  /** Clic sur une entité : ne pas propager, propager en sélection, ou en filtre. */
-  selection?: SelectionPropagation
-  /** Propager les filtres simples émis par le visu (recherche, facette interne). */
-  filter?: boolean
-}
+/**
+ * Synchronisation d'un élément avec le dashboard et les autres visus, alignée
+ * sur les modes `syncParams` d'une page de portail :
+ *  - `shared-filters` (défaut) : ses filtres/sélections sont reprojetés dans le
+ *    namespace propre (`_c*`/`_d*`) et relayés aux autres visus ;
+ *  - `sandboxed` : il garde son état dans son canal privé, rien n'est partagé ;
+ *  - `none` : aucun canal privé, son état n'est pas conservé, rien n'est partagé.
+ * Dans tous les cas il reçoit les filtres du dashboard (`ignoreFilters` n'existe
+ * plus).
+ */
+export type SyncParams = 'none' | 'sandboxed' | 'shared-filters'
 
 export type DashboardDescriptionPosition = 'none' | 'left' | 'right' | 'top' | 'bottom'
 
@@ -101,8 +103,7 @@ export interface TablePreviewElement extends BaseElement {
   fields?: string[]
   display?: 'table' | 'table-dense' | 'list'
   noInteractions?: boolean
-  ignoreFilters?: boolean
-  propagation?: ElementPropagation
+  syncParams?: SyncParams
   valueMandatory?: boolean
   mandatoryFilters?: string[]
 }
@@ -116,8 +117,7 @@ export interface ApplicationElement extends BaseElement {
     href: string
     baseApp: { meta: Record<string, unknown> }
   }
-  ignoreFilters?: boolean
-  propagation?: ElementPropagation
+  syncParams?: SyncParams
   valueMandatory?: boolean
   mandatoryFilters?: string[]
   description?: DashboardDescriptionPosition
@@ -131,7 +131,7 @@ export interface TextElement extends BaseElement {
 export interface FormElement extends BaseElement {
   type: 'form'
   dataset?: DashboardDataset
-  ignoreFilters?: boolean
+  syncParams?: SyncParams
 }
 
 export type DashboardElement =

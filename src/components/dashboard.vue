@@ -24,9 +24,9 @@ import { pageTitleDefaults } from '@/utils/title-style'
 const { config, dataset, error } = useConfig()
 const { t } = useI18n()
 
-// Les visus embarqués écrivent leurs sélections et filtres dans un canal privé
-// (namespace par élément) : on les reprojette ici vers le namespace propre
-// `_c_*` / `_s_*` / `_d_*` de l'URL du dashboard.
+// Les visus embarqués écrivent leurs filtres dans un canal privé (namespace par
+// élément) : on les reprojette ici vers le namespace propre `_c_*` / `_d_*` de
+// l'URL du dashboard (cf. syncParams des éléments).
 useEmissionsProjection()
 
 const filtersValues = reactive<Record<number, FiltersValues>>({ 0: { keys: [] }, 1: { keys: [] } })

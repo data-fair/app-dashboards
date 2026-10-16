@@ -536,16 +536,13 @@ test.describe('collectReceivedFilters', () => {
     })
   })
 
-  test('relaie les marqueurs de sélection sans les compter dans les champs', () => {
+  test('ignore les marqueurs de sélection hérités (_s_), clés inconnues', () => {
     const received = collectReceivedFilters({
       params: { _s_codeDepartement: 'app_sankey', _s_ds1_an: 'app_table' },
       fields,
       config
     })
-    expect(received).toEqual({
-      values: { _s_codeDepartement: 'app_sankey', _s_ds1_an: 'app_table' },
-      fields: []
-    })
+    expect(received).toEqual({ values: {}, fields: [] })
   })
 
   test('ne relaie pas les clés internes de ses filtres dynamiques (labels, CSV quoté)', () => {

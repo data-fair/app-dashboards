@@ -2,11 +2,11 @@
  * Project the emissions of the embedded visus into the dashboard URL.
  *
  * Each embed writes its own state in a private, namespaced channel
- * (`sync-params="*:<scope>_"` on its d-frame): a selection or a filter it emits
- * lands as `<scope>_<key>` in the dashboard URL. This composable turns those
- * private keys into the clean, shared namespace (`_c_*` / `_s_*` / `_d_*`)
- * every visu and every outer page understands, following the per-element
- * `propagation` settings (see `utils/emissions.ts`).
+ * (`sync-params="*:<scope>_"` on its d-frame): a filter it emits lands as
+ * `<scope>_<key>` in the dashboard URL. This composable turns those private
+ * keys into the clean, shared namespace (`_c_*` / `_d_*`) every visu and every
+ * outer page understands, for the elements in `shared-filters` mode (see
+ * `utils/emissions.ts`).
  *
  * Called once by `dashboard.vue`: the clean keys are URL-wide (the compare-view
  * columns keep separate private channels through their scope prefix, but share

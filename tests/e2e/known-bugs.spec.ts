@@ -24,7 +24,7 @@ interface DashboardElementConfig {
   type: string
   dataset?: { id: string }
   application?: { id: string; href?: string }
-  ignoreFilters?: boolean
+  syncParams?: string
   valueMandatory?: boolean
   mandatoryFilters?: string[]
   elements?: DashboardElementConfig[]
@@ -541,7 +541,7 @@ test.describe('Bugs connus (régressions)', () => {
     //    filtre dynamique est actif l'emportent et sont sautés).
     const rootDatasetId = config.datasets?.[0]?.id
     const staticFilters = config.staticFilters || []
-    const hasFilteredApp = visibleElements(config).some(el => el.type === 'application' && !!el.application?.id && !el.ignoreFilters)
+    const hasFilteredApp = visibleElements(config).some(el => el.type === 'application' && !!el.application?.id)
     if (staticFilters.length && rootDatasetId && hasFilteredApp) {
       const activeFields = new Set([...initialActiveFields(config), ...(unGateField ? [unGateField] : [])])
       for (const src of srcs.filter(s => s.includes('/data-fair/app/'))) {

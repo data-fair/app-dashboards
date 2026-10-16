@@ -352,7 +352,7 @@ test.describe('useFiltersValues', () => {
     expect(values.value._c_codeCommune_in).toBe('86194')
   })
 
-  test('relaie les marqueurs et les filtres dataset-scopés reçus', async () => {
+  test('relaie les filtres dataset-scopés et concept reçus, ignore les marqueurs hérités', async () => {
     reactiveSearchParams._c_codeCommune_in = '86222'
     reactiveSearchParams._s_codeCommune = 'app_sankey'
     reactiveSearchParams._d_autre_dep_in = '75'
@@ -365,7 +365,6 @@ test.describe('useFiltersValues', () => {
     expect(values.value).toEqual({
       keys: [],
       _c_codeCommune_in: '86222',
-      _s_codeCommune: 'app_sankey',
       _d_autre_dep_in: '75',
       finalizedAt: 'F'
     })

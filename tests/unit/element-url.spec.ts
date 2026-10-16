@@ -65,7 +65,7 @@ test.describe('tableDFrameSrc', () => {
   })
 
   test('transmet les clés reçues (sans préfixe) du dataset de l\'élément', () => {
-    const filters = { keys: [], _d_ds1_int_in: '2', _s_ds1_int: 'app_table' }
+    const filters = { keys: [], _d_ds1_int_in: '2' }
     const src = tableDFrameSrc(tableEl(), 'ds1', null, filters, undefined, undefined, undefined, '')
     expect(src).toContain('int_in=2')
   })
@@ -75,10 +75,10 @@ test.describe('tableDFrameSrc', () => {
     expect(src).toMatch(/^\/data-fair\/embed\/dataset\/abc%3Ads1\/table\?/)
   })
 
-  test('ignore les filtres quand ignoreFilters est activé', () => {
+  test('transmet toujours les filtres (plus d\'ignoreFilters)', () => {
     const filters = { keys: [], _d_ds1_int_in: '1' }
-    const src = tableDFrameSrc(tableEl({ ignoreFilters: true }), 'ds1', null, filters, undefined, undefined, undefined, '')
-    expect(src).toBe('/data-fair/embed/dataset/ds1/table?d-frame=true&interaction=true')
+    const src = tableDFrameSrc(tableEl(), 'ds1', null, filters, undefined, undefined, undefined, '')
+    expect(src).toContain('int_in=1')
   })
 
   test('transmet primary/secondary, display et cols', () => {
@@ -166,9 +166,9 @@ test.describe('applicationDFrameSrc', () => {
     expect(src).not.toContain('keys=')
   })
 
-  test('ignore les filtres quand ignoreFilters est activé', () => {
-    const src = applicationDFrameSrc(appEl({ ignoreFilters: true }), null, { keys: [], _d_ds1_int_in: '1' }, undefined, undefined, undefined)
-    expect(src).toBe('/data-fair/app/sankey?d-frame=true')
+  test('transmet toujours les filtres (plus d\'ignoreFilters)', () => {
+    const src = applicationDFrameSrc(appEl(), null, { keys: [], _d_ds1_int_in: '1' }, undefined, undefined, undefined)
+    expect(src).toContain('_d_ds1_int_in=1')
   })
 
   test('transmet primary/secondary et print désactive l\'interaction', () => {
