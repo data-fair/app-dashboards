@@ -7,10 +7,12 @@ import { parseSyncParams, getChildSrc, getParentUrl } from '@data-fair/frame/lib
  *
  * Ces assertions figent le comportement de `@data-fair/frame` : une montée de
  * version qui casserait l'injection, la purge ou l'anti-écho doit faire échouer
- * la suite. Les patterns partagés (`_c*`, `_d*`) sont volontairement exclus :
- * ils injectent les clés du parent dans l'enfant et suppriment de l'URL du
- * dashboard toute clé absente de l'enfant qui en émet (ils casseraient la
- * séparation des colonnes du mode comparaison).
+ * la suite (contrat relevé en 0.19 : une valeur égale à celle de la src est
+ * retirée de l'URL du dashboard, cf. « anti-écho »). Les patterns partagés
+ * (`_c*`, `_d*`) sont volontairement exclus : ils injectent les clés du parent
+ * dans l'enfant et suppriment de l'URL du dashboard toute clé absente de
+ * l'enfant qui en émet (ils casseraient la séparation des colonnes du mode
+ * comparaison).
  */
 const scope = parseSyncParams('*:application-a_')
 const src = 'http://host/data-fair/app/A?d-frame=true&finalizedAt=F'
@@ -48,7 +50,10 @@ test.describe('canal privé du visu (sync-params *:<scope>_)', () => {
     expect(query['application-b__c_q']).toBe('b')
   })
 
-  test('anti-écho : une clé identique à celle de la src n\'est pas ré-émise', () => {
+  test('anti-écho : une clé identique à celle de la src n\'est pas conservée par le dashboard', () => {
+    // Contrat @data-fair/frame 0.19 : une valeur égale à celle de la src est
+    // retirée de l'URL du parent au lieu d'y être recopiée. Sans perte pour
+    // l'enfant : la valeur reste portée par la src de l'élément.
     const query = queryOf(getParentUrl(
       'http://host/data-fair/app/A?d-frame=true&_c_codeCommune_in=86194',
       'http://host/data-fair/app/A?d-frame=true&_c_codeCommune_in=86194',
@@ -56,7 +61,13 @@ test.describe('canal privé du visu (sync-params *:<scope>_)', () => {
       scope,
       null
     )!)
-    expect(query['application-a__c_codeCommune_in']).toBe('86194')
+    expect(query['application-a__c_codeCommune_in']).toBeUndefined()
+    expect(queryOf(getChildSrc(
+      'http://host/data-fair/app/A?d-frame=true&_c_codeCommune_in=86194',
+      'http://host/app/dashboard',
+      scope,
+      null
+    )!)._c_codeCommune_in).toBe('86194')
   })
 
   test('purge bornée à son scope : une clé qu\'il supprime disparaît, pas celles du dashboard', () => {
