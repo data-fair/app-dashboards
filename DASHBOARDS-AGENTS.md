@@ -70,7 +70,7 @@ DashboardConfig
 │       ├── height                # Hauteur en px (négatif = auto)
 │       └── elements[]
 │           ├── title, width      # 1=Fin, 2=Moyen, 3=Large (défaut 2)
-│           └── type              # application | tablePreview | text | form | column
+│           └── type              # application | tablePreview | download | text | form | column
 ├── sectionsGroup                 # accordion | tabs-tab | tabs-button | flow
 ├── showSources, showEmbed, showCapture
 ```
@@ -81,9 +81,12 @@ DashboardConfig
 |------|------|-------------------|
 | `application` | Embarque une visualisation DataFair | `application: {id, title, href, baseApp}` (du catalogue) |
 | `tablePreview` | Prévisualisation tabulaire du dataset | `source: 'root'` (filtres) ou `'external'` (autre dataset) |
+| `download` | Bloc de téléchargement du dataset (CSV, XLSX, ODS, GeoJSON, SHP) | `source: 'root'` ou `'external'`, `dataset: {...}`, `fields`, `header` |
 | `form` | Formulaire de saisie lié à un dataset éditable | `dataset: {...}` (REST, droit `createLine`) |
 | `text` | Bloc de texte libre (markdown simple) | `content: string` |
 | `column` | Colonne verticale qui contient d'autres éléments | `elements: []` (récursif) |
+
+Les `tablePreview` exposent `hideInteractions` (tokens `count, search, filters, pagination, sort, cells, select-cols, fix-cols, display, download` à interdire) et `pagination`. `noInteractions` est déprécié mais reste prioritaire sur `hideInteractions`.
 
 ### 2.2 Sources de données
 
@@ -100,8 +103,8 @@ DashboardConfig
 
 Le dashboard propage les filtres aux éléments embarqués via **deux canaux distincts** selon le type d'élément. C'est une distinction essentielle à comprendre pour prédire le comportement d'une visu.
 
-**Canal « embed dataset »** (éléments `tablePreview` et `form`)
-- URL cible : `/data-fair/embed/dataset/<id>/table` ou `/data-fair/embed/dataset/<id>/form`.
+**Canal « embed dataset »** (éléments `tablePreview`, `download` et `form`)
+- URL cible : `/data-fair/embed/dataset/<id>/table`, `/download` ou `/form`.
 - Les filtres dynamiques (`filters[]`) sont sérialisés dans l'URL avec un préfixe **dataset-scopé** : `<prefix>_d_<rootDatasetId>_<labelField>_in=...`. Ce format est attendu par l'API REST de l'embed dataset natif, qui sait à quel dataset appliquer la requête.
 - Les static filters sont sérialisés sous la même forme : `<prefix>_d_<rootDatasetId>_<field>_in|_nin|_gte|_lte|_starts|_exists|_nexists=...`.
 - Les concepts universels (`_c_date_match`, `_c_geo_distance`, `finalizedAt`) sont également transmis.
@@ -118,6 +121,7 @@ Le dashboard propage les filtres aux éléments embarqués via **deux canaux dis
 | Type d'élément | URL de l'embed | Préfixe des filtres dynamiques | Static filters | Concepts universels |
 |----------------|----------------|------------------------------|----------------|---------------------|
 | `tablePreview` | `/data-fair/embed/dataset/<id>/table` | `_d_<rootDatasetId>_` (présent) | préfixés | oui |
+| `download` | `/data-fair/embed/dataset/<id>/download` | `_d_<rootDatasetId>_` (présent) | préfixés | oui |
 | `form` | `/data-fair/embed/dataset/<id>/form` | `_d_<rootDatasetId>_` (présent) | préfixés | oui |
 | `application` | `/data-fair/app/<id>` | `_d_<rootDatasetId>_` (préfixe de colonne retiré) | idem (préfixe de colonne retiré) | oui |
 

@@ -7,7 +7,7 @@
  *  - embed code (iframe snippet for sharing)
  *
  * Note on filter transmission:
- *  - The native dataset embed (`/data-fair/embed/dataset/.../table|form`)
+ *  - The native dataset embed (`/data-fair/embed/dataset/.../table|download|form`)
  *    is served on the same dataset as the dashboard's root, so we strip
  *    the `<prefix>_d_<datasetId>_` part from dynamic and static filter
  *    keys before forwarding them: the embed REST API expects unprefixed
@@ -24,7 +24,7 @@
  *    the concept mirrors (`_c_*`). The application picks the ones that
  *    target its own dataset and ignores the rest.
  */
-import type { DashboardElement, ApplicationElement, TablePreviewElement, FormElement } from '@/config'
+import type { DashboardElement, ApplicationElement, TablePreviewElement, FormElement, DownloadElement } from '@/config'
 import { datasetFilterKey } from './dataset-filter'
 
 export interface ApplicationLike { href: string; apiUrl?: string }
@@ -33,6 +33,36 @@ export interface FilterValues { [key: string]: any }
 const stripAfterDataFair = (href: string): string => href.split('/data-fair/')[0]
 
 const accessKeyPrefix = (accessKey: string | null): string => accessKey ? `${accessKey}%3A` : ''
+
+/**
+ * Paramètre `interaction` de la vue table intégrée (data-fair >= 6.18) :
+ * `0` sans aucune interaction, sinon les tokens bloqués en négatif
+ * (`-filters,-sort`), `1` quand rien n'est bloqué.
+ * `noInteractions` est déprécié mais reste prioritaire (configs existantes).
+ */
+export const tableInteractionParam = (element: { noInteractions?: boolean; hideInteractions?: string[] }): string => {
+  if (element.noInteractions) return '0'
+  const hidden = (element.hideInteractions ?? []).filter(Boolean)
+  return hidden.length ? '-' + hidden.join(',-') : '1'
+}
+
+/** Paramètres `_t_*` d'une surcharge locale du thème (simple-directory). */
+export const themeOverrideParams = (query: Record<string, unknown> | null | undefined): Record<string, string> => {
+  const params: Record<string, string> = {}
+  if (!query) return params
+  for (const [key, value] of Object.entries(query)) {
+    if (key.startsWith('_t_') && typeof value === 'string') params[key] = value
+  }
+  return params
+}
+
+/** Ajoute les paramètres `_t_*` à une URL de d-frame ou de capture. */
+export const appendThemeParams = (src: string, params: Record<string, string>): string => {
+  if (!Object.keys(params).length) return src
+  const url = new URL(src, 'http://localhost')
+  for (const [key, value] of Object.entries(params)) url.searchParams.set(key, value)
+  return src.startsWith('http') ? url.href : `${url.pathname}${url.search}`
+}
 
 const toStringRecord = (obj: FilterValues | null | undefined): Record<string, string> => {
   if (!obj) return {}
@@ -115,9 +145,23 @@ export const tableDFrameSrc = (
 ): string => {
   const params: Record<string, string> = datasetEmbedParams(filtersValues, primary, secondary, print, prefix, datasetId)
   if (element.display) params.display = element.display
-  params.interaction = String(!element.noInteractions)
+  params.interaction = tableInteractionParam(element)
+  if (element.pagination) params.pagination = 'true'
   if (element.fields?.length) params.cols = element.fields.join(',')
   return `/data-fair/embed/dataset/${accessKeyPrefix(accessKey)}${datasetId}/table?${new URLSearchParams(params).toString()}`
+}
+
+export const downloadDFrameSrc = (
+  element: DownloadElement,
+  datasetId: string,
+  accessKey: string | null,
+  filtersValues: FilterValues | null,
+  prefix: string
+): string => {
+  const params: Record<string, string> = datasetEmbedParams(filtersValues, undefined, undefined, undefined, prefix, datasetId)
+  params.header = String(element.header !== false)
+  if (element.fields?.length) params.select = element.fields.join(',')
+  return `/data-fair/embed/dataset/${accessKeyPrefix(accessKey)}${datasetId}/download?${new URLSearchParams(params).toString()}`
 }
 
 export const formDFrameSrc = (
@@ -201,7 +245,8 @@ export const sourcesUrl = (element: DashboardElement, application: ApplicationLi
  */
 export const captureUrl = (
   element: DashboardElement,
-  filtersValues: FilterValues | null
+  filtersValues: FilterValues | null,
+  themeParams: Record<string, string> = {}
 ): string | undefined => {
   if (element.type !== 'application') return undefined
   const app = element.application
@@ -213,6 +258,9 @@ export const captureUrl = (
   for (const [key, value] of Object.entries(filtersValues || {})) {
     if (key === 'keys') continue
     params[`app_${key}`] = String(value)
+  }
+  for (const [key, value] of Object.entries(themeParams)) {
+    params[`app_${key}`] = value
   }
   return `${app.href}/capture?${new URLSearchParams(params).toString()}`
 }

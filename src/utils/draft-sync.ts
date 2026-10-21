@@ -63,7 +63,7 @@ export const extractReferencedDatasets = (
   const refs: DatasetRef[] = []
   const seen = new Set<string>()
   for (const el of elements) {
-    if (el.type !== 'tablePreview' && el.type !== 'form') continue
+    if (el.type !== 'tablePreview' && el.type !== 'download' && el.type !== 'form') continue
     const ds = (el as { dataset?: { id?: string; title?: string; href?: string } }).dataset
     if (!ds?.id || !ds.title || !ds.href) continue
     if (ds.id === filtersDataset.id || seen.has(ds.id)) continue

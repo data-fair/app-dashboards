@@ -87,24 +87,25 @@ const mandatoryFiltersSatisfied = (el: DashboardElementConfig, activeFields: str
 
 /**
  * Éléments qui produisent réellement un `<d-frame>` : une `application` avec
- * un id, un `tablePreview` (dataset racine en fallback) et un `form` avec un
- * dataset. Un form sans dataset ne rend pas d'embed (état invalide), une
+ * un id, un `tablePreview` ou `download` (dataset racine en fallback) et un
+ * `form` avec un dataset. Un form sans dataset ne rend pas d'embed (état invalide), une
  * application sans id non plus, et un élément `valueMandatory` dont les
  * filtres requis ne sont pas actifs affiche un placeholder à la place.
  * `extraActiveFields` porte les champs activés par le test avant le décompte
  * (sélection dans un filtre dynamique).
  */
-const expectedFrames = (config: DevConfig, extraActiveFields: string[] = []): { type: 'application' | 'table' | 'form' }[] => {
+const expectedFrames = (config: DevConfig, extraActiveFields: string[] = []): { type: 'application' | 'table' | 'download' | 'form' }[] => {
   const activeFields = [...new Set([...initialActiveFields(config), ...extraActiveFields])]
   return visibleElements(config)
     .filter(el => mandatoryFiltersSatisfied(el, activeFields))
     .map(el => {
       if (el.type === 'application') return el.application?.id ? { type: 'application' as const } : null
       if (el.type === 'tablePreview') return { type: 'table' as const }
+      if (el.type === 'download') return { type: 'download' as const }
       if (el.type === 'form') return el.dataset?.id ? { type: 'form' as const } : null
       return null
     })
-    .filter((e): e is { type: 'application' | 'table' | 'form' } => !!e)
+    .filter((e): e is { type: 'application' | 'table' | 'download' | 'form' } => !!e)
 }
 
 /**

@@ -1,17 +1,21 @@
 import { test, expect } from '@playwright/test'
 import {
   tableDFrameSrc,
+  downloadDFrameSrc,
   formDFrameSrc,
   applicationDFrameSrc,
   applicationUrl,
   descriptionUrl,
   sourcesUrl,
   captureUrl,
-  embedCode
+  embedCode,
+  themeOverrideParams,
+  appendThemeParams
 } from '@/utils/element-url'
-import type { TablePreviewElement, FormElement, ApplicationElement } from '@/config'
+import type { TablePreviewElement, DownloadElement, FormElement, ApplicationElement } from '@/config'
 
 const tableEl = (overrides: Partial<TablePreviewElement> = {}): TablePreviewElement => ({ type: 'tablePreview', ...overrides })
+const downloadEl = (overrides: Partial<DownloadElement> = {}): DownloadElement => ({ type: 'download', ...overrides })
 const formEl = (overrides: Record<string, unknown> = {}): FormElement => ({ type: 'form', ...overrides }) as FormElement
 const appEl = (overrides: Partial<ApplicationElement> = {}): ApplicationElement => ({
   type: 'application',
@@ -27,7 +31,7 @@ const appEl = (overrides: Partial<ApplicationElement> = {}): ApplicationElement 
 test.describe('tableDFrameSrc', () => {
   test('produit une URL minimale sur le dataset racine', () => {
     expect(tableDFrameSrc(tableEl(), 'ds1', null, null, undefined, undefined, undefined, '')).toBe(
-      '/data-fair/embed/dataset/ds1/table?d-frame=true&interaction=true'
+      '/data-fair/embed/dataset/ds1/table?d-frame=true&interaction=1'
     )
   })
 
@@ -92,17 +96,75 @@ test.describe('tableDFrameSrc', () => {
     expect(src).toContain('cols=a%2Cb')
   })
 
-  test('désactive les interactions si noInteractions', () => {
+  test('désactive toutes les interactions si noInteractions', () => {
     const src = tableDFrameSrc(tableEl({ noInteractions: true }), 'ds1', null, null, undefined, undefined, undefined, '')
-    expect(src).toContain('interaction=false')
+    expect(src).toContain('interaction=0')
+  })
+
+  test('interdit une liste d\'interactions via hideInteractions', () => {
+    const src = tableDFrameSrc(tableEl({ hideInteractions: ['filters', 'sort'] }), 'ds1', null, null, undefined, undefined, undefined, '')
+    expect(src).toContain('interaction=-filters%2C-sort')
+  })
+
+  test('noInteractions reste prioritaire sur hideInteractions', () => {
+    const src = tableDFrameSrc(tableEl({ noInteractions: true, hideInteractions: ['filters'] }), 'ds1', null, null, undefined, undefined, undefined, '')
+    expect(src).toContain('interaction=0')
+  })
+
+  test('active la pagination de la vue table', () => {
+    const src = tableDFrameSrc(tableEl({ pagination: true }), 'ds1', null, null, undefined, undefined, undefined, '')
+    expect(src).toContain('pagination=true')
   })
 
   // Comportement actuel documenté : pour la vue table, `interaction` est
-  // systématiquement écrasé par `String(!noInteractions)` APRÈS le traitement
-  // de `print` → le mode print n'a pas d'effet sur l'interaction d'une table.
-  test('print ne change pas interaction pour la vue table (écrasé par noInteractions)', () => {
+  // systématiquement écrasé par la configuration APRÈS le traitement de
+  // `print` → le mode print n'a pas d'effet sur l'interaction d'une table.
+  test('print ne change pas interaction pour la vue table (écrasé par la config)', () => {
     const src = tableDFrameSrc(tableEl(), 'ds1', null, null, undefined, undefined, 'true', '')
-    expect(src).toContain('interaction=true')
+    expect(src).toContain('interaction=1')
+  })
+})
+
+test.describe('downloadDFrameSrc', () => {
+  test('produit une URL minimale avec l\'en-tête activé par défaut', () => {
+    expect(downloadDFrameSrc(downloadEl(), 'ds1', null, null, '')).toBe(
+      '/data-fair/embed/dataset/ds1/download?d-frame=true&header=true'
+    )
+  })
+
+  test('désactive l\'en-tête et restreint les colonnes', () => {
+    const src = downloadDFrameSrc(downloadEl({ header: false, fields: ['a', 'b'] }), 'ds1', null, null, '')
+    expect(src).toContain('header=false')
+    expect(src).toContain('select=a%2Cb')
+  })
+
+  test('dé-préfixe les filtres dataset-scopés et garde les concepts', () => {
+    const filters = { keys: [], _d_ds1_int_in: '1,2', _c_date_match: '2020', _d_autre_x_in: '3' }
+    const src = downloadDFrameSrc(downloadEl(), 'ds1', null, filters, '')
+    expect(src).toContain('int_in=1%2C2')
+    expect(src).toContain('_c_date_match=2020')
+    expect(src).not.toContain('_d_ds1_int_in')
+    expect(src).not.toContain('_d_autre_x_in')
+  })
+
+  test('préfixe le dataset id avec l\'accessKey', () => {
+    const src = downloadDFrameSrc(downloadEl(), 'ds1', 'abc', null, '')
+    expect(src).toMatch(/^\/data-fair\/embed\/dataset\/abc%3Ads1\/download\?/)
+  })
+})
+
+test.describe('surcharge de thème', () => {
+  test('themeOverrideParams ne garde que les _t_* de type string', () => {
+    expect(themeOverrideParams({ _t_primary: 'FFEB3B', _t_secondary: '#004D40', other: 'x', arr: ['y'] })).toEqual({
+      _t_primary: 'FFEB3B',
+      _t_secondary: '#004D40'
+    })
+  })
+
+  test('appendThemeParams ajoute les paramètres aux URLs relatives et absolues', () => {
+    expect(appendThemeParams('/data-fair/app/x?d-frame=true', { _t_primary: 'FFEB3B' })).toBe('/data-fair/app/x?d-frame=true&_t_primary=FFEB3B')
+    expect(appendThemeParams('https://host/capture?a=1', { _t_primary: '#004D40' })).toBe('https://host/capture?a=1&_t_primary=%23004D40')
+    expect(appendThemeParams('/data-fair/app/x', {})).toBe('/data-fair/app/x')
   })
 })
 
@@ -243,6 +305,11 @@ test.describe('captureUrl', () => {
     expect(url).toContain('app__d_ds1_int_in=1')
     expect(url).toContain('app__c_date_match=2020')
     expect(url).not.toContain('app_keys')
+  })
+
+  test('propage la surcharge de thème préfixée app_', () => {
+    const url = captureUrl(appEl(), null, { _t_primary: 'FFEB3B' })!
+    expect(url).toContain('app__t_primary=FFEB3B')
   })
 
   test('omet width/height sans metas df:capture', () => {

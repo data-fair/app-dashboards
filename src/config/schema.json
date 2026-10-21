@@ -279,7 +279,7 @@
                       "title": "Éléments",
                       "type": "array",
                       "layout": {
-                        "itemTitle": "data.title || {tablePreview: ('Vue table - ' + (data.source === 'root' ? rootData.datasets[0].title : (data.dataset?.title || 'Jeu de données non défini'))), application: ('Visualisation - ' +  (data.application?.title || 'Visualisation non définie')),text: 'Texte libre', form: ('Formulaire - '+(data.dataset?.title || 'Jeu de données non défini')), column:('Colonne - '+(data.elements?.length||0)+' éléments')}[data.type]"
+                        "itemTitle": "data.title || {tablePreview: ('Vue table - ' + (data.source === 'root' ? rootData.datasets[0].title : (data.dataset?.title || 'Jeu de données non défini'))), download: ('Téléchargement - ' + (data.source === 'root' ? rootData.datasets[0].title : (data.dataset?.title || 'Jeu de données non défini'))), application: ('Visualisation - ' +  (data.application?.title || 'Visualisation non définie')),text: 'Texte libre', form: ('Formulaire - '+(data.dataset?.title || 'Jeu de données non défini')), column:('Colonne - '+(data.elements?.length||0)+' éléments')}[data.type]"
                       },
                       "items": {
                         "type": "object",
@@ -322,6 +322,9 @@
                         "oneOf": [
                           {
                             "$ref": "#/definitions/table"
+                          },
+                          {
+                            "$ref": "#/definitions/download"
                           },
                           {
                             "$ref": "#/definitions/application"
@@ -492,7 +495,41 @@
               "title": "Affichage"
             },
             "noInteractions": {
-              "title": "Désactiver les interactions",
+              "title": "Sans aucune interaction",
+              "description": "Réglage déprécié, conservé pour les configurations existantes. Utilisez plutôt la liste « Interactions désactivées ».",
+              "type": "boolean",
+              "default": false,
+              "layout": {
+                "if": "parent.data.noInteractions === true"
+              }
+            },
+            "hideInteractions": {
+              "title": "Interactions désactivées",
+              "description": "Toutes les interactions du tableau sont actives par défaut : sélectionnez celles à interdire.",
+              "type": "array",
+              "default": [],
+              "items": {
+                "type": "string",
+                "oneOf": [
+                  { "const": "count", "title": "Décompte des lignes" },
+                  { "const": "search", "title": "Recherche textuelle" },
+                  { "const": "filters", "title": "Filtres (puces et menus de colonne)" },
+                  { "const": "pagination", "title": "Navigation entre les pages (mode paginé)" },
+                  { "const": "sort", "title": "Tri par clic sur un en-tête" },
+                  { "const": "cells", "title": "Filtrage par clic sur une cellule" },
+                  { "const": "select-cols", "title": "Choix des colonnes" },
+                  { "const": "fix-cols", "title": "Figement des colonnes" },
+                  { "const": "display", "title": "Choix du mode d'affichage" },
+                  { "const": "download", "title": "Téléchargement des résultats" }
+                ]
+              },
+              "layout": {
+                "if": "!parent.data.noInteractions"
+              }
+            },
+            "pagination": {
+              "title": "Pagination",
+              "description": "Affiche les lignes par pages dimensionnées pour tenir dans la hauteur du tableau, ce qui supprime sa barre de défilement verticale.",
               "type": "boolean",
               "default": false
             },
@@ -616,7 +653,41 @@
               "title": "Affichage"
             },
             "noInteractions": {
-              "title": "Désactiver les interactions",
+              "title": "Sans aucune interaction",
+              "description": "Réglage déprécié, conservé pour les configurations existantes. Utilisez plutôt la liste « Interactions désactivées ».",
+              "type": "boolean",
+              "default": false,
+              "layout": {
+                "if": "parent.data.noInteractions === true"
+              }
+            },
+            "hideInteractions": {
+              "title": "Interactions désactivées",
+              "description": "Toutes les interactions du tableau sont actives par défaut : sélectionnez celles à interdire.",
+              "type": "array",
+              "default": [],
+              "items": {
+                "type": "string",
+                "oneOf": [
+                  { "const": "count", "title": "Décompte des lignes" },
+                  { "const": "search", "title": "Recherche textuelle" },
+                  { "const": "filters", "title": "Filtres (puces et menus de colonne)" },
+                  { "const": "pagination", "title": "Navigation entre les pages (mode paginé)" },
+                  { "const": "sort", "title": "Tri par clic sur un en-tête" },
+                  { "const": "cells", "title": "Filtrage par clic sur une cellule" },
+                  { "const": "select-cols", "title": "Choix des colonnes" },
+                  { "const": "fix-cols", "title": "Figement des colonnes" },
+                  { "const": "display", "title": "Choix du mode d'affichage" },
+                  { "const": "download", "title": "Téléchargement des résultats" }
+                ]
+              },
+              "layout": {
+                "if": "!parent.data.noInteractions"
+              }
+            },
+            "pagination": {
+              "title": "Pagination",
+              "description": "Affiche les lignes par pages dimensionnées pour tenir dans la hauteur du tableau, ce qui supprime sa barre de défilement verticale.",
               "type": "boolean",
               "default": false
             },
@@ -639,6 +710,161 @@
                   "title": "Aucune synchronisation : son état n'est pas conservé, rien n'est partagé"
                 }
               ]
+            },
+            "valueMandatory": {
+              "title": "Nécessite une valeur dans des filtres",
+              "type": "boolean",
+              "default": false
+            },
+            "mandatoryFilters": {
+              "title": "Filtres requis",
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "layout": {
+                "getItems": {
+                  "expr": "rootData.filters",
+                  "itemKey": "data.labelField",
+                  "itemTitle": "data.labelField"
+                },
+                "if": "parent.data.valueMandatory"
+              }
+            }
+          }
+        }
+      ],
+      "default": {
+        "source": "root"
+      },
+      "oneOfLayout": {
+        "label": "Source des données"
+      }
+    },
+    "download": {
+      "title": "Téléchargement",
+      "type": "object",
+      "properties": {
+        "type": {
+          "const": "download",
+          "title": "Type de l'élément"
+        }
+      },
+      "discriminator": { "propertyName": "source" },
+      "oneOf": [
+        {
+          "title": "Jeu de données des filtres",
+          "properties": {
+            "source": {
+              "const": "root",
+              "title": "Source des données"
+            },
+            "fields": {
+              "title": "Colonnes à télécharger",
+              "description": "Si vide, toutes les colonnes du jeu de données sont proposées.",
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "layout": {
+                "getItems": {
+                  "url": "${rootData.datasets[0].href}/schema?calculated=false",
+                  "itemKey": "data.key",
+                  "itemTitle": "data.label"
+                }
+              }
+            },
+            "header": {
+              "title": "Afficher l'en-tête",
+              "description": "Affiche le titre, le résumé et le nombre de lignes du jeu de données.",
+              "type": "boolean",
+              "default": true
+            },
+            "valueMandatory": {
+              "title": "Nécessite une valeur dans des filtres",
+              "type": "boolean",
+              "default": false
+            },
+            "mandatoryFilters": {
+              "title": "Filtres requis",
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "layout": {
+                "getItems": {
+                  "expr": "rootData.filters",
+                  "itemKey": "data.labelField",
+                  "itemTitle": "data.labelField"
+                },
+                "if": "parent.data.valueMandatory"
+              }
+            }
+          }
+        },
+        {
+          "title": "Autre jeu de données",
+          "layout": {
+            "switch": [
+              {
+                "if": "!data.dataset",
+                "children": ["dataset"]
+              }
+            ]
+          },
+          "properties": {
+            "source": {
+              "const": "external",
+              "title": "Source des données"
+            },
+            "dataset": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string"
+                },
+                "slug": {
+                  "type": "string"
+                },
+                "title": {
+                  "type": "string"
+                },
+                "href": {
+                  "type": "string"
+                },
+                "schema": {
+                  "type": "array"
+                }
+              },
+              "layout": {
+                "getItems": {
+                  "url": "api/v1/datasets?q={q}&size=100&${context.datasetFilter}&select=id,title,slug,schema",
+                  "itemKey": "data.id",
+                  "itemTitle": "data.title",
+                  "itemsResults": "data.results"
+                }
+              }
+            },
+            "fields": {
+              "title": "Colonnes à télécharger",
+              "description": "Si vide, toutes les colonnes du jeu de données sont proposées.",
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "layout": {
+                "getItems": {
+                  "url": "${parent.data.dataset.href}/schema?calculated=false",
+                  "itemKey": "data.key",
+                  "itemTitle": "data.label"
+                }
+              }
+            },
+            "header": {
+              "title": "Afficher l'en-tête",
+              "description": "Affiche le titre, le résumé et le nombre de lignes du jeu de données.",
+              "type": "boolean",
+              "default": true
             },
             "valueMandatory": {
               "title": "Nécessite une valeur dans des filtres",
@@ -969,7 +1195,7 @@
         "elements": {
           "type": "array",
           "layout": {
-            "itemTitle": "data.title || {tablePreview: ('Vue table - ' + (data.source === 'root' ? rootData.datasets[0].title : (data.dataset?.title || 'Jeu de données non défini'))), application: ('Visualisation - ' +  (data.application?.title || 'Visualisation non définie')),text: 'Texte libre', form: ('Formulaire - '+(data.dataset?.title || 'Jeu de données non défini')), column:('Colonne - '+(data.elements?.length||0)+' éléments')}[data.type]"
+            "itemTitle": "data.title || {tablePreview: ('Vue table - ' + (data.source === 'root' ? rootData.datasets[0].title : (data.dataset?.title || 'Jeu de données non défini'))), download: ('Téléchargement - ' + (data.source === 'root' ? rootData.datasets[0].title : (data.dataset?.title || 'Jeu de données non défini'))), application: ('Visualisation - ' +  (data.application?.title || 'Visualisation non définie')),text: 'Texte libre', form: ('Formulaire - '+(data.dataset?.title || 'Jeu de données non défini')), column:('Colonne - '+(data.elements?.length||0)+' éléments')}[data.type]"
           },
           "items": {
             "type": "object",
@@ -987,6 +1213,9 @@
             "oneOf": [
               {
                 "$ref": "#/definitions/table"
+              },
+              {
+                "$ref": "#/definitions/download"
               },
               {
                 "$ref": "#/definitions/application"

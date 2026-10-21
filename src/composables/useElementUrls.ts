@@ -5,9 +5,9 @@
  *
  * Two filter shapes are accepted:
  *  - `datasetFiltersValues` (dashboard-shaped, with
- *    `<prefix>_d_<datasetId>_…` keys) for `tablePreview` and `form`
- *    elements. The dataset scope is stripped before forwarding to the
- *    embed REST API.
+ *    `<prefix>_d_<datasetId>_…` keys) for `tablePreview`, `download` and
+ *    `form` elements. The dataset scope is stripped before forwarding to
+ *    the embed REST API.
  *  - `applicationFiltersValues` (application-shaped, with
  *    `_d_<datasetId>_…` keys: the compare-view column prefix is stripped
  *    at emission, see `useFiltersValues`) for `application` elements. The
@@ -19,11 +19,14 @@ import { useFetch } from '@data-fair/lib-vue/fetch.js'
 import type { DashboardElement, DashboardDataset } from '@/config'
 import {
   tableDFrameSrc,
+  downloadDFrameSrc,
   formDFrameSrc,
   applicationDFrameSrc,
   descriptionUrl,
   sourcesUrl,
-  captureUrl
+  captureUrl,
+  appendThemeParams,
+  themeOverrideParams
 } from '@/utils/element-url'
 import type { FiltersValues, ApplicationFiltersValues } from '@/utils/filters'
 import { useConfig } from './config'
@@ -52,13 +55,19 @@ export const useElementUrls = (opts: UseElementUrlsOptions): ElementUrlsApi => {
   const primary = computed(() => reactiveSearchParams.primary)
   const secondary = computed(() => reactiveSearchParams.secondary)
   const print = computed(() => reactiveSearchParams.print)
+  const themeParams = computed(() => themeOverrideParams(reactiveSearchParams))
 
-  const dFrameSrc = computed<string | undefined>(() => {
+  const rawDFrameSrc = computed<string | undefined>(() => {
     const el = element.value
     if (el.type === 'tablePreview') {
       const dsId = el.dataset?.id || fallbackDataset?.value?.id
       if (!dsId) return undefined
       return tableDFrameSrc(el, dsId, accessKey.value, datasetFilters.value, primary.value, secondary.value, print.value, prefix)
+    }
+    if (el.type === 'download') {
+      const dsId = el.dataset?.id || fallbackDataset?.value?.id
+      if (!dsId) return undefined
+      return downloadDFrameSrc(el, dsId, accessKey.value, datasetFilters.value, prefix)
     }
     if (el.type === 'form') {
       return formDFrameSrc(el, accessKey.value, datasetFilters.value, primary.value, secondary.value, print.value, prefix)
@@ -67,6 +76,11 @@ export const useElementUrls = (opts: UseElementUrlsOptions): ElementUrlsApi => {
       return applicationDFrameSrc(el, accessKey.value, applicationFilters.value, primary.value, secondary.value, print.value)
     }
     return undefined
+  })
+
+  const dFrameSrc = computed<string | undefined>(() => {
+    const src = rawDFrameSrc.value
+    return src ? appendThemeParams(src, themeParams.value) : undefined
   })
 
   const descriptionFetchUrl = computed(() => {
@@ -79,7 +93,7 @@ export const useElementUrls = (opts: UseElementUrlsOptions): ElementUrlsApi => {
   const sourcesFetchUrl = computed(() => sourcesUrl(element.value, application, config.value?.showSources))
   const { data: sourcesData } = useFetch(() => sourcesFetchUrl.value, { immediate: true })
   const sourcesList = computed(() => {
-    if (element.value.type === 'tablePreview') {
+    if (element.value.type === 'tablePreview' || element.value.type === 'download') {
       return [element.value.dataset || fallbackDataset?.value].filter(Boolean) as { id: string; title: string }[]
     }
     return ((sourcesData.value as { datasets?: { id: string; title: string; href?: string }[] } | null)?.datasets || [])
@@ -90,7 +104,7 @@ export const useElementUrls = (opts: UseElementUrlsOptions): ElementUrlsApi => {
   // the application-shaped filters (dataset-scoped keys, e.g.
   // `<prefix>_d_<datasetId>_<field>_in`) prefixed with `app_` and forwarded
   // as-is by the capture endpoint to the target application.
-  const captureHref = computed(() => captureUrl(element.value, applicationFilters.value))
+  const captureHref = computed(() => captureUrl(element.value, applicationFilters.value, themeParams.value))
 
   return { dFrameSrc, descriptionHtml, sourcesList, captureHref }
 }

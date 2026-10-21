@@ -1,7 +1,7 @@
 <script setup lang="ts">
 /**
- * Renders a single dashboard element (table preview, form, application, text)
- * as a `<d-frame>` embed or as plain text. The element's URL is computed by
+ * Renders a single dashboard element (table preview, download, form,
+ * application, text) as a `<d-frame>` embed or as plain text. The element's URL is computed by
  * `useElementUrls` which encapsulates the d-frame src, capture URL, sources
  * URL and description URL.
  */
@@ -13,6 +13,7 @@ import { useElementUrls } from '@/composables/useElementUrls'
 import {
   isApplicationElement,
   isTablePreviewElement as _isTablePreview,
+  isDownloadElement as _isDownload,
   isFormElement as _isForm,
   isTextElement,
   type DashboardDescriptionPosition
@@ -51,24 +52,26 @@ const actionsRef = ref<HTMLElement | null>(null)
 const { height: actionsHeight } = useElementSize(actionsRef)
 
 const isTable = computed(() => _isTablePreview(props.element))
+const isDownload = computed(() => _isDownload(props.element))
 const isForm = computed(() => _isForm(props.element))
 const isApp = computed(() => isApplicationElement(props.element))
+const isNativeEmbed = computed(() => isTable.value || isDownload.value || isForm.value)
 const appElement = computed<ApplicationElement | null>(() => isApplicationElement(props.element) ? props.element : null)
-const elementKind = computed(() => isTable.value ? 'table' : isForm.value ? 'form' : 'app')
+const elementKind = computed(() => isTable.value ? 'table' : isDownload.value ? 'download' : isForm.value ? 'form' : 'app')
 
 const descriptionPos = computed<DashboardDescriptionPosition>(() => appElement.value?.description ?? 'none')
 const isHorizontal = computed(() => descriptionPos.value === 'left' || descriptionPos.value === 'right')
 const isVertical = computed(() => descriptionPos.value === 'top' || descriptionPos.value === 'bottom')
 
 const requiredFilter = computed(() => {
-  if (!isTable.value && !isApp.value) return []
+  if (!isTable.value && !isDownload.value && !isApp.value) return []
   return computeMandatoryFilterIssues(props.element as { valueMandatory?: boolean; mandatoryFilters?: string[] }, props.filtersValues?.keys, fields.value)
 })
 
 const iframeTitle = computed(() => {
   const el = props.element
   if (el.type === 'application') return el.application?.title || ''
-  const ds = el.type === 'tablePreview'
+  const ds = el.type === 'tablePreview' || el.type === 'download'
     ? (el.dataset || fallbackDataset.value)
     : el.type === 'form' ? el.dataset : null
   return ds?.title || ''
@@ -115,7 +118,7 @@ const scope = computed(() => props.instanceKey
     <!-- eslint-enable vue/no-v-html -->
   </div>
 
-  <template v-else-if="isTable || isForm">
+  <template v-else-if="isNativeEmbed">
     <element-d-frame
       v-if="dFrameSrc"
       :key="`${elementKind}-${instanceKey}`"

@@ -110,6 +110,7 @@ export const computeSectionBreakpoints = (rows: DashboardRow[] | undefined): Pro
 export const elementKey = (el: DashboardElement, index: number): string => {
   switch (el.type) {
     case 'tablePreview':
+    case 'download':
     case 'form':
       return `${el.type}-${el.dataset?.id || 'root'}`
     case 'application':

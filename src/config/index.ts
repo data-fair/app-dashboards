@@ -54,7 +54,7 @@ export interface DashboardStaticFilter {
   value?: string
 }
 
-export type DashboardElementType = 'tablePreview' | 'application' | 'text' | 'form' | 'column'
+export type DashboardElementType = 'tablePreview' | 'download' | 'application' | 'text' | 'form' | 'column'
 
 export type DashboardElementWidth = 1 | 2 | 3
 
@@ -96,14 +96,34 @@ export interface BaseElement {
   height?: number
 }
 
+/**
+ * Interactions de la vue table intégrée (`/embed/dataset/<id>/table`) que
+ * l'on peut interdire. Alignées sur `allInteractions` de data-fair ; `agent`
+ * et `fullscreen` en sont absents car jamais rendus dans un embed.
+ */
+export type TableInteraction = 'count' | 'search' | 'filters' | 'pagination' | 'sort' | 'cells' | 'select-cols' | 'fix-cols' | 'display' | 'download'
+
 export interface TablePreviewElement extends BaseElement {
   type: 'tablePreview'
   source?: 'root' | 'external'
   dataset?: DashboardDataset
   fields?: string[]
   display?: 'table' | 'table-dense' | 'list'
+  /** Déprécié : prioritaire sur `hideInteractions`, conservé pour les configs existantes. */
   noInteractions?: boolean
+  hideInteractions?: TableInteraction[]
+  pagination?: boolean
   syncParams?: SyncParams
+  valueMandatory?: boolean
+  mandatoryFilters?: string[]
+}
+
+export interface DownloadElement extends BaseElement {
+  type: 'download'
+  source?: 'root' | 'external'
+  dataset?: DashboardDataset
+  fields?: string[]
+  header?: boolean
   valueMandatory?: boolean
   mandatoryFilters?: string[]
 }
@@ -136,6 +156,7 @@ export interface FormElement extends BaseElement {
 
 export type DashboardElement =
   | TablePreviewElement
+  | DownloadElement
   | ApplicationElement
   | TextElement
   | FormElement
@@ -188,6 +209,7 @@ export interface DashboardConfig {
 
 // Type guard helpers (handy with the discriminated union)
 export const isTablePreviewElement = (e: DashboardElement): e is TablePreviewElement => e.type === 'tablePreview'
+export const isDownloadElement = (e: DashboardElement): e is DownloadElement => e.type === 'download'
 export const isApplicationElement = (e: DashboardElement): e is ApplicationElement => e.type === 'application'
 export const isTextElement = (e: DashboardElement): e is TextElement => e.type === 'text'
 export const isFormElement = (e: DashboardElement): e is FormElement => e.type === 'form'

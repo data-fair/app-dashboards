@@ -2,6 +2,7 @@ import './helpers/dom'
 import { test, expect } from '@playwright/test'
 import { ref, computed } from 'vue'
 import { createUiNotif } from '@data-fair/lib-vue/ui-notif.js'
+import reactiveSearchParams from '@data-fair/lib-vue/reactive-search-params-global.js'
 import { useElementUrls } from '@/composables/useElementUrls'
 import type { DashboardElement } from '@/config'
 import type { FiltersValues, ApplicationFiltersValues } from '@/utils/filters'
@@ -40,6 +41,8 @@ test.beforeEach(() => {
 test.afterEach(() => {
   unmountProbes()
   fetchStub.restore()
+  delete reactiveSearchParams._t_primary
+  delete reactiveSearchParams._t_secondary
 })
 
 test.describe('useElementUrls — dFrameSrc', () => {
@@ -57,6 +60,23 @@ test.describe('useElementUrls — dFrameSrc', () => {
   test('tablePreview sans dataset ni fallback : undefined', () => {
     const fallback = computed(() => undefined)
     const { dFrameSrc } = setup(el({ type: 'tablePreview' }), { fallbackDataset: fallback })
+    expect(dFrameSrc.value).toBeUndefined()
+  })
+
+  test('download : URL sur le dataset de l\'élément', () => {
+    const { dFrameSrc } = setup(el({ type: 'download', dataset: { id: 'ds1', title: 'DS1', href: 'h' } }))
+    expect(dFrameSrc.value).toMatch(/^\/data-fair\/embed\/dataset\/ds1\/download\?/)
+  })
+
+  test('download sans dataset : retombe sur le dataset racine', () => {
+    const fallback = computed(() => ({ id: 'root', title: 'Root', href: 'h' }))
+    const { dFrameSrc } = setup(el({ type: 'download' }), { fallbackDataset: fallback })
+    expect(dFrameSrc.value).toMatch(/^\/data-fair\/embed\/dataset\/root\/download\?/)
+  })
+
+  test('download sans dataset ni fallback : undefined', () => {
+    const fallback = computed(() => undefined)
+    const { dFrameSrc } = setup(el({ type: 'download' }), { fallbackDataset: fallback })
     expect(dFrameSrc.value).toBeUndefined()
   })
 
@@ -84,6 +104,19 @@ test.describe('useElementUrls — dFrameSrc', () => {
     const config = useConfigValue({ accessKey: ref('abc') })
     const { dFrameSrc } = setup(el({ type: 'tablePreview', dataset: { id: 'ds1', title: 'DS1', href: 'h' } }), {}, config)
     expect(dFrameSrc.value).toMatch(/^\/data-fair\/embed\/dataset\/abc%3Ads1\/table\?/)
+  })
+
+  test('propage la surcharge de thème _t_* à tous les embeds', () => {
+    reactiveSearchParams._t_primary = 'FFEB3B'
+    const elements = [
+      el({ type: 'tablePreview', dataset: { id: 'ds1', title: 'DS1', href: 'h' } }),
+      el({ type: 'download', dataset: { id: 'ds1', title: 'DS1', href: 'h' } }),
+      el({ type: 'form', dataset: { id: 'ds1', title: 'DS1', href: 'h' } }),
+      el({ type: 'application', application: { id: 'sankey', title: 'S', href: 'h', baseApp: { meta: {} } } })
+    ]
+    for (const element of elements) {
+      expect(setup(element).dFrameSrc.value).toContain('_t_primary=FFEB3B')
+    }
   })
 })
 
@@ -158,6 +191,22 @@ test.describe('useElementUrls — capture, sources, description', () => {
     const element = el({ type: 'tablePreview', dataset: { id: 'ds1', title: 'DS1', href: 'h' } })
     const { sourcesList } = setup(element)
     expect(sourcesList.value).toEqual([{ id: 'ds1', title: 'DS1', href: 'h' }])
+  })
+
+  test('sourcesList d\'un download : son dataset', () => {
+    const element = el({ type: 'download', dataset: { id: 'ds1', title: 'DS1', href: 'h' } })
+    const { sourcesList } = setup(element)
+    expect(sourcesList.value).toEqual([{ id: 'ds1', title: 'DS1', href: 'h' }])
+  })
+
+  test('captureHref propage la surcharge de thème', () => {
+    reactiveSearchParams._t_primary = 'FFEB3B'
+    const element = el({
+      type: 'application',
+      application: { id: 'sankey', title: 'S', href: 'https://demo/data-fair/app/sankey', baseApp: { meta: {} } }
+    })
+    const { captureHref } = setup(element)
+    expect(captureHref.value).toContain('app__t_primary=FFEB3B')
   })
 
   test('sourcesList d\'une application : les datasets de l\'app (fetch)', async () => {

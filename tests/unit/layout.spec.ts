@@ -132,6 +132,7 @@ test.describe('resolveRowHeight', () => {
 test.describe('elementKey', () => {
   test('identifie les éléments par leur dataset/application plutôt que par l\'index', () => {
     expect(elementKey({ type: 'tablePreview', dataset: { id: 'a' } } as DashboardElement, 0)).toBe('tablePreview-a')
+    expect(elementKey({ type: 'download', dataset: { id: 'a' } } as DashboardElement, 0)).toBe('download-a')
     expect(elementKey({ type: 'form', dataset: { id: 'b' } } as DashboardElement, 5)).toBe('form-b')
     expect(elementKey({ type: 'application', application: { id: 'x' } } as DashboardElement, 9)).toBe('application-x')
   })

@@ -79,14 +79,21 @@ test.describe('extractReferencedDatasets', () => {
     expect(extractReferencedDatasets([ds('a')] as DashboardElement[], undefined)).toEqual([])
   })
 
-  test('collecte les datasets des tablePreview/form, hors dataset racine, racine en tête', () => {
+  test('collecte les datasets des tablePreview/download/form, hors dataset racine, racine en tête', () => {
     const refs = extractReferencedDatasets(
-      [ds('a'), ds('root'), el({ type: 'form', dataset: { id: 'b', title: 'B', href: '/b' } }), el({ type: 'text' })] as DashboardElement[],
+      [
+        ds('a'),
+        ds('root'),
+        el({ type: 'download', dataset: { id: 'c', title: 'C', href: '/c' } }),
+        el({ type: 'form', dataset: { id: 'b', title: 'B', href: '/b' } }),
+        el({ type: 'text' })
+      ] as DashboardElement[],
       filtersDataset
     )
     expect(refs).toEqual([
       { id: 'root', title: 'Root', href: '/root' },
       { id: 'a', title: 'a', href: '/a' },
+      { id: 'c', title: 'C', href: '/c' },
       { id: 'b', title: 'B', href: '/b' }
     ])
   })
