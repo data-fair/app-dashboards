@@ -10,7 +10,7 @@ const vueFlatRecommended = pluginVue.configs['flat/recommended'].map(({ plugins,
 export default [
   ...dfLibRecommended,
   ...vueFlatRecommended,
-  ...pluginVuetify.configs['flat/recommended'],
+  ...pluginVuetify.configs['flat/recommended-v4'],
   ...neostandard({ ts: true, env: ['browser'] }),
   {
     rules: {

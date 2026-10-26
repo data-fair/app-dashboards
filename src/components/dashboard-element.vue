@@ -108,12 +108,12 @@ const scope = computed(() => props.instanceKey
       size="40"
       class="mb-3 text-medium-emphasis"
     />
-    <div class="text-subtitle-1 font-weight-medium mb-1">
+    <div class="text-body-large font-weight-medium mb-1">
       {{ t('element.missingFilterTitle') }}
     </div>
     <!-- eslint-disable vue/no-v-html -->
     <div
-      class="text-body-2 text-medium-emphasis"
+      class="text-body-medium text-medium-emphasis"
       v-html="missingFilterText"
     />
     <!-- eslint-enable vue/no-v-html -->
@@ -138,8 +138,7 @@ const scope = computed(() => props.instanceKey
   >
     <v-row
       v-if="isApp && isHorizontal"
-      align="center"
-      class="ma-0"
+      class="ma-0 align-center"
     >
       <v-col
         v-if="descriptionPos === 'left' && appElement"

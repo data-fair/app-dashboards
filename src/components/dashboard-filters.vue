@@ -65,9 +65,7 @@ const colWidth = computed(() => Math.min(Math.max(1, Math.ceil(12 * 250 / (width
 <template>
   <v-row
     ref="root"
-    justify="center"
-    align="center"
-    class="py-3"
+    class="py-3 justify-center align-center"
   >
     <dashboard-filter-item
       v-for="(filter, i) in filters"
@@ -97,7 +95,7 @@ const colWidth = computed(() => Math.min(Math.max(1, Math.ceil(12 * 250 / (width
         class="px-1 py-2"
         style="width:320px;border-color:#A0A0A0"
       >
-        <v-row align="start">
+        <v-row class="align-start">
           <v-col
             class="pr-0"
             :cols="8"

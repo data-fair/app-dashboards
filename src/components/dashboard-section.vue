@@ -55,7 +55,7 @@ const rowsWithKeys = computed(() => processedRows.value.map(row => ({
   <v-row
     v-for="(row, j) of rowsWithKeys"
     :key="j"
-    justify="center"
+    class="justify-center"
   >
     <v-col
       v-for="(element, i) of row.elements"
@@ -69,7 +69,7 @@ const rowsWithKeys = computed(() => processedRows.value.map(row => ({
     >
       <h4
         v-if="element.title"
-        class="text-h6 text-center mt-4"
+        class="text-headline-small text-center mt-4"
       >
         {{ element.title }}
       </h4>
