@@ -8,6 +8,7 @@
 import { computed, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useElementSize } from '@vueuse/core'
+import { mdiFilterVariant } from '@mdi/js'
 import { useConfig } from '@/composables/config'
 import { useElementUrls } from '@/composables/useElementUrls'
 import {
@@ -103,7 +104,7 @@ const scope = computed(() => props.instanceKey
     style="max-width:480px;background-color:#FAFAFA;border:1px solid #E0E0E0;border-radius:8px;"
   >
     <v-icon
-      icon="mdi-filter-variant"
+      :icon="mdiFilterVariant"
       size="40"
       class="mb-3 text-medium-emphasis"
     />

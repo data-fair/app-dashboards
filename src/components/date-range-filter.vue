@@ -9,6 +9,7 @@
  * a single click never wipes the period.
  */
 import { computed, ref, watch } from 'vue'
+import { mdiCalendar } from '@mdi/js'
 import { dateToIso, isoToDate, parsePeriod } from '@/utils/period'
 
 defineProps<{
@@ -71,7 +72,7 @@ const displayText = computed(() => {
         readonly
         hide-details
         :clearable="!!model"
-        prepend-inner-icon="mdi-calendar"
+        :prepend-inner-icon="mdiCalendar"
         style="min-width:250px;"
         autocomplete="off"
         @click:clear="clear"

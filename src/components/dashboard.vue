@@ -11,6 +11,7 @@
  */
 import { computed, reactive, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
+import { mdiAlertCircleOutline } from '@mdi/js'
 import reactiveSearchParams from '@data-fair/lib-vue/reactive-search-params-global.js'
 import dashboardFilters from './dashboard-filters.vue'
 import sectionsView from './sections-view.vue'
@@ -75,7 +76,7 @@ function updateSwitch (v: boolean | null) {
     <v-empty-state
       v-if="error"
       :title="error"
-      icon="mdi-alert-circle-outline"
+      :icon="mdiAlertCircleOutline"
       class="mt-8"
     />
     <template v-else>

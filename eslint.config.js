@@ -16,7 +16,13 @@ export default [
     rules: {
       'vue/multi-word-component-names': 'off',
       'vue/require-default-prop': 'off',
-      'no-undef': 'off' // typescript s'en charge
+      'no-undef': 'off', // typescript s'en charge
+      // le jeu d'icônes est mdi-svg : une chaîne mdi-* rend une icône vide, sans erreur
+      'vue/no-restricted-static-attribute': ['error', {
+        key: '/^((prepend|append)-(inner-)?)?icon$|-icon$/',
+        value: '/^mdi-/',
+        message: 'mdi-svg iconset: import the path from @mdi/js instead of an mdi-* string.'
+      }]
     }
   },
   {
