@@ -128,7 +128,7 @@ export const useFilterState = (opts: UseFilterStateOptions): FilterStateApi => {
 
   // Range-slider value: [min, max] stored as `_gte` / `_lte` URL keys.
   const rangeValue = computed<[number, number] | undefined>({
-    get () {
+    get (): [number, number] | undefined {
       const gteKey = datasetFilterKey(datasetId.value || '', filter.value.labelField, prefix, 'gte')
       const lteKey = datasetFilterKey(datasetId.value || '', filter.value.labelField, prefix, 'lte')
       const gte = reactiveSearchParams[gteKey]
