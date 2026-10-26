@@ -108,12 +108,12 @@ const scope = computed(() => props.instanceKey
       size="40"
       class="mb-3 text-medium-emphasis"
     />
-    <div class="text-body-large font-weight-medium mb-1">
+    <div class="font-weight-medium mb-1">
       {{ t('element.missingFilterTitle') }}
     </div>
     <!-- eslint-disable vue/no-v-html -->
     <div
-      class="text-body-medium text-medium-emphasis"
+      class="text-medium-emphasis"
       v-html="missingFilterText"
     />
     <!-- eslint-enable vue/no-v-html -->

@@ -69,7 +69,7 @@ const rowsWithKeys = computed(() => processedRows.value.map(row => ({
     >
       <h4
         v-if="element.title"
-        class="text-headline-small text-center mt-4"
+        class="text-center mt-4"
       >
         {{ element.title }}
       </h4>

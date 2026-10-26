@@ -61,7 +61,7 @@ const fieldLabel = computed<string>(() => {
   <v-col :cols="cols">
     <div
       v-if="filter.slider"
-      class="text-body-medium text-medium-emphasis"
+      class="text-medium-emphasis"
       style="min-width:280px;"
     >
       {{ fieldLabel }}
