@@ -15,7 +15,8 @@
 import { computed, ref, watch } from 'vue'
 import reactiveSearchParams from '@data-fair/lib-vue/reactive-search-params-global.js'
 import { useConfig } from './config'
-import { collectEmissionsTargets, computeProjections, emissionsSignature, seedProjected } from '@/utils/emissions'
+import { collectEmissionsTargets, computeProjections, emissionsSignature, nextEchoState, seedProjected } from '@/utils/emissions'
+import type { EchoState } from '@/utils/emissions'
 import { ownedFilterKeys } from '@/utils/filters'
 
 export const useEmissionsProjection = (): void => {
@@ -29,6 +30,8 @@ export const useEmissionsProjection = (): void => {
   // Keys this projection wrote (or adopted after a reload), so it can remove a
   // selection that an element cleared without touching the page's own keys.
   const projected = ref<Record<string, string>>({})
+  // Keys it removed, to drop their late echo instead of republishing it.
+  let echoState: EchoState = { sources: {}, withdrawn: {} }
   let seeded = false
 
   watch(
@@ -38,7 +41,9 @@ export const useEmissionsProjection = (): void => {
         projected.value = seedProjected(reactiveSearchParams, targets.value)
         seeded = true
       }
-      const { values, remove } = computeProjections(reactiveSearchParams, targets.value, owned.value, projected.value)
+      const result = computeProjections(reactiveSearchParams, targets.value, owned.value, projected.value, echoState.withdrawn)
+      echoState = nextEchoState(reactiveSearchParams, targets.value, echoState, projected.value, result)
+      const { values, remove } = result
       for (const key of remove) delete reactiveSearchParams[key]
       for (const [key, value] of Object.entries(values)) {
         if (reactiveSearchParams[key] !== value) reactiveSearchParams[key] = value

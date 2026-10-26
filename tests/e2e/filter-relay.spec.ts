@@ -90,10 +90,17 @@ const emitFilter = async (page: Page, appId: string, params: Record<string, stri
   }, params)
 }
 
+// carto-stats 1.0 (vue-router 3) rejects, without catching it, a router.replace
+// towards its current query sent in another key order by d-frame: a few during
+// the mode switches. Counted below: a relay loop throws it by the hundreds.
+const redundantNavigation = 'Avoided redundant navigation to current location'
+
 test.describe('Relais des filtres émis par un visu', () => {
-  test.use({ expectedConsole: embeddedVisusConsole })
+  test.use({ expectedConsole: [...embeddedVisusConsole, redundantNavigation] })
 
   test('R1 — un filtre émis remonte et se propage selon le mode syncParams', async ({ page }) => {
+    let redundantNavigations = 0
+    page.on('pageerror', (err) => { if (err.message.includes(redundantNavigation)) redundantNavigations++ })
     await page.goto('/app/')
     const config = await getDevConfig(page)
     await expect(page.locator('.v-container').first()).toBeVisible({ timeout: 20_000 })
@@ -164,5 +171,8 @@ test.describe('Relais des filtres émis par un visu', () => {
       async () => hasNamespaced(await dashboardParams()),
       { timeout: 10_000, message: 'en mode none, le canal privé doit être purgé' }
     ).toBe(false)
+
+    // 5) Pas de boucle de relais : l'écho d'un filtre retiré n'est pas republié.
+    expect(redundantNavigations, 'boucle de relais avec le récepteur').toBeLessThan(20)
   })
 })

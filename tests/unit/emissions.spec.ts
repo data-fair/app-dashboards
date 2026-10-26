@@ -8,9 +8,11 @@ import {
   emissionsSignature,
   isFilterKey,
   keyWithoutOp,
+  nextEchoState,
   projectEmissions,
   seedProjected
 } from '@/utils/emissions'
+import type { EchoState, ElementSyncParams } from '@/utils/emissions'
 import type { ApplicationElement, DashboardElement, DashboardSection, FormElement, SyncParams, TablePreviewElement } from '@/config'
 
 const app = (id: string, syncParams?: SyncParams): ApplicationElement =>
@@ -163,6 +165,57 @@ test.describe('computeProjections', () => {
       values: {},
       remove: ['application-a__c_codeCommune_in']
     })
+  })
+})
+
+test.describe('écho d\'un filtre retiré', () => {
+  // A émet, B le reçoit par sa src ; B renvoie en retard l'ancienne valeur
+  // après le retrait (course du stateChange de d-frame), parfois en clignotant.
+  const shared = [
+    { scope: 'application-a', syncParams: 'shared-filters' as const },
+    { scope: 'application-b', syncParams: 'shared-filters' as const }
+  ]
+  const sandboxedA = [{ ...shared[0], syncParams: 'sandboxed' as const }, shared[1]]
+  const empty = { sources: {}, withdrawn: {} }
+  const run = (params: Record<string, string>, targets: ElementSyncParams[], state: EchoState, previous: Record<string, string>) => {
+    const result = computeProjections(params, targets, new Set(), previous, state.withdrawn)
+    return { result, state: nextEchoState(params, targets, state, previous, result) }
+  }
+
+  test('le retrait mémorise la valeur et l\'élément qui l\'avait publiée', () => {
+    const published = run({ 'application-a__c_q': 'x' }, shared, empty, {})
+    expect(published.result.values).toEqual({ _c_q: 'x' })
+    const withdrawn = run({ 'application-a__c_q': 'x' }, sandboxedA, published.state, published.result.values)
+    expect(withdrawn.result.remove).toEqual(['_c_q'])
+    expect(withdrawn.state.withdrawn).toEqual({ _c_q: { value: 'x', origins: ['application-a'] } })
+  })
+
+  test('l\'écho d\'un autre élément n\'est jamais republié, même s\'il clignote', () => {
+    let state: EchoState = { sources: {}, withdrawn: { _c_q: { value: 'x', origins: ['application-a'] } } }
+    const steps: Record<string, string>[] = [
+      { 'application-a__c_q': 'x', 'application-b__c_q': 'x' },
+      { 'application-a__c_q': 'x' },
+      { 'application-a__c_q': 'x', 'application-b__c_q': 'x' }
+    ]
+    for (const params of steps) {
+      const step = run(params, sandboxedA, state, {})
+      expect(step.result).toEqual({ values: {}, remove: [] })
+      state = step.state
+    }
+  })
+
+  test('l\'émetteur qui efface puis resélectionne la même valeur la republie', () => {
+    const published = run({ 'application-a__c_q': 'x' }, shared, empty, {})
+    const cleared = run({}, shared, published.state, published.result.values)
+    expect(cleared.result.remove).toEqual(['_c_q'])
+    const reselected = run({ 'application-a__c_q': 'x' }, shared, cleared.state, {})
+    expect(reselected.result.values).toEqual({ _c_q: 'x' })
+    expect(reselected.state.withdrawn).toEqual({})
+  })
+
+  test('une autre valeur émise par un autre élément passe', () => {
+    const state: EchoState = { sources: {}, withdrawn: { _c_q: { value: 'x', origins: ['application-a'] } } }
+    expect(run({ 'application-b__c_q': 'y' }, shared, state, {}).result.values).toEqual({ _c_q: 'y' })
   })
 })
 

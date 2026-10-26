@@ -132,17 +132,44 @@ export interface ProjectionResult {
 }
 
 /**
+ * A clean key the projection removed, remembered to recognize its echo: an
+ * element that received it through its src can send the old value back after
+ * the removal (late d-frame stateChange, stamped with the previous src), and
+ * keep sending it. `origins` are the elements that had published it: their
+ * emission of the same value stays genuine (clear then select it again).
+ */
+export interface WithdrawnKey {
+  value: string
+  origins: string[]
+}
+
+/** What the projection remembers between runs to tell an echo from an emission. */
+export interface EchoState {
+  /** Elements whose emission produced each published clean key. */
+  sources: Record<string, string[]>
+  withdrawn: Record<string, WithdrawnKey>
+}
+
+const isEcho = (withdrawn: Record<string, WithdrawnKey>, scope: string, key: string, value: string): boolean =>
+  withdrawn[key]?.value === value && !withdrawn[key].origins.includes(scope)
+
+/**
  * Compute the clean projection of every element emission. The dashboard's own
  * keys (`ownedKeys`: configured dynamic/static filters, period, geo) always
  * win and are never projected. `previous` is what the projection wrote before,
  * so a key is only removed while it still holds the projected value. The
  * namespaced keys of a `none` element are purged (no channel keeps them alive).
+ * The echo of a `withdrawn` key is not republished: that would put the key back
+ * in every src, then the d-frame anti-echo would remove it again, forever. It
+ * stays in the echoing element's channel, as its own state (removing it there
+ * loops the same way with a visu that reasserts its state, e.g. carto-stats 1.0).
  */
 export const computeProjections = (
   params: ReactiveParams,
   targets: ElementSyncParams[],
   ownedKeys: Set<string>,
-  previous: Record<string, string>
+  previous: Record<string, string>,
+  withdrawn: Record<string, WithdrawnKey> = {}
 ): ProjectionResult => {
   const values: Record<string, string> = {}
   const staleScopes: string[] = []
@@ -151,7 +178,9 @@ export const computeProjections = (
       staleScopes.push(`${target.scope}_`)
       continue
     }
-    Object.assign(values, projectEmissions(collectElementEmissions(params, target.scope), target.syncParams))
+    for (const [key, value] of Object.entries(projectEmissions(collectElementEmissions(params, target.scope), target.syncParams))) {
+      if (!isEcho(withdrawn, target.scope, key, value)) values[key] = value
+    }
   }
   for (const key of Object.keys(values)) {
     if (ownedKeys.has(key)) delete values[key]
@@ -164,6 +193,39 @@ export const computeProjections = (
     if (staleScopes.some(prefix => key.startsWith(prefix))) remove.push(key)
   }
   return { values, remove }
+}
+
+/**
+ * Echo state after a projection run: the sources of the published keys, and
+ * the removed keys with the elements that had published them. A withdrawn key
+ * is forgotten when it is published again; an echo can come and go (a visu
+ * reasserting its state), so it is never a reason to forget it.
+ * ponytail: another element selecting exactly a withdrawn value is not shared
+ * until it selects another one or an origin republishes it; a timestamp would
+ * lift that if a real case shows up.
+ */
+export const nextEchoState = (
+  params: ReactiveParams,
+  targets: ElementSyncParams[],
+  state: EchoState,
+  previous: Record<string, string>,
+  result: ProjectionResult
+): EchoState => {
+  const emissions = targets.map(target => ({ scope: target.scope, values: collectElementEmissions(params, target.scope) }))
+  const sources: Record<string, string[]> = {}
+  for (const [key, value] of Object.entries(result.values)) {
+    sources[key] = emissions.filter(e => e.values[key] === value).map(e => e.scope)
+  }
+  const withdrawn: Record<string, WithdrawnKey> = {}
+  for (const [key, marker] of Object.entries(state.withdrawn)) {
+    if (!(key in result.values)) withdrawn[key] = marker
+  }
+  for (const key of result.remove) {
+    if (!(key in previous)) continue
+    const holders = emissions.filter(e => e.values[key] === previous[key]).map(e => e.scope)
+    withdrawn[key] = { value: previous[key], origins: [...new Set([...(state.sources[key] || []), ...holders])] }
+  }
+  return { sources, withdrawn }
 }
 
 /**
