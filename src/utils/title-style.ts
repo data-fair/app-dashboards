@@ -1,6 +1,6 @@
 /**
  * Shared default title styles, mirroring the `titleStyle` config definition
- * (see `src/config/schema.json`). Used as fallbacks by `d-title` when a
+ * (see `public/config-schema.json`). Used as fallbacks by `d-title` when a
  * configured style omits some fields.
  */
 import type { TitleStyle } from '@/config'

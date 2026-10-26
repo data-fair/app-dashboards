@@ -12,7 +12,7 @@
     "lint-fix": "eslint --fix .",
     "prepare": "husky || true",
     "type-check": "vue-tsc --noEmit",
-    "build-types": "df-build-types && cp src/config/.type/resolved-schema.json public/config-schema.json",
+    "build-types": "df-build-types src/config",
     "test": "df-dev-env && dotenv -- playwright test --max-failures=1",
     "test-unit": "playwright test --project unit",
     "test-e2e": "df-dev-env && dotenv -- playwright test --project e2e",

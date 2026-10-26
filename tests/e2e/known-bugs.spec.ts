@@ -1,4 +1,5 @@
-import { test, expect, type Page } from '@playwright/test'
+import type { Page } from '@playwright/test'
+import { test, expect, embeddedVisusConsole } from './fixtures'
 
 /**
  * Régressions / bugs connus du dashboard.
@@ -173,32 +174,10 @@ const selectFirstFilterOption = async (page: Page, index: number): Promise<void>
   await firstOption.click()
 }
 
-const collectConsoleEvents = (page: Page): { type: string; text: string }[] => {
-  const events: { type: string; text: string }[] = []
-  page.on('console', (msg) => {
-    events.push({ type: msg.type(), text: msg.text() })
-  })
-  return events
-}
-
-const assertNoInitIssue = (events: { type: string; text: string }[]) => {
-  const inactiveScopeWarning = events.find((e) => e.text.includes('cannot run an inactive effect scope'))
-  expect(
-    inactiveScopeWarning,
-    `Warning Vue inattendu : ${inactiveScopeWarning?.text ?? '(aucun)'}\n` +
-    `Tous les messages console :\n${events.map(e => `[${e.type}] ${e.text}`).join('\n')}`
-  ).toBeUndefined()
-  const initError = events.find((e) => e.text.includes('Failed to initialize app'))
-  expect(
-    initError,
-    `Erreur d'init inattendue : ${initError?.text ?? '(aucune)'}`
-  ).toBeUndefined()
-}
-
 test.describe('Bugs connus (régressions)', () => {
-  test('K1 — les filtres dynamiques (v-autocomplete) se rendent dans leurs v-col', async ({ page }) => {
-    const consoleEvents = collectConsoleEvents(page)
+  test.use({ expectedConsole: embeddedVisusConsole })
 
+  test('K1 — les filtres dynamiques (v-autocomplete) se rendent dans leurs v-col', async ({ page }) => {
     await page.goto('/app/')
     const config = await getDevConfig(page)
 
@@ -212,13 +191,9 @@ test.describe('Bugs connus (régressions)', () => {
       const autocompleteCount = filters.filter(f => !(f as { slider?: boolean }).slider).length
       await expect(page.locator('.v-autocomplete')).toHaveCount(autocompleteCount, { timeout: 5_000 })
     }
-
-    assertNoInitIssue(consoleEvents)
   })
 
   test('K2 — transmission des filtres aux embeds : dataset vs application, clés concept et dé-préfixage', async ({ page }) => {
-    const consoleEvents = collectConsoleEvents(page)
-
     await page.goto('/app/')
     const config = await getDevConfig(page)
 
@@ -347,13 +322,9 @@ test.describe('Bugs connus (régressions)', () => {
         }
       }
     }
-
-    assertNoInitIssue(consoleEvents)
   })
 
   test('K3 — basculer un filtre slider en liste (draft) nettoie les bornes gte/lte de l\'URL et des embeds', async ({ page }) => {
-    const consoleEvents = collectConsoleEvents(page)
-
     await page.goto('/app/')
     const config = await getDevConfig(page)
 
@@ -414,13 +385,9 @@ test.describe('Bugs connus (régressions)', () => {
       async () => await firstFrame.getAttribute('src'),
       { timeout: 10_000 }
     ).not.toMatch(gteRegex)
-
-    assertNoInitIssue(consoleEvents)
   })
 
   test('K4 — la barre d\'actions reste dans sa ligne en hauteur automatique', async ({ page }) => {
-    const consoleEvents = collectConsoleEvents(page)
-
     await page.goto('/app/')
     const config = await getDevConfig(page)
 
@@ -493,13 +460,9 @@ test.describe('Bugs connus (régressions)', () => {
       timeout: 20_000,
       message: 'La barre d\'actions (sources) chevauche un autre élément (régression hauteur automatique)'
     }).toBe(true)
-
-    assertNoInitIssue(consoleEvents)
   })
 
   test('K5 — mode comparaison : les filtres transmis aux embeds sont dé-préfixés', async ({ page }) => {
-    const consoleEvents = collectConsoleEvents(page)
-
     // Le mode comparaison se pilote par l'URL (`view=compare`) : le switch
     // n'est visible que si `allowDuplicate`, mais l'URL suffit à rendre les
     // deux colonnes (préfixe de colonne `c` à droite).
@@ -559,13 +522,9 @@ test.describe('Bugs connus (régressions)', () => {
         }
       }
     }
-
-    assertNoInitIssue(consoleEvents)
   })
 
   test('K6 — dimensionnement des d-frame : respect de la hauteur fixe (même avec df:overflow) et ratio d\'aspect en repli', async ({ page }) => {
-    const consoleEvents = collectConsoleEvents(page)
-
     await page.goto('/app/')
     await expect(page.locator('.v-container').first()).toBeVisible({ timeout: 20_000 })
 
@@ -602,13 +561,9 @@ test.describe('Bugs connus (régressions)', () => {
     await expect(firstFrame).toHaveAttribute('aspect-ratio', '')
     const autoStyle = (await firstFrame.getAttribute('style')) || ''
     expect(autoStyle).not.toContain('height:')
-
-    assertNoInitIssue(consoleEvents)
   })
 
   test('K7 — hauteur par breakpoint : fixe à partir de md, repli auto en mobile', async ({ page }) => {
-    const consoleEvents = collectConsoleEvents(page)
-
     await page.goto('/app/')
     await expect(page.locator('.v-container').first()).toBeVisible({ timeout: 20_000 })
 
@@ -641,7 +596,5 @@ test.describe('Bugs connus (régressions)', () => {
     // Mobile (xs) : default -1 → hauteur automatique et repli sur le ratio d'aspect.
     await page.setViewportSize({ width: 390, height: 800 })
     await expect.poll(async () => (await frameStyles()).every(f => f.aspectRatio === '' && !f.style.includes('height:'))).toBe(true)
-
-    assertNoInitIssue(consoleEvents)
   })
 })

@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-47.524 -9.447 210.894 210.894">
+<defs>
+    <filter id="kshadow" color-interpolation-filters="sRGB" x="-25%" y="-25%" width="150%" height="150%">
+      <feFlood flood-opacity="0.7" flood-color="rgb(0,0,0)" result="flood"/>
+      <feComposite in="flood" in2="SourceGraphic" operator="in" result="composite1"/>
+      <feGaussianBlur in="composite1" stdDeviation="1.5" result="blur"/>
+      <feOffset dx="1.5" dy="1.5" result="offset"/>
+      <feComposite in="SourceGraphic" in2="offset" operator="over" result="composite2"/>
+    </filter>
+  </defs><g><g filter="url(#kshadow)"><path fill="#64b5f6" d="M 0,73.92 91.12,2.88 a 7.68,7.68 0 0 1 7.68,0 l 15.36,20.16 a 7.68,7.68 0 0 1 0,9.6 L 0,118.08 Z"/></g><g filter="url(#kshadow)"><rect fill="#546e7a" x="3.8399999" y="1.92" width="34.560001" height="188.16" rx="7.6799998" ry="7.6799998"/></g><g filter="url(#kshadow)"><path fill="#1e88e5" d="m 0,73.92 114.16,87.36 a 7.68,7.68 0 0 1 0,9.6 L 98.8,189.12 a 7.68,7.68 0 0 1 -7.68,0 L 0,118.08 Z"/></g></g>
+</svg>

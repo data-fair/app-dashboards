@@ -5,10 +5,9 @@
 // produces overly loose types (`[k: string]: unknown` on every variant) which
 // make property access in code return `unknown`.
 //
-// The schema in src/config/schema.json remains the source of truth for the
-// VJSF form; regenerate public/config-schema.json and the .type/ directory
-// with `npm run build-types` if the schema changes, then update the
-// interfaces below to stay in sync.
+// The schema in public/config-schema.json remains the source of truth for the
+// VJSF form; regenerate the .type/ directory with `npm run build-types` if the
+// schema changes, then update the interfaces below to stay in sync.
 //
 // Dataset selector prerequisites: the root `datasets` selector is intentionally
 // open — this dashboard must accept any dataset for its filters, so no

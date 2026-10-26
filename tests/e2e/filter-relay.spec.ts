@@ -1,4 +1,5 @@
-import { test, expect, type Page } from '@playwright/test'
+import type { Page } from '@playwright/test'
+import { test, expect, embeddedVisusConsole } from './fixtures'
 
 /**
  * Relais des filtres émis par un visu embarqué (canal privé par élément).
@@ -90,6 +91,8 @@ const emitFilter = async (page: Page, appId: string, params: Record<string, stri
 }
 
 test.describe('Relais des filtres émis par un visu', () => {
+  test.use({ expectedConsole: embeddedVisusConsole })
+
   test('R1 — un filtre émis remonte et se propage selon le mode syncParams', async ({ page }) => {
     await page.goto('/app/')
     const config = await getDevConfig(page)

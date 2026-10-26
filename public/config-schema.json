@@ -1,4 +1,5 @@
 {
+  "x-exports": ["types"],
   "type": "object",
   "layout": "tabs",
   "allOf": [
@@ -15,27 +16,13 @@
                 "href": {
                   "type": "string"
                 },
-                "title": {
-                  "type": "string"
-                },
-                "id": {
-                  "type": "string"
-                },
-                "slug": {
-                  "type": "string"
-                },
-                "schema": {
-                  "type": "array"
-                },
-                "timePeriod": {
-                  "type": "object"
-                },
-                "bbox": {
-                  "type": "array"
-                },
-                "finalizedAt": {
-                  "type": "string"
-                }
+                "title": { "type": "string" },
+                "id": { "type": "string" },
+                "slug": { "type": "string" },
+                "schema": { "type": "array" },
+                "timePeriod": { "type": "object" },
+                "bbox": { "type": "array" },
+                "finalizedAt": { "type": "string" }
               },
               "layout": {
                 "getItems": {
@@ -49,219 +36,7 @@
           ]
         },
         "staticFilters": {
-          "title": "Filtres prédéfinis",
-          "type": "array",
-          "layout": {
-            "messages": {
-              "addItem": "Ajouter un filtre"
-            }
-          },
-          "items": {
-            "type": "object",
-            "default": {
-              "type": "in"
-            },
-            "required": [],
-            "discriminator": {
-              "propertyName": "type"
-            },
-            "oneOf": [
-              {
-                "title": "Restreindre à des valeurs",
-                "required": [
-                  "field",
-                  "values"
-                ],
-                "additionalProperties": false,
-                "properties": {
-                  "type": {
-                    "const": "in"
-                  },
-                  "field": {
-                    "type": "string",
-                    "title": "Colonne de filtre",
-                    "layout": {
-                      "getItems": {
-                        "url": "${rootData.datasets[0].href}/schema?calculated=false",
-                        "itemKey": "data.key",
-                        "itemTitle": "data.label"
-                      }
-                    }
-                  },
-                  "values": {
-                    "type": "array",
-                    "title": "Valeurs",
-                    "items": {
-                      "type": "string"
-                    },
-                    "layout": {
-                      "getItems": {
-                        "url": "${rootData.datasets[0].href}/values-labels/${parent.data.field}?q={q}&q_mode=complete&size=1000&stringify=true",
-                        "itemKey": "data.value",
-                        "itemTitle": "data.label"
-                      }
-                    }
-                  }
-                }
-              },
-              {
-                "title": "Restreindre à un intervalle de valeurs",
-                "required": [
-                  "field"
-                ],
-                "additionalProperties": false,
-                "properties": {
-                  "type": {
-                    "const": "interval"
-                  },
-                  "field": {
-                    "type": "string",
-                    "title": "Colonne de filtre",
-                    "layout": {
-                      "getItems": {
-                        "url": "${rootData.datasets[0].href}/schema?calculated=false",
-                        "itemKey": "data.key",
-                        "itemTitle": "data.label"
-                      }
-                    }
-                  },
-                  "minValue": {
-                    "type": "string",
-                    "title": "Valeur min",
-                    "layout": {
-                      "getItems": {
-                        "url": "${rootData.datasets[0].href}/values-labels/${parent.data.field}?sort=asc&${parent.data.field}_gte={q}&stringify=true",
-                        "itemKey": "data.value",
-                        "itemTitle": "data.label"
-                      }
-                    }
-                  },
-                  "maxValue": {
-                    "type": "string",
-                    "title": "Valeur max",
-                    "layout": {
-                      "getItems": {
-                        "url": "${rootData.datasets[0].href}/values-labels/${parent.data.field}?sort=desc&${parent.data.field}_lte={q}&stringify=true",
-                        "itemKey": "data.value",
-                        "itemTitle": "data.label"
-                      }
-                    }
-                  }
-                }
-              },
-              {
-                "title": "Exclure des valeurs",
-                "required": [
-                  "field"
-                ],
-                "additionalProperties": false,
-                "properties": {
-                  "type": {
-                    "const": "out"
-                  },
-                  "field": {
-                    "type": "string",
-                    "title": "Colonne de filtre",
-                    "layout": {
-                      "getItems": {
-                        "url": "${rootData.datasets[0].href}/schema?calculated=false",
-                        "itemKey": "data.key",
-                        "itemTitle": "data.label"
-                      }
-                    }
-                  },
-                  "values": {
-                    "type": "array",
-                    "title": "Valeurs à exclure",
-                    "items": {
-                      "type": "string"
-                    },
-                    "layout": {
-                      "getItems": {
-                        "url": "${rootData.datasets[0].href}/values-labels/${parent.data.field}?q={q}&q_mode=complete&size=1000&stringify=true",
-                        "itemKey": "data.value",
-                        "itemTitle": "data.label"
-                      }
-                    }
-                  }
-                }
-              },
-              {
-                "title": "Commence par",
-                "required": [
-                  "field",
-                  "value"
-                ],
-                "additionalProperties": false,
-                "properties": {
-                  "type": {
-                    "const": "starts"
-                  },
-                  "field": {
-                    "type": "string",
-                    "title": "Colonne de filtre",
-                    "layout": {
-                      "getItems": {
-                        "url": "${rootData.datasets[0].href}/schema?calculated=false",
-                        "itemKey": "data.key",
-                        "itemTitle": "data.label"
-                      }
-                    }
-                  },
-                  "value": {
-                    "type": "string",
-                    "title": "Valeur"
-                  }
-                }
-              },
-              {
-                "title": "Exclure les valeurs vides ou non définies",
-                "required": [
-                  "field"
-                ],
-                "additionalProperties": false,
-                "properties": {
-                  "type": {
-                    "const": "exists"
-                  },
-                  "field": {
-                    "type": "string",
-                    "title": "Colonne de filtre",
-                    "layout": {
-                      "getItems": {
-                        "url": "${rootData.datasets[0].href}/schema?calculated=false",
-                        "itemKey": "data.key",
-                        "itemTitle": "data.label"
-                      }
-                    }
-                  }
-                }
-              },
-              {
-                "title": "Restreindre aux valeurs vides ou non définies",
-                "required": [
-                  "field"
-                ],
-                "additionalProperties": false,
-                "properties": {
-                  "type": {
-                    "const": "notExists"
-                  },
-                  "field": {
-                    "type": "string",
-                    "title": "Colonne de filtre",
-                    "layout": {
-                      "getItems": {
-                        "url": "${rootData.datasets[0].href}/schema?calculated=false",
-                        "itemKey": "data.key",
-                        "itemTitle": "data.label"
-                      }
-                    }
-                  }
-                }
-              }
-            ]
-          }
+          "$ref": "#/$defs/filters"
         },
         "filters": {
           "type": "array",
@@ -274,9 +49,7 @@
           },
           "items": {
             "type": "object",
-            "required": [
-              "labelField"
-            ],
+            "required": ["labelField"],
             "layout": {
               "switch": [
                 {
@@ -390,12 +163,7 @@
                   "if": "!summary",
                   "children": [
                     {
-                      "children": [
-                        "title",
-                        "description",
-                        "icon",
-                        "rows"
-                      ]
+                      "children": ["title", "description", "icon", "rows"]
                     }
                   ]
                 },
@@ -460,18 +228,12 @@
                         "if": "!summary",
                         "children": [
                           {
-                            "children": [
-                              "height",
-                              "heights",
-                              "elements"
-                            ]
+                            "children": ["height", "heights", "elements"]
                           }
                         ]
                       },
                       {
-                        "children": [
-                          "elements"
-                        ]
+                        "children": ["elements"]
                       }
                     ]
                   },
@@ -556,1675 +318,25 @@
                             "default": 2
                           }
                         },
-                        "discriminator": {
-                          "propertyName": "type"
-                        },
+                        "discriminator": { "propertyName": "type" },
                         "oneOf": [
                           {
-                            "title": "Prévisualisation table",
-                            "type": "object",
-                            "properties": {
-                              "type": {
-                                "const": "tablePreview",
-                                "title": "Type de l'élément"
-                              }
-                            },
-                            "discriminator": {
-                              "propertyName": "source"
-                            },
-                            "oneOf": [
-                              {
-                                "title": "Jeu de données des filtres",
-                                "properties": {
-                                  "source": {
-                                    "const": "root",
-                                    "title": "Source des données"
-                                  },
-                                  "fields": {
-                                    "title": "Champs à afficher",
-                                    "description": "Si vide, tous les champs seront affichés",
-                                    "type": "array",
-                                    "items": {
-                                      "type": "string"
-                                    },
-                                    "layout": {
-                                      "getItems": {
-                                        "url": "${rootData.datasets[0].href}/schema?calculated=false",
-                                        "itemKey": "data.key",
-                                        "itemTitle": "data.label"
-                                      }
-                                    }
-                                  },
-                                  "display": {
-                                    "type": "string",
-                                    "oneOf": [
-                                      {
-                                        "const": "table",
-                                        "title": "Tableau"
-                                      },
-                                      {
-                                        "const": "table-dense",
-                                        "title": "Tableau dense"
-                                      },
-                                      {
-                                        "const": "list",
-                                        "title": "Vignettes"
-                                      }
-                                    ],
-                                    "default": "table",
-                                    "title": "Affichage"
-                                  },
-                                  "noInteractions": {
-                                    "title": "Sans aucune interaction",
-                                    "description": "Réglage déprécié, conservé pour les configurations existantes. Utilisez plutôt la liste « Interactions désactivées ».",
-                                    "type": "boolean",
-                                    "default": false,
-                                    "layout": {
-                                      "if": "parent.data.noInteractions === true"
-                                    }
-                                  },
-                                  "hideInteractions": {
-                                    "title": "Interactions désactivées",
-                                    "description": "Toutes les interactions du tableau sont actives par défaut : sélectionnez celles à interdire.",
-                                    "type": "array",
-                                    "default": [],
-                                    "items": {
-                                      "type": "string",
-                                      "oneOf": [
-                                        {
-                                          "const": "count",
-                                          "title": "Décompte des lignes"
-                                        },
-                                        {
-                                          "const": "search",
-                                          "title": "Recherche textuelle"
-                                        },
-                                        {
-                                          "const": "filters",
-                                          "title": "Filtres (puces et menus de colonne)"
-                                        },
-                                        {
-                                          "const": "pagination",
-                                          "title": "Navigation entre les pages (mode paginé)"
-                                        },
-                                        {
-                                          "const": "sort",
-                                          "title": "Tri par clic sur un en-tête"
-                                        },
-                                        {
-                                          "const": "cells",
-                                          "title": "Filtrage par clic sur une cellule"
-                                        },
-                                        {
-                                          "const": "select-cols",
-                                          "title": "Choix des colonnes"
-                                        },
-                                        {
-                                          "const": "fix-cols",
-                                          "title": "Figement des colonnes"
-                                        },
-                                        {
-                                          "const": "display",
-                                          "title": "Choix du mode d'affichage"
-                                        },
-                                        {
-                                          "const": "download",
-                                          "title": "Téléchargement des résultats"
-                                        }
-                                      ]
-                                    },
-                                    "layout": {
-                                      "if": "!parent.data.noInteractions"
-                                    }
-                                  },
-                                  "pagination": {
-                                    "title": "Pagination",
-                                    "description": "Affiche les lignes par pages dimensionnées pour tenir dans la hauteur du tableau, ce qui supprime sa barre de défilement verticale.",
-                                    "type": "boolean",
-                                    "default": false
-                                  },
-                                  "syncParams": {
-                                    "title": "Synchronisation des filtres",
-                                    "description": "Ce que ce visu transmet aux autres visus du tableau de bord. Dans tous les cas il reçoit les filtres du dashboard.",
-                                    "type": "string",
-                                    "default": "shared-filters",
-                                    "oneOf": [
-                                      {
-                                        "const": "shared-filters",
-                                        "title": "Partage des filtres : ses filtres et sélections alimentent les autres visus"
-                                      },
-                                      {
-                                        "const": "sandboxed",
-                                        "title": "Cloisonné : il garde son état pour lui, rien n'est partagé"
-                                      },
-                                      {
-                                        "const": "none",
-                                        "title": "Aucune synchronisation : son état n'est pas conservé, rien n'est partagé"
-                                      }
-                                    ]
-                                  },
-                                  "valueMandatory": {
-                                    "title": "Nécessite une valeur dans des filtres",
-                                    "type": "boolean",
-                                    "default": false
-                                  },
-                                  "mandatoryFilters": {
-                                    "title": "Filtres requis",
-                                    "type": "array",
-                                    "items": {
-                                      "type": "string"
-                                    },
-                                    "layout": {
-                                      "getItems": {
-                                        "expr": "rootData.filters",
-                                        "itemKey": "data.labelField",
-                                        "itemTitle": "data.labelField"
-                                      },
-                                      "if": "parent.data.valueMandatory"
-                                    }
-                                  }
-                                }
-                              },
-                              {
-                                "title": "Autre jeu de données",
-                                "layout": {
-                                  "switch": [
-                                    {
-                                      "if": "!data.dataset",
-                                      "children": [
-                                        "dataset"
-                                      ]
-                                    }
-                                  ]
-                                },
-                                "properties": {
-                                  "source": {
-                                    "const": "external",
-                                    "title": "Source des données"
-                                  },
-                                  "dataset": {
-                                    "type": "object",
-                                    "properties": {
-                                      "id": {
-                                        "type": "string"
-                                      },
-                                      "slug": {
-                                        "type": "string"
-                                      },
-                                      "title": {
-                                        "type": "string"
-                                      },
-                                      "href": {
-                                        "type": "string"
-                                      },
-                                      "schema": {
-                                        "type": "array"
-                                      }
-                                    },
-                                    "layout": {
-                                      "getItems": {
-                                        "url": "api/v1/datasets?q={q}&size=100&${context.datasetFilter}&select=id,title,slug,schema",
-                                        "itemKey": "data.id",
-                                        "itemTitle": "data.title",
-                                        "itemsResults": "data.results"
-                                      }
-                                    }
-                                  },
-                                  "fields": {
-                                    "title": "Champs à afficher",
-                                    "description": "Si vide, tous les champs seront affichés",
-                                    "type": "array",
-                                    "items": {
-                                      "type": "string"
-                                    },
-                                    "layout": {
-                                      "getItems": {
-                                        "url": "${parent.data.dataset.href}/schema?calculated=false",
-                                        "itemKey": "data.key",
-                                        "itemTitle": "data.label"
-                                      }
-                                    }
-                                  },
-                                  "display": {
-                                    "type": "string",
-                                    "oneOf": [
-                                      {
-                                        "const": "table",
-                                        "title": "Tableau"
-                                      },
-                                      {
-                                        "const": "table-dense",
-                                        "title": "Tableau dense"
-                                      },
-                                      {
-                                        "const": "list",
-                                        "title": "Vignettes"
-                                      }
-                                    ],
-                                    "default": "table",
-                                    "title": "Affichage"
-                                  },
-                                  "noInteractions": {
-                                    "title": "Sans aucune interaction",
-                                    "description": "Réglage déprécié, conservé pour les configurations existantes. Utilisez plutôt la liste « Interactions désactivées ».",
-                                    "type": "boolean",
-                                    "default": false,
-                                    "layout": {
-                                      "if": "parent.data.noInteractions === true"
-                                    }
-                                  },
-                                  "hideInteractions": {
-                                    "title": "Interactions désactivées",
-                                    "description": "Toutes les interactions du tableau sont actives par défaut : sélectionnez celles à interdire.",
-                                    "type": "array",
-                                    "default": [],
-                                    "items": {
-                                      "type": "string",
-                                      "oneOf": [
-                                        {
-                                          "const": "count",
-                                          "title": "Décompte des lignes"
-                                        },
-                                        {
-                                          "const": "search",
-                                          "title": "Recherche textuelle"
-                                        },
-                                        {
-                                          "const": "filters",
-                                          "title": "Filtres (puces et menus de colonne)"
-                                        },
-                                        {
-                                          "const": "pagination",
-                                          "title": "Navigation entre les pages (mode paginé)"
-                                        },
-                                        {
-                                          "const": "sort",
-                                          "title": "Tri par clic sur un en-tête"
-                                        },
-                                        {
-                                          "const": "cells",
-                                          "title": "Filtrage par clic sur une cellule"
-                                        },
-                                        {
-                                          "const": "select-cols",
-                                          "title": "Choix des colonnes"
-                                        },
-                                        {
-                                          "const": "fix-cols",
-                                          "title": "Figement des colonnes"
-                                        },
-                                        {
-                                          "const": "display",
-                                          "title": "Choix du mode d'affichage"
-                                        },
-                                        {
-                                          "const": "download",
-                                          "title": "Téléchargement des résultats"
-                                        }
-                                      ]
-                                    },
-                                    "layout": {
-                                      "if": "!parent.data.noInteractions"
-                                    }
-                                  },
-                                  "pagination": {
-                                    "title": "Pagination",
-                                    "description": "Affiche les lignes par pages dimensionnées pour tenir dans la hauteur du tableau, ce qui supprime sa barre de défilement verticale.",
-                                    "type": "boolean",
-                                    "default": false
-                                  },
-                                  "syncParams": {
-                                    "title": "Synchronisation des filtres",
-                                    "description": "Ce que ce visu transmet aux autres visus du tableau de bord. Dans tous les cas il reçoit les filtres du dashboard.",
-                                    "type": "string",
-                                    "default": "shared-filters",
-                                    "oneOf": [
-                                      {
-                                        "const": "shared-filters",
-                                        "title": "Partage des filtres : ses filtres et sélections alimentent les autres visus"
-                                      },
-                                      {
-                                        "const": "sandboxed",
-                                        "title": "Cloisonné : il garde son état pour lui, rien n'est partagé"
-                                      },
-                                      {
-                                        "const": "none",
-                                        "title": "Aucune synchronisation : son état n'est pas conservé, rien n'est partagé"
-                                      }
-                                    ]
-                                  },
-                                  "valueMandatory": {
-                                    "title": "Nécessite une valeur dans des filtres",
-                                    "type": "boolean",
-                                    "default": false
-                                  },
-                                  "mandatoryFilters": {
-                                    "title": "Filtres requis",
-                                    "type": "array",
-                                    "items": {
-                                      "type": "string"
-                                    },
-                                    "layout": {
-                                      "getItems": {
-                                        "expr": "rootData.filters",
-                                        "itemKey": "data.labelField",
-                                        "itemTitle": "data.labelField"
-                                      },
-                                      "if": "parent.data.valueMandatory"
-                                    }
-                                  }
-                                }
-                              }
-                            ],
-                            "default": {
-                              "source": "root"
-                            },
-                            "oneOfLayout": {
-                              "label": "Source des données"
-                            }
+                            "$ref": "#/$defs/table"
                           },
                           {
-                            "title": "Téléchargement",
-                            "type": "object",
-                            "properties": {
-                              "type": {
-                                "const": "download",
-                                "title": "Type de l'élément"
-                              }
-                            },
-                            "discriminator": {
-                              "propertyName": "source"
-                            },
-                            "oneOf": [
-                              {
-                                "title": "Jeu de données des filtres",
-                                "properties": {
-                                  "source": {
-                                    "const": "root",
-                                    "title": "Source des données"
-                                  },
-                                  "fields": {
-                                    "title": "Colonnes à télécharger",
-                                    "description": "Si vide, toutes les colonnes du jeu de données sont proposées.",
-                                    "type": "array",
-                                    "items": {
-                                      "type": "string"
-                                    },
-                                    "layout": {
-                                      "getItems": {
-                                        "url": "${rootData.datasets[0].href}/schema?calculated=false",
-                                        "itemKey": "data.key",
-                                        "itemTitle": "data.label"
-                                      }
-                                    }
-                                  },
-                                  "header": {
-                                    "title": "Afficher l'en-tête",
-                                    "description": "Affiche le titre, le résumé et le nombre de lignes du jeu de données.",
-                                    "type": "boolean",
-                                    "default": true
-                                  },
-                                  "valueMandatory": {
-                                    "title": "Nécessite une valeur dans des filtres",
-                                    "type": "boolean",
-                                    "default": false
-                                  },
-                                  "mandatoryFilters": {
-                                    "title": "Filtres requis",
-                                    "type": "array",
-                                    "items": {
-                                      "type": "string"
-                                    },
-                                    "layout": {
-                                      "getItems": {
-                                        "expr": "rootData.filters",
-                                        "itemKey": "data.labelField",
-                                        "itemTitle": "data.labelField"
-                                      },
-                                      "if": "parent.data.valueMandatory"
-                                    }
-                                  }
-                                }
-                              },
-                              {
-                                "title": "Autre jeu de données",
-                                "layout": {
-                                  "switch": [
-                                    {
-                                      "if": "!data.dataset",
-                                      "children": [
-                                        "dataset"
-                                      ]
-                                    }
-                                  ]
-                                },
-                                "properties": {
-                                  "source": {
-                                    "const": "external",
-                                    "title": "Source des données"
-                                  },
-                                  "dataset": {
-                                    "type": "object",
-                                    "properties": {
-                                      "id": {
-                                        "type": "string"
-                                      },
-                                      "slug": {
-                                        "type": "string"
-                                      },
-                                      "title": {
-                                        "type": "string"
-                                      },
-                                      "href": {
-                                        "type": "string"
-                                      },
-                                      "schema": {
-                                        "type": "array"
-                                      }
-                                    },
-                                    "layout": {
-                                      "getItems": {
-                                        "url": "api/v1/datasets?q={q}&size=100&${context.datasetFilter}&select=id,title,slug,schema",
-                                        "itemKey": "data.id",
-                                        "itemTitle": "data.title",
-                                        "itemsResults": "data.results"
-                                      }
-                                    }
-                                  },
-                                  "fields": {
-                                    "title": "Colonnes à télécharger",
-                                    "description": "Si vide, toutes les colonnes du jeu de données sont proposées.",
-                                    "type": "array",
-                                    "items": {
-                                      "type": "string"
-                                    },
-                                    "layout": {
-                                      "getItems": {
-                                        "url": "${parent.data.dataset.href}/schema?calculated=false",
-                                        "itemKey": "data.key",
-                                        "itemTitle": "data.label"
-                                      }
-                                    }
-                                  },
-                                  "header": {
-                                    "title": "Afficher l'en-tête",
-                                    "description": "Affiche le titre, le résumé et le nombre de lignes du jeu de données.",
-                                    "type": "boolean",
-                                    "default": true
-                                  },
-                                  "valueMandatory": {
-                                    "title": "Nécessite une valeur dans des filtres",
-                                    "type": "boolean",
-                                    "default": false
-                                  },
-                                  "mandatoryFilters": {
-                                    "title": "Filtres requis",
-                                    "type": "array",
-                                    "items": {
-                                      "type": "string"
-                                    },
-                                    "layout": {
-                                      "getItems": {
-                                        "expr": "rootData.filters",
-                                        "itemKey": "data.labelField",
-                                        "itemTitle": "data.labelField"
-                                      },
-                                      "if": "parent.data.valueMandatory"
-                                    }
-                                  }
-                                }
-                              }
-                            ],
-                            "default": {
-                              "source": "root"
-                            },
-                            "oneOfLayout": {
-                              "label": "Source des données"
-                            }
+                            "$ref": "#/$defs/download"
                           },
                           {
-                            "title": "Visualisation",
-                            "properties": {
-                              "type": {
-                                "const": "application",
-                                "title": "Type de l'élément"
-                              }
-                            },
-                            "discriminator": {
-                              "propertyName": "source"
-                            },
-                            "oneOf": [
-                              {
-                                "title": "Jeu de données des filtres",
-                                "properties": {
-                                  "source": {
-                                    "const": "root",
-                                    "title": "Source des données de l'application"
-                                  },
-                                  "application": {
-                                    "type": "object",
-                                    "properties": {
-                                      "id": {
-                                        "type": "string"
-                                      },
-                                      "title": {
-                                        "type": "string"
-                                      },
-                                      "href": {
-                                        "type": "string"
-                                      },
-                                      "baseApp": {
-                                        "type": "object"
-                                      }
-                                    },
-                                    "layout": {
-                                      "getItems": {
-                                        "url": "api/v1/applications?q={q}&size=100&${context.datasetFilter}&dataset=${rootData.datasets[0].id}&filterConcepts=true&select=id,title,baseApp",
-                                        "itemKey": "data.id",
-                                        "itemTitle": "data.title",
-                                        "itemsResults": "data.results"
-                                      }
-                                    }
-                                  },
-                                  "syncParams": {
-                                    "title": "Synchronisation des filtres",
-                                    "description": "Ce que ce visu transmet aux autres visus du tableau de bord. Dans tous les cas il reçoit les filtres du dashboard.",
-                                    "type": "string",
-                                    "default": "shared-filters",
-                                    "oneOf": [
-                                      {
-                                        "const": "shared-filters",
-                                        "title": "Partage des filtres : ses filtres et sélections alimentent les autres visus"
-                                      },
-                                      {
-                                        "const": "sandboxed",
-                                        "title": "Cloisonné : il garde son état pour lui, rien n'est partagé"
-                                      },
-                                      {
-                                        "const": "none",
-                                        "title": "Aucune synchronisation : son état n'est pas conservé, rien n'est partagé"
-                                      }
-                                    ]
-                                  },
-                                  "valueMandatory": {
-                                    "title": "Nécessite une valeur dans des filtres",
-                                    "type": "boolean",
-                                    "default": false
-                                  },
-                                  "mandatoryFilters": {
-                                    "title": "Filtres requis",
-                                    "type": "array",
-                                    "items": {
-                                      "type": "string"
-                                    },
-                                    "layout": {
-                                      "getItems": {
-                                        "expr": "rootData.filters",
-                                        "itemKey": "data.labelField",
-                                        "itemTitle": "data.labelField"
-                                      },
-                                      "if": "parent.data.valueMandatory"
-                                    }
-                                  },
-                                  "description": {
-                                    "title": "Affichage de la description",
-                                    "type": "string",
-                                    "oneOf": [
-                                      {
-                                        "const": "none",
-                                        "title": "Aucun affichage"
-                                      },
-                                      {
-                                        "const": "left",
-                                        "title": "A gauche"
-                                      },
-                                      {
-                                        "const": "right",
-                                        "title": "A droite"
-                                      },
-                                      {
-                                        "const": "top",
-                                        "title": "En haut"
-                                      },
-                                      {
-                                        "const": "bottom",
-                                        "title": "En bas"
-                                      }
-                                    ],
-                                    "default": "none"
-                                  }
-                                }
-                              },
-                              {
-                                "title": "Autre jeu de données",
-                                "properties": {
-                                  "source": {
-                                    "const": "external",
-                                    "title": "Source des données de l'application"
-                                  },
-                                  "application": {
-                                    "type": "object",
-                                    "properties": {
-                                      "id": {
-                                        "type": "string"
-                                      },
-                                      "title": {
-                                        "type": "string"
-                                      },
-                                      "href": {
-                                        "type": "string"
-                                      },
-                                      "baseApp": {
-                                        "type": "object"
-                                      }
-                                    },
-                                    "layout": {
-                                      "getItems": {
-                                        "url": "api/v1/applications?q={q}&size=100&${context.datasetFilter}&filterConcepts=true&select=id,title,baseApp",
-                                        "itemKey": "data.id",
-                                        "itemTitle": "data.title",
-                                        "itemsResults": "data.results"
-                                      }
-                                    }
-                                  },
-                                  "syncParams": {
-                                    "title": "Synchronisation des filtres",
-                                    "description": "Ce que ce visu transmet aux autres visus du tableau de bord. Dans tous les cas il reçoit les filtres du dashboard.",
-                                    "type": "string",
-                                    "default": "shared-filters",
-                                    "oneOf": [
-                                      {
-                                        "const": "shared-filters",
-                                        "title": "Partage des filtres : ses filtres et sélections alimentent les autres visus"
-                                      },
-                                      {
-                                        "const": "sandboxed",
-                                        "title": "Cloisonné : il garde son état pour lui, rien n'est partagé"
-                                      },
-                                      {
-                                        "const": "none",
-                                        "title": "Aucune synchronisation : son état n'est pas conservé, rien n'est partagé"
-                                      }
-                                    ]
-                                  },
-                                  "valueMandatory": {
-                                    "title": "Nécessite une valeur dans des filtres",
-                                    "type": "boolean",
-                                    "default": false
-                                  },
-                                  "mandatoryFilters": {
-                                    "title": "Filtres requis",
-                                    "type": "array",
-                                    "items": {
-                                      "type": "string"
-                                    },
-                                    "layout": {
-                                      "getItems": {
-                                        "expr": "rootData.filters",
-                                        "itemKey": "data.labelField",
-                                        "itemTitle": "data.labelField"
-                                      },
-                                      "if": "parent.data.valueMandatory"
-                                    }
-                                  },
-                                  "description": {
-                                    "title": "Affichage de la description",
-                                    "type": "string",
-                                    "oneOf": [
-                                      {
-                                        "const": "none",
-                                        "title": "Aucun affichage"
-                                      },
-                                      {
-                                        "const": "left",
-                                        "title": "A gauche"
-                                      },
-                                      {
-                                        "const": "right",
-                                        "title": "A droite"
-                                      },
-                                      {
-                                        "const": "top",
-                                        "title": "En haut"
-                                      },
-                                      {
-                                        "const": "bottom",
-                                        "title": "En bas"
-                                      }
-                                    ],
-                                    "default": "none"
-                                  }
-                                }
-                              }
-                            ],
-                            "default": {
-                              "source": "root"
-                            },
-                            "oneOfLayout": {
-                              "label": "Source des données de l'application"
-                            }
+                            "$ref": "#/$defs/application"
                           },
                           {
-                            "title": "Texte",
-                            "properties": {
-                              "type": {
-                                "const": "text",
-                                "title": "Type de l'élément"
-                              },
-                              "content": {
-                                "type": "string",
-                                "title": "Contenu",
-                                "layout": "textarea"
-                              }
-                            }
+                            "$ref": "#/$defs/text"
                           },
                           {
-                            "title": "Colonne",
-                            "properties": {
-                              "type": {
-                                "const": "column",
-                                "title": "Type de l'élément"
-                              },
-                              "elements": {
-                                "type": "array",
-                                "layout": {
-                                  "itemTitle": "data.title || {tablePreview: ('Vue table - ' + (data.source === 'root' ? rootData.datasets[0].title : (data.dataset?.title || 'Jeu de données non défini'))), download: ('Téléchargement - ' + (data.source === 'root' ? rootData.datasets[0].title : (data.dataset?.title || 'Jeu de données non défini'))), application: ('Visualisation - ' +  (data.application?.title || 'Visualisation non définie')),text: 'Texte libre', form: ('Formulaire - '+(data.dataset?.title || 'Jeu de données non défini')), column:('Colonne - '+(data.elements?.length||0)+' éléments')}[data.type]"
-                                },
-                                "items": {
-                                  "type": "object",
-                                  "layout": {
-                                    "switch": [
-                                      {
-                                        "if": "!summary"
-                                      },
-                                      {
-                                        "children": []
-                                      }
-                                    ]
-                                  },
-                                  "discriminator": {
-                                    "propertyName": "type"
-                                  },
-                                  "oneOf": [
-                                    {
-                                      "title": "Prévisualisation table",
-                                      "type": "object",
-                                      "properties": {
-                                        "type": {
-                                          "const": "tablePreview",
-                                          "title": "Type de l'élément"
-                                        }
-                                      },
-                                      "discriminator": {
-                                        "propertyName": "source"
-                                      },
-                                      "oneOf": [
-                                        {
-                                          "title": "Jeu de données des filtres",
-                                          "properties": {
-                                            "source": {
-                                              "const": "root",
-                                              "title": "Source des données"
-                                            },
-                                            "fields": {
-                                              "title": "Champs à afficher",
-                                              "description": "Si vide, tous les champs seront affichés",
-                                              "type": "array",
-                                              "items": {
-                                                "type": "string"
-                                              },
-                                              "layout": {
-                                                "getItems": {
-                                                  "url": "${rootData.datasets[0].href}/schema?calculated=false",
-                                                  "itemKey": "data.key",
-                                                  "itemTitle": "data.label"
-                                                }
-                                              }
-                                            },
-                                            "display": {
-                                              "type": "string",
-                                              "oneOf": [
-                                                {
-                                                  "const": "table",
-                                                  "title": "Tableau"
-                                                },
-                                                {
-                                                  "const": "table-dense",
-                                                  "title": "Tableau dense"
-                                                },
-                                                {
-                                                  "const": "list",
-                                                  "title": "Vignettes"
-                                                }
-                                              ],
-                                              "default": "table",
-                                              "title": "Affichage"
-                                            },
-                                            "noInteractions": {
-                                              "title": "Sans aucune interaction",
-                                              "description": "Réglage déprécié, conservé pour les configurations existantes. Utilisez plutôt la liste « Interactions désactivées ».",
-                                              "type": "boolean",
-                                              "default": false,
-                                              "layout": {
-                                                "if": "parent.data.noInteractions === true"
-                                              }
-                                            },
-                                            "hideInteractions": {
-                                              "title": "Interactions désactivées",
-                                              "description": "Toutes les interactions du tableau sont actives par défaut : sélectionnez celles à interdire.",
-                                              "type": "array",
-                                              "default": [],
-                                              "items": {
-                                                "type": "string",
-                                                "oneOf": [
-                                                  {
-                                                    "const": "count",
-                                                    "title": "Décompte des lignes"
-                                                  },
-                                                  {
-                                                    "const": "search",
-                                                    "title": "Recherche textuelle"
-                                                  },
-                                                  {
-                                                    "const": "filters",
-                                                    "title": "Filtres (puces et menus de colonne)"
-                                                  },
-                                                  {
-                                                    "const": "pagination",
-                                                    "title": "Navigation entre les pages (mode paginé)"
-                                                  },
-                                                  {
-                                                    "const": "sort",
-                                                    "title": "Tri par clic sur un en-tête"
-                                                  },
-                                                  {
-                                                    "const": "cells",
-                                                    "title": "Filtrage par clic sur une cellule"
-                                                  },
-                                                  {
-                                                    "const": "select-cols",
-                                                    "title": "Choix des colonnes"
-                                                  },
-                                                  {
-                                                    "const": "fix-cols",
-                                                    "title": "Figement des colonnes"
-                                                  },
-                                                  {
-                                                    "const": "display",
-                                                    "title": "Choix du mode d'affichage"
-                                                  },
-                                                  {
-                                                    "const": "download",
-                                                    "title": "Téléchargement des résultats"
-                                                  }
-                                                ]
-                                              },
-                                              "layout": {
-                                                "if": "!parent.data.noInteractions"
-                                              }
-                                            },
-                                            "pagination": {
-                                              "title": "Pagination",
-                                              "description": "Affiche les lignes par pages dimensionnées pour tenir dans la hauteur du tableau, ce qui supprime sa barre de défilement verticale.",
-                                              "type": "boolean",
-                                              "default": false
-                                            },
-                                            "syncParams": {
-                                              "title": "Synchronisation des filtres",
-                                              "description": "Ce que ce visu transmet aux autres visus du tableau de bord. Dans tous les cas il reçoit les filtres du dashboard.",
-                                              "type": "string",
-                                              "default": "shared-filters",
-                                              "oneOf": [
-                                                {
-                                                  "const": "shared-filters",
-                                                  "title": "Partage des filtres : ses filtres et sélections alimentent les autres visus"
-                                                },
-                                                {
-                                                  "const": "sandboxed",
-                                                  "title": "Cloisonné : il garde son état pour lui, rien n'est partagé"
-                                                },
-                                                {
-                                                  "const": "none",
-                                                  "title": "Aucune synchronisation : son état n'est pas conservé, rien n'est partagé"
-                                                }
-                                              ]
-                                            },
-                                            "valueMandatory": {
-                                              "title": "Nécessite une valeur dans des filtres",
-                                              "type": "boolean",
-                                              "default": false
-                                            },
-                                            "mandatoryFilters": {
-                                              "title": "Filtres requis",
-                                              "type": "array",
-                                              "items": {
-                                                "type": "string"
-                                              },
-                                              "layout": {
-                                                "getItems": {
-                                                  "expr": "rootData.filters",
-                                                  "itemKey": "data.labelField",
-                                                  "itemTitle": "data.labelField"
-                                                },
-                                                "if": "parent.data.valueMandatory"
-                                              }
-                                            }
-                                          }
-                                        },
-                                        {
-                                          "title": "Autre jeu de données",
-                                          "layout": {
-                                            "switch": [
-                                              {
-                                                "if": "!data.dataset",
-                                                "children": [
-                                                  "dataset"
-                                                ]
-                                              }
-                                            ]
-                                          },
-                                          "properties": {
-                                            "source": {
-                                              "const": "external",
-                                              "title": "Source des données"
-                                            },
-                                            "dataset": {
-                                              "type": "object",
-                                              "properties": {
-                                                "id": {
-                                                  "type": "string"
-                                                },
-                                                "slug": {
-                                                  "type": "string"
-                                                },
-                                                "title": {
-                                                  "type": "string"
-                                                },
-                                                "href": {
-                                                  "type": "string"
-                                                },
-                                                "schema": {
-                                                  "type": "array"
-                                                }
-                                              },
-                                              "layout": {
-                                                "getItems": {
-                                                  "url": "api/v1/datasets?q={q}&size=100&${context.datasetFilter}&select=id,title,slug,schema",
-                                                  "itemKey": "data.id",
-                                                  "itemTitle": "data.title",
-                                                  "itemsResults": "data.results"
-                                                }
-                                              }
-                                            },
-                                            "fields": {
-                                              "title": "Champs à afficher",
-                                              "description": "Si vide, tous les champs seront affichés",
-                                              "type": "array",
-                                              "items": {
-                                                "type": "string"
-                                              },
-                                              "layout": {
-                                                "getItems": {
-                                                  "url": "${parent.data.dataset.href}/schema?calculated=false",
-                                                  "itemKey": "data.key",
-                                                  "itemTitle": "data.label"
-                                                }
-                                              }
-                                            },
-                                            "display": {
-                                              "type": "string",
-                                              "oneOf": [
-                                                {
-                                                  "const": "table",
-                                                  "title": "Tableau"
-                                                },
-                                                {
-                                                  "const": "table-dense",
-                                                  "title": "Tableau dense"
-                                                },
-                                                {
-                                                  "const": "list",
-                                                  "title": "Vignettes"
-                                                }
-                                              ],
-                                              "default": "table",
-                                              "title": "Affichage"
-                                            },
-                                            "noInteractions": {
-                                              "title": "Sans aucune interaction",
-                                              "description": "Réglage déprécié, conservé pour les configurations existantes. Utilisez plutôt la liste « Interactions désactivées ».",
-                                              "type": "boolean",
-                                              "default": false,
-                                              "layout": {
-                                                "if": "parent.data.noInteractions === true"
-                                              }
-                                            },
-                                            "hideInteractions": {
-                                              "title": "Interactions désactivées",
-                                              "description": "Toutes les interactions du tableau sont actives par défaut : sélectionnez celles à interdire.",
-                                              "type": "array",
-                                              "default": [],
-                                              "items": {
-                                                "type": "string",
-                                                "oneOf": [
-                                                  {
-                                                    "const": "count",
-                                                    "title": "Décompte des lignes"
-                                                  },
-                                                  {
-                                                    "const": "search",
-                                                    "title": "Recherche textuelle"
-                                                  },
-                                                  {
-                                                    "const": "filters",
-                                                    "title": "Filtres (puces et menus de colonne)"
-                                                  },
-                                                  {
-                                                    "const": "pagination",
-                                                    "title": "Navigation entre les pages (mode paginé)"
-                                                  },
-                                                  {
-                                                    "const": "sort",
-                                                    "title": "Tri par clic sur un en-tête"
-                                                  },
-                                                  {
-                                                    "const": "cells",
-                                                    "title": "Filtrage par clic sur une cellule"
-                                                  },
-                                                  {
-                                                    "const": "select-cols",
-                                                    "title": "Choix des colonnes"
-                                                  },
-                                                  {
-                                                    "const": "fix-cols",
-                                                    "title": "Figement des colonnes"
-                                                  },
-                                                  {
-                                                    "const": "display",
-                                                    "title": "Choix du mode d'affichage"
-                                                  },
-                                                  {
-                                                    "const": "download",
-                                                    "title": "Téléchargement des résultats"
-                                                  }
-                                                ]
-                                              },
-                                              "layout": {
-                                                "if": "!parent.data.noInteractions"
-                                              }
-                                            },
-                                            "pagination": {
-                                              "title": "Pagination",
-                                              "description": "Affiche les lignes par pages dimensionnées pour tenir dans la hauteur du tableau, ce qui supprime sa barre de défilement verticale.",
-                                              "type": "boolean",
-                                              "default": false
-                                            },
-                                            "syncParams": {
-                                              "title": "Synchronisation des filtres",
-                                              "description": "Ce que ce visu transmet aux autres visus du tableau de bord. Dans tous les cas il reçoit les filtres du dashboard.",
-                                              "type": "string",
-                                              "default": "shared-filters",
-                                              "oneOf": [
-                                                {
-                                                  "const": "shared-filters",
-                                                  "title": "Partage des filtres : ses filtres et sélections alimentent les autres visus"
-                                                },
-                                                {
-                                                  "const": "sandboxed",
-                                                  "title": "Cloisonné : il garde son état pour lui, rien n'est partagé"
-                                                },
-                                                {
-                                                  "const": "none",
-                                                  "title": "Aucune synchronisation : son état n'est pas conservé, rien n'est partagé"
-                                                }
-                                              ]
-                                            },
-                                            "valueMandatory": {
-                                              "title": "Nécessite une valeur dans des filtres",
-                                              "type": "boolean",
-                                              "default": false
-                                            },
-                                            "mandatoryFilters": {
-                                              "title": "Filtres requis",
-                                              "type": "array",
-                                              "items": {
-                                                "type": "string"
-                                              },
-                                              "layout": {
-                                                "getItems": {
-                                                  "expr": "rootData.filters",
-                                                  "itemKey": "data.labelField",
-                                                  "itemTitle": "data.labelField"
-                                                },
-                                                "if": "parent.data.valueMandatory"
-                                              }
-                                            }
-                                          }
-                                        }
-                                      ],
-                                      "default": {
-                                        "source": "root"
-                                      },
-                                      "oneOfLayout": {
-                                        "label": "Source des données"
-                                      }
-                                    },
-                                    {
-                                      "title": "Téléchargement",
-                                      "type": "object",
-                                      "properties": {
-                                        "type": {
-                                          "const": "download",
-                                          "title": "Type de l'élément"
-                                        }
-                                      },
-                                      "discriminator": {
-                                        "propertyName": "source"
-                                      },
-                                      "oneOf": [
-                                        {
-                                          "title": "Jeu de données des filtres",
-                                          "properties": {
-                                            "source": {
-                                              "const": "root",
-                                              "title": "Source des données"
-                                            },
-                                            "fields": {
-                                              "title": "Colonnes à télécharger",
-                                              "description": "Si vide, toutes les colonnes du jeu de données sont proposées.",
-                                              "type": "array",
-                                              "items": {
-                                                "type": "string"
-                                              },
-                                              "layout": {
-                                                "getItems": {
-                                                  "url": "${rootData.datasets[0].href}/schema?calculated=false",
-                                                  "itemKey": "data.key",
-                                                  "itemTitle": "data.label"
-                                                }
-                                              }
-                                            },
-                                            "header": {
-                                              "title": "Afficher l'en-tête",
-                                              "description": "Affiche le titre, le résumé et le nombre de lignes du jeu de données.",
-                                              "type": "boolean",
-                                              "default": true
-                                            },
-                                            "valueMandatory": {
-                                              "title": "Nécessite une valeur dans des filtres",
-                                              "type": "boolean",
-                                              "default": false
-                                            },
-                                            "mandatoryFilters": {
-                                              "title": "Filtres requis",
-                                              "type": "array",
-                                              "items": {
-                                                "type": "string"
-                                              },
-                                              "layout": {
-                                                "getItems": {
-                                                  "expr": "rootData.filters",
-                                                  "itemKey": "data.labelField",
-                                                  "itemTitle": "data.labelField"
-                                                },
-                                                "if": "parent.data.valueMandatory"
-                                              }
-                                            }
-                                          }
-                                        },
-                                        {
-                                          "title": "Autre jeu de données",
-                                          "layout": {
-                                            "switch": [
-                                              {
-                                                "if": "!data.dataset",
-                                                "children": [
-                                                  "dataset"
-                                                ]
-                                              }
-                                            ]
-                                          },
-                                          "properties": {
-                                            "source": {
-                                              "const": "external",
-                                              "title": "Source des données"
-                                            },
-                                            "dataset": {
-                                              "type": "object",
-                                              "properties": {
-                                                "id": {
-                                                  "type": "string"
-                                                },
-                                                "slug": {
-                                                  "type": "string"
-                                                },
-                                                "title": {
-                                                  "type": "string"
-                                                },
-                                                "href": {
-                                                  "type": "string"
-                                                },
-                                                "schema": {
-                                                  "type": "array"
-                                                }
-                                              },
-                                              "layout": {
-                                                "getItems": {
-                                                  "url": "api/v1/datasets?q={q}&size=100&${context.datasetFilter}&select=id,title,slug,schema",
-                                                  "itemKey": "data.id",
-                                                  "itemTitle": "data.title",
-                                                  "itemsResults": "data.results"
-                                                }
-                                              }
-                                            },
-                                            "fields": {
-                                              "title": "Colonnes à télécharger",
-                                              "description": "Si vide, toutes les colonnes du jeu de données sont proposées.",
-                                              "type": "array",
-                                              "items": {
-                                                "type": "string"
-                                              },
-                                              "layout": {
-                                                "getItems": {
-                                                  "url": "${parent.data.dataset.href}/schema?calculated=false",
-                                                  "itemKey": "data.key",
-                                                  "itemTitle": "data.label"
-                                                }
-                                              }
-                                            },
-                                            "header": {
-                                              "title": "Afficher l'en-tête",
-                                              "description": "Affiche le titre, le résumé et le nombre de lignes du jeu de données.",
-                                              "type": "boolean",
-                                              "default": true
-                                            },
-                                            "valueMandatory": {
-                                              "title": "Nécessite une valeur dans des filtres",
-                                              "type": "boolean",
-                                              "default": false
-                                            },
-                                            "mandatoryFilters": {
-                                              "title": "Filtres requis",
-                                              "type": "array",
-                                              "items": {
-                                                "type": "string"
-                                              },
-                                              "layout": {
-                                                "getItems": {
-                                                  "expr": "rootData.filters",
-                                                  "itemKey": "data.labelField",
-                                                  "itemTitle": "data.labelField"
-                                                },
-                                                "if": "parent.data.valueMandatory"
-                                              }
-                                            }
-                                          }
-                                        }
-                                      ],
-                                      "default": {
-                                        "source": "root"
-                                      },
-                                      "oneOfLayout": {
-                                        "label": "Source des données"
-                                      }
-                                    },
-                                    {
-                                      "title": "Visualisation",
-                                      "properties": {
-                                        "type": {
-                                          "const": "application",
-                                          "title": "Type de l'élément"
-                                        }
-                                      },
-                                      "discriminator": {
-                                        "propertyName": "source"
-                                      },
-                                      "oneOf": [
-                                        {
-                                          "title": "Jeu de données des filtres",
-                                          "properties": {
-                                            "source": {
-                                              "const": "root",
-                                              "title": "Source des données de l'application"
-                                            },
-                                            "application": {
-                                              "type": "object",
-                                              "properties": {
-                                                "id": {
-                                                  "type": "string"
-                                                },
-                                                "title": {
-                                                  "type": "string"
-                                                },
-                                                "href": {
-                                                  "type": "string"
-                                                },
-                                                "baseApp": {
-                                                  "type": "object"
-                                                }
-                                              },
-                                              "layout": {
-                                                "getItems": {
-                                                  "url": "api/v1/applications?q={q}&size=100&${context.datasetFilter}&dataset=${rootData.datasets[0].id}&filterConcepts=true&select=id,title,baseApp",
-                                                  "itemKey": "data.id",
-                                                  "itemTitle": "data.title",
-                                                  "itemsResults": "data.results"
-                                                }
-                                              }
-                                            },
-                                            "syncParams": {
-                                              "title": "Synchronisation des filtres",
-                                              "description": "Ce que ce visu transmet aux autres visus du tableau de bord. Dans tous les cas il reçoit les filtres du dashboard.",
-                                              "type": "string",
-                                              "default": "shared-filters",
-                                              "oneOf": [
-                                                {
-                                                  "const": "shared-filters",
-                                                  "title": "Partage des filtres : ses filtres et sélections alimentent les autres visus"
-                                                },
-                                                {
-                                                  "const": "sandboxed",
-                                                  "title": "Cloisonné : il garde son état pour lui, rien n'est partagé"
-                                                },
-                                                {
-                                                  "const": "none",
-                                                  "title": "Aucune synchronisation : son état n'est pas conservé, rien n'est partagé"
-                                                }
-                                              ]
-                                            },
-                                            "valueMandatory": {
-                                              "title": "Nécessite une valeur dans des filtres",
-                                              "type": "boolean",
-                                              "default": false
-                                            },
-                                            "mandatoryFilters": {
-                                              "title": "Filtres requis",
-                                              "type": "array",
-                                              "items": {
-                                                "type": "string"
-                                              },
-                                              "layout": {
-                                                "getItems": {
-                                                  "expr": "rootData.filters",
-                                                  "itemKey": "data.labelField",
-                                                  "itemTitle": "data.labelField"
-                                                },
-                                                "if": "parent.data.valueMandatory"
-                                              }
-                                            },
-                                            "description": {
-                                              "title": "Affichage de la description",
-                                              "type": "string",
-                                              "oneOf": [
-                                                {
-                                                  "const": "none",
-                                                  "title": "Aucun affichage"
-                                                },
-                                                {
-                                                  "const": "left",
-                                                  "title": "A gauche"
-                                                },
-                                                {
-                                                  "const": "right",
-                                                  "title": "A droite"
-                                                },
-                                                {
-                                                  "const": "top",
-                                                  "title": "En haut"
-                                                },
-                                                {
-                                                  "const": "bottom",
-                                                  "title": "En bas"
-                                                }
-                                              ],
-                                              "default": "none"
-                                            }
-                                          }
-                                        },
-                                        {
-                                          "title": "Autre jeu de données",
-                                          "properties": {
-                                            "source": {
-                                              "const": "external",
-                                              "title": "Source des données de l'application"
-                                            },
-                                            "application": {
-                                              "type": "object",
-                                              "properties": {
-                                                "id": {
-                                                  "type": "string"
-                                                },
-                                                "title": {
-                                                  "type": "string"
-                                                },
-                                                "href": {
-                                                  "type": "string"
-                                                },
-                                                "baseApp": {
-                                                  "type": "object"
-                                                }
-                                              },
-                                              "layout": {
-                                                "getItems": {
-                                                  "url": "api/v1/applications?q={q}&size=100&${context.datasetFilter}&filterConcepts=true&select=id,title,baseApp",
-                                                  "itemKey": "data.id",
-                                                  "itemTitle": "data.title",
-                                                  "itemsResults": "data.results"
-                                                }
-                                              }
-                                            },
-                                            "syncParams": {
-                                              "title": "Synchronisation des filtres",
-                                              "description": "Ce que ce visu transmet aux autres visus du tableau de bord. Dans tous les cas il reçoit les filtres du dashboard.",
-                                              "type": "string",
-                                              "default": "shared-filters",
-                                              "oneOf": [
-                                                {
-                                                  "const": "shared-filters",
-                                                  "title": "Partage des filtres : ses filtres et sélections alimentent les autres visus"
-                                                },
-                                                {
-                                                  "const": "sandboxed",
-                                                  "title": "Cloisonné : il garde son état pour lui, rien n'est partagé"
-                                                },
-                                                {
-                                                  "const": "none",
-                                                  "title": "Aucune synchronisation : son état n'est pas conservé, rien n'est partagé"
-                                                }
-                                              ]
-                                            },
-                                            "valueMandatory": {
-                                              "title": "Nécessite une valeur dans des filtres",
-                                              "type": "boolean",
-                                              "default": false
-                                            },
-                                            "mandatoryFilters": {
-                                              "title": "Filtres requis",
-                                              "type": "array",
-                                              "items": {
-                                                "type": "string"
-                                              },
-                                              "layout": {
-                                                "getItems": {
-                                                  "expr": "rootData.filters",
-                                                  "itemKey": "data.labelField",
-                                                  "itemTitle": "data.labelField"
-                                                },
-                                                "if": "parent.data.valueMandatory"
-                                              }
-                                            },
-                                            "description": {
-                                              "title": "Affichage de la description",
-                                              "type": "string",
-                                              "oneOf": [
-                                                {
-                                                  "const": "none",
-                                                  "title": "Aucun affichage"
-                                                },
-                                                {
-                                                  "const": "left",
-                                                  "title": "A gauche"
-                                                },
-                                                {
-                                                  "const": "right",
-                                                  "title": "A droite"
-                                                },
-                                                {
-                                                  "const": "top",
-                                                  "title": "En haut"
-                                                },
-                                                {
-                                                  "const": "bottom",
-                                                  "title": "En bas"
-                                                }
-                                              ],
-                                              "default": "none"
-                                            }
-                                          }
-                                        }
-                                      ],
-                                      "default": {
-                                        "source": "root"
-                                      },
-                                      "oneOfLayout": {
-                                        "label": "Source des données de l'application"
-                                      }
-                                    },
-                                    {
-                                      "title": "Texte",
-                                      "properties": {
-                                        "type": {
-                                          "const": "text",
-                                          "title": "Type de l'élément"
-                                        },
-                                        "content": {
-                                          "type": "string",
-                                          "title": "Contenu",
-                                          "layout": "textarea"
-                                        }
-                                      }
-                                    },
-                                    {
-                                      "title": "Formulaire de saisie",
-                                      "properties": {
-                                        "type": {
-                                          "const": "form",
-                                          "title": "Type de l'élément"
-                                        },
-                                        "dataset": {
-                                          "type": "object",
-                                          "title": "Jeu de données",
-                                          "properties": {
-                                            "id": {
-                                              "type": "string"
-                                            },
-                                            "title": {
-                                              "type": "string"
-                                            },
-                                            "href": {
-                                              "type": "string"
-                                            },
-                                            "schema": {
-                                              "type": "array"
-                                            }
-                                          },
-                                          "layout": {
-                                            "getItems": {
-                                              "url": "api/v1/datasets?q={q}&size=100&${context.datasetFilter}&rest=true&select=id,title,schema",
-                                              "itemKey": "data.id",
-                                              "itemTitle": "data.title",
-                                              "itemsResults": "data.results"
-                                            }
-                                          }
-                                        },
-                                        "syncParams": {
-                                          "title": "Synchronisation des filtres",
-                                          "description": "Ce que ce formulaire transmet aux autres visus du tableau de bord. Dans tous les cas il reçoit les filtres du dashboard.",
-                                          "type": "string",
-                                          "default": "shared-filters",
-                                          "oneOf": [
-                                            {
-                                              "const": "shared-filters",
-                                              "title": "Partage des filtres : ses filtres alimentent les autres visus"
-                                            },
-                                            {
-                                              "const": "sandboxed",
-                                              "title": "Cloisonné : il garde son état pour lui, rien n'est partagé"
-                                            },
-                                            {
-                                              "const": "none",
-                                              "title": "Aucune synchronisation : son état n'est pas conservé, rien n'est partagé"
-                                            }
-                                          ]
-                                        }
-                                      }
-                                    }
-                                  ],
-                                  "properties": {
-                                    "height": {
-                                      "title": "Hauteur (pondération)",
-                                      "type": "integer",
-                                      "default": 100
-                                    }
-                                  }
-                                }
-                              }
-                            }
+                            "$ref": "#/$defs/column"
                           },
                           {
-                            "title": "Formulaire de saisie",
-                            "properties": {
-                              "type": {
-                                "const": "form",
-                                "title": "Type de l'élément"
-                              },
-                              "dataset": {
-                                "type": "object",
-                                "title": "Jeu de données",
-                                "properties": {
-                                  "id": {
-                                    "type": "string"
-                                  },
-                                  "title": {
-                                    "type": "string"
-                                  },
-                                  "href": {
-                                    "type": "string"
-                                  },
-                                  "schema": {
-                                    "type": "array"
-                                  }
-                                },
-                                "layout": {
-                                  "getItems": {
-                                    "url": "api/v1/datasets?q={q}&size=100&${context.datasetFilter}&rest=true&select=id,title,schema",
-                                    "itemKey": "data.id",
-                                    "itemTitle": "data.title",
-                                    "itemsResults": "data.results"
-                                  }
-                                }
-                              },
-                              "syncParams": {
-                                "title": "Synchronisation des filtres",
-                                "description": "Ce que ce formulaire transmet aux autres visus du tableau de bord. Dans tous les cas il reçoit les filtres du dashboard.",
-                                "type": "string",
-                                "default": "shared-filters",
-                                "oneOf": [
-                                  {
-                                    "const": "shared-filters",
-                                    "title": "Partage des filtres : ses filtres alimentent les autres visus"
-                                  },
-                                  {
-                                    "const": "sandboxed",
-                                    "title": "Cloisonné : il garde son état pour lui, rien n'est partagé"
-                                  },
-                                  {
-                                    "const": "none",
-                                    "title": "Aucune synchronisation : son état n'est pas conservé, rien n'est partagé"
-                                  }
-                                ]
-                              }
-                            }
+                            "$ref": "#/$defs/form"
                           }
                         ]
                       }
@@ -2260,6 +372,7 @@
           "title": "Titre"
         },
         "titleStyle": {
+          "$ref": "#/$defs/titleStyle",
           "title": "Style du titre de page",
           "default": {
             "tag": "h2",
@@ -2270,183 +383,6 @@
             "line": {
               "position": "none",
               "color": "primary"
-            }
-          },
-          "type": "object",
-          "properties": {
-            "tag": {
-              "type": "string",
-              "title": "Balise HTML",
-              "default": "h2",
-              "oneOf": [
-                {
-                  "const": "h1",
-                  "title": "h1"
-                },
-                {
-                  "const": "h2",
-                  "title": "h2"
-                },
-                {
-                  "const": "h3",
-                  "title": "h3"
-                },
-                {
-                  "const": "h4",
-                  "title": "h4"
-                }
-              ]
-            },
-            "size": {
-              "type": "string",
-              "title": "Taille",
-              "default": "h4",
-              "oneOf": [
-                {
-                  "const": "h1",
-                  "title": "Titre principal (96px)"
-                },
-                {
-                  "const": "h2",
-                  "title": "Très grand (60px)"
-                },
-                {
-                  "const": "h3",
-                  "title": "Grand (48px)"
-                },
-                {
-                  "const": "h4",
-                  "title": "Moyen (34px)"
-                },
-                {
-                  "const": "h5",
-                  "title": "Petit (24px)"
-                },
-                {
-                  "const": "h6",
-                  "title": "Très petit (20px)"
-                }
-              ]
-            },
-            "center": {
-              "type": "boolean",
-              "title": "Centré",
-              "default": false
-            },
-            "bold": {
-              "type": "boolean",
-              "title": "Gras",
-              "default": false
-            },
-            "color": {
-              "type": [
-                "string",
-                "null"
-              ],
-              "title": "Couleur du texte",
-              "default": null,
-              "oneOf": [
-                {
-                  "const": null,
-                  "title": "Aucune (par défaut)"
-                },
-                {
-                  "const": "primary",
-                  "title": "Principale"
-                },
-                {
-                  "const": "secondary",
-                  "title": "Secondaire"
-                },
-                {
-                  "const": "accent",
-                  "title": "Accent"
-                },
-                {
-                  "const": "info",
-                  "title": "Info"
-                },
-                {
-                  "const": "success",
-                  "title": "Succès"
-                },
-                {
-                  "const": "error",
-                  "title": "Erreur"
-                },
-                {
-                  "const": "warning",
-                  "title": "Avertissement"
-                }
-              ]
-            },
-            "line": {
-              "type": "object",
-              "title": "Trait décoratif",
-              "properties": {
-                "position": {
-                  "type": "string",
-                  "title": "Position",
-                  "default": "none",
-                  "oneOf": [
-                    {
-                      "const": "none",
-                      "title": "Aucun"
-                    },
-                    {
-                      "const": "left",
-                      "title": "À gauche du titre"
-                    },
-                    {
-                      "const": "bottom-small",
-                      "title": "Petit trait sous le titre (80px)"
-                    },
-                    {
-                      "const": "bottom-medium",
-                      "title": "Trait moyen sous le titre (largeur du texte)"
-                    },
-                    {
-                      "const": "bottom-large",
-                      "title": "Grand trait sous le titre (toute la largeur)"
-                    }
-                  ]
-                },
-                "color": {
-                  "type": "string",
-                  "title": "Couleur du trait",
-                  "default": "primary",
-                  "oneOf": [
-                    {
-                      "const": "primary",
-                      "title": "Principale"
-                    },
-                    {
-                      "const": "secondary",
-                      "title": "Secondaire"
-                    },
-                    {
-                      "const": "accent",
-                      "title": "Accent"
-                    },
-                    {
-                      "const": "info",
-                      "title": "Info"
-                    },
-                    {
-                      "const": "success",
-                      "title": "Succès"
-                    },
-                    {
-                      "const": "error",
-                      "title": "Erreur"
-                    },
-                    {
-                      "const": "warning",
-                      "title": "Avertissement"
-                    }
-                  ]
-                }
-              }
             }
           }
         },
@@ -2474,6 +410,7 @@
           "default": "accordion"
         },
         "sectionsTitleStyle": {
+          "$ref": "#/$defs/titleStyle",
           "title": "Style des titres de sections",
           "description": "Style appliqué à tous les libellés de sections",
           "default": {
@@ -2489,183 +426,6 @@
           },
           "layout": {
             "if": "rootData.sectionsGroup === 'flow'"
-          },
-          "type": "object",
-          "properties": {
-            "tag": {
-              "type": "string",
-              "title": "Balise HTML",
-              "default": "h2",
-              "oneOf": [
-                {
-                  "const": "h1",
-                  "title": "h1"
-                },
-                {
-                  "const": "h2",
-                  "title": "h2"
-                },
-                {
-                  "const": "h3",
-                  "title": "h3"
-                },
-                {
-                  "const": "h4",
-                  "title": "h4"
-                }
-              ]
-            },
-            "size": {
-              "type": "string",
-              "title": "Taille",
-              "default": "h4",
-              "oneOf": [
-                {
-                  "const": "h1",
-                  "title": "Titre principal (96px)"
-                },
-                {
-                  "const": "h2",
-                  "title": "Très grand (60px)"
-                },
-                {
-                  "const": "h3",
-                  "title": "Grand (48px)"
-                },
-                {
-                  "const": "h4",
-                  "title": "Moyen (34px)"
-                },
-                {
-                  "const": "h5",
-                  "title": "Petit (24px)"
-                },
-                {
-                  "const": "h6",
-                  "title": "Très petit (20px)"
-                }
-              ]
-            },
-            "center": {
-              "type": "boolean",
-              "title": "Centré",
-              "default": false
-            },
-            "bold": {
-              "type": "boolean",
-              "title": "Gras",
-              "default": false
-            },
-            "color": {
-              "type": [
-                "string",
-                "null"
-              ],
-              "title": "Couleur du texte",
-              "default": null,
-              "oneOf": [
-                {
-                  "const": null,
-                  "title": "Aucune (par défaut)"
-                },
-                {
-                  "const": "primary",
-                  "title": "Principale"
-                },
-                {
-                  "const": "secondary",
-                  "title": "Secondaire"
-                },
-                {
-                  "const": "accent",
-                  "title": "Accent"
-                },
-                {
-                  "const": "info",
-                  "title": "Info"
-                },
-                {
-                  "const": "success",
-                  "title": "Succès"
-                },
-                {
-                  "const": "error",
-                  "title": "Erreur"
-                },
-                {
-                  "const": "warning",
-                  "title": "Avertissement"
-                }
-              ]
-            },
-            "line": {
-              "type": "object",
-              "title": "Trait décoratif",
-              "properties": {
-                "position": {
-                  "type": "string",
-                  "title": "Position",
-                  "default": "none",
-                  "oneOf": [
-                    {
-                      "const": "none",
-                      "title": "Aucun"
-                    },
-                    {
-                      "const": "left",
-                      "title": "À gauche du titre"
-                    },
-                    {
-                      "const": "bottom-small",
-                      "title": "Petit trait sous le titre (80px)"
-                    },
-                    {
-                      "const": "bottom-medium",
-                      "title": "Trait moyen sous le titre (largeur du texte)"
-                    },
-                    {
-                      "const": "bottom-large",
-                      "title": "Grand trait sous le titre (toute la largeur)"
-                    }
-                  ]
-                },
-                "color": {
-                  "type": "string",
-                  "title": "Couleur du trait",
-                  "default": "primary",
-                  "oneOf": [
-                    {
-                      "const": "primary",
-                      "title": "Principale"
-                    },
-                    {
-                      "const": "secondary",
-                      "title": "Secondaire"
-                    },
-                    {
-                      "const": "accent",
-                      "title": "Accent"
-                    },
-                    {
-                      "const": "info",
-                      "title": "Info"
-                    },
-                    {
-                      "const": "success",
-                      "title": "Succès"
-                    },
-                    {
-                      "const": "error",
-                      "title": "Erreur"
-                    },
-                    {
-                      "const": "warning",
-                      "title": "Avertissement"
-                    }
-                  ]
-                }
-              }
-            }
           }
         },
         "description": {
@@ -2681,7 +441,7 @@
       }
     }
   ],
-  "definitions": {
+  "$defs": {
     "table": {
       "title": "Prévisualisation table",
       "type": "object",
@@ -2691,9 +451,7 @@
           "title": "Type de l'élément"
         }
       },
-      "discriminator": {
-        "propertyName": "source"
-      },
+      "discriminator": { "propertyName": "source" },
       "oneOf": [
         {
           "title": "Jeu de données des filtres",
@@ -2753,46 +511,16 @@
               "items": {
                 "type": "string",
                 "oneOf": [
-                  {
-                    "const": "count",
-                    "title": "Décompte des lignes"
-                  },
-                  {
-                    "const": "search",
-                    "title": "Recherche textuelle"
-                  },
-                  {
-                    "const": "filters",
-                    "title": "Filtres (puces et menus de colonne)"
-                  },
-                  {
-                    "const": "pagination",
-                    "title": "Navigation entre les pages (mode paginé)"
-                  },
-                  {
-                    "const": "sort",
-                    "title": "Tri par clic sur un en-tête"
-                  },
-                  {
-                    "const": "cells",
-                    "title": "Filtrage par clic sur une cellule"
-                  },
-                  {
-                    "const": "select-cols",
-                    "title": "Choix des colonnes"
-                  },
-                  {
-                    "const": "fix-cols",
-                    "title": "Figement des colonnes"
-                  },
-                  {
-                    "const": "display",
-                    "title": "Choix du mode d'affichage"
-                  },
-                  {
-                    "const": "download",
-                    "title": "Téléchargement des résultats"
-                  }
+                  { "const": "count", "title": "Décompte des lignes" },
+                  { "const": "search", "title": "Recherche textuelle" },
+                  { "const": "filters", "title": "Filtres (puces et menus de colonne)" },
+                  { "const": "pagination", "title": "Navigation entre les pages (mode paginé)" },
+                  { "const": "sort", "title": "Tri par clic sur un en-tête" },
+                  { "const": "cells", "title": "Filtrage par clic sur une cellule" },
+                  { "const": "select-cols", "title": "Choix des colonnes" },
+                  { "const": "fix-cols", "title": "Figement des colonnes" },
+                  { "const": "display", "title": "Choix du mode d'affichage" },
+                  { "const": "download", "title": "Téléchargement des résultats" }
                 ]
               },
               "layout": {
@@ -2853,9 +581,7 @@
             "switch": [
               {
                 "if": "!data.dataset",
-                "children": [
-                  "dataset"
-                ]
+                "children": ["dataset"]
               }
             ]
           },
@@ -2943,46 +669,16 @@
               "items": {
                 "type": "string",
                 "oneOf": [
-                  {
-                    "const": "count",
-                    "title": "Décompte des lignes"
-                  },
-                  {
-                    "const": "search",
-                    "title": "Recherche textuelle"
-                  },
-                  {
-                    "const": "filters",
-                    "title": "Filtres (puces et menus de colonne)"
-                  },
-                  {
-                    "const": "pagination",
-                    "title": "Navigation entre les pages (mode paginé)"
-                  },
-                  {
-                    "const": "sort",
-                    "title": "Tri par clic sur un en-tête"
-                  },
-                  {
-                    "const": "cells",
-                    "title": "Filtrage par clic sur une cellule"
-                  },
-                  {
-                    "const": "select-cols",
-                    "title": "Choix des colonnes"
-                  },
-                  {
-                    "const": "fix-cols",
-                    "title": "Figement des colonnes"
-                  },
-                  {
-                    "const": "display",
-                    "title": "Choix du mode d'affichage"
-                  },
-                  {
-                    "const": "download",
-                    "title": "Téléchargement des résultats"
-                  }
+                  { "const": "count", "title": "Décompte des lignes" },
+                  { "const": "search", "title": "Recherche textuelle" },
+                  { "const": "filters", "title": "Filtres (puces et menus de colonne)" },
+                  { "const": "pagination", "title": "Navigation entre les pages (mode paginé)" },
+                  { "const": "sort", "title": "Tri par clic sur un en-tête" },
+                  { "const": "cells", "title": "Filtrage par clic sur une cellule" },
+                  { "const": "select-cols", "title": "Choix des colonnes" },
+                  { "const": "fix-cols", "title": "Figement des colonnes" },
+                  { "const": "display", "title": "Choix du mode d'affichage" },
+                  { "const": "download", "title": "Téléchargement des résultats" }
                 ]
               },
               "layout": {
@@ -3054,9 +750,7 @@
           "title": "Type de l'élément"
         }
       },
-      "discriminator": {
-        "propertyName": "source"
-      },
+      "discriminator": { "propertyName": "source" },
       "oneOf": [
         {
           "title": "Jeu de données des filtres",
@@ -3114,9 +808,7 @@
             "switch": [
               {
                 "if": "!data.dataset",
-                "children": [
-                  "dataset"
-                ]
+                "children": ["dataset"]
               }
             ]
           },
@@ -3212,9 +904,7 @@
           "title": "Type de l'élément"
         }
       },
-      "discriminator": {
-        "propertyName": "source"
-      },
+      "discriminator": { "propertyName": "source" },
       "oneOf": [
         {
           "title": "Jeu de données des filtres",
@@ -3519,822 +1209,22 @@
                 }
               ]
             },
-            "discriminator": {
-              "propertyName": "type"
-            },
+            "discriminator": { "propertyName": "type" },
             "oneOf": [
               {
-                "title": "Prévisualisation table",
-                "type": "object",
-                "properties": {
-                  "type": {
-                    "const": "tablePreview",
-                    "title": "Type de l'élément"
-                  }
-                },
-                "discriminator": {
-                  "propertyName": "source"
-                },
-                "oneOf": [
-                  {
-                    "title": "Jeu de données des filtres",
-                    "properties": {
-                      "source": {
-                        "const": "root",
-                        "title": "Source des données"
-                      },
-                      "fields": {
-                        "title": "Champs à afficher",
-                        "description": "Si vide, tous les champs seront affichés",
-                        "type": "array",
-                        "items": {
-                          "type": "string"
-                        },
-                        "layout": {
-                          "getItems": {
-                            "url": "${rootData.datasets[0].href}/schema?calculated=false",
-                            "itemKey": "data.key",
-                            "itemTitle": "data.label"
-                          }
-                        }
-                      },
-                      "display": {
-                        "type": "string",
-                        "oneOf": [
-                          {
-                            "const": "table",
-                            "title": "Tableau"
-                          },
-                          {
-                            "const": "table-dense",
-                            "title": "Tableau dense"
-                          },
-                          {
-                            "const": "list",
-                            "title": "Vignettes"
-                          }
-                        ],
-                        "default": "table",
-                        "title": "Affichage"
-                      },
-                      "noInteractions": {
-                        "title": "Sans aucune interaction",
-                        "description": "Réglage déprécié, conservé pour les configurations existantes. Utilisez plutôt la liste « Interactions désactivées ».",
-                        "type": "boolean",
-                        "default": false,
-                        "layout": {
-                          "if": "parent.data.noInteractions === true"
-                        }
-                      },
-                      "hideInteractions": {
-                        "title": "Interactions désactivées",
-                        "description": "Toutes les interactions du tableau sont actives par défaut : sélectionnez celles à interdire.",
-                        "type": "array",
-                        "default": [],
-                        "items": {
-                          "type": "string",
-                          "oneOf": [
-                            {
-                              "const": "count",
-                              "title": "Décompte des lignes"
-                            },
-                            {
-                              "const": "search",
-                              "title": "Recherche textuelle"
-                            },
-                            {
-                              "const": "filters",
-                              "title": "Filtres (puces et menus de colonne)"
-                            },
-                            {
-                              "const": "pagination",
-                              "title": "Navigation entre les pages (mode paginé)"
-                            },
-                            {
-                              "const": "sort",
-                              "title": "Tri par clic sur un en-tête"
-                            },
-                            {
-                              "const": "cells",
-                              "title": "Filtrage par clic sur une cellule"
-                            },
-                            {
-                              "const": "select-cols",
-                              "title": "Choix des colonnes"
-                            },
-                            {
-                              "const": "fix-cols",
-                              "title": "Figement des colonnes"
-                            },
-                            {
-                              "const": "display",
-                              "title": "Choix du mode d'affichage"
-                            },
-                            {
-                              "const": "download",
-                              "title": "Téléchargement des résultats"
-                            }
-                          ]
-                        },
-                        "layout": {
-                          "if": "!parent.data.noInteractions"
-                        }
-                      },
-                      "pagination": {
-                        "title": "Pagination",
-                        "description": "Affiche les lignes par pages dimensionnées pour tenir dans la hauteur du tableau, ce qui supprime sa barre de défilement verticale.",
-                        "type": "boolean",
-                        "default": false
-                      },
-                      "syncParams": {
-                        "title": "Synchronisation des filtres",
-                        "description": "Ce que ce visu transmet aux autres visus du tableau de bord. Dans tous les cas il reçoit les filtres du dashboard.",
-                        "type": "string",
-                        "default": "shared-filters",
-                        "oneOf": [
-                          {
-                            "const": "shared-filters",
-                            "title": "Partage des filtres : ses filtres et sélections alimentent les autres visus"
-                          },
-                          {
-                            "const": "sandboxed",
-                            "title": "Cloisonné : il garde son état pour lui, rien n'est partagé"
-                          },
-                          {
-                            "const": "none",
-                            "title": "Aucune synchronisation : son état n'est pas conservé, rien n'est partagé"
-                          }
-                        ]
-                      },
-                      "valueMandatory": {
-                        "title": "Nécessite une valeur dans des filtres",
-                        "type": "boolean",
-                        "default": false
-                      },
-                      "mandatoryFilters": {
-                        "title": "Filtres requis",
-                        "type": "array",
-                        "items": {
-                          "type": "string"
-                        },
-                        "layout": {
-                          "getItems": {
-                            "expr": "rootData.filters",
-                            "itemKey": "data.labelField",
-                            "itemTitle": "data.labelField"
-                          },
-                          "if": "parent.data.valueMandatory"
-                        }
-                      }
-                    }
-                  },
-                  {
-                    "title": "Autre jeu de données",
-                    "layout": {
-                      "switch": [
-                        {
-                          "if": "!data.dataset",
-                          "children": [
-                            "dataset"
-                          ]
-                        }
-                      ]
-                    },
-                    "properties": {
-                      "source": {
-                        "const": "external",
-                        "title": "Source des données"
-                      },
-                      "dataset": {
-                        "type": "object",
-                        "properties": {
-                          "id": {
-                            "type": "string"
-                          },
-                          "slug": {
-                            "type": "string"
-                          },
-                          "title": {
-                            "type": "string"
-                          },
-                          "href": {
-                            "type": "string"
-                          },
-                          "schema": {
-                            "type": "array"
-                          }
-                        },
-                        "layout": {
-                          "getItems": {
-                            "url": "api/v1/datasets?q={q}&size=100&${context.datasetFilter}&select=id,title,slug,schema",
-                            "itemKey": "data.id",
-                            "itemTitle": "data.title",
-                            "itemsResults": "data.results"
-                          }
-                        }
-                      },
-                      "fields": {
-                        "title": "Champs à afficher",
-                        "description": "Si vide, tous les champs seront affichés",
-                        "type": "array",
-                        "items": {
-                          "type": "string"
-                        },
-                        "layout": {
-                          "getItems": {
-                            "url": "${parent.data.dataset.href}/schema?calculated=false",
-                            "itemKey": "data.key",
-                            "itemTitle": "data.label"
-                          }
-                        }
-                      },
-                      "display": {
-                        "type": "string",
-                        "oneOf": [
-                          {
-                            "const": "table",
-                            "title": "Tableau"
-                          },
-                          {
-                            "const": "table-dense",
-                            "title": "Tableau dense"
-                          },
-                          {
-                            "const": "list",
-                            "title": "Vignettes"
-                          }
-                        ],
-                        "default": "table",
-                        "title": "Affichage"
-                      },
-                      "noInteractions": {
-                        "title": "Sans aucune interaction",
-                        "description": "Réglage déprécié, conservé pour les configurations existantes. Utilisez plutôt la liste « Interactions désactivées ».",
-                        "type": "boolean",
-                        "default": false,
-                        "layout": {
-                          "if": "parent.data.noInteractions === true"
-                        }
-                      },
-                      "hideInteractions": {
-                        "title": "Interactions désactivées",
-                        "description": "Toutes les interactions du tableau sont actives par défaut : sélectionnez celles à interdire.",
-                        "type": "array",
-                        "default": [],
-                        "items": {
-                          "type": "string",
-                          "oneOf": [
-                            {
-                              "const": "count",
-                              "title": "Décompte des lignes"
-                            },
-                            {
-                              "const": "search",
-                              "title": "Recherche textuelle"
-                            },
-                            {
-                              "const": "filters",
-                              "title": "Filtres (puces et menus de colonne)"
-                            },
-                            {
-                              "const": "pagination",
-                              "title": "Navigation entre les pages (mode paginé)"
-                            },
-                            {
-                              "const": "sort",
-                              "title": "Tri par clic sur un en-tête"
-                            },
-                            {
-                              "const": "cells",
-                              "title": "Filtrage par clic sur une cellule"
-                            },
-                            {
-                              "const": "select-cols",
-                              "title": "Choix des colonnes"
-                            },
-                            {
-                              "const": "fix-cols",
-                              "title": "Figement des colonnes"
-                            },
-                            {
-                              "const": "display",
-                              "title": "Choix du mode d'affichage"
-                            },
-                            {
-                              "const": "download",
-                              "title": "Téléchargement des résultats"
-                            }
-                          ]
-                        },
-                        "layout": {
-                          "if": "!parent.data.noInteractions"
-                        }
-                      },
-                      "pagination": {
-                        "title": "Pagination",
-                        "description": "Affiche les lignes par pages dimensionnées pour tenir dans la hauteur du tableau, ce qui supprime sa barre de défilement verticale.",
-                        "type": "boolean",
-                        "default": false
-                      },
-                      "syncParams": {
-                        "title": "Synchronisation des filtres",
-                        "description": "Ce que ce visu transmet aux autres visus du tableau de bord. Dans tous les cas il reçoit les filtres du dashboard.",
-                        "type": "string",
-                        "default": "shared-filters",
-                        "oneOf": [
-                          {
-                            "const": "shared-filters",
-                            "title": "Partage des filtres : ses filtres et sélections alimentent les autres visus"
-                          },
-                          {
-                            "const": "sandboxed",
-                            "title": "Cloisonné : il garde son état pour lui, rien n'est partagé"
-                          },
-                          {
-                            "const": "none",
-                            "title": "Aucune synchronisation : son état n'est pas conservé, rien n'est partagé"
-                          }
-                        ]
-                      },
-                      "valueMandatory": {
-                        "title": "Nécessite une valeur dans des filtres",
-                        "type": "boolean",
-                        "default": false
-                      },
-                      "mandatoryFilters": {
-                        "title": "Filtres requis",
-                        "type": "array",
-                        "items": {
-                          "type": "string"
-                        },
-                        "layout": {
-                          "getItems": {
-                            "expr": "rootData.filters",
-                            "itemKey": "data.labelField",
-                            "itemTitle": "data.labelField"
-                          },
-                          "if": "parent.data.valueMandatory"
-                        }
-                      }
-                    }
-                  }
-                ],
-                "default": {
-                  "source": "root"
-                },
-                "oneOfLayout": {
-                  "label": "Source des données"
-                }
+                "$ref": "#/$defs/table"
               },
               {
-                "title": "Téléchargement",
-                "type": "object",
-                "properties": {
-                  "type": {
-                    "const": "download",
-                    "title": "Type de l'élément"
-                  }
-                },
-                "discriminator": {
-                  "propertyName": "source"
-                },
-                "oneOf": [
-                  {
-                    "title": "Jeu de données des filtres",
-                    "properties": {
-                      "source": {
-                        "const": "root",
-                        "title": "Source des données"
-                      },
-                      "fields": {
-                        "title": "Colonnes à télécharger",
-                        "description": "Si vide, toutes les colonnes du jeu de données sont proposées.",
-                        "type": "array",
-                        "items": {
-                          "type": "string"
-                        },
-                        "layout": {
-                          "getItems": {
-                            "url": "${rootData.datasets[0].href}/schema?calculated=false",
-                            "itemKey": "data.key",
-                            "itemTitle": "data.label"
-                          }
-                        }
-                      },
-                      "header": {
-                        "title": "Afficher l'en-tête",
-                        "description": "Affiche le titre, le résumé et le nombre de lignes du jeu de données.",
-                        "type": "boolean",
-                        "default": true
-                      },
-                      "valueMandatory": {
-                        "title": "Nécessite une valeur dans des filtres",
-                        "type": "boolean",
-                        "default": false
-                      },
-                      "mandatoryFilters": {
-                        "title": "Filtres requis",
-                        "type": "array",
-                        "items": {
-                          "type": "string"
-                        },
-                        "layout": {
-                          "getItems": {
-                            "expr": "rootData.filters",
-                            "itemKey": "data.labelField",
-                            "itemTitle": "data.labelField"
-                          },
-                          "if": "parent.data.valueMandatory"
-                        }
-                      }
-                    }
-                  },
-                  {
-                    "title": "Autre jeu de données",
-                    "layout": {
-                      "switch": [
-                        {
-                          "if": "!data.dataset",
-                          "children": [
-                            "dataset"
-                          ]
-                        }
-                      ]
-                    },
-                    "properties": {
-                      "source": {
-                        "const": "external",
-                        "title": "Source des données"
-                      },
-                      "dataset": {
-                        "type": "object",
-                        "properties": {
-                          "id": {
-                            "type": "string"
-                          },
-                          "slug": {
-                            "type": "string"
-                          },
-                          "title": {
-                            "type": "string"
-                          },
-                          "href": {
-                            "type": "string"
-                          },
-                          "schema": {
-                            "type": "array"
-                          }
-                        },
-                        "layout": {
-                          "getItems": {
-                            "url": "api/v1/datasets?q={q}&size=100&${context.datasetFilter}&select=id,title,slug,schema",
-                            "itemKey": "data.id",
-                            "itemTitle": "data.title",
-                            "itemsResults": "data.results"
-                          }
-                        }
-                      },
-                      "fields": {
-                        "title": "Colonnes à télécharger",
-                        "description": "Si vide, toutes les colonnes du jeu de données sont proposées.",
-                        "type": "array",
-                        "items": {
-                          "type": "string"
-                        },
-                        "layout": {
-                          "getItems": {
-                            "url": "${parent.data.dataset.href}/schema?calculated=false",
-                            "itemKey": "data.key",
-                            "itemTitle": "data.label"
-                          }
-                        }
-                      },
-                      "header": {
-                        "title": "Afficher l'en-tête",
-                        "description": "Affiche le titre, le résumé et le nombre de lignes du jeu de données.",
-                        "type": "boolean",
-                        "default": true
-                      },
-                      "valueMandatory": {
-                        "title": "Nécessite une valeur dans des filtres",
-                        "type": "boolean",
-                        "default": false
-                      },
-                      "mandatoryFilters": {
-                        "title": "Filtres requis",
-                        "type": "array",
-                        "items": {
-                          "type": "string"
-                        },
-                        "layout": {
-                          "getItems": {
-                            "expr": "rootData.filters",
-                            "itemKey": "data.labelField",
-                            "itemTitle": "data.labelField"
-                          },
-                          "if": "parent.data.valueMandatory"
-                        }
-                      }
-                    }
-                  }
-                ],
-                "default": {
-                  "source": "root"
-                },
-                "oneOfLayout": {
-                  "label": "Source des données"
-                }
+                "$ref": "#/$defs/download"
               },
               {
-                "title": "Visualisation",
-                "properties": {
-                  "type": {
-                    "const": "application",
-                    "title": "Type de l'élément"
-                  }
-                },
-                "discriminator": {
-                  "propertyName": "source"
-                },
-                "oneOf": [
-                  {
-                    "title": "Jeu de données des filtres",
-                    "properties": {
-                      "source": {
-                        "const": "root",
-                        "title": "Source des données de l'application"
-                      },
-                      "application": {
-                        "type": "object",
-                        "properties": {
-                          "id": {
-                            "type": "string"
-                          },
-                          "title": {
-                            "type": "string"
-                          },
-                          "href": {
-                            "type": "string"
-                          },
-                          "baseApp": {
-                            "type": "object"
-                          }
-                        },
-                        "layout": {
-                          "getItems": {
-                            "url": "api/v1/applications?q={q}&size=100&${context.datasetFilter}&dataset=${rootData.datasets[0].id}&filterConcepts=true&select=id,title,baseApp",
-                            "itemKey": "data.id",
-                            "itemTitle": "data.title",
-                            "itemsResults": "data.results"
-                          }
-                        }
-                      },
-                      "syncParams": {
-                        "title": "Synchronisation des filtres",
-                        "description": "Ce que ce visu transmet aux autres visus du tableau de bord. Dans tous les cas il reçoit les filtres du dashboard.",
-                        "type": "string",
-                        "default": "shared-filters",
-                        "oneOf": [
-                          {
-                            "const": "shared-filters",
-                            "title": "Partage des filtres : ses filtres et sélections alimentent les autres visus"
-                          },
-                          {
-                            "const": "sandboxed",
-                            "title": "Cloisonné : il garde son état pour lui, rien n'est partagé"
-                          },
-                          {
-                            "const": "none",
-                            "title": "Aucune synchronisation : son état n'est pas conservé, rien n'est partagé"
-                          }
-                        ]
-                      },
-                      "valueMandatory": {
-                        "title": "Nécessite une valeur dans des filtres",
-                        "type": "boolean",
-                        "default": false
-                      },
-                      "mandatoryFilters": {
-                        "title": "Filtres requis",
-                        "type": "array",
-                        "items": {
-                          "type": "string"
-                        },
-                        "layout": {
-                          "getItems": {
-                            "expr": "rootData.filters",
-                            "itemKey": "data.labelField",
-                            "itemTitle": "data.labelField"
-                          },
-                          "if": "parent.data.valueMandatory"
-                        }
-                      },
-                      "description": {
-                        "title": "Affichage de la description",
-                        "type": "string",
-                        "oneOf": [
-                          {
-                            "const": "none",
-                            "title": "Aucun affichage"
-                          },
-                          {
-                            "const": "left",
-                            "title": "A gauche"
-                          },
-                          {
-                            "const": "right",
-                            "title": "A droite"
-                          },
-                          {
-                            "const": "top",
-                            "title": "En haut"
-                          },
-                          {
-                            "const": "bottom",
-                            "title": "En bas"
-                          }
-                        ],
-                        "default": "none"
-                      }
-                    }
-                  },
-                  {
-                    "title": "Autre jeu de données",
-                    "properties": {
-                      "source": {
-                        "const": "external",
-                        "title": "Source des données de l'application"
-                      },
-                      "application": {
-                        "type": "object",
-                        "properties": {
-                          "id": {
-                            "type": "string"
-                          },
-                          "title": {
-                            "type": "string"
-                          },
-                          "href": {
-                            "type": "string"
-                          },
-                          "baseApp": {
-                            "type": "object"
-                          }
-                        },
-                        "layout": {
-                          "getItems": {
-                            "url": "api/v1/applications?q={q}&size=100&${context.datasetFilter}&filterConcepts=true&select=id,title,baseApp",
-                            "itemKey": "data.id",
-                            "itemTitle": "data.title",
-                            "itemsResults": "data.results"
-                          }
-                        }
-                      },
-                      "syncParams": {
-                        "title": "Synchronisation des filtres",
-                        "description": "Ce que ce visu transmet aux autres visus du tableau de bord. Dans tous les cas il reçoit les filtres du dashboard.",
-                        "type": "string",
-                        "default": "shared-filters",
-                        "oneOf": [
-                          {
-                            "const": "shared-filters",
-                            "title": "Partage des filtres : ses filtres et sélections alimentent les autres visus"
-                          },
-                          {
-                            "const": "sandboxed",
-                            "title": "Cloisonné : il garde son état pour lui, rien n'est partagé"
-                          },
-                          {
-                            "const": "none",
-                            "title": "Aucune synchronisation : son état n'est pas conservé, rien n'est partagé"
-                          }
-                        ]
-                      },
-                      "valueMandatory": {
-                        "title": "Nécessite une valeur dans des filtres",
-                        "type": "boolean",
-                        "default": false
-                      },
-                      "mandatoryFilters": {
-                        "title": "Filtres requis",
-                        "type": "array",
-                        "items": {
-                          "type": "string"
-                        },
-                        "layout": {
-                          "getItems": {
-                            "expr": "rootData.filters",
-                            "itemKey": "data.labelField",
-                            "itemTitle": "data.labelField"
-                          },
-                          "if": "parent.data.valueMandatory"
-                        }
-                      },
-                      "description": {
-                        "title": "Affichage de la description",
-                        "type": "string",
-                        "oneOf": [
-                          {
-                            "const": "none",
-                            "title": "Aucun affichage"
-                          },
-                          {
-                            "const": "left",
-                            "title": "A gauche"
-                          },
-                          {
-                            "const": "right",
-                            "title": "A droite"
-                          },
-                          {
-                            "const": "top",
-                            "title": "En haut"
-                          },
-                          {
-                            "const": "bottom",
-                            "title": "En bas"
-                          }
-                        ],
-                        "default": "none"
-                      }
-                    }
-                  }
-                ],
-                "default": {
-                  "source": "root"
-                },
-                "oneOfLayout": {
-                  "label": "Source des données de l'application"
-                }
+                "$ref": "#/$defs/application"
               },
               {
-                "title": "Texte",
-                "properties": {
-                  "type": {
-                    "const": "text",
-                    "title": "Type de l'élément"
-                  },
-                  "content": {
-                    "type": "string",
-                    "title": "Contenu",
-                    "layout": "textarea"
-                  }
-                }
+                "$ref": "#/$defs/text"
               },
               {
-                "title": "Formulaire de saisie",
-                "properties": {
-                  "type": {
-                    "const": "form",
-                    "title": "Type de l'élément"
-                  },
-                  "dataset": {
-                    "type": "object",
-                    "title": "Jeu de données",
-                    "properties": {
-                      "id": {
-                        "type": "string"
-                      },
-                      "title": {
-                        "type": "string"
-                      },
-                      "href": {
-                        "type": "string"
-                      },
-                      "schema": {
-                        "type": "array"
-                      }
-                    },
-                    "layout": {
-                      "getItems": {
-                        "url": "api/v1/datasets?q={q}&size=100&${context.datasetFilter}&rest=true&select=id,title,schema",
-                        "itemKey": "data.id",
-                        "itemTitle": "data.title",
-                        "itemsResults": "data.results"
-                      }
-                    }
-                  },
-                  "syncParams": {
-                    "title": "Synchronisation des filtres",
-                    "description": "Ce que ce formulaire transmet aux autres visus du tableau de bord. Dans tous les cas il reçoit les filtres du dashboard.",
-                    "type": "string",
-                    "default": "shared-filters",
-                    "oneOf": [
-                      {
-                        "const": "shared-filters",
-                        "title": "Partage des filtres : ses filtres alimentent les autres visus"
-                      },
-                      {
-                        "const": "sandboxed",
-                        "title": "Cloisonné : il garde son état pour lui, rien n'est partagé"
-                      },
-                      {
-                        "const": "none",
-                        "title": "Aucune synchronisation : son état n'est pas conservé, rien n'est partagé"
-                      }
-                    ]
-                  }
-                }
+                "$ref": "#/$defs/form"
               }
             ],
             "properties": {
@@ -4362,31 +1252,18 @@
           "type": "in"
         },
         "required": [],
-        "discriminator": {
-          "propertyName": "type"
-        },
+        "discriminator": { "propertyName": "type" },
         "oneOf": [
           {
             "title": "Restreindre à des valeurs",
-            "required": [
-              "field",
-              "values"
-            ],
+            "required": ["field", "values"],
             "additionalProperties": false,
             "properties": {
               "type": {
                 "const": "in"
               },
               "field": {
-                "type": "string",
-                "title": "Colonne de filtre",
-                "layout": {
-                  "getItems": {
-                    "url": "${rootData.datasets[0].href}/schema?calculated=false",
-                    "itemKey": "data.key",
-                    "itemTitle": "data.label"
-                  }
-                }
+                "$ref": "#/$defs/filterField"
               },
               "values": {
                 "type": "array",
@@ -4406,24 +1283,14 @@
           },
           {
             "title": "Restreindre à un intervalle de valeurs",
-            "required": [
-              "field"
-            ],
+            "required": ["field"],
             "additionalProperties": false,
             "properties": {
               "type": {
                 "const": "interval"
               },
               "field": {
-                "type": "string",
-                "title": "Colonne de filtre",
-                "layout": {
-                  "getItems": {
-                    "url": "${rootData.datasets[0].href}/schema?calculated=false",
-                    "itemKey": "data.key",
-                    "itemTitle": "data.label"
-                  }
-                }
+                "$ref": "#/$defs/filterField"
               },
               "minValue": {
                 "type": "string",
@@ -4451,24 +1318,14 @@
           },
           {
             "title": "Exclure des valeurs",
-            "required": [
-              "field"
-            ],
+            "required": ["field"],
             "additionalProperties": false,
             "properties": {
               "type": {
                 "const": "out"
               },
               "field": {
-                "type": "string",
-                "title": "Colonne de filtre",
-                "layout": {
-                  "getItems": {
-                    "url": "${rootData.datasets[0].href}/schema?calculated=false",
-                    "itemKey": "data.key",
-                    "itemTitle": "data.label"
-                  }
-                }
+                "$ref": "#/$defs/filterField"
               },
               "values": {
                 "type": "array",
@@ -4488,25 +1345,14 @@
           },
           {
             "title": "Commence par",
-            "required": [
-              "field",
-              "value"
-            ],
+            "required": ["field", "value"],
             "additionalProperties": false,
             "properties": {
               "type": {
                 "const": "starts"
               },
               "field": {
-                "type": "string",
-                "title": "Colonne de filtre",
-                "layout": {
-                  "getItems": {
-                    "url": "${rootData.datasets[0].href}/schema?calculated=false",
-                    "itemKey": "data.key",
-                    "itemTitle": "data.label"
-                  }
-                }
+                "$ref": "#/$defs/filterField"
               },
               "value": {
                 "type": "string",
@@ -4516,47 +1362,27 @@
           },
           {
             "title": "Exclure les valeurs vides ou non définies",
-            "required": [
-              "field"
-            ],
+            "required": ["field"],
             "additionalProperties": false,
             "properties": {
               "type": {
                 "const": "exists"
               },
               "field": {
-                "type": "string",
-                "title": "Colonne de filtre",
-                "layout": {
-                  "getItems": {
-                    "url": "${rootData.datasets[0].href}/schema?calculated=false",
-                    "itemKey": "data.key",
-                    "itemTitle": "data.label"
-                  }
-                }
+                "$ref": "#/$defs/filterField"
               }
             }
           },
           {
             "title": "Restreindre aux valeurs vides ou non définies",
-            "required": [
-              "field"
-            ],
+            "required": ["field"],
             "additionalProperties": false,
             "properties": {
               "type": {
                 "const": "notExists"
               },
               "field": {
-                "type": "string",
-                "title": "Colonne de filtre",
-                "layout": {
-                  "getItems": {
-                    "url": "${rootData.datasets[0].href}/schema?calculated=false",
-                    "itemKey": "data.key",
-                    "itemTitle": "data.label"
-                  }
-                }
+                "$ref": "#/$defs/filterField"
               }
             }
           }
@@ -4583,22 +1409,10 @@
           "title": "Balise HTML",
           "default": "h2",
           "oneOf": [
-            {
-              "const": "h1",
-              "title": "h1"
-            },
-            {
-              "const": "h2",
-              "title": "h2"
-            },
-            {
-              "const": "h3",
-              "title": "h3"
-            },
-            {
-              "const": "h4",
-              "title": "h4"
-            }
+            { "const": "h1", "title": "h1" },
+            { "const": "h2", "title": "h2" },
+            { "const": "h3", "title": "h3" },
+            { "const": "h4", "title": "h4" }
           ]
         },
         "size": {
@@ -4606,30 +1420,12 @@
           "title": "Taille",
           "default": "h4",
           "oneOf": [
-            {
-              "const": "h1",
-              "title": "Titre principal (96px)"
-            },
-            {
-              "const": "h2",
-              "title": "Très grand (60px)"
-            },
-            {
-              "const": "h3",
-              "title": "Grand (48px)"
-            },
-            {
-              "const": "h4",
-              "title": "Moyen (34px)"
-            },
-            {
-              "const": "h5",
-              "title": "Petit (24px)"
-            },
-            {
-              "const": "h6",
-              "title": "Très petit (20px)"
-            }
+            { "const": "h1", "title": "Titre principal (96px)" },
+            { "const": "h2", "title": "Très grand (60px)" },
+            { "const": "h3", "title": "Grand (48px)" },
+            { "const": "h4", "title": "Moyen (34px)" },
+            { "const": "h5", "title": "Petit (24px)" },
+            { "const": "h6", "title": "Très petit (20px)" }
           ]
         },
         "center": {
@@ -4643,45 +1439,18 @@
           "default": false
         },
         "color": {
-          "type": [
-            "string",
-            "null"
-          ],
+          "type": ["string", "null"],
           "title": "Couleur du texte",
           "default": null,
           "oneOf": [
-            {
-              "const": null,
-              "title": "Aucune (par défaut)"
-            },
-            {
-              "const": "primary",
-              "title": "Principale"
-            },
-            {
-              "const": "secondary",
-              "title": "Secondaire"
-            },
-            {
-              "const": "accent",
-              "title": "Accent"
-            },
-            {
-              "const": "info",
-              "title": "Info"
-            },
-            {
-              "const": "success",
-              "title": "Succès"
-            },
-            {
-              "const": "error",
-              "title": "Erreur"
-            },
-            {
-              "const": "warning",
-              "title": "Avertissement"
-            }
+            { "const": null, "title": "Aucune (par défaut)" },
+            { "const": "primary", "title": "Principale" },
+            { "const": "secondary", "title": "Secondaire" },
+            { "const": "accent", "title": "Accent" },
+            { "const": "info", "title": "Info" },
+            { "const": "success", "title": "Succès" },
+            { "const": "error", "title": "Erreur" },
+            { "const": "warning", "title": "Avertissement" }
           ]
         },
         "line": {
@@ -4693,26 +1462,11 @@
               "title": "Position",
               "default": "none",
               "oneOf": [
-                {
-                  "const": "none",
-                  "title": "Aucun"
-                },
-                {
-                  "const": "left",
-                  "title": "À gauche du titre"
-                },
-                {
-                  "const": "bottom-small",
-                  "title": "Petit trait sous le titre (80px)"
-                },
-                {
-                  "const": "bottom-medium",
-                  "title": "Trait moyen sous le titre (largeur du texte)"
-                },
-                {
-                  "const": "bottom-large",
-                  "title": "Grand trait sous le titre (toute la largeur)"
-                }
+                { "const": "none", "title": "Aucun" },
+                { "const": "left", "title": "À gauche du titre" },
+                { "const": "bottom-small", "title": "Petit trait sous le titre (80px)" },
+                { "const": "bottom-medium", "title": "Trait moyen sous le titre (largeur du texte)" },
+                { "const": "bottom-large", "title": "Grand trait sous le titre (toute la largeur)" }
               ]
             },
             "color": {
@@ -4720,40 +1474,18 @@
               "title": "Couleur du trait",
               "default": "primary",
               "oneOf": [
-                {
-                  "const": "primary",
-                  "title": "Principale"
-                },
-                {
-                  "const": "secondary",
-                  "title": "Secondaire"
-                },
-                {
-                  "const": "accent",
-                  "title": "Accent"
-                },
-                {
-                  "const": "info",
-                  "title": "Info"
-                },
-                {
-                  "const": "success",
-                  "title": "Succès"
-                },
-                {
-                  "const": "error",
-                  "title": "Erreur"
-                },
-                {
-                  "const": "warning",
-                  "title": "Avertissement"
-                }
+                { "const": "primary", "title": "Principale" },
+                { "const": "secondary", "title": "Secondaire" },
+                { "const": "accent", "title": "Accent" },
+                { "const": "info", "title": "Info" },
+                { "const": "success", "title": "Succès" },
+                { "const": "error", "title": "Erreur" },
+                { "const": "warning", "title": "Avertissement" }
               ]
             }
           }
         }
       }
     }
-  },
-  "$id": "config-resolved"
+  }
 }
