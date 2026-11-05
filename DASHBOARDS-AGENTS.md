@@ -145,6 +145,9 @@ des filtres » du formulaire). Les mêmes modes que les blocs de page de portail
 | `sandboxed` | rien (le visu garde son état pour lui) |
 | `none` | rien, et l'état du visu n'est pas conservé (aucun canal privé) |
 
+- En mode comparaison, une émission ne sort pas de sa colonne : la colonne droite
+  publie sous son préfixe (`c_d_*` / `c_c_*`), la gauche dans le namespace propre,
+  que la droite ignore. Seuls les filtres posés par un parent atteignent les deux.
 - La clé `_s_` (marqueur de sélection) n'existe plus : une clé `_c_`/`_d_` est un
   filtre partagé, libre à chaque visu de la traiter en restriction ou en mise en
   évidence selon son propre champ de sélection.

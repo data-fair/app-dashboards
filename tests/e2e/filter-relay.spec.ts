@@ -175,4 +175,50 @@ test.describe('Relais des filtres émis par un visu', () => {
     // 5) Pas de boucle de relais : l'écho d'un filtre retiré n'est pas republié.
     expect(redundantNavigations, 'boucle de relais avec le récepteur').toBeLessThan(20)
   })
+
+  test('R2 — mode comparaison : une émission ne sort pas de sa colonne', async ({ page }) => {
+    await page.goto('/app/?view=compare')
+    const config = await getDevConfig(page)
+    await expect(page.locator('.v-container').first()).toBeVisible({ timeout: 20_000 })
+
+    const rootDatasetId = config.datasets?.[0]?.id
+    const usedFields = new Set([
+      ...(config.filters || []).flatMap(f => [f.labelField, ...(f.values || [])]),
+      ...(config.staticFilters || []).map(sf => fieldKeyOf(sf.field))
+    ].filter(Boolean) as string[])
+    const field = (config.datasets?.[0]?.schema || []).map(f => f.key).find(key => key && !usedFields.has(key))
+    const emitter = flatElements(config).find(el => el.type === 'application' && el.application?.id)
+    test.skip(!rootDatasetId || !field || !emitter, 'config de dev sans visu émetteur exploitable')
+
+    const appId = emitter!.application!.id!
+    await expect(page.locator('d-frame').first()).toBeVisible({ timeout: 20_000 })
+    const emitterFrames = () => page.frames().filter(f => f.url().includes(`/data-fair/app/${appId}`))
+    await expect.poll(() => emitterFrames().length, { timeout: 20_000, message: 'un émetteur par colonne' }).toBe(2)
+    const emitIn = (index: number, params: Record<string, string>) => emitterFrames()[index].evaluate((params) => {
+      const url = new URL(location.href)
+      for (const [key, value] of Object.entries(params)) url.searchParams.set(key, value)
+      history.replaceState(history.state, '', url.toString())
+    }, params)
+
+    const key = `_d_${rootDatasetId}_${field}_in`
+    const dashboardParams = async () => Object.fromEntries(new URL(await page.evaluate(() => location.href)).searchParams)
+    const columnsValues = async () => {
+      const all = await frames(page)
+      const half = all.length / 2
+      return { left: all.slice(0, half).map(f => f.query[key]), right: all.slice(half).map(f => f.query[key]) }
+    }
+
+    // Une sélection à droite reste à droite, sous le préfixe de colonne.
+    await emitIn(1, { [key]: 'Droite' })
+    await expect.poll(dashboardParams, { timeout: 10_000 }).toMatchObject({ [`c${key}`]: 'Droite' })
+    expect(await dashboardParams()).not.toHaveProperty(key)
+    await expect.poll(async () => (await columnsValues()).right.every(v => v === 'Droite'), { timeout: 10_000 }).toBe(true)
+    expect((await columnsValues()).left.every(v => v === undefined)).toBe(true)
+
+    // Une sélection à gauche, dans le namespace propre, n'atteint pas la droite.
+    await emitIn(0, { [key]: 'Gauche' })
+    await expect.poll(dashboardParams, { timeout: 10_000 }).toMatchObject({ [key]: 'Gauche', [`c${key}`]: 'Droite' })
+    await expect.poll(async () => (await columnsValues()).left.every(v => v === 'Gauche'), { timeout: 10_000 }).toBe(true)
+    expect((await columnsValues()).right.every(v => v === 'Droite')).toBe(true)
+  })
 })

@@ -10,6 +10,7 @@ import {
   keyWithoutOp,
   nextEchoState,
   projectEmissions,
+  publishedEmissions,
   seedProjected
 } from '@/utils/emissions'
 import type { EchoState, ElementSyncParams } from '@/utils/emissions'
@@ -70,11 +71,12 @@ test.describe('collectEmissionsTargets', () => {
       'c_form-root'
     ])
     expect(targets.every(t => t.syncParams === 'shared-filters')).toBe(true)
+    expect(targets.map(t => t.prefix)).toEqual(['', 'c', '', 'c', '', 'c'])
   })
 
   test('reprend le mode configuré de l\'élément', () => {
     const targets = collectEmissionsTargets(sections([[app('a', 'sandboxed')]]), [''])
-    expect(targets).toEqual([{ scope: 'application-a', syncParams: 'sandboxed' }])
+    expect(targets).toEqual([{ scope: 'application-a', prefix: '', syncParams: 'sandboxed' }])
   })
 
   test('suit le chemin des colonnes et la déduplication par ligne', () => {
@@ -216,6 +218,59 @@ test.describe('écho d\'un filtre retiré', () => {
   test('une autre valeur émise par un autre élément passe', () => {
     const state: EchoState = { sources: {}, withdrawn: { _c_q: { value: 'x', origins: ['application-a'] } } }
     expect(run({ 'application-b__c_q': 'y' }, shared, state, {}).result.values).toEqual({ _c_q: 'y' })
+  })
+})
+
+test.describe('colonnes du mode comparaison', () => {
+  const left = { scope: 'application-a', prefix: '', syncParams: 'shared-filters' as const }
+  const right = { scope: 'c_application-a', prefix: 'c', syncParams: 'shared-filters' as const }
+  const empty = { sources: {}, withdrawn: {} }
+
+  test('l\'émission de la colonne droite est publiée sous le préfixe de colonne', () => {
+    const params = { 'c_application-a__d_ds1__id_eq': 'x', 'c_application-a__c_codeCommune_in': '86194' }
+    expect(computeProjections(params, [left, right], new Set(), {})).toEqual({
+      values: { c_d_ds1__id_eq: 'x', c_c_codeCommune_in: '86194' },
+      remove: []
+    })
+  })
+
+  test('l\'émission de la colonne gauche reste dans le namespace propre', () => {
+    const params = { 'application-a__d_ds1__id_eq': 'x' }
+    expect(computeProjections(params, [left, right], new Set(), {}).values).toEqual({ _d_ds1__id_eq: 'x' })
+  })
+
+  test('deux colonnes gardent chacune leur sélection', () => {
+    const params = { 'application-a__d_ds1__id_eq': 'x', 'c_application-a__d_ds1__id_eq': 'y' }
+    expect(computeProjections(params, [left, right], new Set(), {}).values).toEqual({
+      _d_ds1__id_eq: 'x',
+      c_d_ds1__id_eq: 'y'
+    })
+  })
+
+  test('un filtre du dashboard gagne aussi sur la colonne droite', () => {
+    const params = { 'c_application-a__c_codeCommune_in': '86194', 'c_application-a__d_ds1_an_in': '2022' }
+    const owned = new Set(['_c_codeCommune_in', 'c_d_ds1_an_in'])
+    expect(computeProjections(params, [left, right], owned, {}).values).toEqual({})
+  })
+
+  test('une sélection effacée à droite est retirée sous son préfixe et son écho reconnu', () => {
+    const published = computeProjections({ 'c_application-a__d_ds1__id_eq': 'x' }, [right], new Set(), {})
+    const state = nextEchoState({ 'c_application-a__d_ds1__id_eq': 'x' }, [right], empty, {}, published)
+    const cleared = computeProjections({}, [right], new Set(), published.values, state.withdrawn)
+    expect(cleared.remove).toEqual(['c_d_ds1__id_eq'])
+    const next = nextEchoState({}, [right], state, published.values, cleared)
+    expect(next.withdrawn).toEqual({ c_d_ds1__id_eq: { value: 'x', origins: ['c_application-a'] } })
+  })
+
+  test('seedProjected adopte la clé préfixée d\'une émission de la colonne droite', () => {
+    const params = { 'c_application-a__d_ds1__id_eq': 'x', c_d_ds1__id_eq: 'x' }
+    expect(seedProjected(params, [right])).toEqual({ c_d_ds1__id_eq: 'x' })
+  })
+
+  test('publishedEmissions liste ce qu\'un jeu d\'éléments publie', () => {
+    const sandboxed = { scope: 'application-b', prefix: '', syncParams: 'sandboxed' as const }
+    const params = { 'application-a__d_ds1__id_eq': 'x', 'application-a_page': '2', 'application-b__c_q': 'z' }
+    expect(publishedEmissions(params, [left, sandboxed])).toEqual({ _d_ds1__id_eq: 'x' })
   })
 })
 

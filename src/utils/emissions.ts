@@ -7,7 +7,9 @@
  * its own src, which keeps its state alive across filter broadcasts. The
  * dashboard then *projects* those emissions into the clean, interoperable
  * namespace (`_c_*` / `_d_*`) according to the per-element `syncParams` mode:
- * what everyone else sees.
+ * what everyone else sees. In the compare view each column publishes apart: the
+ * left one in the clean keys, the right one under its column prefix (`c_d_*` /
+ * `c_c_*`), so a selection never leaks into the other column.
  *
  * Why not let d-frame route the raw keys (`sync-params="_c*,_d*"`)?
  *  - `getChildSrc` re-injects every matching parent key into every child src,
@@ -35,14 +37,18 @@ export const stripOp = (key: string): string => key.replace(FILTER_OP_SUFFIX, ''
 
 /**
  * Private d-frame namespace of one element instance. The compare-view column
- * prefix is part of it so the two columns keep separate states: the clean
- * `_c_*` / `_d_*` keys stay shared between columns, as the convention wants.
+ * prefix is part of it so the two columns keep separate states.
  */
 export const emissionScope = (prefix: string, instanceKey: string): string =>
   prefix ? `${prefix}_${instanceKey}` : instanceKey
 
+/** URL key a clean filter key takes in a compare-view column. */
+export const columnFilterKey = (prefix: string, key: string): string => `${prefix}${key}`
+
 export interface ElementSyncParams {
   scope: string
+  /** Compare-view column of the element, empty for the left one. */
+  prefix?: string
   syncParams: SyncParams
 }
 
@@ -69,7 +75,7 @@ export const collectEmissionsTargets = (
     }
     if (el.type !== 'application' && el.type !== 'tablePreview' && el.type !== 'form') return
     for (const prefix of prefixes) {
-      targets.push({ scope: emissionScope(prefix, instanceKey), syncParams: elementSyncParams(el) })
+      targets.push({ scope: emissionScope(prefix, instanceKey), prefix, syncParams: elementSyncParams(el) })
     }
   }
   for (const section of sections || []) {
@@ -110,6 +116,26 @@ export const projectEmissions = (emissions: Record<string, string>, syncParams: 
   return out
 }
 
+/** Clean filter keys published by these elements, under their column key. */
+export const publishedEmissions = (params: ReactiveParams, targets: ElementSyncParams[]): Record<string, string> => {
+  const out: Record<string, string> = {}
+  for (const target of targets) {
+    for (const [key, value] of Object.entries(projectEmissions(collectElementEmissions(params, target.scope), target.syncParams))) {
+      out[columnFilterKey(target.prefix ?? '', key)] = value
+    }
+  }
+  return out
+}
+
+/** Every emission of an element, under the key it would be published with. */
+const columnEmissions = (params: ReactiveParams, target: ElementSyncParams): Record<string, string> => {
+  const out: Record<string, string> = {}
+  for (const [key, value] of Object.entries(collectElementEmissions(params, target.scope))) {
+    out[columnFilterKey(target.prefix ?? '', key)] = value
+  }
+  return out
+}
+
 /**
  * Signature of the emissions of every target, with their sync mode: used to
  * re-run the projection when an emission changes (or when a mode is
@@ -125,7 +151,7 @@ export const emissionsSignature = (params: ReactiveParams, targets: ElementSyncP
   ].join('\u0001')).join('\u0002')
 
 export interface ProjectionResult {
-  /** Clean keys to write in the dashboard URL. */
+  /** Keys to write in the dashboard URL: clean, or under the column prefix. */
   values: Record<string, string>
   /** Previously projected keys whose emission is gone, to remove. */
   remove: string[]
@@ -179,11 +205,10 @@ export const computeProjections = (
       continue
     }
     for (const [key, value] of Object.entries(projectEmissions(collectElementEmissions(params, target.scope), target.syncParams))) {
-      if (!isEcho(withdrawn, target.scope, key, value)) values[key] = value
+      const columnKey = columnFilterKey(target.prefix ?? '', key)
+      if (ownedKeys.has(key) || ownedKeys.has(columnKey)) continue
+      if (!isEcho(withdrawn, target.scope, columnKey, value)) values[columnKey] = value
     }
-  }
-  for (const key of Object.keys(values)) {
-    if (ownedKeys.has(key)) delete values[key]
   }
   const remove = Object.keys(previous).filter(key =>
     !(key in values) && !ownedKeys.has(key) &&
@@ -211,7 +236,7 @@ export const nextEchoState = (
   previous: Record<string, string>,
   result: ProjectionResult
 ): EchoState => {
-  const emissions = targets.map(target => ({ scope: target.scope, values: collectElementEmissions(params, target.scope) }))
+  const emissions = targets.map(target => ({ scope: target.scope, values: columnEmissions(params, target) }))
   const sources: Record<string, string[]> = {}
   for (const [key, value] of Object.entries(result.values)) {
     sources[key] = emissions.filter(e => e.values[key] === value).map(e => e.scope)
@@ -238,7 +263,8 @@ export const seedProjected = (params: ReactiveParams, targets: ElementSyncParams
     if (target.syncParams !== 'shared-filters') continue
     for (const [key, value] of Object.entries(collectElementEmissions(params, target.scope))) {
       if (!isFilterKey(key)) continue
-      if (params[key] === value) out[key] = value
+      const columnKey = columnFilterKey(target.prefix ?? '', key)
+      if (params[columnKey] === value) out[columnKey] = value
     }
   }
   return out

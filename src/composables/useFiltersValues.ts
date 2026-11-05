@@ -14,6 +14,7 @@ import reactiveSearchParams from '@data-fair/lib-vue/reactive-search-params-glob
 import type { DashboardFilter } from '@/config'
 import { useConfig } from './config'
 import { datasetFilterKey } from '@/utils/dataset-filter'
+import { collectEmissionsTargets, publishedEmissions } from '@/utils/emissions'
 import { normalizeStaticFilters } from '@/utils/staticFilters'
 import {
   collectActiveFields,
@@ -39,13 +40,17 @@ export const useFiltersValues = (opts: UseFiltersValuesOptions) => {
   // filters, outer dashboard, shareable link) or projected from an embedded
   // visu's emissions. They are relayed to the child embeds, which is what lets
   // a page drive a dashboard configured without any dynamic filter, and what
-  // carries a selection from one visu to the others.
+  // carries a selection from one visu to the others. The clean keys published
+  // by the left column are not for the right one: only a parent's reach both.
+  const leftColumnTargets = computed(() => prefix ? collectEmissionsTargets(config.value?.sections, ['']) : [])
   const received = computed(() => collectReceivedFilters({
     params: reactiveSearchParams,
     fields: fields.value,
     config: config.value,
     filters: filters.value,
-    datasetId: dataset.value?.id
+    datasetId: dataset.value?.id,
+    prefix,
+    otherColumnKeys: publishedEmissions(reactiveSearchParams, leftColumnTargets.value)
   }))
 
   // Abort the previous resolution when a new one starts: rapid filter/period/

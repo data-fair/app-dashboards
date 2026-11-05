@@ -8,9 +8,9 @@
  * outer page understands, for the elements in `shared-filters` mode (see
  * `utils/emissions.ts`).
  *
- * Called once by `dashboard.vue`: the clean keys are URL-wide (the compare-view
- * columns keep separate private channels through their scope prefix, but share
- * the clean keys, as the URL convention wants).
+ * Called once by `dashboard.vue`. In the compare view the right column publishes
+ * under its column prefix and the left one stays in the clean keys, which the
+ * right column ignores (`useFiltersValues`): the columns are independent.
  */
 import { computed, ref, watch } from 'vue'
 import reactiveSearchParams from '@data-fair/lib-vue/reactive-search-params-global.js'

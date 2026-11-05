@@ -512,6 +512,43 @@ test.describe('collectReceivedFilters', () => {
     })
   })
 
+  test.describe('colonnes du mode comparaison', () => {
+    const received = (params: Record<string, string>, prefix: string, otherColumnKeys?: Record<string, string>) =>
+      collectReceivedFilters({ params, fields, config, prefix, otherColumnKeys }).values
+
+    test('la colonne droite reçoit ses clés préfixées, dé-préfixées pour les embeds', () => {
+      expect(received({ c_d_ds1__id_eq: 'x', c_c_codeDepartement_in: '75' }, 'c')).toEqual({
+        _d_ds1__id_eq: 'x',
+        _c_codeDepartement_in: '75'
+      })
+    })
+
+    test('la colonne gauche ignore les clés de la colonne droite', () => {
+      expect(received({ c_d_ds1__id_eq: 'x' }, '')).toEqual({})
+    })
+
+    test('la colonne droite ignore ce que publie la colonne gauche', () => {
+      const params = { _d_ds1__id_eq: 'x' }
+      expect(received(params, 'c', { _d_ds1__id_eq: 'x' })).toEqual({})
+    })
+
+    test('un filtre reçu du parent atteint les deux colonnes', () => {
+      const params = { _c_codeDepartement_in: '75' }
+      expect(received(params, '')).toEqual(params)
+      expect(received(params, 'c', {})).toEqual(params)
+    })
+
+    test('une clé de la colonne droite gagne sur la même clé reçue du parent', () => {
+      expect(received({ c_c_codeDepartement_in: '44', _c_codeDepartement_in: '75' }, 'c')).toEqual({ _c_codeDepartement_in: '44' })
+      expect(received({ _c_codeDepartement_in: '75', c_c_codeDepartement_in: '44' }, 'c')).toEqual({ _c_codeDepartement_in: '44' })
+    })
+
+    test('le filtre dynamique de la colonne droite reste interne', () => {
+      const filters = [{ labelField: 'an', values: ['an'] }] as DashboardFilter[]
+      expect(collectReceivedFilters({ params: { c_d_ds1_an_in: '2022' }, fields, config, filters, prefix: 'c' }).values).toEqual({})
+    })
+  })
+
   test('relaie les clés dataset-scopées du dataset racine et résout leur champ', () => {
     const received = collectReceivedFilters({
       params: { _d_ds1_an_gte: '10', _d_ds1_dep_in: '75' },

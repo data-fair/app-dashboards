@@ -77,6 +77,10 @@ export interface CollectReceivedFiltersInput {
   filters?: DashboardFilter[]
   /** Root dataset id (defaults to `config.datasets[0].id`). */
   datasetId?: string
+  /** Compare-view column receiving the filters: its own keys override the clean ones. */
+  prefix?: string
+  /** Clean keys published by the visus of the other column, kept away from this one. */
+  otherColumnKeys?: Record<string, string>
 }
 
 /**
@@ -89,13 +93,19 @@ export const collectReceivedFilters = (input: CollectReceivedFiltersInput): Rece
   const datasetId = input.datasetId ?? config.datasets?.[0]?.id ?? ''
   const internal = dynamicFilterUrlKeys(input.filters ?? config.filters, datasetId)
   const rootScope = `_d_${datasetId}_`
+  const prefix = input.prefix ?? ''
+  const columnKey = (key: string): string | undefined =>
+    prefix && key.startsWith(prefix) && isFilterKey(key.slice(prefix.length)) ? key.slice(prefix.length) : undefined
   const values: Record<string, string> = {}
   const receivedFields: string[] = []
-  for (const key of Object.keys(params)) {
-    if (!isFilterKey(key)) continue
-    const value = params[key]
+  // Clean keys first, so the column's own keys override them.
+  const paramKeys = Object.keys(params)
+  for (const urlKey of [...paramKeys.filter(isFilterKey), ...paramKeys.filter(k => columnKey(k))]) {
+    const key = columnKey(urlKey) ?? urlKey
+    const value = params[urlKey]
     if (value == null || value === '') continue
-    if (internal.has(key)) continue
+    if (internal.has(urlKey)) continue
+    if (urlKey === key && input.otherColumnKeys?.[key] === String(value)) continue
     values[key] = String(value)
     // Only the fields of the root dataset can be matched against the schema.
     const conceptKey = key.startsWith('_c_')
