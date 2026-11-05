@@ -108,6 +108,8 @@ const fieldLabel = computed<string>(() => {
       :clearable="!filter.forceOneValue"
       :persistent-clear="!filter.forceOneValue"
       :multiple="filter.multipleValues"
+      :no-filter="!filter.showAllValues"
+      ignore-accents
       style="min-width:250px;"
       density="comfortable"
       autocomplete="off"

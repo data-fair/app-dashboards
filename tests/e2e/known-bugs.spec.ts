@@ -598,3 +598,42 @@ test.describe('Bugs connus (régressions)', () => {
     await expect.poll(async () => (await frameStyles()).every(f => f.aspectRatio === '' && !f.style.includes('height:'))).toBe(true)
   })
 })
+
+test.describe('Recherche dans les filtres', () => {
+  // carto-stats (vue-router 3) rejects a redundant router.replace, uncaught, when a filter changes.
+  test.use({ expectedConsole: [...embeddedVisusConsole, 'Avoided redundant navigation to current location'] })
+
+  test('K8 — recherche d\'un filtre : la réponse de l\'API n\'est pas refiltrée (accents, tirets), le mode showAllValues ignore les accents', async ({ page }) => {
+    await page.route('**/values-labels/**', route => route.fulfill({
+      json: [{ value: 'Nîmes', label: 'Nîmes' }, { value: 'Saint-Étienne', label: 'Saint-Étienne' }],
+      headers: { 'access-control-allow-origin': '*' }
+    }))
+    await page.goto('/app/')
+    const config = await getDevConfig(page)
+    const autocomplete = page.locator('.v-autocomplete input:not([type=hidden])').first()
+    test.skip(!(config.filters || []).some(f => !(f as { slider?: boolean }).slider), 'La config courante n\'a pas de filtre liste')
+    await expect(autocomplete).toBeVisible({ timeout: 20_000 })
+
+    // Recherche serveur : l'API a déjà trouvé la valeur, le libellé ne contient
+    // pourtant pas le texte saisi.
+    const option = (name: string) => page.locator('.v-list-item').filter({ hasText: name })
+    await autocomplete.fill('nimes')
+    await expect(option('Nîmes')).toBeVisible({ timeout: 5_000 })
+    await autocomplete.fill('saint etienne')
+    await expect(option('Saint-Étienne')).toBeVisible({ timeout: 5_000 })
+
+    // showAllValues : pas de recherche serveur, le filtre reste côté client.
+    await autocomplete.fill('')
+    await page.evaluate(() => {
+      const cfg = JSON.parse(JSON.stringify(window.APPLICATION.configuration))
+      for (const filter of cfg.filters) filter.showAllValues = true
+      window.dispatchEvent(new MessageEvent('message', {
+        source: window,
+        data: { type: 'set-config', content: cfg }
+      }))
+    })
+    await autocomplete.fill('nimes')
+    await expect(option('Nîmes')).toBeVisible({ timeout: 5_000 })
+    await expect(option('Saint-Étienne')).toHaveCount(0)
+  })
+})
