@@ -145,9 +145,16 @@ des filtres » du formulaire). Les mêmes modes que les blocs de page de portail
 | `sandboxed` | rien (le visu garde son état pour lui) |
 | `none` | rien, et l'état du visu n'est pas conservé (aucun canal privé) |
 
-- En mode comparaison, une émission ne sort pas de sa colonne : la colonne droite
+- En mode comparaison, les clés propres restent séparées : la colonne droite
   publie sous son préfixe (`c_d_*` / `c_c_*`), la gauche dans le namespace propre,
   que la droite ignore. Seuls les filtres posés par un parent atteignent les deux.
+- Les **sélections** (`_eq` / `_in`, hors clés du dashboard) sont en revanche
+  recopiées dans le canal privé de l'autre colonne : un clic sur une carte d'un
+  côté sélectionne la même entité de l'autre côté, sans toucher aux filtres
+  propres de chaque colonne (année, static filters, période). Le dernier clic
+  gagne, et un effacement se propage aux deux colonnes. Pour comparer deux
+  années, le champ de sélection de la visu doit être stable d'une année à
+  l'autre (par exemple `id_unique_projet`), pas `_id` (une ligne par année).
 - La clé `_s_` (marqueur de sélection) n'existe plus : une clé `_c_`/`_d_` est un
   filtre partagé, libre à chaque visu de la traiter en restriction ou en mise en
   évidence selon son propre champ de sélection.

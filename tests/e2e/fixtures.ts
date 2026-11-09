@@ -35,5 +35,8 @@ export const embeddedVisusConsole = [
   'GPU stall due to ReadPixels',
   'tileserver-koumoul/proxy/styles/cadastre/style.json',
   'net::ERR_FAILED',
-  'apps/carto-stats/'
+  'apps/carto-stats/',
+  // A visu that writes its own state (e.g. charts' stacked mode) can navigate
+  // before the d-frame init handshake; the frame recovers and the state syncs.
+  'src mismatch at init'
 ]

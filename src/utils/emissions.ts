@@ -116,6 +116,99 @@ export const projectEmissions = (emissions: Record<string, string>, syncParams: 
   return out
 }
 
+/**
+ * A selection-like filter key (`_eq` / `_in`). Other app state that also uses
+ * the `_c_` / `_d_` prefixes stays local to its column: search (`_c_q`),
+ * geo distance, camera (`_c_map_*`), ranges (`_gte` / `_lte`).
+ */
+export const isSelectionKey = (key: string): boolean =>
+  isFilterKey(key) && (key.endsWith('_eq') || key.endsWith('_in'))
+
+/** Selection emissions of one element, keyed by raw filter key. */
+export const collectSelectionEmissions = (params: ReactiveParams, scope: string): Record<string, string> => {
+  const out: Record<string, string> = {}
+  for (const [key, value] of Object.entries(collectElementEmissions(params, scope))) {
+    if (isSelectionKey(key)) out[key] = value
+  }
+  return out
+}
+
+/** Selection state of every shared element, for the next synchronization run. */
+export const selectionEmissionsState = (
+  params: ReactiveParams,
+  targets: ElementSyncParams[]
+): Record<string, Record<string, string>> => {
+  const out: Record<string, Record<string, string>> = {}
+  for (const target of targets) {
+    if (target.syncParams !== 'shared-filters') continue
+    out[target.scope] = collectSelectionEmissions(params, target.scope)
+  }
+  return out
+}
+
+export interface SelectionSyncResult {
+  /** Private keys to write, so the other compare-view column follows the selection. */
+  set: Record<string, string>
+  /** Private keys to remove, when the selection was cleared. */
+  remove: string[]
+}
+
+/**
+ * Mirror a selection emitted in one compare-view column into the private
+ * channel of the other column. `previous` is the selection state of the last
+ * run, so only a changed or cleared selection is propagated: the last click
+ * wins. Dashboard-owned keys never cross (each column keeps its own year and
+ * static filters), and non-selection app state is left alone.
+ *
+ * The private channel is used instead of the clean keys because the right
+ * column deliberately ignores the clean keys published by the left one
+ * (`useFiltersValues`), and because the d-frame re-injects an element's private
+ * key over its base src: without this mirror, the second click would be
+ * overridden by the other column's previous private selection.
+ */
+export const computeSelectionSync = (
+  params: ReactiveParams,
+  targets: ElementSyncParams[],
+  previous: Record<string, Record<string, string>>,
+  ownedKeys: Set<string>
+): SelectionSyncResult => {
+  // In single view there is only one rendered column: mirroring would create
+  // unused private keys (and confuse the "none" purge test).
+  if (params.view !== 'compare') return { set: {}, remove: [] }
+  const shared = targets.filter(target => target.syncParams === 'shared-filters')
+  const current = new Map<string, Record<string, string>>()
+  for (const target of shared) current.set(target.scope, collectSelectionEmissions(params, target.scope))
+
+  const changes: { target: ElementSyncParams, key: string, value?: string }[] = []
+  for (const target of shared) {
+    const before = previous[target.scope] || {}
+    const now = current.get(target.scope) || {}
+    for (const key of new Set([...Object.keys(before), ...Object.keys(now)])) {
+      if (before[key] !== now[key]) changes.push({ target, key, value: now[key] })
+    }
+  }
+
+  const set: Record<string, string> = {}
+  const remove: string[] = []
+  for (const key of new Set(changes.map(change => change.key))) {
+    if (ownedKeys.has(key)) continue
+    // If both columns changed in the same run, the last one in DOM order wins.
+    const winner = changes.filter(change => change.key === key).at(-1)
+    if (!winner) continue
+    const winnerPrefix = winner.target.prefix ?? ''
+    for (const target of shared) {
+      if ((target.prefix ?? '') === winnerPrefix) continue
+      const currentValue = current.get(target.scope)?.[key]
+      if (winner.value === undefined) {
+        if (currentValue !== undefined) remove.push(`${target.scope}_${key}`)
+      } else if (currentValue !== winner.value) {
+        set[`${target.scope}_${key}`] = winner.value
+      }
+    }
+  }
+  return { set, remove }
+}
+
 /** Clean filter keys published by these elements, under their column key. */
 export const publishedEmissions = (params: ReactiveParams, targets: ElementSyncParams[]): Record<string, string> => {
   const out: Record<string, string> = {}

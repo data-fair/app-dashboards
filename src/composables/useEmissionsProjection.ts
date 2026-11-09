@@ -10,12 +10,23 @@
  *
  * Called once by `dashboard.vue`. In the compare view the right column publishes
  * under its column prefix and the left one stays in the clean keys, which the
- * right column ignores (`useFiltersValues`): the columns are independent.
+ * right column ignores (`useFiltersValues`). Selections (`_eq` / `_in`) are
+ * mirrored into the other column's private channel on every change, so a click
+ * on one map selects the same entity on the other side while each column keeps
+ * its own filters (notably its year).
  */
 import { computed, ref, watch } from 'vue'
 import reactiveSearchParams from '@data-fair/lib-vue/reactive-search-params-global.js'
 import { useConfig } from './config'
-import { collectEmissionsTargets, computeProjections, emissionsSignature, nextEchoState, seedProjected } from '@/utils/emissions'
+import {
+  collectEmissionsTargets,
+  computeProjections,
+  computeSelectionSync,
+  emissionsSignature,
+  nextEchoState,
+  seedProjected,
+  selectionEmissionsState
+} from '@/utils/emissions'
 import type { EchoState } from '@/utils/emissions'
 import { ownedFilterKeys } from '@/utils/filters'
 
@@ -32,6 +43,9 @@ export const useEmissionsProjection = (): void => {
   const projected = ref<Record<string, string>>({})
   // Keys it removed, to drop their late echo instead of republishing it.
   let echoState: EchoState = { sources: {}, withdrawn: {} }
+  // Selection state of the previous run, to mirror only a changed/cleared
+  // selection into the other compare-view column (last click wins).
+  let previousSelections: Record<string, Record<string, string>> = {}
   let seeded = false
 
   watch(
@@ -39,7 +53,15 @@ export const useEmissionsProjection = (): void => {
     () => {
       if (!seeded) {
         projected.value = seedProjected(reactiveSearchParams, targets.value)
+        previousSelections = selectionEmissionsState(reactiveSearchParams, targets.value)
         seeded = true
+      } else {
+        const sync = computeSelectionSync(reactiveSearchParams, targets.value, previousSelections, owned.value)
+        for (const key of sync.remove) delete reactiveSearchParams[key]
+        for (const [key, value] of Object.entries(sync.set)) {
+          if (reactiveSearchParams[key] !== value) reactiveSearchParams[key] = value
+        }
+        previousSelections = selectionEmissionsState(reactiveSearchParams, targets.value)
       }
       const result = computeProjections(reactiveSearchParams, targets.value, owned.value, projected.value, echoState.withdrawn)
       echoState = nextEchoState(reactiveSearchParams, targets.value, echoState, projected.value, result)

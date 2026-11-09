@@ -1,5 +1,10 @@
+import { readFileSync } from 'node:fs'
 import type { Page } from '@playwright/test'
 import { test, expect, embeddedVisusConsole } from './fixtures'
+
+// Minimal d-frame child used by R2: it has the same URL-sync contract as a
+// visu, without depending on a remote application build.
+const dFrameContent = readFileSync('node_modules/@data-fair/frame/dist/d-frame-content.min.js', 'utf8')
 
 /**
  * Relais des filtres émis par un visu embarqué (canal privé par élément).
@@ -96,7 +101,13 @@ const emitFilter = async (page: Page, appId: string, params: Record<string, stri
 const redundantNavigation = 'Avoided redundant navigation to current location'
 
 test.describe('Relais des filtres émis par un visu', () => {
-  test.use({ expectedConsole: [...embeddedVisusConsole, redundantNavigation] })
+  test.use({
+    expectedConsole: [
+      ...embeddedVisusConsole,
+      redundantNavigation,
+      'Failed to load resource: the server responded with a status of 400'
+    ]
+  })
 
   test('R1 — un filtre émis remonte et se propage selon le mode syncParams', async ({ page }) => {
     let redundantNavigations = 0
@@ -176,49 +187,114 @@ test.describe('Relais des filtres émis par un visu', () => {
     expect(redundantNavigations, 'boucle de relais avec le récepteur').toBeLessThan(20)
   })
 
-  test('R2 — mode comparaison : une émission ne sort pas de sa colonne', async ({ page }) => {
-    await page.goto('/app/?view=compare')
-    const config = await getDevConfig(page)
+  test('R2 — mode comparaison : la sélection croise sans changer le filtre d\'année', async ({ page }) => {
+    const appId = 'test-emitter'
+    const datasetId = 'nkgybhhtnhiufg4wtokjsmz-'
+    const yearKey = `_d_${datasetId}_annee_in`
+    const selectionKey = `_d_${datasetId}_id_unique_projet_eq`
+
+    // Minimal d-frame child: it keeps the URL-sync contract of a visu and
+    // exposes setSelection() to simulate a click without a remote app build.
+    const stubScript = `<script>
+      window.vIframeOptions = { reactiveParams: Object.fromEntries(new URL(location.href).searchParams) }
+      window.setSelection = function (key, value) {
+        const params = window.vIframeOptions.reactiveParams
+        if (value == null) delete params[key]
+        else params[key] = value
+        const url = new URL(location.href)
+        if (value == null) url.searchParams.delete(key)
+        else url.searchParams.set(key, value)
+        history.replaceState(history.state, '', url.toString())
+      }
+    </script>`
+    await page.context().route(new RegExp(`/data-fair/app/${appId}`), route => route.fulfill({
+      contentType: 'text/html',
+      body: `<!doctype html><html><head><meta charset="utf-8"></head><body>
+        <script>${dFrameContent}</script>
+        ${stubScript}
+      </body></html>`
+    }))
+
+    await page.goto(`/app/?view=compare&${yearKey}=2024&c${yearKey}=2025`)
     await expect(page.locator('.v-container').first()).toBeVisible({ timeout: 20_000 })
 
-    const rootDatasetId = config.datasets?.[0]?.id
-    const usedFields = new Set([
-      ...(config.filters || []).flatMap(f => [f.labelField, ...(f.values || [])]),
-      ...(config.staticFilters || []).map(sf => fieldKeyOf(sf.field))
-    ].filter(Boolean) as string[])
-    const field = (config.datasets?.[0]?.schema || []).map(f => f.key).find(key => key && !usedFields.has(key))
-    const emitter = flatElements(config).find(el => el.type === 'application' && el.application?.id)
-    test.skip(!rootDatasetId || !field || !emitter, 'config de dev sans visu émetteur exploitable')
-
-    const appId = emitter!.application!.id!
-    await expect(page.locator('d-frame').first()).toBeVisible({ timeout: 20_000 })
-    const emitterFrames = () => page.frames().filter(f => f.url().includes(`/data-fair/app/${appId}`))
-    await expect.poll(() => emitterFrames().length, { timeout: 20_000, message: 'un émetteur par colonne' }).toBe(2)
-    const emitIn = (index: number, params: Record<string, string>) => emitterFrames()[index].evaluate((params) => {
-      const url = new URL(location.href)
-      for (const [key, value] of Object.entries(params)) url.searchParams.set(key, value)
-      history.replaceState(history.state, '', url.toString())
-    }, params)
-
-    const key = `_d_${rootDatasetId}_${field}_in`
-    const dashboardParams = async () => Object.fromEntries(new URL(await page.evaluate(() => location.href)).searchParams)
-    const columnsValues = async () => {
-      const all = await frames(page)
-      const half = all.length / 2
-      return { left: all.slice(0, half).map(f => f.query[key]), right: all.slice(half).map(f => f.query[key]) }
+    const config = {
+      datasets: [{
+        id: datasetId,
+        href: `https://koumoul.com/data-fair/api/v1/datasets/${datasetId}`,
+        title: 'Production annuelle de biométhane',
+        finalizedAt: '2026-10-31T23:08:32.326Z',
+        schema: [
+          { key: 'annee', type: 'integer', title: 'Année', 'x-originalName': 'annee' },
+          { key: 'id_unique_projet', type: 'integer', title: 'ID unique projet', 'x-originalName': 'id_unique_projet' },
+          { key: '_id', type: 'string', title: 'Identifiant' }
+        ]
+      }],
+      filters: [{ labelField: 'annee', values: ['annee'], multipleValues: false, showAllValues: true, slider: false }],
+      allowDuplicate: true,
+      sections: [{
+        rows: [{
+          elements: [{
+            type: 'application',
+            syncParams: 'shared-filters',
+            application: { id: appId }
+          }]
+        }]
+      }]
     }
+    await page.evaluate((cfg) => {
+      window.dispatchEvent(new MessageEvent('message', { source: window, data: { type: 'set-config', content: cfg } }))
+    }, config)
 
-    // Une sélection à droite reste à droite, sous le préfixe de colonne.
-    await emitIn(1, { [key]: 'Droite' })
-    await expect.poll(dashboardParams, { timeout: 10_000 }).toMatchObject({ [`c${key}`]: 'Droite' })
-    expect(await dashboardParams()).not.toHaveProperty(key)
-    await expect.poll(async () => (await columnsValues()).right.every(v => v === 'Droite'), { timeout: 10_000 }).toBe(true)
-    expect((await columnsValues()).left.every(v => v === undefined)).toBe(true)
+    const appFrames = () => page.frames().filter(f => f.url().includes(`/data-fair/app/${appId}`))
+    const stateOf = async (index: number) => {
+      try {
+        return await appFrames()[index].evaluate(
+          () => ((window as unknown as { vIframeOptions?: { reactiveParams?: Record<string, unknown> } }).vIframeOptions?.reactiveParams || {})
+        )
+      } catch {
+        // The stub may be navigating to its updated src: retry on the next poll.
+        return {}
+      }
+    }
+    const yearOf = async (index: number) => String((await stateOf(index))[yearKey] ?? '').replaceAll('"', '')
+    const projectOf = async (index: number) => (await stateOf(index))[selectionKey] ?? null
 
-    // Une sélection à gauche, dans le namespace propre, n'atteint pas la droite.
-    await emitIn(0, { [key]: 'Gauche' })
-    await expect.poll(dashboardParams, { timeout: 10_000 }).toMatchObject({ [key]: 'Gauche', [`c${key}`]: 'Droite' })
-    await expect.poll(async () => (await columnsValues()).left.every(v => v === 'Gauche'), { timeout: 10_000 }).toBe(true)
-    expect((await columnsValues()).right.every(v => v === 'Droite')).toBe(true)
+    await expect(page.locator('d-frame')).toHaveCount(2, { timeout: 30_000 })
+    await expect.poll(() => appFrames().length, { timeout: 30_000 }).toBe(2)
+    await expect.poll(async () => {
+      try {
+        const ready = await Promise.all(appFrames().map(frame => frame.evaluate(
+          () => Boolean((window as unknown as { __d_frame__content?: { initialized?: boolean } }).__d_frame__content?.initialized)
+        )))
+        return ready.length === 2 && ready.every(Boolean)
+      } catch {
+        // The stub may be navigating to its updated src: retry on the next poll.
+        return false
+      }
+    }, { timeout: 30_000 }).toBe(true)
+    await expect.poll(async () => [await yearOf(0), await yearOf(1)], { timeout: 30_000 }).toEqual(['2024', '2025'])
+
+    const setIn = (index: number, value: string | null) => appFrames()[index].evaluate(
+      ({ selectionKey, value }) => {
+        (window as unknown as { setSelection: (key: string, value: string | null) => void }).setSelection(selectionKey, value)
+      },
+      { selectionKey, value }
+    )
+
+    // Le clic gauche (2024) sélectionne le projet 4 ; la colonne 2025 le reçoit
+    // sans perdre son année.
+    await setIn(0, '4')
+    await expect.poll(async () => [await projectOf(0), await projectOf(1)], { timeout: 10_000 }).toEqual(['4', '4'])
+    await expect.poll(async () => [await yearOf(0), await yearOf(1)], { timeout: 10_000 }).toEqual(['2024', '2025'])
+
+    // Le clic droit (2025) sélectionne le projet 5 ; la colonne 2024 revient à 5.
+    await setIn(1, '5')
+    await expect.poll(async () => [await projectOf(0), await projectOf(1)], { timeout: 10_000 }).toEqual(['5', '5'])
+    await expect.poll(async () => [await yearOf(0), await yearOf(1)], { timeout: 10_000 }).toEqual(['2024', '2025'])
+
+    // Un effacement se propage aux deux colonnes.
+    await setIn(0, null)
+    await expect.poll(async () => [await projectOf(0), await projectOf(1)], { timeout: 10_000 }).toEqual([null, null])
   })
 })

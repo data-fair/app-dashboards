@@ -89,3 +89,35 @@ test('ne supprime pas une clé propre reprise par un autre écrivain', async () 
   await nextTick()
   expect(reactiveSearchParams._c_codeCommune_in).toBe('44109')
 })
+
+test('recopie une sélection dans la clé privée de l\'autre colonne', async () => {
+  reactiveSearchParams.view = 'compare'
+  setup({ sections: section([app('map')]) })
+
+  reactiveSearchParams['application-map__d_ds1__id_eq'] = '2024-row'
+  await nextTick()
+  expect(reactiveSearchParams['c_application-map__d_ds1__id_eq']).toBe('2024-row')
+
+  // Le dernier clic gagne, dans l'autre sens aussi.
+  reactiveSearchParams['c_application-map__d_ds1__id_eq'] = '2025-row'
+  await nextTick()
+  expect(reactiveSearchParams['application-map__d_ds1__id_eq']).toBe('2025-row')
+
+  // Un effacement se propage aux deux colonnes.
+  delete reactiveSearchParams['c_application-map__d_ds1__id_eq']
+  await nextTick()
+  expect(reactiveSearchParams['application-map__d_ds1__id_eq']).toBeUndefined()
+})
+
+test('ne recopie pas une clé possédée par le dashboard', async () => {
+  reactiveSearchParams.view = 'compare'
+  setup({
+    datasets: [{ id: 'ds1' }] as DashboardConfig['datasets'],
+    filters: [{ labelField: 'annee' }],
+    sections: section([app('map')])
+  })
+
+  reactiveSearchParams['application-map__d_ds1_annee_in'] = '2024'
+  await nextTick()
+  expect(reactiveSearchParams['c_application-map__d_ds1_annee_in']).toBeUndefined()
+})

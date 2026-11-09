@@ -2,16 +2,20 @@ import { test, expect } from '@playwright/test'
 import {
   collectElementEmissions,
   collectEmissionsTargets,
+  collectSelectionEmissions,
   computeProjections,
+  computeSelectionSync,
   elementSyncParams,
   emissionScope,
   emissionsSignature,
   isFilterKey,
+  isSelectionKey,
   keyWithoutOp,
   nextEchoState,
   projectEmissions,
   publishedEmissions,
-  seedProjected
+  seedProjected,
+  selectionEmissionsState
 } from '@/utils/emissions'
 import type { EchoState, ElementSyncParams } from '@/utils/emissions'
 import type { ApplicationElement, DashboardElement, DashboardSection, FormElement, SyncParams, TablePreviewElement } from '@/config'
@@ -271,6 +275,114 @@ test.describe('colonnes du mode comparaison', () => {
     const sandboxed = { scope: 'application-b', prefix: '', syncParams: 'sandboxed' as const }
     const params = { 'application-a__d_ds1__id_eq': 'x', 'application-a_page': '2', 'application-b__c_q': 'z' }
     expect(publishedEmissions(params, [left, sandboxed])).toEqual({ _d_ds1__id_eq: 'x' })
+  })
+})
+
+test.describe('miroir de sélection entre colonnes', () => {
+  const left = { scope: 'application-map', prefix: '', syncParams: 'shared-filters' as const }
+  const right = { scope: 'c_application-map', prefix: 'c', syncParams: 'shared-filters' as const }
+  const state = (leftValue?: string, rightValue?: string): Record<string, Record<string, string>> => ({
+    'application-map': leftValue === undefined ? {} : { _d_ds1__id_eq: leftValue },
+    'c_application-map': rightValue === undefined ? {} : { _d_ds1__id_eq: rightValue }
+  })
+
+  test('isSelectionKey distingue sélection et état caméra/recherche', () => {
+    expect(isSelectionKey('_d_ds1__id_eq')).toBe(true)
+    expect(isSelectionKey('_d_ds1__id_in')).toBe(true)
+    expect(isSelectionKey('_c_codeCommune_in')).toBe(true)
+    expect(isSelectionKey('_d_ds1_annee_in')).toBe(true)
+    expect(isSelectionKey('_c_map_center')).toBe(false)
+    expect(isSelectionKey('_c_q')).toBe(false)
+    expect(isSelectionKey('_d_ds1_prix_gte')).toBe(false)
+  })
+
+  test('collecte uniquement les clés de sélection', () => {
+    expect(collectSelectionEmissions({
+      'application-map__d_ds1__id_eq': 'x',
+      'application-map__d_ds1_annee_in': '2024',
+      'application-map__c_map_center': '1,47',
+      'application-map_page': '2'
+    }, 'application-map')).toEqual({ _d_ds1__id_eq: 'x', _d_ds1_annee_in: '2024' })
+  })
+
+  test('ne synchronise que les changements, dernier changement gagnant', () => {
+    const params = {
+      view: 'compare',
+      'application-map__d_ds1__id_eq': 'B',
+      'c_application-map__d_ds1__id_eq': 'A'
+    }
+    expect(computeSelectionSync(params, [left, right], state('A', 'A'), new Set())).toEqual({
+      set: { 'c_application-map__d_ds1__id_eq': 'B' },
+      remove: []
+    })
+  })
+
+  test('synchronise aussi un changement venu de la colonne droite', () => {
+    const params = {
+      view: 'compare',
+      'application-map__d_ds1__id_eq': 'A',
+      'c_application-map__d_ds1__id_eq': 'C'
+    }
+    expect(computeSelectionSync(params, [left, right], state('A', 'A'), new Set())).toEqual({
+      set: { 'application-map__d_ds1__id_eq': 'C' },
+      remove: []
+    })
+  })
+
+  test('propage un effacement dans les deux sens', () => {
+    expect(computeSelectionSync({ view: 'compare', 'c_application-map__d_ds1__id_eq': 'A' }, [left, right], state('A', 'A'), new Set())).toEqual({
+      set: {},
+      remove: ['c_application-map__d_ds1__id_eq']
+    })
+    expect(computeSelectionSync({ view: 'compare', 'application-map__d_ds1__id_eq': 'A' }, [left, right], state('A', 'A'), new Set())).toEqual({
+      set: {},
+      remove: ['application-map__d_ds1__id_eq']
+    })
+  })
+
+  test('ne touche jamais une clé possédée par le dashboard (année, statique, période)', () => {
+    const params = {
+      view: 'compare',
+      'application-map__d_ds1_annee_in': '2025',
+      'c_application-map__d_ds1_annee_in': '2024'
+    }
+    expect(computeSelectionSync(params, [left, right], {
+      'application-map': { _d_ds1_annee_in: '2024' },
+      'c_application-map': { _d_ds1_annee_in: '2024' }
+    }, new Set(['_d_ds1_annee_in']))).toEqual({ set: {}, remove: [] })
+  })
+
+  test('laisse la caméra et la recherche dans leur colonne', () => {
+    const params = {
+      view: 'compare',
+      'application-map__c_map_center': '2,48',
+      'c_application-map__c_map_center': '1,47',
+      'application-map__c_q': 'a',
+      'c_application-map__c_q': 'b'
+    }
+    expect(computeSelectionSync(params, [left, right], {
+      'application-map': { _c_map_center: '1,47', _c_q: 'x' },
+      'c_application-map': { _c_map_center: '1,47', _c_q: 'y' }
+    }, new Set())).toEqual({ set: {}, remove: [] })
+  })
+
+  test('ignore un élément non partagé', () => {
+    const sandboxed = { scope: 'application-map', prefix: '', syncParams: 'sandboxed' as const }
+    const params = { view: 'compare', 'application-map__d_ds1__id_eq': 'B', 'c_application-map__d_ds1__id_eq': 'A' }
+    expect(computeSelectionSync(params, [sandboxed, right], state('A', 'A'), new Set())).toEqual({ set: {}, remove: [] })
+  })
+
+  test('selectionEmissionsState ne garde que les éléments partagés', () => {
+    const sandboxed = { scope: 'application-sandbox', prefix: '', syncParams: 'sandboxed' as const }
+    const params = {
+      'application-map__d_ds1__id_eq': 'x',
+      'c_application-map__d_ds1__id_eq': 'x',
+      'application-sandbox__d_ds1__id_eq': 'y'
+    }
+    expect(selectionEmissionsState(params, [left, right, sandboxed])).toEqual({
+      'application-map': { _d_ds1__id_eq: 'x' },
+      'c_application-map': { _d_ds1__id_eq: 'x' }
+    })
   })
 })
 
