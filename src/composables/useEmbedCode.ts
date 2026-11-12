@@ -7,10 +7,10 @@
  * component layer).
  */
 import type { Ref } from 'vue'
+import type { DashboardElement } from '@/config'
 import { useConfig } from './config'
 import { useUiNotif, getErrorMsg } from '@data-fair/lib-vue/ui-notif.js'
 import { embedCode } from '@/utils/element-url'
-import type { DashboardElement } from '@/config'
 
 export const useEmbedCode = (element: Ref<DashboardElement>, t: (key: string) => string) => {
   const { application, accessKey } = useConfig()

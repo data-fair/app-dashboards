@@ -1,11 +1,11 @@
+import type { DashboardConfig, DashboardFilter } from '@/config'
+import type { Field } from '@data-fair/lib-common-types/application/index.js'
 import './helpers/dom'
 import { test, expect } from '@playwright/test'
 import { ref, nextTick, watch } from 'vue'
 import { createUiNotif } from '@data-fair/lib-vue/ui-notif.js'
 import { useFiltersValues } from '@/composables/useFiltersValues'
 import reactiveSearchParams from '@data-fair/lib-vue/reactive-search-params-global.js'
-import type { DashboardConfig, DashboardFilter } from '@/config'
-import type { Field } from '@data-fair/lib-common-types/application/index.js'
 import { FetchStub } from './helpers/fetch-mock'
 import { probe, unmountProbes } from './helpers/probe'
 import { settle } from './helpers/spy'
@@ -51,14 +51,14 @@ test.describe('useFiltersValues', () => {
     for (const key of Object.keys(reactiveSearchParams)) delete reactiveSearchParams[key]
   })
 
-  test('émet { keys: [] } sans dataset', async () => {
+  test('emits { keys: [] } without dataset', async () => {
     const { values } = setup(makeState())
     await nextTick()
     await settle()
     expect(values.value).toEqual({ keys: [] })
   })
 
-  test('sérialise un filtre actif simple sans appel /values', async () => {
+  test('serializes a simple active filter without /values call', async () => {
     reactiveSearchParams._d_ds1_an_in = '2020'
     const state = makeState({
       filters: ref([{ labelField: 'an' }]),
@@ -75,7 +75,7 @@ test.describe('useFiltersValues', () => {
     expect(valuesCalls()).toHaveLength(0)
   })
 
-  test('résout les champs associés via /values et les sérialise avec le mirror concept', async () => {
+  test('resolves the associated fields via /values and serializes them with the concept mirror', async () => {
     reactiveSearchParams._d_ds1_libelle_in = '"X"'
     fetchStub.on('/values/code', { json: ['c1', 'c2'] })
     const state = makeState({
@@ -98,7 +98,7 @@ test.describe('useFiltersValues', () => {
     })
   })
 
-  test('transmet les staticFilters à la résolution /values', async () => {
+  test('forwards the staticFilters to the /values resolution', async () => {
     reactiveSearchParams._d_ds1_libelle_in = '"X"'
     fetchStub.on('/values/code', { json: ['c1'] })
     const state = makeState({
@@ -122,7 +122,7 @@ test.describe('useFiltersValues', () => {
     })
   })
 
-  test('fusionne les staticFilters (clés dataset-scopées + mirror concept)', async () => {
+  test('merges the staticFilters (dataset-scoped keys + concept mirror)', async () => {
     const state = makeState({
       config: ref({ staticFilters: [{ type: 'in', field: 'dep', values: ['75'] }] }),
       filters: ref([]),
@@ -140,7 +140,7 @@ test.describe('useFiltersValues', () => {
     })
   })
 
-  test('émet période et géo quand activées', async () => {
+  test('emits period and geo when enabled', async () => {
     reactiveSearchParams.period = '2020-01-01,2020-12-31'
     reactiveSearchParams.radius = '5'
     const state = makeState({
@@ -159,7 +159,7 @@ test.describe('useFiltersValues', () => {
     })
   })
 
-  test('applicationValues est une copie de values', async () => {
+  test('applicationValues is a copy of values', async () => {
     reactiveSearchParams._d_ds1_an_in = '2020'
     const state = makeState({
       filters: ref([{ labelField: 'an' }]),
@@ -171,7 +171,7 @@ test.describe('useFiltersValues', () => {
     expect(applicationValues.value).toEqual({ ...values.value })
   })
 
-  test('applicationValues retire le préfixe de colonne compare sur les clés dataset', async () => {
+  test('applicationValues strips the compare column prefix from the dataset keys', async () => {
     reactiveSearchParams.c_d_ds1_dep_in = '75'
     reactiveSearchParams.c_d_ds1_tx_gte = '10'
     const state = makeState({
@@ -182,8 +182,8 @@ test.describe('useFiltersValues', () => {
     const { values, applicationValues } = setup(state, undefined, 'c')
     await nextTick()
     await settle()
-    // Le dashboard conserve le préfixe de colonne dans ses propres valeurs
-    // (URL, embeds dataset)…
+    // The dashboard keeps the column prefix in its own values
+    // (URL, dataset embeds)…
     expect(values.value).toEqual({
       keys: ['dep', 'tx'],
       c_d_ds1_dep_in: '"75"',
@@ -191,7 +191,7 @@ test.describe('useFiltersValues', () => {
       c_d_ds1_tx_gte: '10',
       finalizedAt: 'F'
     })
-    // …mais les applications ne connaissent que les clés dé-préfixées.
+    // …but applications only know the unprefixed keys.
     expect(applicationValues.value).toEqual({
       keys: ['dep', 'tx'],
       _d_ds1_dep_in: '"75"',
@@ -201,7 +201,7 @@ test.describe('useFiltersValues', () => {
     })
   })
 
-  test('sérialise un filtre range slider en gte/lte sans appel /values', async () => {
+  test('serializes a range slider filter as gte/lte without /values call', async () => {
     reactiveSearchParams._d_ds1_tx_gte = '10'
     reactiveSearchParams._d_ds1_tx_lte = '20'
     const state = makeState({
@@ -223,7 +223,7 @@ test.describe('useFiltersValues', () => {
     })
   })
 
-  test('sérialise un range slider avec une seule borne', async () => {
+  test('serializes a range slider with a single bound', async () => {
     reactiveSearchParams._d_ds1_tx_lte = '25'
     const state = makeState({
       filters: ref([{ labelField: 'tx', slider: true }]),
@@ -239,7 +239,7 @@ test.describe('useFiltersValues', () => {
     })
   })
 
-  test('relance la recompute quand le flag slider du filtre change (draft hot reload)', async () => {
+  test('re-runs the recompute when the filter\'s slider flag changes (draft hot reload)', async () => {
     reactiveSearchParams._d_ds1_tx_gte = '10'
     reactiveSearchParams._d_ds1_tx_lte = '20'
     const filters = ref<DashboardFilter[]>([{ labelField: 'tx', slider: true }])
@@ -260,8 +260,8 @@ test.describe('useFiltersValues', () => {
       finalizedAt: 'F'
     })
 
-    // Bascule du slider → le flag change, la recompute doit repartir et les
-    // bornes gte/lte doivent disparaître du broadcast.
+    // Slider toggle → the flag changes, the recompute must restart and the
+    // gte/lte bounds must disappear from the broadcast.
     filters.value = [{ labelField: 'tx' }]
     await nextTick()
     await settle()
@@ -269,7 +269,7 @@ test.describe('useFiltersValues', () => {
     expect(values.value).toEqual({ keys: [], finalizedAt: 'F' })
   })
 
-  test('la sélection dynamique l\'emporte sur le static in du même champ', async () => {
+  test('the dynamic selection wins over the static in on the same field', async () => {
     reactiveSearchParams._d_ds1_type_in = '"a"'
     fetchStub.on('/values/type', { json: ['a'] })
     const state = makeState({
@@ -291,7 +291,7 @@ test.describe('useFiltersValues', () => {
     })
   })
 
-  test('relaie les filtres reçus de la page sans filtre configuré', async () => {
+  test('relays the filters received from the page without configured filter', async () => {
     reactiveSearchParams._c_codeCommune_in = '86222'
     const state = makeState({
       dataset: ref({ id: 'ds1', href: 'https://x/ds1', finalizedAt: 'F' })
@@ -312,7 +312,7 @@ test.describe('useFiltersValues', () => {
     expect(fetchStub.calls).toHaveLength(0)
   })
 
-  test('la sélection dynamique l\'emporte sur un filtre reçu du même concept', async () => {
+  test('the dynamic selection wins over a received filter of the same concept', async () => {
     reactiveSearchParams._c_codeCommune_in = '86222'
     reactiveSearchParams._d_ds1_type_in = '"a"'
     fetchStub.on('/values/type', { json: ['a'] })
@@ -332,7 +332,7 @@ test.describe('useFiltersValues', () => {
     })
   })
 
-  test('relance la recompute quand un filtre reçu change (sync sans reload)', async () => {
+  test('re-runs the recompute when a received filter changes (sync without reload)', async () => {
     reactiveSearchParams._c_codeCommune_in = '86222'
     const { values, loading } = setup(makeState({
       dataset: ref({ id: 'ds1', href: 'https://x/ds1' })
@@ -352,7 +352,7 @@ test.describe('useFiltersValues', () => {
     expect(values.value._c_codeCommune_in).toBe('86194')
   })
 
-  test('relaie les filtres dataset-scopés et concept reçus, ignore les marqueurs hérités', async () => {
+  test('relays the received dataset-scoped and concept filters, ignores legacy markers', async () => {
     reactiveSearchParams._c_codeCommune_in = '86222'
     reactiveSearchParams._s_codeCommune = 'app_sankey'
     reactiveSearchParams._d_autre_dep_in = '75'
@@ -371,7 +371,7 @@ test.describe('useFiltersValues', () => {
     expect(applicationValues.value).toEqual({ ...values.value })
   })
 
-  test('une clé dataset-scopée reçue du dataset racine compte dans les filtres actifs', async () => {
+  test('a received dataset-scoped key of the root dataset counts in the active filters', async () => {
     reactiveSearchParams._d_ds1_type_in = '"a"'
     const state = makeState({
       config: ref({ datasets: [{ id: 'ds1' }] }),

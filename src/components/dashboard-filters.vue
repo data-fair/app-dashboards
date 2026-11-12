@@ -10,6 +10,7 @@
  *   `useFiltersValues`.
  * - Renders the period picker and the address filter (if enabled in config).
  */
+import type { FiltersValues, ApplicationFiltersValues } from '@/utils/filters'
 import { computed, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import reactiveSearchParams from '@data-fair/lib-vue/reactive-search-params-global.js'
@@ -19,7 +20,6 @@ import { useConfig } from '@/composables/config'
 import { useFiltersValues } from '@/composables/useFiltersValues'
 import DashboardFilterItem from './dashboard-filter-item.vue'
 import DateRangeFilter from './date-range-filter.vue'
-import type { FiltersValues, ApplicationFiltersValues } from '@/utils/filters'
 
 const props = defineProps<{
   prefix?: string

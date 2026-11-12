@@ -5,13 +5,13 @@
  * (sm/md/lg/xl column spans, ordering classes) is computed by the
  * `computeSectionBreakpoints` utility.
  */
+import type { DashboardSection } from '@/config'
+import type { FiltersValues, ApplicationFiltersValues } from '@/utils/filters'
 import { computed } from 'vue'
 import { useDisplay } from 'vuetify'
-import type { DashboardSection } from '@/config'
 import { useConfig } from '@/composables/config'
 import { computeSectionBreakpoints, dedupeKeys, elementKey, resolveRowHeight } from '@/utils/layout'
 import { sectionTitleDefaults } from '@/utils/title-style'
-import type { FiltersValues, ApplicationFiltersValues } from '@/utils/filters'
 import dashboardColumn from './dashboard-column.vue'
 import dTitle from './d-title.vue'
 

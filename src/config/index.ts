@@ -39,12 +39,12 @@ export interface DashboardFilter {
   forceOneValue?: boolean
   startValue?: string
   showAllValues?: boolean
-  /** Rend le filtre comme un range slider (champ numérique uniquement). */
+  /** Renders the filter as a range slider (numeric field only). */
   slider?: boolean
 }
 
 export interface DashboardStaticFilter {
-  /** `nin` est la forme historique de `out`, normalisée au runtime. */
+  /** `nin` is the legacy form of `out`, normalized at runtime. */
   type: 'in' | 'interval' | 'out' | 'nin' | 'starts' | 'exists' | 'notExists'
   field: string
   values?: string[]
@@ -58,14 +58,14 @@ export type DashboardElementType = 'tablePreview' | 'download' | 'application' |
 export type DashboardElementWidth = 1 | 2 | 3
 
 /**
- * Synchronisation d'un élément avec le dashboard et les autres visus, alignée
- * sur les modes `syncParams` d'une page de portail :
- *  - `shared-filters` (défaut) : ses filtres/sélections sont reprojetés dans le
- *    namespace propre (`_c*`/`_d*`) et relayés aux autres visus ;
- *  - `sandboxed` : il garde son état dans son canal privé, rien n'est partagé ;
- *  - `none` : aucun canal privé, son état n'est pas conservé, rien n'est partagé.
- * Dans tous les cas il reçoit les filtres du dashboard (`ignoreFilters` n'existe
- * plus).
+ * Synchronization of an element with the dashboard and the other visus, aligned
+ * on the `syncParams` modes of a portal page:
+ *  - `shared-filters` (default): its filters/selections are projected into the
+ *    clean namespace (`_c*`/`_d*`) and relayed to the other visus;
+ *  - `sandboxed`: it keeps its state in its private channel, nothing is shared;
+ *  - `none`: no private channel, its state is not kept, nothing is shared.
+ * In every case it receives the dashboard filters (`ignoreFilters` no longer
+ * exists).
  */
 export type SyncParams = 'none' | 'sandboxed' | 'shared-filters'
 
@@ -96,9 +96,9 @@ export interface BaseElement {
 }
 
 /**
- * Interactions de la vue table intégrée (`/embed/dataset/<id>/table`) que
- * l'on peut interdire. Alignées sur `allInteractions` de data-fair ; `agent`
- * et `fullscreen` en sont absents car jamais rendus dans un embed.
+ * Interactions of the embedded table view (`/embed/dataset/<id>/table`) that
+ * can be forbidden. Aligned on data-fair's `allInteractions`; `agent`
+ * and `fullscreen` are absent as they are never rendered in an embed.
  */
 export type TableInteraction = 'count' | 'search' | 'filters' | 'pagination' | 'sort' | 'cells' | 'select-cols' | 'fix-cols' | 'display' | 'download'
 
@@ -108,7 +108,7 @@ export interface TablePreviewElement extends BaseElement {
   dataset?: DashboardDataset
   fields?: string[]
   display?: 'table' | 'table-dense' | 'list'
-  /** Déprécié : prioritaire sur `hideInteractions`, conservé pour les configs existantes. */
+  /** Deprecated: takes precedence over `hideInteractions`, kept for existing configs. */
   noInteractions?: boolean
   hideInteractions?: TableInteraction[]
   pagination?: boolean

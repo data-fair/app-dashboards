@@ -2,17 +2,17 @@ import { test, expect } from '@playwright/test'
 import { parseSyncParams, getChildSrc, getParentUrl } from '@data-fair/frame/lib/utils/sync-params.js'
 
 /**
- * Contrat du canal privé par élément (`sync-params="*:<scope>_"`), celui sur
- * lequel repose tout le relais des filtres émis par les visus embarqués.
+ * Contract of the private per-element channel (`sync-params="*:<scope>_"`), the one
+ * the whole relay of the filters emitted by embedded visus relies on.
  *
- * Ces assertions figent le comportement de `@data-fair/frame` : une montée de
- * version qui casserait l'injection, la purge ou l'anti-écho doit faire échouer
- * la suite (contrat relevé en 0.19 : une valeur égale à celle de la src est
- * retirée de l'URL du dashboard, cf. « anti-écho »). Les patterns partagés
- * (`_c*`, `_d*`) sont volontairement exclus : ils injectent les clés du parent
- * dans l'enfant et suppriment de l'URL du dashboard toute clé absente de
- * l'enfant qui en émet (ils casseraient la séparation des colonnes du mode
- * comparaison).
+ * These assertions pin the behavior of `@data-fair/frame`: a version upgrade
+ * that would break the injection, the purge or the anti-echo must make the suite
+ * fail (contract observed in 0.19: a value equal to the src one is removed
+ * from the dashboard URL, see "anti-echo"). Shared patterns
+ * (`_c*`, `_d*`) are deliberately excluded: they inject the parent's keys
+ * into the child and remove from the dashboard URL every key missing from
+ * the emitting child (they would break the column separation of the compare
+ * view).
  */
 const scope = parseSyncParams('*:application-a_')
 const src = 'http://host/data-fair/app/A?d-frame=true&finalizedAt=F'
@@ -27,33 +27,33 @@ const parentHref = [
 const queryOf = (url: string | URL): Record<string, string> =>
   Object.fromEntries(new URL(url).searchParams.entries())
 
-test.describe('canal privé du visu (sync-params *:<scope>_)', () => {
-  test('descente : seules les clés de son propre scope reviennent dé-namespacées', () => {
+test.describe('private channel of the visu (sync-params *:<scope>_)', () => {
+  test('down: only the keys of its own scope come back de-namespaced', () => {
     const query = queryOf(getChildSrc(src, parentHref, scope, null)!)
-    // Son propre état lui est renvoyé, dé-namespacé.
+    // Its own state is sent back to it, de-namespaced.
     expect(query._c_codeCommune_in).toBe('86194')
-    // Les clés du dashboard et des autres visus ne sont pas injectées : la src
-    // calculée par le dashboard est la seule source des filtres.
+    // The keys of the dashboard and of the other visus are not injected: the src
+    // computed by the dashboard is the only source of the filters.
     expect(query._d_ds1_dep_in).toBeUndefined()
     expect(query._c_q).toBeUndefined()
   })
 
-  test('montée : ses clés sortent namespacées et celles du dashboard sont préservées', () => {
+  test('up: its keys go out namespaced and the dashboard ones are preserved', () => {
     const childHref = `${src}&_c_q=velo`
     const query = queryOf(getParentUrl(src, childHref, parentHref, scope, null)!)
     expect(query['application-a__c_q']).toBe('velo')
-    // Aucune clé propre n'est écrite par l'enfant : la projection s'en charge.
+    // No clean key is written by the child: the projection takes care of it.
     expect(query._c_q).toBeUndefined()
-    // Les clés du dashboard ne sont pas supprimées par cette montée.
+    // The dashboard keys are not removed by this upward sync.
     expect(query._d_ds1_dep_in).toBe('75')
     expect(query._c_codeCommune_in).toBe('86194')
     expect(query['application-b__c_q']).toBe('b')
   })
 
-  test('anti-écho : une clé identique à celle de la src n\'est pas conservée par le dashboard', () => {
-    // Contrat @data-fair/frame 0.19 : une valeur égale à celle de la src est
-    // retirée de l'URL du parent au lieu d'y être recopiée. Sans perte pour
-    // l'enfant : la valeur reste portée par la src de l'élément.
+  test('anti-echo: a key identical to the src one is not kept by the dashboard', () => {
+    // @data-fair/frame 0.19 contract: a value equal to the src one is
+    // removed from the parent URL instead of being copied there. No loss for
+    // the child: the value stays carried by the element's src.
     const query = queryOf(getParentUrl(
       'http://host/data-fair/app/A?d-frame=true&_c_codeCommune_in=86194',
       'http://host/data-fair/app/A?d-frame=true&_c_codeCommune_in=86194',
@@ -70,8 +70,8 @@ test.describe('canal privé du visu (sync-params *:<scope>_)', () => {
     )!)._c_codeCommune_in).toBe('86194')
   })
 
-  test('purge bornée à son scope : une clé qu\'il supprime disparaît, pas celles du dashboard', () => {
-    // L'enfant avait émis une clé puis l'a effacée : l'URL du dashboard la perd.
+  test('purge bounded to its scope: a key it removes disappears, not the dashboard ones', () => {
+    // The child had emitted a key then cleared it: the dashboard URL loses it.
     const parentWithStale = `${parentHref}&application-a__c_q=velo`
     const childHref = 'http://host/data-fair/app/A?d-frame=true&_c_codeCommune_in=86194'
     const query = queryOf(getParentUrl(src, childHref, parentWithStale, scope, null)!)
@@ -80,9 +80,9 @@ test.describe('canal privé du visu (sync-params *:<scope>_)', () => {
     expect(query._c_codeCommune_in).toBe('86194')
   })
 
-  // Deux éléments identiques dans deux lignes sont dédupliqués avec un `#n`
-  // (utils/layout.ts) : le scope doit rester utilisable tel quel dans l'URL.
-  test('un scope contenant # fonctionne (clé dédupliquée)', () => {
+  // Two identical elements in two rows are deduplicated with a `#n`
+  // (utils/layout.ts): the scope must stay usable as-is in the URL.
+  test('a scope containing # works (deduplicated key)', () => {
     const deduped = parseSyncParams('*:application-a#1_')
     const parent = 'http://host/app/dashboard?application-a%231__c_q=a'
     expect(queryOf(getChildSrc(src, parent, deduped, null)!)._c_q).toBe('a')

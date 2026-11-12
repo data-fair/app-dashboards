@@ -13,10 +13,12 @@
  *    at emission, see `useFiltersValues`) for `application` elements. The
  *    application picks the filters that target its own dataset.
  */
-import { computed, ref, type ComputedRef, type Ref } from 'vue'
+import type { ComputedRef, Ref } from 'vue'
+import type { DashboardElement, DashboardDataset } from '@/config'
+import type { FiltersValues, ApplicationFiltersValues } from '@/utils/filters'
+import { computed, ref } from 'vue'
 import reactiveSearchParams from '@data-fair/lib-vue/reactive-search-params-global.js'
 import { useFetch } from '@data-fair/lib-vue/fetch.js'
-import type { DashboardElement, DashboardDataset } from '@/config'
 import {
   tableDFrameSrc,
   downloadDFrameSrc,
@@ -28,7 +30,6 @@ import {
   appendThemeParams,
   themeOverrideParams
 } from '@/utils/element-url'
-import type { FiltersValues, ApplicationFiltersValues } from '@/utils/filters'
 import { useConfig } from './config'
 
 export interface UseElementUrlsOptions {

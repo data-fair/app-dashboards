@@ -10,13 +10,13 @@
  * autocomplete is replaced by a `v-range-slider` bound to the same
  * `useFilterState` value (a `[min, max]` pair stored as `_gte`/`_lte` keys).
  */
+import type { DashboardFilter } from '@/config'
+import type { Field } from '@data-fair/lib-common-types/application/index.js'
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import reactiveSearchParams from '@data-fair/lib-vue/reactive-search-params-global.js'
 import { useConfig } from '@/composables/config'
 import { useFilterState } from '@/composables/useFilterState'
-import type { DashboardFilter } from '@/config'
-import type { Field } from '@data-fair/lib-common-types/application/index.js'
 import { datasetFilterKey } from '@/utils/dataset-filter'
 
 const props = defineProps<{

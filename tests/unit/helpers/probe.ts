@@ -1,6 +1,7 @@
 // Probe component: mounts a composable inside a real Vue app so that inject()
 // (useConfig, useUiNotif) and lifecycle-bound effects work as in production.
-import { createApp, defineComponent, h, type App } from 'vue'
+import type { App } from 'vue'
+import { createApp, defineComponent, h } from 'vue'
 
 const mounted: App[] = []
 

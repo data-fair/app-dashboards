@@ -5,9 +5,9 @@
  * in fixed rows; in auto rows it is sized by the embedded application itself
  * (df:overflow height report) or falls back on the d-frame aspect ratio.
  */
+import type { DashboardElement } from '@/config'
 import { computed } from 'vue'
 import { useConfig } from '@/composables/config'
-import type { DashboardElement } from '@/config'
 
 const props = defineProps<{
   element: DashboardElement
@@ -16,31 +16,31 @@ const props = defineProps<{
   height: number | undefined
   actionsHeight: number | undefined
   /**
-   * Canal privé de l'élément : tout ce que le visu écrit dans son URL remonte
-   * namespacé dans l'URL du dashboard (`<scope>_<clé>`), et lui est renvoyé
-   * dé-namespacé. Le dashboard reprojette ensuite les clés `_c*`/`_d*` des
-   * éléments en mode `shared-filters` vers le namespace propre
-   * (cf. useEmissionsProjection).
+   * Private channel of the element: everything the visu writes in its URL goes
+   * up namespaced into the dashboard URL (`<scope>_<key>`), and is sent back to
+   * it de-namespaced. The dashboard then projects the `_c*`/`_d*` keys of the
+   * elements in `shared-filters` mode into the clean namespace
+   * (see useEmissionsProjection).
    */
   scope?: string
 }>()
 
 const { dFrameAdapter } = useConfig()
 
-// `*:<scope>_` est le seul pattern sûr ici : il n'injecte dans l'enfant que ses
-// propres clés et ne supprime, dans l'URL du dashboard, que les siennes. Les
-// patterns partagés (`_c*`…) casseraient la séparation des colonnes du mode
-// comparaison (cf. @data-fair/frame utils/sync-params). Un élément en mode
-// `none` n'a aucun canal : son état n'est pas conservé.
+// `*:<scope>_` is the only safe pattern here: it injects into the child only its
+// own keys and only removes its own from the dashboard URL. Shared
+// patterns (`_c*`…) would break the column separation of the compare
+// view (see @data-fair/frame utils/sync-params). An element in `none` mode
+// has no channel: its state is not kept.
 const syncParams = computed(() => {
   if (!props.scope) return undefined
   if ('syncParams' in props.element && props.element.syncParams === 'none') return undefined
   return `*:${props.scope}_`
 })
 
-// Note : La fuite de watchers côté @data-fair/frame a été corrigée dans 0.18.7
-// (unregister de onStateChange lors du disconnectedCallback). Les clés stables
-// (utils/layout.ts → elementKey) évitent également les recréations inutiles.
+// Note: the watcher leak in @data-fair/frame was fixed in 0.18.7
+// (onStateChange unregistered in disconnectedCallback). Stable keys
+// (utils/layout.ts → elementKey) also avoid needless re-creations.
 
 const availableHeight = computed(() => {
   if (props.height && props.height > 0) {
@@ -57,10 +57,10 @@ const containerStyle = computed(() => {
   return ''
 })
 
-// En hauteur automatique, l'iframe se dimensionne par elle-même si elle remonte
-// sa hauteur (df:overflow / data-iframe-height), sinon repli sur le ratio d'aspect
-// par défaut du <d-frame> (1, 4/3, 16/9 ou 21/9 selon la largeur).
-// En hauteur fixe, l'aspect ratio est désactivé pour laisser la hauteur explicite s'appliquer.
+// With automatic height, the iframe sizes itself if it reports its height
+// (df:overflow / data-iframe-height), otherwise falls back on the default aspect
+// ratio of the <d-frame> (1, 4/3, 16/9 or 21/9 depending on the width).
+// With fixed height, the aspect ratio is disabled so the explicit height applies.
 const aspectRatio = computed(() => {
   if (availableHeight.value) return undefined
   return ''

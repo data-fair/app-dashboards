@@ -7,11 +7,11 @@
  * Extracted from `dashboard.vue` so each compare-view column owns its own
  * tab state.
  */
-import { computed, ref } from 'vue'
 import type { DashboardSection } from '@/config'
+import type { FiltersValues, ApplicationFiltersValues } from '@/utils/filters'
+import { computed, ref } from 'vue'
 import { useConfig } from '@/composables/config'
 import { sectionTitleDefaults } from '@/utils/title-style'
-import type { FiltersValues, ApplicationFiltersValues } from '@/utils/filters'
 import dashboardSection from './dashboard-section.vue'
 import dTitle from './d-title.vue'
 

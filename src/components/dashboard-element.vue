@@ -5,6 +5,8 @@
  * `useElementUrls` which encapsulates the d-frame src, capture URL, sources
  * URL and description URL.
  */
+import type { ApplicationElement, DashboardDataset, DashboardDescriptionPosition, DashboardElement } from '@/config'
+import type { FiltersValues, ApplicationFiltersValues } from '@/utils/filters'
 import { computed, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useElementSize } from '@vueuse/core'
@@ -16,15 +18,12 @@ import {
   isTablePreviewElement as _isTablePreview,
   isDownloadElement as _isDownload,
   isFormElement as _isForm,
-  isTextElement,
-  type DashboardDescriptionPosition
-  , DashboardElement, DashboardDataset, ApplicationElement
+  isTextElement
 } from '@/config'
 import ElementDFrame from './element-dframe.vue'
 import ElementActions from './element-actions.vue'
 import ElementDescription from './element-description.vue'
 import { computeMandatoryFilterIssues } from '@/utils/filters'
-import type { FiltersValues, ApplicationFiltersValues } from '@/utils/filters'
 import { emissionScope } from '@/utils/emissions'
 
 const props = defineProps<{
@@ -87,11 +86,11 @@ const missingFilterText = computed(() => {
   return t(key, { labels: missingFilterLabels.value })
 })
 
-// Canal privé de l'élément (remontée de son état) : la clé d'instance encode le
-// chemin de colonnes, le préfixe sépare les deux colonnes du mode comparaison.
-// shortcut: deux éléments identiques (même application, même dataset) dans deux
-// lignes partagent ce namespace et donc leur état ; dédupliquer globalement le
-// jour où le cas se présente.
+// Private channel of the element (reports its state): the instance key encodes
+// the column path, the prefix separates the two columns of the compare view.
+// shortcut: two identical elements (same application, same dataset) in two
+// rows share this namespace and therefore their state; deduplicate globally
+// when the case shows up.
 const scope = computed(() => props.instanceKey
   ? emissionScope(props.prefix || '', props.instanceKey)
   : undefined)

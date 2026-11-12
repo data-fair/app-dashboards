@@ -15,6 +15,7 @@
  * on one map selects the same entity on the other side while each column keeps
  * its own filters (notably its year).
  */
+import type { EchoState } from '@/utils/emissions'
 import { computed, ref, watch } from 'vue'
 import reactiveSearchParams from '@data-fair/lib-vue/reactive-search-params-global.js'
 import { useConfig } from './config'
@@ -27,7 +28,6 @@ import {
   seedProjected,
   selectionEmissionsState
 } from '@/utils/emissions'
-import type { EchoState } from '@/utils/emissions'
 import { ownedFilterKeys } from '@/utils/filters'
 
 export const useEmissionsProjection = (): void => {

@@ -1,3 +1,5 @@
+import type { DashboardConfig, DashboardFilter } from '@/config'
+import type { Field } from '@data-fair/lib-common-types/application/index.js'
 import { test, expect } from '@playwright/test'
 import {
   collectActiveFields,
@@ -14,8 +16,6 @@ import {
   buildValuesLabelsUrl,
   serializeFiltersValues
 } from '@/utils/filters'
-import type { DashboardConfig, DashboardFilter } from '@/config'
-import type { Field } from '@data-fair/lib-common-types/application/index.js'
 
 const fieldWithConcept = (key: string, concept: string): Field =>
   ({ key, title: key, 'x-concept': { id: concept, title: concept } }) as Field
@@ -24,7 +24,7 @@ const plainField = (key: string): Field => ({ key, title: key }) as Field
 test.describe('collectStaticFilterParams', () => {
   const fields = { dep: fieldWithConcept('dep', 'codeDepartement'), an: plainField('an') }
 
-  test('build les clés dataset-scopées et les mirrore en _c_<concept>_<op>', () => {
+  test('builds the dataset-scoped keys and mirrors them as _c_<concept>_<op>', () => {
     const config = { staticFilters: [{ type: 'in', field: 'dep', values: ['75', '92'] }] }
     expect(collectStaticFilterParams(config as DashboardConfig, 'ds1', '', fields)).toEqual({
       _d_ds1_dep_in: '75,92',
@@ -32,7 +32,7 @@ test.describe('collectStaticFilterParams', () => {
     })
   })
 
-  test('gère nin avec mirror concept', () => {
+  test('handles nin with concept mirror', () => {
     const config = { staticFilters: [{ type: 'nin', field: 'dep', values: ['75'] }] }
     expect(collectStaticFilterParams(config as DashboardConfig, 'ds1', '', fields)).toEqual({
       _d_ds1_dep_nin: '75',
@@ -40,7 +40,7 @@ test.describe('collectStaticFilterParams', () => {
     })
   })
 
-  test('gère interval avec gte/lte et mirrors concept', () => {
+  test('handles interval with gte/lte and concept mirrors', () => {
     const config = { staticFilters: [{ type: 'interval', field: 'dep', minValue: '10', maxValue: '20' }] }
     expect(collectStaticFilterParams(config as DashboardConfig, 'ds1', '', fields)).toEqual({
       _d_ds1_dep_gte: '10',
@@ -50,7 +50,7 @@ test.describe('collectStaticFilterParams', () => {
     })
   })
 
-  test('gère interval borné d\'un seul côté', () => {
+  test('handles an interval bounded on one side only', () => {
     const config = { staticFilters: [{ type: 'interval', field: 'dep', minValue: '10' }] }
     expect(collectStaticFilterParams(config as DashboardConfig, 'ds1', '', fields)).toEqual({
       _d_ds1_dep_gte: '10',
@@ -58,14 +58,14 @@ test.describe('collectStaticFilterParams', () => {
     })
   })
 
-  test('pas de clé _c_ pour un champ sans concept', () => {
+  test('no _c_ key for a field without concept', () => {
     const config = { staticFilters: [{ type: 'in', field: 'an', values: ['2020'] }] }
     expect(collectStaticFilterParams(config as DashboardConfig, 'ds1', '', fields)).toEqual({
       _d_ds1_an_in: '2020'
     })
   })
 
-  test('pas de mirror concept pour nin/interval sur un champ sans concept', () => {
+  test('no concept mirror for nin/interval on a field without concept', () => {
     const config = {
       staticFilters: [
         { type: 'nin', field: 'an', values: ['2020'] },
@@ -79,7 +79,7 @@ test.describe('collectStaticFilterParams', () => {
     })
   })
 
-  test('préfixe de colonne appliqué aux clés dataset-scopées mais pas aux clés concept', () => {
+  test('column prefix applied to dataset-scoped keys but not to concept keys', () => {
     const config = { staticFilters: [{ type: 'in', field: 'dep', values: ['75'] }] }
     expect(collectStaticFilterParams(config as DashboardConfig, 'ds1', 'c', fields)).toEqual({
       c_d_ds1_dep_in: '75',
@@ -87,23 +87,23 @@ test.describe('collectStaticFilterParams', () => {
     })
   })
 
-  test('renvoie {} sans staticFilters', () => {
+  test('returns {} without staticFilters', () => {
     expect(collectStaticFilterParams({} as DashboardConfig, 'ds1', '', fields)).toEqual({})
   })
 
-  test('ignore un type de staticFilter inconnu', () => {
+  test('ignores an unknown staticFilter type', () => {
     const config = { staticFilters: [{ type: 'eq', field: 'dep', values: ['75'] }] }
     expect(collectStaticFilterParams(config as DashboardConfig, 'ds1', '', fields)).toEqual({})
   })
 
-  test('omet un filtre sans valeurs (sémantique filters2params)', () => {
+  test('omits a filter without values (filters2params semantics)', () => {
     const config = { staticFilters: [{ type: 'in', field: 'dep' }] }
     expect(collectStaticFilterParams(config as DashboardConfig, 'ds1', '', fields)).toEqual({})
     const configNin = { staticFilters: [{ type: 'nin', field: 'dep' }] }
     expect(collectStaticFilterParams(configNin as DashboardConfig, 'ds1', '', fields)).toEqual({})
   })
 
-  test('gère un interval borné par le haut uniquement, et un interval vide', () => {
+  test('handles an interval bounded from above only, and an empty interval', () => {
     const config = { staticFilters: [{ type: 'interval', field: 'dep', maxValue: '20' }] }
     expect(collectStaticFilterParams(config as DashboardConfig, 'ds1', '', fields)).toEqual({
       _d_ds1_dep_lte: '20',
@@ -112,7 +112,7 @@ test.describe('collectStaticFilterParams', () => {
     expect(collectStaticFilterParams({ staticFilters: [{ type: 'interval', field: 'dep' }] } as DashboardConfig, 'ds1', '', fields)).toEqual({})
   })
 
-  test('gère starts avec mirror concept, et sans valeur', () => {
+  test('handles starts with concept mirror, and without value', () => {
     const config = { staticFilters: [{ type: 'starts', field: 'dep', value: '75' }] }
     expect(collectStaticFilterParams(config as DashboardConfig, 'ds1', '', fields)).toEqual({
       _d_ds1_dep_starts: '75',
@@ -121,7 +121,7 @@ test.describe('collectStaticFilterParams', () => {
     expect(collectStaticFilterParams({ staticFilters: [{ type: 'starts', field: 'dep' }] } as DashboardConfig, 'ds1', '', fields)).toEqual({})
   })
 
-  test('gère exists et notExists avec la valeur conventionnelle espace', () => {
+  test('handles exists and notExists with the conventional space value', () => {
     const config = {
       staticFilters: [
         { type: 'exists', field: 'dep' },
@@ -137,7 +137,7 @@ test.describe('collectStaticFilterParams', () => {
 })
 
 test.describe('fieldConcept', () => {
-  test('extrait l\'id du concept, undefined sinon', () => {
+  test('extracts the concept id, undefined otherwise', () => {
     expect(fieldConcept(fieldWithConcept('dep', 'codeDepartement'))).toBe('codeDepartement')
     expect(fieldConcept(plainField('an'))).toBeUndefined()
     expect(fieldConcept(undefined)).toBeUndefined()
@@ -145,7 +145,7 @@ test.describe('fieldConcept', () => {
 })
 
 test.describe('isRangeFilter', () => {
-  test('vrai quand slider est activé', () => {
+  test('true when slider is enabled', () => {
     expect(isRangeFilter({ labelField: 'tx', slider: true } as any)).toBe(true)
     expect(isRangeFilter({ labelField: 'tx' } as any)).toBe(false)
   })
@@ -157,22 +157,22 @@ test.describe('collectActiveFields', () => {
     { labelField: 'equipement' }
   ]
 
-  test('collecte les champs ayant une valeur dans les params', () => {
+  test('collects the fields that have a value in the params', () => {
     const params = { _d_ds1_int_in: '1' }
     expect(collectActiveFields(filters as any, '', 'ds1', params)).toEqual(['int'])
   })
 
-  test('respecte le préfixe', () => {
+  test('honors the prefix', () => {
     const params = { c_d_ds1_int_in: '1' }
     expect(collectActiveFields(filters as any, 'c', 'ds1', params)).toEqual(['int'])
     expect(collectActiveFields(filters as any, '', 'ds1', params)).toEqual([])
   })
 
-  test('renvoie [] sans filters', () => {
+  test('returns [] without filters', () => {
     expect(collectActiveFields(undefined, '', 'ds1', {})).toEqual([])
   })
 
-  test('considère un filtre range actif quand une borne gte/lte est présente', () => {
+  test('considers a range filter active when a gte/lte bound is present', () => {
     const sliders = [{ labelField: 'tx', slider: true }]
     expect(collectActiveFields(sliders as any, '', 'ds1', { _d_ds1_tx_gte: '10' })).toEqual(['tx'])
     expect(collectActiveFields(sliders as any, '', 'ds1', { _d_ds1_tx_lte: '20' })).toEqual(['tx'])
@@ -180,7 +180,7 @@ test.describe('collectActiveFields', () => {
     expect(collectActiveFields(sliders as any, '', 'ds1', {})).toEqual([])
   })
 
-  test('un filtre range actif respecte le préfixe', () => {
+  test('an active range filter honors the prefix', () => {
     const sliders = [{ labelField: 'tx', slider: true }]
     expect(collectActiveFields(sliders as any, 'c', 'ds1', { c_d_ds1_tx_gte: '10' })).toEqual(['tx'])
     expect(collectActiveFields(sliders as any, '', 'ds1', { c_d_ds1_tx_gte: '10' })).toEqual([])
@@ -188,51 +188,51 @@ test.describe('collectActiveFields', () => {
 })
 
 test.describe('initDefaultFilterValues', () => {
-  test('initialise la valeur de départ simple', () => {
+  test('initializes the simple start value', () => {
     const params: Record<string, string> = {}
     initDefaultFilterValues([{ labelField: 'an', startValue: '2020' }], 'ds1', params)
     expect(params._d_ds1_an_in).toBe('2020')
   })
 
-  test('sérialise la valeur de départ multiple en CSV (chaque valeur entre guillemets)', () => {
+  test('serializes the multiple start value as CSV (each value quoted)', () => {
     const params: Record<string, string> = {}
     initDefaultFilterValues([{ labelField: 'an', startValue: '2020', multipleValues: true }], 'ds1', params)
-    // JSON.stringify(['2020']).slice(1,-1) → "2020" (citations conservées, relues par JSON.parse(`[...]`))
+    // JSON.stringify(['2020']).slice(1,-1) → "2020" (quotes kept, read back by JSON.parse(`[...]`))
     expect(params._d_ds1_an_in).toBe('"2020"')
   })
 
-  test('n\'écrase pas une valeur déjà présente', () => {
+  test('does not overwrite an already present value', () => {
     const params: Record<string, string> = { _d_ds1_an_in: '2019' }
     initDefaultFilterValues([{ labelField: 'an', startValue: '2020' }], 'ds1', params)
     expect(params._d_ds1_an_in).toBe('2019')
   })
 
-  test('ignore les filtres sans startValue', () => {
+  test('ignores filters without startValue', () => {
     const params: Record<string, string> = {}
     initDefaultFilterValues([{ labelField: 'an' }], 'ds1', params)
     expect(params).toEqual({})
   })
 
-  test('tolère undefined en filtres', () => {
+  test('tolerates undefined filters', () => {
     const params: Record<string, string> = {}
     initDefaultFilterValues(undefined, 'ds1', params)
     expect(params).toEqual({})
   })
 
-  test('tolère un datasetId indéfini (clé sans scope)', () => {
+  test('tolerates an undefined datasetId (unscoped key)', () => {
     const params: Record<string, string> = {}
     initDefaultFilterValues([{ labelField: 'an', startValue: '2020' }], undefined, params)
     expect(params._d__an_in).toBe('2020')
   })
 
-  test('préfixe la clé avec le prefix de colonne compare', () => {
+  test('prefixes the key with the compare column prefix', () => {
     const params: Record<string, string> = {}
     initDefaultFilterValues([{ labelField: 'an', startValue: '2020' }], 'ds1', params, 'c')
     expect(params.c_d_ds1_an_in).toBe('2020')
     expect(params._d_ds1_an_in).toBeUndefined()
   })
 
-  test('range slider: écrit min,max dans les clés gte/lte', () => {
+  test('range slider: writes min,max into the gte/lte keys', () => {
     const params: Record<string, string> = {}
     initDefaultFilterValues([{ labelField: 'tx', slider: true, startValue: '10,20' }], 'ds1', params)
     expect(params._d_ds1_tx_gte).toBe('10')
@@ -240,21 +240,21 @@ test.describe('initDefaultFilterValues', () => {
     expect(params._d_ds1_tx_in).toBeUndefined()
   })
 
-  test('range slider: tolère un seul côté et préfixe', () => {
+  test('range slider: tolerates a single side and prefix', () => {
     const params: Record<string, string> = {}
     initDefaultFilterValues([{ labelField: 'tx', slider: true, startValue: '10' }], 'ds1', params, 'c')
     expect(params.c_d_ds1_tx_gte).toBe('10')
     expect(params.c_d_ds1_tx_lte).toBeUndefined()
   })
 
-  test('range slider: n\'écrase pas les bornes déjà présentes', () => {
+  test('range slider: does not overwrite already present bounds', () => {
     const params: Record<string, string> = { _d_ds1_tx_gte: '5' }
     initDefaultFilterValues([{ labelField: 'tx', slider: true, startValue: '10,20' }], 'ds1', params)
     expect(params._d_ds1_tx_gte).toBe('5')
     expect(params._d_ds1_tx_lte).toBe('20')
   })
 
-  test('range slider: ignore sans startValue', () => {
+  test('range slider: ignored without startValue', () => {
     const params: Record<string, string> = {}
     initDefaultFilterValues([{ labelField: 'tx', slider: true }], 'ds1', params)
     expect(params).toEqual({})
@@ -262,7 +262,7 @@ test.describe('initDefaultFilterValues', () => {
 })
 
 test.describe('mergeAndSortItems', () => {
-  test('fusionne les valeurs sélectionnées absentes de la liste et trie par label', () => {
+  test('merges the selected values missing from the list and sorts by label', () => {
     const items = mergeAndSortItems(
       [{ value: 'b', label: 'Beta' }, { value: 'a', label: 'Alpha' }],
       '"c"',
@@ -271,23 +271,23 @@ test.describe('mergeAndSortItems', () => {
     expect(items.map(i => i.value)).toEqual(['a', 'b', 'c'])
   })
 
-  test('gère une sélection simple (non multiple)', () => {
+  test('handles a single (non multiple) selection', () => {
     const items = mergeAndSortItems([{ value: 'x', label: 'X' }], 'z', false)
     expect(items.map(i => i.value)).toEqual(['x', 'z'])
     expect(items.find(i => i.value === 'z')?.label).toBe('z')
   })
 
-  test('renvoie [] sans données', () => {
+  test('returns [] without data', () => {
     expect(mergeAndSortItems(null, undefined, true)).toEqual([])
     expect(mergeAndSortItems(undefined, undefined, false)).toEqual([])
   })
 
-  test('ne duplique pas une valeur déjà présente dans la liste', () => {
+  test('does not duplicate a value already in the list', () => {
     const items = mergeAndSortItems([{ value: 'a', label: 'Alpha' }], '"a"', true)
     expect(items).toEqual([{ value: 'a', label: 'Alpha' }])
   })
 
-  test('trie sans label (comparaison sur les valeurs brutes)', () => {
+  test('sorts without label (comparison on raw values)', () => {
     const items = mergeAndSortItems([{ value: 'z' }, { value: 'y' }], undefined, false)
     expect(items.map(i => i.value)).toEqual(['y', 'z'])
   })
@@ -296,7 +296,7 @@ test.describe('mergeAndSortItems', () => {
 test.describe('computeMandatoryFilterIssues', () => {
   const fields = { dep: fieldWithConcept('dep', 'codeDepartement') }
 
-  test('résout les labels des filtres manquants', () => {
+  test('resolves the labels of the missing filters', () => {
     const issues = computeMandatoryFilterIssues(
       { valueMandatory: true, mandatoryFilters: ['dep', 'an'] },
       [],
@@ -305,7 +305,7 @@ test.describe('computeMandatoryFilterIssues', () => {
     expect(issues).toEqual(['dep', 'an'])
   })
 
-  test('ignore les filtres satisfaits (dans keys)', () => {
+  test('ignores satisfied filters (in keys)', () => {
     const issues = computeMandatoryFilterIssues(
       { valueMandatory: true, mandatoryFilters: ['dep'] },
       ['dep'],
@@ -314,7 +314,7 @@ test.describe('computeMandatoryFilterIssues', () => {
     expect(issues).toEqual([])
   })
 
-  test('renvoie [] sans valueMandatory ou sans mandatoryFilters', () => {
+  test('returns [] without valueMandatory or without mandatoryFilters', () => {
     expect(computeMandatoryFilterIssues({}, ['dep'], fields)).toEqual([])
     expect(computeMandatoryFilterIssues({ valueMandatory: true }, [], fields)).toEqual([])
   })
@@ -324,31 +324,31 @@ test.describe('buildValuesLabelsUrl', () => {
   const filter = { labelField: 'equipement' }
   const config: DashboardConfig = {}
 
-  test('renvoie null sans dataset', () => {
+  test('returns null without dataset', () => {
     expect(buildValuesLabelsUrl(filter, undefined, 'https://x/href', config, '', undefined, undefined, {})).toBeNull()
     expect(buildValuesLabelsUrl(filter, 'ds1', undefined, config, '', undefined, undefined, {})).toBeNull()
   })
 
-  test('build l\'URL minimale', () => {
+  test('builds the minimal URL', () => {
     const url = buildValuesLabelsUrl(filter, 'ds1', 'https://x/href', config, '', undefined, undefined, {})!
     expect(url.startsWith('https://x/href/values-labels/equipement?')).toBe(true)
     expect(url).not.toContain('finalizedAt')
     expect(url).toContain('stringify=true')
   })
 
-  test('horodate l\'URL avec le finalizedAt du dataset', () => {
+  test('timestamps the URL with the dataset\'s finalizedAt', () => {
     const url = buildValuesLabelsUrl(filter, 'ds1', 'https://x/href', { datasets: [{ finalizedAt: 'F' }] } as DashboardConfig, '', undefined, undefined, {})!
     expect(url).toContain('finalizedAt=F')
   })
 
-  test('applique les autres filtres actifs', () => {
+  test('applies the other active filters', () => {
     const params = { _d_ds1_int_in: '1,2' }
     const cfg = { filters: [{ labelField: 'int' }, { labelField: 'equipement' }] }
     const url = buildValuesLabelsUrl(filter, 'ds1', 'https://x/href', cfg as DashboardConfig, '', undefined, undefined, params)!
     expect(url).toContain('int_in=1%2C2')
   })
 
-  test('applique les staticFilters (in/nin/interval)', () => {
+  test('applies the staticFilters (in/nin/interval)', () => {
     const cfg = {
       staticFilters: [
         { type: 'in', field: 'dep', values: ['75'] },
@@ -363,7 +363,7 @@ test.describe('buildValuesLabelsUrl', () => {
     expect(url).toContain('an_lte=2020')
   })
 
-  test('applique les staticFilters starts/exists/notExists', () => {
+  test('applies the staticFilters starts/exists/notExists', () => {
     const cfg = {
       staticFilters: [
         { type: 'starts', field: 'dep', value: '75' },
@@ -377,7 +377,7 @@ test.describe('buildValuesLabelsUrl', () => {
     expect(url).toContain('an_nexists=+')
   })
 
-  test('omet les staticFilters sans valeurs et garde les intervalles partiels', () => {
+  test('omits staticFilters without values and keeps partial intervals', () => {
     const cfg = {
       staticFilters: [
         { type: 'in', field: 'dep' },
@@ -393,24 +393,24 @@ test.describe('buildValuesLabelsUrl', () => {
     expect(url).toContain('jour_lte=2020')
   })
 
-  test('ajoute q=<search>* quand la recherche est active', () => {
+  test('adds q=<search>* when the search is active', () => {
     const url = buildValuesLabelsUrl(filter, 'ds1', 'https://x/href', config, '', 'vel', undefined, {})!
     expect(url).toContain('q=vel*')
   })
 
-  test('ajoute size=1000 avec showAllValues (pas de q)', () => {
+  test('adds size=1000 with showAllValues (no q)', () => {
     const url = buildValuesLabelsUrl({ ...filter, showAllValues: true }, 'ds1', 'https://x/href', config, '', 'vel', undefined, {})!
     expect(url).toContain('size=1000')
     expect(url).not.toContain('q=')
   })
 
-  test('ignore un type de staticFilter inconnu dans l\'URL', () => {
+  test('ignores an unknown staticFilter type in the URL', () => {
     const cfg = { staticFilters: [{ type: 'eq', field: 'dep', values: ['75'] }] }
     const url = buildValuesLabelsUrl(filter, 'ds1', 'https://x/href', cfg as DashboardConfig, '', undefined, undefined, {})!
     expect(url).not.toContain('dep_')
   })
 
-  test('ajoute _c_date_match et _c_geo_distance quand activés', () => {
+  test('adds _c_date_match and _c_geo_distance when enabled', () => {
     const cfg = { periodFilter: true, addressFilter: true }
     const params = { period: '2020-01-01,2020-12-31', radius: '5' }
     const url = buildValuesLabelsUrl(filter, 'ds1', 'https://x/href', cfg as DashboardConfig, '', undefined, { lon: 1.5, lat: 48.8 }, params)!
@@ -418,7 +418,7 @@ test.describe('buildValuesLabelsUrl', () => {
     expect(url).toContain('_c_geo_distance=1.5%2C48.8%2C5000')
   })
 
-  test('ajoute _c_date_match vide sans période définie, pas de géo sans adresse', () => {
+  test('adds an empty _c_date_match without a defined period, no geo without address', () => {
     const cfg = { periodFilter: true, addressFilter: true }
     const url = buildValuesLabelsUrl(filter, 'ds1', 'https://x/href', cfg as DashboardConfig, '', undefined, undefined, {})!
     expect(url).toContain('_c_date_match=')
@@ -429,11 +429,11 @@ test.describe('buildValuesLabelsUrl', () => {
 test.describe('buildMetricsUrl', () => {
   const slider = { labelField: 'tx', slider: true }
 
-  test('renvoie null sans dataset', () => {
+  test('returns null without dataset', () => {
     expect(buildMetricsUrl(slider, undefined, {})).toBeNull()
   })
 
-  test('build l\'URL minimale', () => {
+  test('builds the minimal URL', () => {
     const url = buildMetricsUrl(slider, 'https://x/href', {})!
     expect(url.startsWith('https://x/href/simple_metrics_agg?')).toBe(true)
     expect(url).toContain('fields=tx')
@@ -441,7 +441,7 @@ test.describe('buildMetricsUrl', () => {
     expect(url).not.toContain('finalizedAt')
   })
 
-  test('applique les staticFilters pour borner sur le sous-ensemble filtré', () => {
+  test('applies the staticFilters to bound on the filtered subset', () => {
     const cfg = {
       datasets: [{ finalizedAt: 'F' }],
       staticFilters: [
@@ -458,29 +458,29 @@ test.describe('buildMetricsUrl', () => {
 })
 
 test.describe('collectFilterEmitFields', () => {
-  test('retourne les labelFields sans valeurs associées', () => {
+  test('returns the labelFields without associated values', () => {
     expect(collectFilterEmitFields([{ labelField: 'a' }, { labelField: 'b' }])).toEqual(['a', 'b'])
   })
 
-  test('déplie les valeurs associées et déduplique', () => {
+  test('unfolds the associated values and deduplicates', () => {
     expect(collectFilterEmitFields([
       { labelField: 'a', values: ['x', 'y'] },
       { labelField: 'b', values: ['y', 'z'] }
     ])).toEqual(['x', 'y', 'z'])
   })
 
-  test('gère un mélange labelField / valeurs associées', () => {
+  test('handles a mix of labelField / associated values', () => {
     expect(collectFilterEmitFields([
       { labelField: 'a' },
       { labelField: 'b', values: ['x'] }
     ])).toEqual(['a', 'x'])
   })
 
-  test('retourne [] sans filtre', () => {
+  test('returns [] without filter', () => {
     expect(collectFilterEmitFields([])).toEqual([])
   })
 
-  test('ignore les filtres range slider (bornes brutes, pas de /values)', () => {
+  test('ignores range slider filters (raw bounds, no /values)', () => {
     expect(collectFilterEmitFields([
       { labelField: 'tx', slider: true },
       { labelField: 'a' }
@@ -495,7 +495,7 @@ test.describe('collectReceivedFilters', () => {
   }
   const config = { datasets: [{ id: 'ds1' }] } as DashboardConfig
 
-  test('relaie les clés concept, résout le champ porteur et ignore le reste', () => {
+  test('relays the concept keys, resolves the carrying field and ignores the rest', () => {
     const received = collectReceivedFilters({
       params: {
         _c_codeDepartement_in: '75',
@@ -512,44 +512,44 @@ test.describe('collectReceivedFilters', () => {
     })
   })
 
-  test.describe('colonnes du mode comparaison', () => {
+  test.describe('compare view columns', () => {
     const received = (params: Record<string, string>, prefix: string, otherColumnKeys?: Record<string, string>) =>
       collectReceivedFilters({ params, fields, config, prefix, otherColumnKeys }).values
 
-    test('la colonne droite reçoit ses clés préfixées, dé-préfixées pour les embeds', () => {
+    test('the right column receives its prefixed keys, unprefixed for the embeds', () => {
       expect(received({ c_d_ds1__id_eq: 'x', c_c_codeDepartement_in: '75' }, 'c')).toEqual({
         _d_ds1__id_eq: 'x',
         _c_codeDepartement_in: '75'
       })
     })
 
-    test('la colonne gauche ignore les clés de la colonne droite', () => {
+    test('the left column ignores the right column\'s keys', () => {
       expect(received({ c_d_ds1__id_eq: 'x' }, '')).toEqual({})
     })
 
-    test('la colonne droite ignore ce que publie la colonne gauche', () => {
+    test('the right column ignores what the left column publishes', () => {
       const params = { _d_ds1__id_eq: 'x' }
       expect(received(params, 'c', { _d_ds1__id_eq: 'x' })).toEqual({})
     })
 
-    test('un filtre reçu du parent atteint les deux colonnes', () => {
+    test('a filter received from the parent reaches both columns', () => {
       const params = { _c_codeDepartement_in: '75' }
       expect(received(params, '')).toEqual(params)
       expect(received(params, 'c', {})).toEqual(params)
     })
 
-    test('une clé de la colonne droite gagne sur la même clé reçue du parent', () => {
+    test('a right column key wins over the same key received from the parent', () => {
       expect(received({ c_c_codeDepartement_in: '44', _c_codeDepartement_in: '75' }, 'c')).toEqual({ _c_codeDepartement_in: '44' })
       expect(received({ _c_codeDepartement_in: '75', c_c_codeDepartement_in: '44' }, 'c')).toEqual({ _c_codeDepartement_in: '44' })
     })
 
-    test('le filtre dynamique de la colonne droite reste interne', () => {
+    test('the right column\'s dynamic filter stays internal', () => {
       const filters = [{ labelField: 'an', values: ['an'] }] as DashboardFilter[]
       expect(collectReceivedFilters({ params: { c_d_ds1_an_in: '2022' }, fields, config, filters, prefix: 'c' }).values).toEqual({})
     })
   })
 
-  test('relaie les clés dataset-scopées du dataset racine et résout leur champ', () => {
+  test('relays the dataset-scoped keys of the root dataset and resolves their field', () => {
     const received = collectReceivedFilters({
       params: { _d_ds1_an_gte: '10', _d_ds1_dep_in: '75' },
       fields,
@@ -561,7 +561,7 @@ test.describe('collectReceivedFilters', () => {
     })
   })
 
-  test('relaie les clés dataset-scopées d\'un autre dataset sans résoudre de champ', () => {
+  test('relays the dataset-scoped keys of another dataset without resolving a field', () => {
     const received = collectReceivedFilters({
       params: { _d_autre_an_in: '2020' },
       fields,
@@ -573,7 +573,7 @@ test.describe('collectReceivedFilters', () => {
     })
   })
 
-  test('ignore les marqueurs de sélection hérités (_s_), clés inconnues', () => {
+  test('ignores legacy selection markers (_s_), unknown keys', () => {
     const received = collectReceivedFilters({
       params: { _s_codeDepartement: 'app_sankey', _s_ds1_an: 'app_table' },
       fields,
@@ -582,7 +582,7 @@ test.describe('collectReceivedFilters', () => {
     expect(received).toEqual({ values: {}, fields: [] })
   })
 
-  test('ne relaie pas les clés internes de ses filtres dynamiques (labels, CSV quoté)', () => {
+  test('does not relay the internal keys of its dynamic filters (labels, quoted CSV)', () => {
     const filteredConfig = {
       datasets: [{ id: 'ds1' }],
       filters: [{ labelField: 'dep', values: ['dep'] }],
@@ -598,15 +598,15 @@ test.describe('collectReceivedFilters', () => {
       fields,
       config: filteredConfig
     })
-    // Les valeurs résolues des filtres partent par la sérialisation ; une clé
-    // de filtre dynamique dans l'URL n'est jamais relayée telle quelle.
+    // The resolved values of the filters go out through the serialization; a
+    // dynamic filter key in the URL is never relayed as-is.
     expect(received).toEqual({
       values: { _c_date_match: '2019-01-01,2019-12-31' },
       fields: []
     })
   })
 
-  test('relaie les concepts universels sans champ', () => {
+  test('relays universal concepts without field', () => {
     const received = collectReceivedFilters({
       params: { _c_date_match: '2020-01-01,2020-12-31' },
       fields,
@@ -618,7 +618,7 @@ test.describe('collectReceivedFilters', () => {
     })
   })
 
-  test('ignore les valeurs vides et les concepts inconnus', () => {
+  test('ignores empty values and unknown concepts', () => {
     const received = collectReceivedFilters({
       params: { _c_vide_in: '', _c_inconnu_in: '1' },
       fields,
@@ -637,7 +637,7 @@ test.describe('ownedFilterKeys', () => {
     an: plainField('an')
   }
 
-  test('couvre les filtres dynamiques, leurs valeurs associées, static, période et géo', () => {
+  test('covers dynamic filters, their associated values, static, period and geo', () => {
     const filters: DashboardFilter[] = [{ labelField: 'an' }, { labelField: 'dep', values: ['dep'] }, { labelField: 'tx', slider: true }]
     const config = {
       datasets: [{ id: 'ds1' }],
@@ -668,7 +668,7 @@ test.describe('serializeFiltersValues', () => {
     an: plainField('an')
   }
 
-  test('émet les valeurs résolues en clés dataset-scopées avec mirror concept', () => {
+  test('emits the resolved values as dataset-scoped keys with concept mirror', () => {
     const result = serializeFiltersValues({
       emitFields: ['dep', 'an'],
       activeFields: ['dep', 'an'],
@@ -688,7 +688,7 @@ test.describe('serializeFiltersValues', () => {
     })
   })
 
-  test('applique le préfixe de colonne sur les clés dataset-scopées', () => {
+  test('applies the column prefix to the dataset-scoped keys', () => {
     const result = serializeFiltersValues({
       emitFields: ['dep'],
       activeFields: ['dep'],
@@ -706,7 +706,7 @@ test.describe('serializeFiltersValues', () => {
     })
   })
 
-  test('ajoute période et géo quand activées', () => {
+  test('adds period and geo when enabled', () => {
     const result = serializeFiltersValues({
       emitFields: [],
       activeFields: [],
@@ -726,7 +726,7 @@ test.describe('serializeFiltersValues', () => {
     })
   })
 
-  test('n\'émet pas période/géo si désactivées ou vides', () => {
+  test('does not emit period/geo when disabled or empty', () => {
     const result = serializeFiltersValues({
       emitFields: [],
       activeFields: [],
@@ -742,7 +742,7 @@ test.describe('serializeFiltersValues', () => {
     expect(result._c_geo_distance).toBeUndefined()
   })
 
-  test('fusionne les staticFilters et émet toujours finalizedAt (même vide)', () => {
+  test('merges the staticFilters and always emits finalizedAt (even empty)', () => {
     const result = serializeFiltersValues({
       emitFields: [],
       activeFields: [],
@@ -760,7 +760,7 @@ test.describe('serializeFiltersValues', () => {
     })
   })
 
-  test('un filtre dynamique actif l\'emporte sur un static in du même champ', () => {
+  test('an active dynamic filter wins over a static in on the same field', () => {
     const result = serializeFiltersValues({
       emitFields: ['dep'],
       activeFields: ['dep'],
@@ -778,7 +778,7 @@ test.describe('serializeFiltersValues', () => {
     })
   })
 
-  test('un range slider actif l\'emporte sur un static interval du même champ', () => {
+  test('an active range slider wins over a static interval on the same field', () => {
     const result = serializeFiltersValues({
       emitFields: [],
       activeFields: ['tx'],
@@ -799,7 +799,7 @@ test.describe('serializeFiltersValues', () => {
     })
   })
 
-  test('émet la valeur finalizedAt fournie', () => {
+  test('emits the provided finalizedAt value', () => {
     const result = serializeFiltersValues({
       emitFields: [],
       activeFields: [],
@@ -813,7 +813,7 @@ test.describe('serializeFiltersValues', () => {
     expect(result.finalizedAt).toBe('2020-01-01')
   })
 
-  test('ignore un emitField sans valeurs résolues', () => {
+  test('ignores an emitField without resolved values', () => {
     const result = serializeFiltersValues({
       emitFields: ['dep', 'an'],
       activeFields: ['dep'],
@@ -831,7 +831,7 @@ test.describe('serializeFiltersValues', () => {
     })
   })
 
-  test('émet les bornes d\'un range slider en gte/lte avec mirror concept', () => {
+  test('emits the bounds of a range slider as gte/lte with concept mirror', () => {
     const result = serializeFiltersValues({
       emitFields: [],
       activeFields: ['tx'],
@@ -852,7 +852,7 @@ test.describe('serializeFiltersValues', () => {
     })
   })
 
-  test('émet une seule borne quand l\'autre est absente et applique le préfixe', () => {
+  test('emits a single bound when the other is missing and applies the prefix', () => {
     const result = serializeFiltersValues({
       emitFields: [],
       activeFields: ['tx'],
@@ -870,7 +870,7 @@ test.describe('serializeFiltersValues', () => {
     })
   })
 
-  test('ignore les bornes vides d\'un range slider', () => {
+  test('ignores the empty bounds of a range slider', () => {
     const result = serializeFiltersValues({
       emitFields: [],
       activeFields: [],
@@ -884,7 +884,7 @@ test.describe('serializeFiltersValues', () => {
     expect(result).toEqual({ keys: [], finalizedAt: '' })
   })
 
-  test('relaie un filtre concept reçu sans filtre configuré', () => {
+  test('relays a received concept filter without configured filter', () => {
     const result = serializeFiltersValues({
       emitFields: [],
       activeFields: [],
@@ -902,7 +902,7 @@ test.describe('serializeFiltersValues', () => {
     })
   })
 
-  test('les filtres configurés l\'emportent sur les filtres reçus', () => {
+  test('configured filters win over received filters', () => {
     const result = serializeFiltersValues({
       emitFields: ['dep'],
       activeFields: ['dep'],

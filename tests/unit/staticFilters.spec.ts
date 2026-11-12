@@ -2,19 +2,19 @@ import { test, expect } from '@playwright/test'
 import { normalizeStaticFilters } from '@/utils/staticFilters'
 
 test.describe('normalizeStaticFilters', () => {
-  test('convertit field string en objet { key }', () => {
+  test('converts a string field into a { key } object', () => {
     expect(normalizeStaticFilters([{ type: 'in', field: 'dep', values: ['75'] }])).toEqual([
       { type: 'in', field: { key: 'dep' }, values: ['75'] }
     ])
   })
 
-  test('mappe le type legacy nin vers out', () => {
+  test('maps the legacy nin type to out', () => {
     expect(normalizeStaticFilters([{ type: 'nin', field: 'dep', values: ['75'] }])).toEqual([
       { type: 'out', field: { key: 'dep' }, values: ['75'] }
     ])
   })
 
-  test('laisse passer un field objet et les nouveaux types', () => {
+  test('lets an object field and the new types through', () => {
     const filters = [
       { type: 'starts', field: { key: 'dep' }, value: '75' },
       { type: 'exists', field: { key: 'dep' } },
@@ -23,7 +23,7 @@ test.describe('normalizeStaticFilters', () => {
     expect(normalizeStaticFilters(filters as any)).toEqual(filters)
   })
 
-  test('retourne [] sans filtre ou avec des entrées invalides', () => {
+  test('returns [] without filter or with invalid entries', () => {
     expect(normalizeStaticFilters(undefined)).toEqual([])
     expect(normalizeStaticFilters([])).toEqual([])
     expect(normalizeStaticFilters([null, { type: 'in' }] as any)).toEqual([])

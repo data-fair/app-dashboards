@@ -1,11 +1,12 @@
+import type { UseFilterStateOptions } from '@/composables/useFilterState'
+import type { DashboardConfig, DashboardFilter } from '@/config'
+import type { ValueLabel } from '@/utils/filters'
 import './helpers/dom'
 import { test, expect } from '@playwright/test'
 import { ref } from 'vue'
 import { createUiNotif } from '@data-fair/lib-vue/ui-notif.js'
-import { useFilterState, type UseFilterStateOptions } from '@/composables/useFilterState'
+import { useFilterState } from '@/composables/useFilterState'
 import reactiveSearchParams from '@data-fair/lib-vue/reactive-search-params-global.js'
-import type { DashboardConfig, DashboardFilter } from '@/config'
-import type { ValueLabel } from '@/utils/filters'
 import { FetchStub } from './helpers/fetch-mock'
 import { probe, unmountProbes } from './helpers/probe'
 import { settle } from './helpers/spy'
@@ -53,24 +54,24 @@ test.describe('useFilterState — value', () => {
     for (const key of Object.keys(reactiveSearchParams)) delete reactiveSearchParams[key]
   })
 
-  test('lit la valeur simple depuis les params', () => {
+  test('reads the simple value from the params', () => {
     reactiveSearchParams._d_ds1_an_in = '2020'
     const { value } = setup(filter())
     expect(value.value).toBe('2020')
   })
 
-  test('lit une valeur multiple (CSV JSON) depuis les params', () => {
+  test('reads a multiple value (JSON CSV) from the params', () => {
     reactiveSearchParams._d_ds1_an_in = '"2020","2021"'
     const { value } = setup(filter({ multipleValues: true }))
     expect(value.value).toEqual(['2020', '2021'])
   })
 
-  test('retourne la valeur par défaut sans param', () => {
+  test('returns the default value without param', () => {
     expect(setup(filter()).value.value).toBeUndefined()
     expect(setup(filter({ multipleValues: true })).value.value).toEqual([])
   })
 
-  test('écrit la valeur simple et supprime le param quand elle est vidée', () => {
+  test('writes the simple value and removes the param when it is cleared', () => {
     const { value } = setup(filter())
     value.value = '2019'
     expect(reactiveSearchParams._d_ds1_an_in).toBe('2019')
@@ -78,7 +79,7 @@ test.describe('useFilterState — value', () => {
     expect(reactiveSearchParams._d_ds1_an_in).toBeUndefined()
   })
 
-  test('sérialise une valeur multiple en CSV entre guillemets', () => {
+  test('serializes a multiple value as quoted CSV', () => {
     const { value } = setup(filter({ multipleValues: true }))
     value.value = ['2020', '2021']
     expect(reactiveSearchParams._d_ds1_an_in).toBe('"2020","2021"')
@@ -86,7 +87,7 @@ test.describe('useFilterState — value', () => {
     expect(reactiveSearchParams._d_ds1_an_in).toBeUndefined()
   })
 
-  test('préfixe la clé avec le prefix de colonne compare', () => {
+  test('prefixes the key with the compare column prefix', () => {
     const datasetId = ref<string | undefined>('ds1')
     const datasetHref = ref<string | undefined>('https://x/href')
     const config = ref<DashboardConfig>({})
@@ -96,12 +97,12 @@ test.describe('useFilterState — value', () => {
   })
 })
 
-test.describe('useFilterState — items et recherche', () => {
+test.describe('useFilterState — items and search', () => {
   test.afterEach(() => {
     for (const key of Object.keys(reactiveSearchParams)) delete reactiveSearchParams[key]
   })
 
-  test('fusionne les valeurs sélectionnées avec les données distantes et trie', async () => {
+  test('merges the selected values with the remote data and sorts', async () => {
     reactiveSearchParams._d_ds1_an_in = '"c"'
     const { items } = setup(
       filter({ multipleValues: true }),
@@ -111,7 +112,7 @@ test.describe('useFilterState — items et recherche', () => {
     expect(items.value.map(i => i.value)).toEqual(['a', 'b', 'c'])
   })
 
-  test('refetch au montage (watch immédiat)', async () => {
+  test('refetches on mount (immediate watch)', async () => {
     setup(filter())
     await settle()
     // values-labels fetched once; the metrics refresh is a no-op (metrics URL is null for a select filter)
@@ -119,7 +120,7 @@ test.describe('useFilterState — items et recherche', () => {
     expect(metricsCalls()).toHaveLength(0)
   })
 
-  test('searchItems relance le fetch après le debounce', async () => {
+  test('searchItems refetches after the debounce', async () => {
     const { searchItems } = setup(filter())
     await settle()
     expect(valuesLabelsCalls()).toHaveLength(1)
@@ -151,7 +152,7 @@ test.describe('useFilterState — range slider', () => {
     for (const key of Object.keys(reactiveSearchParams)) delete reactiveSearchParams[key]
   })
 
-  test('lit les bornes depuis simple_metrics_agg et calcule un step propre', async () => {
+  test('reads the bounds from simple_metrics_agg and computes a clean step', async () => {
     const { min, max, step } = setupSlider({ min: 10, max: 40 })
     await settle()
     expect(min.value).toBe(10)
@@ -160,7 +161,7 @@ test.describe('useFilterState — range slider', () => {
     expect(step.value).toBe(0.2)
   })
 
-  test('inclut les staticFilters dans l\'URL metrics des bornes', async () => {
+  test('includes the staticFilters in the bounds metrics URL', async () => {
     const datasetId = ref<string | undefined>('ds1')
     const datasetHref = ref<string | undefined>('https://x/href')
     const config = ref<DashboardConfig>({ staticFilters: [{ type: 'in', field: 'dep', values: ['75'] }] })
@@ -175,21 +176,21 @@ test.describe('useFilterState — range slider', () => {
     expect(url).toContain('dep_in=75')
   })
 
-  test('step propre pour une plage étroite', async () => {
+  test('clean step for a narrow range', async () => {
     const { step } = setupSlider({ min: 10.5, max: 32.7 })
     await settle()
     // rawStep = 22.2/100 = 0.222 → 0.2
     expect(step.value).toBe(0.2)
   })
 
-  test('step propre entier pour une grande plage', async () => {
+  test('clean integer step for a large range', async () => {
     const { step } = setupSlider({ min: 0, max: 1000 })
     await settle()
     // rawStep = 10 → largest nice step ≤ 10 is 10
     expect(step.value).toBe(10)
   })
 
-  test('decimals et formatValue suivent le step', async () => {
+  test('decimals and formatValue follow the step', async () => {
     const { step, decimals, formatValue } = setupSlider({ min: 10, max: 40 })
     await settle()
     expect(step.value).toBe(0.2)
@@ -201,19 +202,19 @@ test.describe('useFilterState — range slider', () => {
     expect(d0.value).toBe(0)
   })
 
-  test('step fallback 1 quand min === max', async () => {
+  test('step falls back to 1 when min === max', async () => {
     const { step } = setupSlider({ min: 10, max: 10 })
     await settle()
     expect(step.value).toBe(1)
   })
 
-  test('pas de bornes tant que les metrics ne sont pas chargées', () => {
+  test('no bounds until the metrics are loaded', () => {
     const { min, max } = setupSlider(null)
     expect(min.value).toBeUndefined()
     expect(max.value).toBeUndefined()
   })
 
-  test('value: écrit les bornes en clés gte/lte et lit un tuple', () => {
+  test('value: writes the bounds as gte/lte keys and reads a tuple', () => {
     const { value } = setupSlider()
     value.value = [10, 20]
     expect(reactiveSearchParams._d_ds1_tx_gte).toBe('10')
@@ -225,14 +226,14 @@ test.describe('useFilterState — range slider', () => {
     expect(value.value).toBeUndefined()
   })
 
-  test('value: lit les bornes depuis les params sans fetch de valeurs', () => {
+  test('value: reads the bounds from the params without values fetch', () => {
     reactiveSearchParams._d_ds1_tx_gte = '5'
     reactiveSearchParams._d_ds1_tx_lte = '15'
     const { value } = setupSlider()
     expect(value.value).toEqual([5, 15])
   })
 
-  test('respecte le prefix sur les clés gte/lte', () => {
+  test('honors the prefix on the gte/lte keys', () => {
     const datasetId = ref<string | undefined>('ds1')
     const datasetHref = ref<string | undefined>('https://x/href')
     const config = ref<DashboardConfig>({})
@@ -242,22 +243,22 @@ test.describe('useFilterState — range slider', () => {
     expect(reactiveSearchParams.c_d_ds1_tx_lte).toBe('2')
   })
 
-  test('recalcule les bornes sur la grille du pas (thumb aligné sur des valeurs propres)', async () => {
+  test('recomputes the bounds on the step grid (thumb aligned on clean values)', async () => {
     const { sliderMin, sliderMax, step } = setupSlider({ min: 0.2, max: 73 })
     await settle()
-    // step = 72.8/100 = 0.728 → 0.5 ; grille ancrée sur 0 → bornes affichées 0 et 73
+    // step = 72.8/100 = 0.728 → 0.5; grid anchored on 0 → displayed bounds 0 and 73
     expect(step.value).toBe(0.5)
     expect(sliderMin.value).toBe(0)
     expect(sliderMax.value).toBe(73)
   })
 
-  test('sliderMin/sliderMax restent undefined tant que les bornes ne sont pas chargées', () => {
+  test('sliderMin/sliderMax stay undefined until the bounds are loaded', () => {
     const { sliderMin, sliderMax } = setupSlider(null)
     expect(sliderMin.value).toBeUndefined()
     expect(sliderMax.value).toBeUndefined()
   })
 
-  test('formatValue supprime le zéro de fin inutile (5.0 → 5)', async () => {
+  test('formatValue strips the useless trailing zero (5.0 → 5)', async () => {
     const { formatValue } = setupSlider({ min: 0.2, max: 73 })
     await settle()
     expect(formatValue(5)).toBe('5')
@@ -265,7 +266,7 @@ test.describe('useFilterState — range slider', () => {
     expect(formatValue(36.5)).toBe('36.5')
   })
 
-  test('nettoye les clés gte/lte quand le slider est désactivé en draft (hot reload)', async () => {
+  test('clears the gte/lte keys when the slider is disabled in draft (hot reload)', async () => {
     reactiveSearchParams._d_ds1_tx_gte = '5'
     reactiveSearchParams._d_ds1_tx_lte = '60'
     const filterRef = ref(slider())
@@ -282,7 +283,7 @@ test.describe('useFilterState — range slider', () => {
     expect(reactiveSearchParams._d_ds1_tx_lte).toBeUndefined()
   })
 
-  test('nettoye la clé _in quand le slider est activé en draft (hot reload)', async () => {
+  test('clears the _in key when the slider is enabled in draft (hot reload)', async () => {
     reactiveSearchParams._d_ds1_tx_in = '"a","b"'
     const filterRef = ref(slider())
     fetchStub.on('/simple_metrics_agg', { json: { metrics: { tx: { min: 0, max: 100 } } } })

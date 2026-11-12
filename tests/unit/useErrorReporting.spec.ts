@@ -1,10 +1,11 @@
+import type { Recorder } from './helpers/spy'
 import './helpers/dom'
 import { test, expect } from '@playwright/test'
 import { ref, nextTick } from 'vue'
 import { useErrorReporting } from '@/composables/useErrorReporting'
 import reactiveSearchParams from '@data-fair/lib-vue/reactive-search-params-global.js'
 import { FetchStub } from './helpers/fetch-mock'
-import { fn, settle, stubGlobal, unstubAllGlobals, type Recorder } from './helpers/spy'
+import { fn, settle, stubGlobal, unstubAllGlobals } from './helpers/spy'
 
 const fetchStub = new FetchStub()
 
@@ -29,7 +30,7 @@ test.describe('useErrorReporting', () => {
     delete reactiveSearchParams.draft
   })
 
-  test('ne poste rien hors mode draft', async () => {
+  test('posts nothing outside draft mode', async () => {
     const postMessage = fn()
     stubGlobal('window', windowStub(postMessage, { postMessage }))
     const error = ref('erreur')
@@ -40,7 +41,7 @@ test.describe('useErrorReporting', () => {
     expect(fetchStub.calls).toHaveLength(0)
   })
 
-  test('poste l\'erreur au backend en mode draft (watch immédiat)', async () => {
+  test('posts the error to the backend in draft mode (immediate watch)', async () => {
     const postMessage = fn()
     stubGlobal('window', windowStub(postMessage, { postMessage }))
     reactiveSearchParams.draft = 'true'
@@ -54,7 +55,7 @@ test.describe('useErrorReporting', () => {
     expect(fetchStub.calls[0].json()).toEqual({ message: 'config invalide' })
   })
 
-  test('ne poste pas quand l\'erreur est vide', async () => {
+  test('does not post when the error is empty', async () => {
     const postMessage = fn()
     stubGlobal('window', windowStub(postMessage, { postMessage }))
     reactiveSearchParams.draft = 'true'
@@ -65,7 +66,7 @@ test.describe('useErrorReporting', () => {
     expect(fetchStub.calls).toHaveLength(0)
   })
 
-  test('log l\'erreur en console quand l\'envoi échoue', async () => {
+  test('logs the error to the console when sending fails', async () => {
     const postMessage = fn()
     stubGlobal('window', windowStub(postMessage, { postMessage }))
     reactiveSearchParams.draft = 'true'

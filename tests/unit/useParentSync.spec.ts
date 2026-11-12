@@ -1,10 +1,11 @@
+import type { DashboardConfig } from '@/config'
+import type { Recorder } from './helpers/spy'
 import './helpers/dom'
 import { test, expect } from '@playwright/test'
 import { ref, nextTick } from 'vue'
 import { useParentSync } from '@/composables/useParentSync'
 import reactiveSearchParams from '@data-fair/lib-vue/reactive-search-params-global.js'
-import type { DashboardConfig } from '@/config'
-import { fn, stubGlobal, unstubAllGlobals, type Recorder } from './helpers/spy'
+import { fn, stubGlobal, unstubAllGlobals } from './helpers/spy'
 
 const baseConfig = (): DashboardConfig => ({
   applications: [{ id: 'a', title: 'A' }],
@@ -12,9 +13,9 @@ const baseConfig = (): DashboardConfig => ({
   sections: [{ rows: [{ height: 0, elements: [{ type: 'application', application: { id: 'a', title: 'A' } } as any] }] }]
 }) as DashboardConfig
 
-// reactiveSearchParams (module singleton) observe son état et appelle
-// `updateUrl` qui lit window.location/history/document : le window stub doit
-// donc les exposer pour éviter un crash quand on touche à l'état.
+// reactiveSearchParams (singleton module) observes its state and calls
+// `updateUrl`, which reads window.location/history/document: the window stub
+// must therefore expose them to avoid a crash when the state is touched.
 const windowStub = (postMessage: Recorder, parent: unknown = null) => ({
   postMessage,
   parent,
@@ -29,7 +30,7 @@ test.describe('useParentSync', () => {
     delete reactiveSearchParams.draft
   })
 
-  test('ne branche rien hors mode draft', async () => {
+  test('wires nothing outside draft mode', async () => {
     const postMessage = fn()
     stubGlobal('window', windowStub(postMessage, { postMessage }))
     const config = ref<DashboardConfig>(baseConfig())
@@ -41,7 +42,7 @@ test.describe('useParentSync', () => {
     expect(postMessage.calls).toHaveLength(0)
   })
 
-  test('poste les deltas d\'applications au parent en mode draft', async () => {
+  test('posts the application deltas to the parent in draft mode', async () => {
     const postMessage = fn()
     stubGlobal('window', windowStub(postMessage, { postMessage }))
     reactiveSearchParams.draft = 'true'
@@ -57,7 +58,7 @@ test.describe('useParentSync', () => {
     ])
   })
 
-  test('ne poste rien quand l\'app est la page racine', async () => {
+  test('posts nothing when the app is the root page', async () => {
     const postMessage = fn()
     const win: any = windowStub(postMessage)
     win.parent = win

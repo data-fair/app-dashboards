@@ -1,3 +1,4 @@
+import type { TablePreviewElement, DownloadElement, FormElement, ApplicationElement } from '@/config'
 import { test, expect } from '@playwright/test'
 import {
   tableDFrameSrc,
@@ -12,7 +13,6 @@ import {
   themeOverrideParams,
   appendThemeParams
 } from '@/utils/element-url'
-import type { TablePreviewElement, DownloadElement, FormElement, ApplicationElement } from '@/config'
 
 const tableEl = (overrides: Partial<TablePreviewElement> = {}): TablePreviewElement => ({ type: 'tablePreview', ...overrides })
 const downloadEl = (overrides: Partial<DownloadElement> = {}): DownloadElement => ({ type: 'download', ...overrides })
@@ -29,13 +29,13 @@ const appEl = (overrides: Partial<ApplicationElement> = {}): ApplicationElement 
 })
 
 test.describe('tableDFrameSrc', () => {
-  test('produit une URL minimale sur le dataset racine', () => {
+  test('produces a minimal URL on the root dataset', () => {
     expect(tableDFrameSrc(tableEl(), 'ds1', null, null, undefined, undefined, undefined, '')).toBe(
       '/data-fair/embed/dataset/ds1/table?d-frame=true&interaction=1'
     )
   })
 
-  test('dé-préfixe les filtres dataset-scopés, garde les clés concept et finalizedAt', () => {
+  test('unprefixes the dataset-scoped filters, keeps the concept keys and finalizedAt', () => {
     const filters = {
       keys: ['int'],
       _d_ds1_int_in: '1,2',
@@ -54,38 +54,38 @@ test.describe('tableDFrameSrc', () => {
     expect(src).not.toContain('nullValue=')
   })
 
-  test('compare-view : le préfixe de colonne est strippé et les clés des autres colonnes/JDD sont écartées', () => {
+  test('compare-view: the column prefix is stripped and keys of other columns/datasets are dropped', () => {
     const filters = { keys: [], c_d_ds1_int_in: '1', _d_ds1_int_in: '2', _d_autre_cat_in: 'b', x_d_ds1_an_in: '3' }
     const src = tableDFrameSrc(tableEl(), 'ds1', null, filters, undefined, undefined, undefined, 'c')
     expect(src).toContain('int_in=1')
     expect(src).not.toContain('c_d_ds1_int_in')
-    // Une clé reçue (sans préfixe de colonne) sur le dataset de l'élément est
-    // reprise, mais la clé de la colonne de l'élément l'emporte.
+    // A received key (without column prefix) on the element's dataset is
+    // kept, but the key of the element's column wins.
     expect(src).not.toContain('_d_ds1_int_in=2')
-    // Les clés d'un autre dataset ou d'une autre colonne ne sont jamais
-    // transmises à un embed natif (son API REST ne connaît que ses champs).
+    // Keys of another dataset or another column are never
+    // forwarded to a native embed (its REST API only knows its own fields).
     expect(src).not.toContain('_d_autre_cat_in')
     expect(src).not.toContain('x_d_ds1_an_in')
   })
 
-  test('transmet les clés reçues (sans préfixe) du dataset de l\'élément', () => {
+  test('forwards the received keys (unprefixed) of the element\'s dataset', () => {
     const filters = { keys: [], _d_ds1_int_in: '2' }
     const src = tableDFrameSrc(tableEl(), 'ds1', null, filters, undefined, undefined, undefined, '')
     expect(src).toContain('int_in=2')
   })
 
-  test('préfixe le dataset id avec l\'accessKey', () => {
+  test('prefixes the dataset id with the accessKey', () => {
     const src = tableDFrameSrc(tableEl(), 'ds1', 'abc', null, undefined, undefined, undefined, '')
     expect(src).toMatch(/^\/data-fair\/embed\/dataset\/abc%3Ads1\/table\?/)
   })
 
-  test('transmet toujours les filtres (plus d\'ignoreFilters)', () => {
+  test('always forwards the filters (no more ignoreFilters)', () => {
     const filters = { keys: [], _d_ds1_int_in: '1' }
     const src = tableDFrameSrc(tableEl(), 'ds1', null, filters, undefined, undefined, undefined, '')
     expect(src).toContain('int_in=1')
   })
 
-  test('transmet primary/secondary, display et cols', () => {
+  test('forwards primary/secondary, display and cols', () => {
     const src = tableDFrameSrc(
       tableEl({ display: 'table-dense', fields: ['a', 'b'] }),
       'ds1', null, null, 'x', 'y', undefined, ''
@@ -96,49 +96,49 @@ test.describe('tableDFrameSrc', () => {
     expect(src).toContain('cols=a%2Cb')
   })
 
-  test('désactive toutes les interactions si noInteractions', () => {
+  test('disables every interaction if noInteractions', () => {
     const src = tableDFrameSrc(tableEl({ noInteractions: true }), 'ds1', null, null, undefined, undefined, undefined, '')
     expect(src).toContain('interaction=0')
   })
 
-  test('interdit une liste d\'interactions via hideInteractions', () => {
+  test('forbids a list of interactions via hideInteractions', () => {
     const src = tableDFrameSrc(tableEl({ hideInteractions: ['filters', 'sort'] }), 'ds1', null, null, undefined, undefined, undefined, '')
     expect(src).toContain('interaction=-filters%2C-sort')
   })
 
-  test('noInteractions reste prioritaire sur hideInteractions', () => {
+  test('noInteractions still takes precedence over hideInteractions', () => {
     const src = tableDFrameSrc(tableEl({ noInteractions: true, hideInteractions: ['filters'] }), 'ds1', null, null, undefined, undefined, undefined, '')
     expect(src).toContain('interaction=0')
   })
 
-  test('active la pagination de la vue table', () => {
+  test('enables the table view pagination', () => {
     const src = tableDFrameSrc(tableEl({ pagination: true }), 'ds1', null, null, undefined, undefined, undefined, '')
     expect(src).toContain('pagination=true')
   })
 
-  // Comportement actuel documenté : pour la vue table, `interaction` est
-  // systématiquement écrasé par la configuration APRÈS le traitement de
-  // `print` → le mode print n'a pas d'effet sur l'interaction d'une table.
-  test('print ne change pas interaction pour la vue table (écrasé par la config)', () => {
+  // Documented current behavior: for the table view, `interaction` is
+  // always overwritten by the configuration AFTER `print` is
+  // handled → print mode has no effect on a table's interaction.
+  test('print does not change interaction for the table view (overwritten by the config)', () => {
     const src = tableDFrameSrc(tableEl(), 'ds1', null, null, undefined, undefined, 'true', '')
     expect(src).toContain('interaction=1')
   })
 })
 
 test.describe('downloadDFrameSrc', () => {
-  test('produit une URL minimale avec l\'en-tête activé par défaut', () => {
+  test('produces a minimal URL with the header enabled by default', () => {
     expect(downloadDFrameSrc(downloadEl(), 'ds1', null, null, '')).toBe(
       '/data-fair/embed/dataset/ds1/download?d-frame=true&header=true'
     )
   })
 
-  test('désactive l\'en-tête et restreint les colonnes', () => {
+  test('disables the header and restricts the columns', () => {
     const src = downloadDFrameSrc(downloadEl({ header: false, fields: ['a', 'b'] }), 'ds1', null, null, '')
     expect(src).toContain('header=false')
     expect(src).toContain('select=a%2Cb')
   })
 
-  test('dé-préfixe les filtres dataset-scopés et garde les concepts', () => {
+  test('unprefixes the dataset-scoped filters and keeps the concepts', () => {
     const filters = { keys: [], _d_ds1_int_in: '1,2', _c_date_match: '2020', _d_autre_x_in: '3' }
     const src = downloadDFrameSrc(downloadEl(), 'ds1', null, filters, '')
     expect(src).toContain('int_in=1%2C2')
@@ -147,21 +147,21 @@ test.describe('downloadDFrameSrc', () => {
     expect(src).not.toContain('_d_autre_x_in')
   })
 
-  test('préfixe le dataset id avec l\'accessKey', () => {
+  test('prefixes the dataset id with the accessKey', () => {
     const src = downloadDFrameSrc(downloadEl(), 'ds1', 'abc', null, '')
     expect(src).toMatch(/^\/data-fair\/embed\/dataset\/abc%3Ads1\/download\?/)
   })
 })
 
-test.describe('surcharge de thème', () => {
-  test('themeOverrideParams ne garde que les _t_* de type string', () => {
+test.describe('theme override', () => {
+  test('themeOverrideParams keeps only the string _t_* params', () => {
     expect(themeOverrideParams({ _t_primary: 'FFEB3B', _t_secondary: '#004D40', other: 'x', arr: ['y'] })).toEqual({
       _t_primary: 'FFEB3B',
       _t_secondary: '#004D40'
     })
   })
 
-  test('appendThemeParams ajoute les paramètres aux URLs relatives et absolues', () => {
+  test('appendThemeParams adds the params to relative and absolute URLs', () => {
     expect(appendThemeParams('/data-fair/app/x?d-frame=true', { _t_primary: 'FFEB3B' })).toBe('/data-fair/app/x?d-frame=true&_t_primary=FFEB3B')
     expect(appendThemeParams('https://host/capture?a=1', { _t_primary: '#004D40' })).toBe('https://host/capture?a=1&_t_primary=%23004D40')
     expect(appendThemeParams('/data-fair/app/x', {})).toBe('/data-fair/app/x')
@@ -169,16 +169,16 @@ test.describe('surcharge de thème', () => {
 })
 
 test.describe('formDFrameSrc', () => {
-  test('produit une URL sur le dataset de l\'élément', () => {
+  test('produces a URL on the element\'s dataset', () => {
     const src = formDFrameSrc(formEl({ dataset: { id: 'form-ds', title: 'Form' } }), null, null, undefined, undefined, undefined, '')
     expect(src).toMatch(/^\/data-fair\/embed\/dataset\/form-ds\/form\?d-frame=true$/)
   })
 
-  test('renvoie undefined pour un élément sans dataset (état invalide)', () => {
+  test('returns undefined for an element without dataset (invalid state)', () => {
     expect(formDFrameSrc(formEl(), null, null, undefined, undefined, undefined, '')).toBeUndefined()
   })
 
-  test('dé-préfixe les filtres et préfixe avec l\'accessKey', () => {
+  test('unprefixes the filters and prefixes with the accessKey', () => {
     const filters = { keys: [], '_d_form-ds_int_in': '7' }
     const src = formDFrameSrc(formEl({ dataset: { id: 'form-ds', title: 'Form' } }), 'k1', filters, undefined, undefined, undefined, '')
     expect(src).toMatch(/^\/data-fair\/embed\/dataset\/k1%3Aform-ds\/form\?/)
@@ -186,33 +186,33 @@ test.describe('formDFrameSrc', () => {
     expect(src).not.toContain('_d_form-ds_int_in')
   })
 
-  test('print désactive l\'interaction', () => {
+  test('print disables interaction', () => {
     const src = formDFrameSrc(formEl({ dataset: { id: 'form-ds', title: 'Form' } }), null, null, undefined, undefined, 'true', '')
     expect(src).toContain('interaction=false')
   })
 })
 
 test.describe('applicationDFrameSrc', () => {
-  test('renvoie undefined pour un élément sans application (état invalide)', () => {
+  test('returns undefined for an element without application (invalid state)', () => {
     expect(applicationDFrameSrc(appEl({ application: undefined as any }), null, null, undefined, undefined, undefined)).toBeUndefined()
   })
 
-  test('renvoie undefined pour une application sans id (état invalide)', () => {
+  test('returns undefined for an application without id (invalid state)', () => {
     expect(applicationDFrameSrc(appEl({ application: { ...appEl().application!, id: '' } }), null, null, undefined, undefined, undefined)).toBeUndefined()
   })
 
-  test('produit une URL minimale sur l\'application', () => {
+  test('produces a minimal URL on the application', () => {
     expect(applicationDFrameSrc(appEl(), null, null, undefined, undefined, undefined)).toBe(
       '/data-fair/app/sankey?d-frame=true'
     )
   })
 
-  test('préfixe avec l\'accessKey', () => {
+  test('prefixes with the accessKey', () => {
     const src = applicationDFrameSrc(appEl(), 'KEY', null, undefined, undefined, undefined)
     expect(src).toMatch(/^\/data-fair\/app\/KEY%3Asankey\?/)
   })
 
-  test('conserve tous les filtres dataset-scopés et concept sans stripping', () => {
+  test('keeps every dataset-scoped and concept filter without stripping', () => {
     const filters = {
       keys: ['int'],
       _d_ds1_int_in: '1',
@@ -228,12 +228,12 @@ test.describe('applicationDFrameSrc', () => {
     expect(src).not.toContain('keys=')
   })
 
-  test('transmet toujours les filtres (plus d\'ignoreFilters)', () => {
+  test('always forwards the filters (no more ignoreFilters)', () => {
     const src = applicationDFrameSrc(appEl(), null, { keys: [], _d_ds1_int_in: '1' }, undefined, undefined, undefined)
     expect(src).toContain('_d_ds1_int_in=1')
   })
 
-  test('transmet primary/secondary et print désactive l\'interaction', () => {
+  test('forwards primary/secondary and print disables interaction', () => {
     const src = applicationDFrameSrc(appEl(), null, null, 'p', 's', 'true')
     expect(src).toContain('primary=p')
     expect(src).toContain('secondary=s')
@@ -244,58 +244,58 @@ test.describe('applicationDFrameSrc', () => {
 test.describe('applicationUrl / descriptionUrl / sourcesUrl', () => {
   const app = { href: 'https://host1/data-fair/app/real-app' }
 
-  test('renvoie undefined pour un élément non-application', () => {
+  test('returns undefined for a non-application element', () => {
     expect(applicationUrl(tableEl(), app)).toBeUndefined()
     expect(descriptionUrl(tableEl(), app)).toBeUndefined()
     expect(sourcesUrl(tableEl(), app, true)).toBeUndefined()
   })
 
-  test('reconstruit l\'URL de l\'application sur l\'hôte de l\'app courante', () => {
+  test('rebuilds the application URL on the current app\'s host', () => {
     expect(applicationUrl(appEl(), app)).toBe('https://host1/data-fair/app/sankey')
     expect(applicationUrl(appEl({ application: { ...appEl().application!, href: 'https://other/data-fair/app/v2' } }), app)).toBe('https://host1/data-fair/app/v2')
   })
 
-  test('renvoie undefined sans href d\'application', () => {
+  test('returns undefined without application href', () => {
     expect(applicationUrl({ ...appEl(), application: undefined as any }, app)).toBeUndefined()
   })
 
-  test('préfère apiUrl (contexte config) pour reconstruire l\'URL API', () => {
-    // En mode config, window.APPLICATION.href est l'URL de l'UI (ex. /config)
-    // sans segment /data-fair/ : seule apiUrl permet de rebaser l'app cible.
+  test('prefers apiUrl (config context) to rebuild the API URL', () => {
+    // In config mode, window.APPLICATION.href is the UI URL (e.g. /config)
+    // without a /data-fair/ segment: only apiUrl can rebase the target app.
     const appWithApi = { href: 'https://host1/config', apiUrl: 'https://host1/data-fair/api/v1' }
     expect(applicationUrl(appEl(), appWithApi)).toBe('https://host1/data-fair/api/v1/applications/sankey')
     expect(applicationUrl(appEl({ application: { ...appEl().application!, href: 'https://other/data-fair/app/v2' } }), appWithApi)).toBe('https://host1/data-fair/api/v1/applications/sankey')
   })
 
-  test('repli sur href quand apiUrl est absent', () => {
+  test('falls back on href when apiUrl is missing', () => {
     expect(applicationUrl(appEl(), { href: 'https://host1/data-fair/app/real-app' })).toBe('https://host1/data-fair/app/sankey')
   })
 
-  test('descriptionUrl renvoie l\'URL sauf si description est none', () => {
+  test('descriptionUrl returns the URL unless description is none', () => {
     expect(descriptionUrl(appEl({ description: 'left' }), app)).toBe('https://host1/data-fair/app/sankey')
     expect(descriptionUrl(appEl({ description: 'none' }), app)).toBeUndefined()
   })
 
-  test('sourcesUrl ajoute /configuration si showSources', () => {
+  test('sourcesUrl adds /configuration if showSources', () => {
     expect(sourcesUrl(appEl(), app, true)).toBe('https://host1/data-fair/app/sankey/configuration')
     expect(sourcesUrl(appEl(), app, false)).toBeUndefined()
-    // showSources actif mais URL d'application indisponible → undefined
+    // showSources enabled but application URL unavailable → undefined
     expect(sourcesUrl({ ...appEl(), application: undefined as any }, app, true)).toBeUndefined()
   })
 
-  test('sourcesUrl utilise apiUrl quand elle est disponible', () => {
+  test('sourcesUrl uses apiUrl when available', () => {
     const appWithApi = { href: 'https://host1/config', apiUrl: 'https://host1/data-fair/api/v1' }
     expect(sourcesUrl(appEl(), appWithApi, true)).toBe('https://host1/data-fair/api/v1/applications/sankey/configuration')
   })
 })
 
 test.describe('captureUrl', () => {
-  test('renvoie undefined hors élément application sans href', () => {
+  test('returns undefined outside an application element without href', () => {
     expect(captureUrl(tableEl(), null)).toBeUndefined()
     expect(captureUrl({ ...appEl(), application: undefined as any }, null)).toBeUndefined()
   })
 
-  test('build l\'URL de capture avec les metas df:capture et les filtres préfixés app_', () => {
+  test('builds the capture URL with the df:capture metas and the app_-prefixed filters', () => {
     const filters = { keys: ['int'], _d_ds1_int_in: '1', _c_date_match: '2020' }
     const url = captureUrl(appEl(), filters)!
     expect(url.startsWith('https://demo.datafair.fr/data-fair/app/sankey/capture?')).toBe(true)
@@ -307,12 +307,12 @@ test.describe('captureUrl', () => {
     expect(url).not.toContain('app_keys')
   })
 
-  test('propage la surcharge de thème préfixée app_', () => {
+  test('forwards the app_-prefixed theme override', () => {
     const url = captureUrl(appEl(), null, { _t_primary: 'FFEB3B' })!
     expect(url).toContain('app__t_primary=FFEB3B')
   })
 
-  test('omet width/height sans metas df:capture', () => {
+  test('omits width/height without df:capture metas', () => {
     const el = appEl({ application: { ...appEl().application!, baseApp: { meta: {} } } })
     const url = captureUrl(el, null)!
     expect(url).toContain('app_embed=true')
@@ -320,7 +320,7 @@ test.describe('captureUrl', () => {
     expect(url).not.toContain('height=')
   })
 
-  test('tolère un baseApp sans meta', () => {
+  test('tolerates a baseApp without meta', () => {
     const el = appEl({ application: { ...appEl().application!, baseApp: { meta: undefined as any } } })
     const url = captureUrl(el, null)!
     expect(url).toContain('app_embed=true')
@@ -328,18 +328,18 @@ test.describe('captureUrl', () => {
 })
 
 test.describe('embedCode', () => {
-  test('renvoie undefined hors élément application sans id', () => {
+  test('returns undefined outside an application element without id', () => {
     expect(embedCode(tableEl(), 'https://host/app', null)).toBeUndefined()
     expect(embedCode({ ...appEl(), application: { ...appEl().application!, id: '' } }, 'https://host/app', null)).toBeUndefined()
   })
 
-  test('build l\'iframe embed sur l\'hôte exposé', () => {
+  test('builds the iframe embed on the exposed host', () => {
     expect(embedCode(appEl(), 'https://host/data-fair/app/abc', null)).toBe(
       '<iframe src="https://host/data-fair/app/sankey?embed=true" width="100%" height="500px" style="background-color: transparent; border: none;"></iframe>'
     )
   })
 
-  test('préfixe l\'accessKey dans le src', () => {
+  test('prefixes the accessKey in the src', () => {
     const code = embedCode(appEl(), 'https://host/data-fair/app/abc', 'KEY')!
     expect(code).toContain('https://host/data-fair/app/KEY%3Asankey?embed=true')
   })

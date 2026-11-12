@@ -6,8 +6,8 @@
  * `useFiltersValues` to be testable in isolation.
  */
 import type { Field } from '@data-fair/lib-common-types/application/index.js'
-import { filters2params } from '@data-fair/lib-utils/filters/index.js'
 import type { DashboardConfig, DashboardFilter } from '@/config'
+import { filters2params } from '@data-fair/lib-utils/filters/index.js'
 import { datasetFilterKey, conceptFilterKey } from './dataset-filter'
 import { normalizeStaticFilters } from './staticFilters'
 import { isFilterKey, keyWithoutOp, stripOp } from './emissions'

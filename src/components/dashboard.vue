@@ -9,6 +9,7 @@
  *  - render the filters and delegate the sections layout to
  *    `sections-view.vue`.
  */
+import type { FiltersValues, ApplicationFiltersValues } from '@/utils/filters'
 import { computed, reactive, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { mdiAlertCircleOutline } from '@mdi/js'
@@ -19,15 +20,14 @@ import dTitle from './d-title.vue'
 import { useConfig } from '@/composables/config'
 import { useEmissionsProjection } from '@/composables/useEmissionsProjection'
 import { initDefaultFilterValues } from '@/utils/filters'
-import type { FiltersValues, ApplicationFiltersValues } from '@/utils/filters'
 import { pageTitleDefaults } from '@/utils/title-style'
 
 const { config, dataset, error } = useConfig()
 const { t } = useI18n()
 
-// Les visus embarqués écrivent leurs filtres dans un canal privé (namespace par
-// élément) : on les reprojette ici vers le namespace propre `_c_*` / `_d_*` de
-// l'URL du dashboard (cf. syncParams des éléments).
+// Embedded visus write their filters in a private channel (namespaced per
+// element): they are projected back here into the clean `_c_*` / `_d_*`
+// namespace of the dashboard URL (see the elements' syncParams).
 useEmissionsProjection()
 
 const filtersValues = reactive<Record<number, FiltersValues>>({ 0: { keys: [] }, 1: { keys: [] } })

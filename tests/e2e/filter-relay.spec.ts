@@ -1,5 +1,5 @@
-import { readFileSync } from 'node:fs'
 import type { Page } from '@playwright/test'
+import { readFileSync } from 'node:fs'
 import { test, expect, embeddedVisusConsole } from './fixtures'
 
 // Minimal d-frame child used by R2: it has the same URL-sync contract as a
@@ -7,20 +7,20 @@ import { test, expect, embeddedVisusConsole } from './fixtures'
 const dFrameContent = readFileSync('node_modules/@data-fair/frame/dist/d-frame-content.min.js', 'utf8')
 
 /**
- * Relais des filtres émis par un visu embarqué (canal privé par élément).
+ * Relay of the filters emitted by an embedded visu (private channel per element).
  *
- * Le visu écrit dans son URL un filtre `_d_<datasetId>_<champ>_<op>` (sans
- * marqueur). Ses clés remontent namespacées (`<clé d'élément>_…`) puis le
- * dashboard les reprojette vers le namespace propre `_c*`/`_d*` selon le mode
- * `syncParams` de l'élément :
- *  - « partage des filtres » (défaut) : la clé est publiée et atteint les autres
- *    visus, qui décident de la traiter en filtre ou en mise en évidence ;
- *  - « cloisonné » : la clé reste dans le canal privé de l'émetteur, rien n'est
- *    partagé ;
- *  - « aucune synchronisation » : aucun canal, l'état du visu n'est pas conservé.
+ * The visu writes a `_d_<datasetId>_<field>_<op>` filter in its URL (without
+ * marker). Its keys go up namespaced (`<element key>_…`) then the
+ * dashboard projects them into the clean `_c*`/`_d*` namespace according to the
+ * element's `syncParams` mode:
+ *  - « partage des filtres » (default): the key is published and reaches the other
+ *    visus, which decide whether to treat it as a filter or a highlight;
+ *  - « cloisonné »: the key stays in the emitter's private channel, nothing is
+ *    shared;
+ *  - « aucune synchronisation »: no channel, the visu's state is not kept.
  *
- * La visu réelle n'émet pas encore (chantier visus) : le test simule le clic en
- * écrivant l'URL de l'iframe, ce que fait exactement une visu à la sélection.
+ * The real visu does not emit yet (visus work in progress): the test simulates the
+ * click by writing the iframe URL, exactly what a visu does on selection.
  */
 
 interface DevConfig {
@@ -51,7 +51,7 @@ const getDevConfig = async (page: Page): Promise<DevConfig> => {
   return res.json() as Promise<DevConfig>
 }
 
-/** Id d'application d'une src `/data-fair/app/<id>` (accessKey `%3A`-préfixée en option). */
+/** Application id of a `/data-fair/app/<id>` src (optionally `%3A`-prefixed accessKey). */
 const appIdOf = (src: string): string | undefined => {
   const match = src.match(/^\/data-fair\/app\/([^?]+)/)
   return match ? decodeURIComponent(match[1]).split(':').pop() : undefined
@@ -66,7 +66,7 @@ const frames = async (page: Page): Promise<{ src: string, query: Record<string, 
     }
   })).then(list => list.map(frame => ({ ...frame, appId: appIdOf(frame.src) })))
 
-/** Change le mode de sync de l'élément portant cette application (config draft). */
+/** Changes the sync mode of the element carrying this application (draft config). */
 const setSyncParams = async (page: Page, appId: string, syncParams: string): Promise<void> => {
   await page.evaluate(({ appId, syncParams }) => {
     const cfg = JSON.parse(JSON.stringify(window.APPLICATION.configuration))
@@ -84,7 +84,7 @@ const setSyncParams = async (page: Page, appId: string, syncParams: string): Pro
   }, { appId, syncParams })
 }
 
-/** Simule une émission dans la visu : la clé de filtre dans son URL. */
+/** Simulates an emission in the visu: the filter key in its URL. */
 const emitFilter = async (page: Page, appId: string, params: Record<string, string>): Promise<void> => {
   const frame = page.frames().find(f => f.url().includes(`/data-fair/app/${appId}`))
   expect(frame, `iframe de ${appId} introuvable`).toBeTruthy()
@@ -100,7 +100,7 @@ const emitFilter = async (page: Page, appId: string, params: Record<string, stri
 // the mode switches. Counted below: a relay loop throws it by the hundreds.
 const redundantNavigation = 'Avoided redundant navigation to current location'
 
-test.describe('Relais des filtres émis par un visu', () => {
+test.describe('Relay of the filters emitted by a visu', () => {
   test.use({
     expectedConsole: [
       ...embeddedVisusConsole,
@@ -109,16 +109,16 @@ test.describe('Relais des filtres émis par un visu', () => {
     ]
   })
 
-  test('R1 — un filtre émis remonte et se propage selon le mode syncParams', async ({ page }) => {
+  test('R1 — an emitted filter goes up and propagates according to the syncParams mode', async ({ page }) => {
     let redundantNavigations = 0
     page.on('pageerror', (err) => { if (err.message.includes(redundantNavigation)) redundantNavigations++ })
     await page.goto('/app/')
     const config = await getDevConfig(page)
     await expect(page.locator('.v-container').first()).toBeVisible({ timeout: 20_000 })
 
-    // Ingrédients : un dataset racine, un visu émetteur (application) et un
-    // autre visu avec un champ non utilisé par les filtres du dashboard (la clé
-    // émise ne doit pas être « possédée »).
+    // Ingredients: a root dataset, an emitting visu (application) and
+    // another visu with a field not used by the dashboard filters (the emitted
+    // key must not be "owned").
     const rootDatasetId = config.datasets?.[0]?.id
     const usedFields = new Set([
       ...(config.filters || []).flatMap(f => [f.labelField, ...(f.values || [])]),
@@ -139,8 +139,8 @@ test.describe('Relais des filtres émis par un visu', () => {
     const key = `_d_${rootDatasetId}_${field}_in`
     const value = 'ValeurFiltre'
 
-    // Clé de l'état privé de l'émetteur : `<scope>_<clé>` (le scope encode le
-    // chemin de colonnes, ex. `column-0-application-<id>`).
+    // Key of the emitter's private state: `<scope>_<key>` (the scope encodes the
+    // column path, e.g. `column-0-application-<id>`).
     const dashboardParams = async () => new URL(await page.evaluate(() => location.href)).searchParams
     const hasNamespaced = (params: URLSearchParams): boolean => [...params.keys()].some(k => k !== key && k.endsWith(`_${key}`))
 
@@ -149,11 +149,11 @@ test.describe('Relais des filtres émis par un visu', () => {
       return all.find(f => f.appId !== emitterAppId && (receiver!.type === 'application' ? f.appId : f.src.startsWith('/data-fair/embed/dataset/')))
     }
 
-    // Le visu émetteur écrit son filtre dans sa propre URL.
+    // The emitting visu writes its filter in its own URL.
     await emitFilter(page, emitterAppId, { [key]: value })
 
-    // 1) « partage des filtres » (défaut) : la clé est projetée dans l'URL du
-    //    dashboard et atteint le récepteur.
+    // 1) « partage des filtres » (default): the key is projected into the
+    //    dashboard URL and reaches the receiver.
     await expect.poll(
       async () => Object.fromEntries((await dashboardParams()).entries()),
       { timeout: 10_000, message: 'le filtre émis doit être projeté dans l\'URL du dashboard' }
@@ -161,13 +161,13 @@ test.describe('Relais des filtres émis par un visu', () => {
     expect(hasNamespaced(await dashboardParams()), 'le canal privé namespacé doit être conservé').toBe(true)
     await expect.poll(async () => (await receiverFrame())?.query[key], { timeout: 10_000, message: 'le récepteur doit recevoir la clé' }).toBe(value)
 
-    // 2) Aucun aller-retour d'URL : deux relevés espacés sont identiques.
+    // 2) No URL round trip: two spaced readings are identical.
     const first = await page.evaluate(() => location.search)
     await page.waitForTimeout(700)
     expect(await page.evaluate(() => location.search)).toBe(first)
 
-    // 3) « cloisonné » : plus de clé propre dans l'URL du dashboard, le
-    //    récepteur ne la reçoit plus, l'émetteur garde son état dans son canal.
+    // 3) « cloisonné »: no more clean key in the dashboard URL, the
+    //    receiver no longer gets it, the emitter keeps its state in its channel.
     await setSyncParams(page, emitterAppId, 'sandboxed')
     await expect.poll(
       async () => (await dashboardParams()).has(key),
@@ -176,18 +176,18 @@ test.describe('Relais des filtres émis par un visu', () => {
     await expect.poll(async () => (await receiverFrame())?.query[key], { timeout: 10_000, message: 'le récepteur ne doit plus recevoir la clé' }).toBeUndefined()
     expect(hasNamespaced(await dashboardParams()), 'le canal privé de l\'émetteur reste').toBe(true)
 
-    // 4) « aucune synchronisation » : le canal privé est purgé.
+    // 4) « aucune synchronisation »: the private channel is purged.
     await setSyncParams(page, emitterAppId, 'none')
     await expect.poll(
       async () => hasNamespaced(await dashboardParams()),
       { timeout: 10_000, message: 'en mode none, le canal privé doit être purgé' }
     ).toBe(false)
 
-    // 5) Pas de boucle de relais : l'écho d'un filtre retiré n'est pas republié.
+    // 5) No relay loop: the echo of a withdrawn filter is not republished.
     expect(redundantNavigations, 'boucle de relais avec le récepteur').toBeLessThan(20)
   })
 
-  test('R2 — mode comparaison : la sélection croise sans changer le filtre d\'année', async ({ page }) => {
+  test('R2 — compare view: the selection crosses over without changing the year filter', async ({ page }) => {
     const appId = 'test-emitter'
     const datasetId = 'nkgybhhtnhiufg4wtokjsmz-'
     const yearKey = `_d_${datasetId}_annee_in`
@@ -282,18 +282,18 @@ test.describe('Relais des filtres émis par un visu', () => {
       { selectionKey, value }
     )
 
-    // Le clic gauche (2024) sélectionne le projet 4 ; la colonne 2025 le reçoit
-    // sans perdre son année.
+    // The left click (2024) selects project 4; the 2025 column receives it
+    // without losing its year.
     await setIn(0, '4')
     await expect.poll(async () => [await projectOf(0), await projectOf(1)], { timeout: 10_000 }).toEqual(['4', '4'])
     await expect.poll(async () => [await yearOf(0), await yearOf(1)], { timeout: 10_000 }).toEqual(['2024', '2025'])
 
-    // Le clic droit (2025) sélectionne le projet 5 ; la colonne 2024 revient à 5.
+    // The right click (2025) selects project 5; the 2024 column goes back to 5.
     await setIn(1, '5')
     await expect.poll(async () => [await projectOf(0), await projectOf(1)], { timeout: 10_000 }).toEqual(['5', '5'])
     await expect.poll(async () => [await yearOf(0), await yearOf(1)], { timeout: 10_000 }).toEqual(['2024', '2025'])
 
-    // Un effacement se propage aux deux colonnes.
+    // A clear propagates to both columns.
     await setIn(0, null)
     await expect.poll(async () => [await projectOf(0), await projectOf(1)], { timeout: 10_000 }).toEqual([null, null])
   })

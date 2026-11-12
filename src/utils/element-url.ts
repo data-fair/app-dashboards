@@ -35,10 +35,10 @@ const stripAfterDataFair = (href: string): string => href.split('/data-fair/')[0
 const accessKeyPrefix = (accessKey: string | null): string => accessKey ? `${accessKey}%3A` : ''
 
 /**
- * Paramètre `interaction` de la vue table intégrée (data-fair >= 6.18) :
- * `0` sans aucune interaction, sinon les tokens bloqués en négatif
- * (`-filters,-sort`), `1` quand rien n'est bloqué.
- * `noInteractions` est déprécié mais reste prioritaire (configs existantes).
+ * `interaction` parameter of the embedded table view (data-fair >= 6.18):
+ * `0` with no interaction at all, otherwise the blocked tokens as negatives
+ * (`-filters,-sort`), `1` when nothing is blocked.
+ * `noInteractions` is deprecated but still takes precedence (existing configs).
  */
 export const tableInteractionParam = (element: { noInteractions?: boolean; hideInteractions?: string[] }): string => {
   if (element.noInteractions) return '0'
@@ -46,7 +46,7 @@ export const tableInteractionParam = (element: { noInteractions?: boolean; hideI
   return hidden.length ? '-' + hidden.join(',-') : '1'
 }
 
-/** Paramètres `_t_*` d'une surcharge locale du thème (simple-directory). */
+/** `_t_*` parameters of a local theme override (simple-directory). */
 export const themeOverrideParams = (query: Record<string, unknown> | null | undefined): Record<string, string> => {
   const params: Record<string, string> = {}
   if (!query) return params
@@ -56,7 +56,7 @@ export const themeOverrideParams = (query: Record<string, unknown> | null | unde
   return params
 }
 
-/** Ajoute les paramètres `_t_*` à une URL de d-frame ou de capture. */
+/** Adds the `_t_*` parameters to a d-frame or capture URL. */
 export const appendThemeParams = (src: string, params: Record<string, string>): string => {
   if (!Object.keys(params).length) return src
   const url = new URL(src, 'http://localhost')
@@ -198,17 +198,17 @@ export const applicationDFrameSrc = (
 }
 
 /**
- * URL API de l'application embarquée, rebasée sur le serveur courant.
+ * API URL of the embedded application, rebased on the current server.
  *
- * Le href de l'application cible (`element.application.href`) porte un
- * chemin `/data-fair/api/v1/applications/:id` (ou `/data-fair/app/:id`),
- * mais l'origine peut être celle d'un autre environnement (ex. prod quand
- * on édite en dev). On préfère `application.apiUrl` — injecté par le proxy
- * data-fair (`reqPublicBaseUrl + /api/v1`) et par le dev-server — qui est
- * l'origine fiable du serveur courant, y compris dans le contexte d'édition
- * (mode config) où `application.href` est l'URL de l'UI de config
- * (ex. `http://host/config`) sans segment `/data-fair/`. En dernier
- * recours, on rebase l'ancien chemin sur l'origine de `application.href`.
+ * The href of the target application (`element.application.href`) carries a
+ * `/data-fair/api/v1/applications/:id` path (or `/data-fair/app/:id`),
+ * but its origin may be another environment's (e.g. prod when editing
+ * in dev). We prefer `application.apiUrl` — injected by the data-fair
+ * proxy (`reqPublicBaseUrl + /api/v1`) and by the dev-server — which is
+ * the reliable origin of the current server, including in the editing context
+ * (config mode) where `application.href` is the config UI URL
+ * (e.g. `http://host/config`) without a `/data-fair/` segment. As a last
+ * resort, the old path is rebased on the origin of `application.href`.
  */
 export const applicationUrl = (element: DashboardElement, application: ApplicationLike): string | undefined => {
   if (element.type !== 'application') return undefined
@@ -234,14 +234,14 @@ export const sourcesUrl = (element: DashboardElement, application: ApplicationLi
 }
 
 /**
- * URL de capture (screenshot) d'un élément application.
+ * Capture (screenshot) URL of an application element.
  *
- * L'endpoint de capture est servi par l'API (`GET {app.href}/capture`) :
- * les paramètres préfixés `app_` sont dé-préfixés et propagés à l'URL cible
- * de l'application, ce qui permet de capturer la visu dans l'état filtré
- * courant du dashboard. `width`/`height` ne sont transmis que si la baseApp
- * les déclare (metas df:capture-width / df:capture-height), sinon le
- * serveur applique ses dimensions par défaut.
+ * The capture endpoint is served by the API (`GET {app.href}/capture`):
+ * `app_`-prefixed parameters are unprefixed and forwarded to the target URL
+ * of the application, which captures the visu in the current filtered state
+ * of the dashboard. `width`/`height` are only passed if the baseApp
+ * declares them (metas df:capture-width / df:capture-height), otherwise the
+ * server applies its default dimensions.
  */
 export const captureUrl = (
   element: DashboardElement,

@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { computed } from 'vue'
 import type { DashboardElement } from '@/config'
 import type { FiltersValues, ApplicationFiltersValues } from '@/utils/filters'
+import { computed } from 'vue'
 import { dedupeKeys, elementKey } from '@/utils/layout'
 import dashboardElement from './dashboard-element.vue'
 

@@ -2,18 +2,18 @@ import type { Page } from '@playwright/test'
 import { test, expect, embeddedVisusConsole } from './fixtures'
 
 /**
- * Régressions / bugs connus du dashboard.
+ * Known regressions / bugs of the dashboard.
  *
- * Chaque test est écrit pour asserter le comportement ATTENDU.
- * Si le test échoue, c'est que la régression est de retour : il faut
- * corriger le code source puis relancer `npm run test-e2e`.
+ * Each test is written to assert the EXPECTED behavior.
+ * If a test fails, the regression is back: fix the source code
+ * and run `npm run test-e2e` again.
  *
- * ⚠️ Les attentes ne sont PLUS couplées à `.dev-config.json` : la config
- * live est lue depuis l'endpoint `GET /config` du dev-server, et toutes les
- * valeurs attendues en sont dérivées (nombre de filtres, d'éléments, dataset
- * racine, clés concept/static-filters). Les assertions qui nécessitent un
- * ingrédient absent de la config courante sont simplement sautées, si bien
- * que la suite reste verte sur n'importe quelle config valide.
+ * ⚠️ The expectations are NO LONGER coupled to `.dev-config.json`: the live
+ * config is read from the dev-server's `GET /config` endpoint, and every
+ * expected value is derived from it (number of filters, of elements, root
+ * dataset, concept/static-filters keys). Assertions that need an
+ * ingredient missing from the current config are simply skipped, so
+ * that the suite stays green on any valid config.
  */
 
 interface SchemaField {
@@ -47,7 +47,7 @@ interface DevConfig {
 
 const fieldKeyOf = (f: StaticFilter['field']): string => (typeof f === 'string' ? f : f.key)
 
-/** Un `column` n'est pas un embed : seuls ses enfants sont rendus dans le DOM. */
+/** A `column` is not an embed: only its children are rendered in the DOM. */
 const flattenElements = (elements: DashboardElementConfig[]): DashboardElementConfig[] =>
   elements.flatMap(el => el.type === 'column' ? flattenElements(el.elements || []) : [el])
 
@@ -56,9 +56,9 @@ const flatElements = (config: DevConfig): DashboardElementConfig[] =>
     .flatMap(section => (section.rows || []).flatMap(row => flattenElements(row.elements || [])))
 
 /**
- * Éléments réellement montés dans le DOM : avec un groupement par onglets
- * (`tabs-*`), seul l'onglet actif (le premier) est rendu par le v-window ;
- * sinon tous les éléments des sections sont rendus.
+ * Elements actually mounted in the DOM: with tab grouping
+ * (`tabs-*`), only the active tab (the first one) is rendered by the v-window;
+ * otherwise every element of the sections is rendered.
  */
 const visibleElements = (config: DevConfig): DashboardElementConfig[] => {
   const sections = config.sections || []
@@ -70,16 +70,16 @@ const visibleElements = (config: DevConfig): DashboardElementConfig[] => {
 }
 
 /**
- * Champs de filtres actifs au chargement : seuls les filtres dynamiques avec
- * une valeur par défaut (`startValue`) sont actifs avant toute interaction
- * (miroir de `initDefaultFilterValues`).
+ * Filter fields active on load: only the dynamic filters with
+ * a default value (`startValue`) are active before any interaction
+ * (mirror of `initDefaultFilterValues`).
  */
 const initialActiveFields = (config: DevConfig): string[] =>
   (config.filters || []).flatMap(f => (f.startValue && f.labelField ? [f.labelField] : []))
 
 /**
- * Un élément `valueMandatory` ne se rend (ni embed ni barre d'actions) qu'une
- * fois tous ses filtres requis actifs (miroir de `computeMandatoryFilterIssues`).
+ * A `valueMandatory` element only renders (neither embed nor actions bar) once
+ * all its required filters are active (mirror of `computeMandatoryFilterIssues`).
  */
 const mandatoryFiltersSatisfied = (el: DashboardElementConfig, activeFields: string[]): boolean => {
   if (!el.valueMandatory) return true
@@ -87,13 +87,13 @@ const mandatoryFiltersSatisfied = (el: DashboardElementConfig, activeFields: str
 }
 
 /**
- * Éléments qui produisent réellement un `<d-frame>` : une `application` avec
- * un id, un `tablePreview` ou `download` (dataset racine en fallback) et un
- * `form` avec un dataset. Un form sans dataset ne rend pas d'embed (état invalide), une
- * application sans id non plus, et un élément `valueMandatory` dont les
- * filtres requis ne sont pas actifs affiche un placeholder à la place.
- * `extraActiveFields` porte les champs activés par le test avant le décompte
- * (sélection dans un filtre dynamique).
+ * Elements that actually produce a `<d-frame>`: an `application` with
+ * an id, a `tablePreview` or `download` (root dataset as fallback) and a
+ * `form` with a dataset. A form without dataset renders no embed (invalid state),
+ * nor does an application without id, and a `valueMandatory` element whose
+ * required filters are not active shows a placeholder instead.
+ * `extraActiveFields` carries the fields activated by the test before counting
+ * (selection in a dynamic filter).
  */
 const expectedFrames = (config: DevConfig, extraActiveFields: string[] = []): { type: 'application' | 'table' | 'download' | 'form' }[] => {
   const activeFields = [...new Set([...initialActiveFields(config), ...extraActiveFields])]
@@ -110,9 +110,9 @@ const expectedFrames = (config: DevConfig, extraActiveFields: string[] = []): { 
 }
 
 /**
- * Paramètres REST attendus pour un static filter (mêmes conventions que
- * `filters2params` de @data-fair/lib-utils : suffixes `_in/_nin/_gte/_lte/
- * _starts/_exists/_nexists`, valeur espace pour exists/nexists).
+ * Expected REST params for a static filter (same conventions as
+ * `filters2params` of @data-fair/lib-utils: `_in/_nin/_gte/_lte/
+ * _starts/_exists/_nexists` suffixes, space value for exists/nexists).
  */
 const staticFilterParams = (sf: StaticFilter): Record<string, string> => {
   const key = fieldKeyOf(sf.field)
@@ -136,7 +136,7 @@ const staticFilterParams = (sf: StaticFilter): Record<string, string> => {
   }
 }
 
-/** Suffixes REST ordonnés du plus long au plus court (split non ambigu). */
+/** REST suffixes ordered from longest to shortest (unambiguous split). */
 const REST_OPS = ['_nexists', '_starts', '_exists', '_nin', '_lte', '_gte', '_in'] as const
 
 const splitRestKey = (key: string): { field: string; op: string } | null => {
@@ -162,9 +162,9 @@ const getDevConfig = async (page: Page): Promise<DevConfig> => {
 }
 
 /**
- * Sélectionne la première option du filtre dynamique non-slider d'indice
- * `index` (ordre de la config : un autocomplete par filtre non-slider, les
- * sliders rendent un range slider).
+ * Selects the first option of the non-slider dynamic filter at
+ * `index` (config order: one autocomplete per non-slider filter,
+ * sliders render a range slider).
  */
 const selectFirstFilterOption = async (page: Page, index: number): Promise<void> => {
   const autocomplete = page.locator('.v-autocomplete').nth(index)
@@ -174,18 +174,18 @@ const selectFirstFilterOption = async (page: Page, index: number): Promise<void>
   await firstOption.click()
 }
 
-test.describe('Bugs connus (régressions)', () => {
+test.describe('Known bugs (regressions)', () => {
   test.use({ expectedConsole: embeddedVisusConsole })
 
-  test('K1 — les filtres dynamiques (v-autocomplete) se rendent dans leurs v-col', async ({ page }) => {
+  test('K1 — dynamic filters (v-autocomplete) render in their v-col', async ({ page }) => {
     await page.goto('/app/')
     const config = await getDevConfig(page)
 
-    // Marqueur de mount fiable, indépendant du contenu de la config.
+    // Reliable mount marker, independent of the config content.
     await expect(page.locator('.v-container').first()).toBeVisible({ timeout: 20_000 })
 
-    // Un autocomplete par filtre dynamique déclaré dans la config (les filtres
-    // slider rendent un range slider et non un autocomplete).
+    // One autocomplete per dynamic filter declared in the config (slider
+    // filters render a range slider, not an autocomplete).
     const filters = config.filters || []
     if (filters.length) {
       const autocompleteCount = filters.filter(f => !(f as { slider?: boolean }).slider).length
@@ -193,17 +193,17 @@ test.describe('Bugs connus (régressions)', () => {
     }
   })
 
-  test('K2 — transmission des filtres aux embeds : dataset vs application, clés concept et dé-préfixage', async ({ page }) => {
+  test('K2 — filters forwarded to embeds: dataset vs application, concept keys and unprefixing', async ({ page }) => {
     await page.goto('/app/')
     const config = await getDevConfig(page)
 
     const rootDatasetId = config.datasets?.[0]?.id
     const rootSchema = config.datasets?.[0]?.schema || []
 
-    // Les éléments `valueMandatory` ne rendent leur embed qu'après sélection
-    // de leurs filtres requis : on sélectionne d'abord une valeur dans le
-    // premier filtre dynamique non-slider, comme en usage réel, puis on
-    // calcule les frames attendues avec cette sélection active.
+    // `valueMandatory` elements only render their embed after their required
+    // filters are selected: first select a value in the
+    // first non-slider dynamic filter, as in real use, then
+    // compute the expected frames with this selection active.
     const nonSliderFilters = (config.filters || []).filter(f => f.labelField && !f.slider)
     let unGateField: string | undefined
     if (nonSliderFilters.length) {
@@ -215,7 +215,7 @@ test.describe('Bugs connus (régressions)', () => {
 
     test.skip(frames.length === 0, 'La config courante n\'a aucun élément embarquable')
 
-    // L'ordre des éléments dans le DOM suit l'ordre de la config.
+    // The order of the elements in the DOM follows the config order.
     const allFrames = page.locator('d-frame')
     await expect(allFrames).toHaveCount(frames.length, { timeout: 20_000 })
 
@@ -223,7 +223,7 @@ test.describe('Bugs connus (régressions)', () => {
     const tableFormIndex = frames.findIndex(f => f.type !== 'application')
     const firstTableFormFrame = tableFormIndex >= 0 ? allFrames.nth(tableFormIndex) : null
 
-    // 1) Chaque élément rend le bon type d'embed, avec finalizedAt et d-frame.
+    // 1) Each element renders the right embed type, with finalizedAt and d-frame.
     for (let i = 0; i < frames.length; i++) {
       const frame = allFrames.nth(i)
       await expect(frame).toBeVisible({ timeout: 20_000 })
@@ -239,13 +239,13 @@ test.describe('Bugs connus (régressions)', () => {
       expect(src, 'd-frame=true doit être présent').toMatch(/[?&]d-frame=true/)
     }
 
-    // 2) Les static filters sont propagés :
-    //    - en clés dataset-scopées `<prefix>_d_<rootDatasetId>_<field>_<op>=`
-    //      sur les embeds d'application ;
-    //    - en clés dé-préfixées (`<field>_<op>=`) sur les vues dataset
-    //      (l'embed REST API attend des noms de champs non préfixés) ;
-    //    - en clés concept `_c_<conceptId>_<op>` sur les deux, quand le champ
-    //      porte un concept (pour qu'une visu sur un AUTRE dataset les lise).
+    // 2) The static filters are propagated:
+    //    - as dataset-scoped keys `<prefix>_d_<rootDatasetId>_<field>_<op>=`
+    //      on the application embeds;
+    //    - as unprefixed keys (`<field>_<op>=`) on the dataset views
+    //      (the embed REST API expects unprefixed field names);
+    //    - as concept keys `_c_<conceptId>_<op>` on both, when the field
+    //      carries a concept (so that a visu on ANOTHER dataset reads them).
     const staticFilters = config.staticFilters || []
     const activeDynamicFields = new Set(unGateField ? [unGateField] : [])
     if (staticFilters.length && rootDatasetId) {
@@ -284,20 +284,20 @@ test.describe('Bugs connus (régressions)', () => {
       }
     }
 
-    // 3) Sélection d'une valeur dans un filtre dynamique : la valeur résolue
-    //    doit être transmise aux embeds (préfixée par le dataset racine pour
-    //    les applications, dé-préfixée pour les vues dataset).
+    // 3) Selecting a value in a dynamic filter: the resolved value
+    //    must be forwarded to the embeds (prefixed by the root dataset for
+    //    applications, unprefixed for dataset views).
     //
-    //    ⚠️ Le filtre sondé ne doit PAS être porté par un static filter (la
-    //    clé serait déjà présente dans les src avant toute sélection et le
-    //    poll passerait trivialement), ni être celui utilisé ci-dessus pour
-    //    débloquer les éléments valueMandatory (le re-cliquer pourrait
-    //    désélectionner la valeur). Sans candidat, l'étape est sautée.
+    //    ⚠️ The probed filter must NOT be carried by a static filter (the
+    //    key would already be in the srcs before any selection and the
+    //    poll would pass trivially), nor be the one used above to
+    //    unlock the valueMandatory elements (clicking it again could
+    //    deselect the value). Without a candidate, the step is skipped.
     //
-    //    Les clés émises suivent `collectFilterEmitFields` : les champs
-    //    `values` associés au filtre quand ils existent (valeurs résolues via
-    //    `/values/`), sinon le labelField lui-même. Un filtre slider émet des
-    //    bornes `_gte`/`_lte`, pas de `_in` : on le saute.
+    //    The emitted keys follow `collectFilterEmitFields`: the
+    //    `values` fields associated with the filter when they exist (values resolved via
+    //    `/values/`), otherwise the labelField itself. A slider filter emits
+    //    `_gte`/`_lte` bounds, no `_in`: it is skipped.
     const staticFields = new Set((config.staticFilters || []).map(sf => fieldKeyOf(sf.field)))
     const probeFilter = nonSliderFilters.find(f =>
       f.labelField && !staticFields.has(f.labelField) && f.labelField !== unGateField
@@ -324,7 +324,7 @@ test.describe('Bugs connus (régressions)', () => {
     }
   })
 
-  test('K3 — basculer un filtre slider en liste (draft) nettoie les bornes gte/lte de l\'URL et des embeds', async ({ page }) => {
+  test('K3 — switching a slider filter to a list (draft) clears the gte/lte bounds from the URL and the embeds', async ({ page }) => {
     await page.goto('/app/')
     const config = await getDevConfig(page)
 
@@ -334,7 +334,7 @@ test.describe('Bugs connus (régressions)', () => {
 
     test.skip(!sliderFilter || !rootDatasetId || frames.length === 0, 'La config courante n\'a pas de filtre slider embarquable')
 
-    // Pose une sélection de bornes dans l'URL puis vérifie qu\'elle est propagée aux embeds.
+    // Sets a bounds selection in the URL then checks it is propagated to the embeds.
     const gteKey = `_d_${rootDatasetId}_${sliderFilter!.labelField}_gte`
     const lteKey = `_d_${rootDatasetId}_${sliderFilter!.labelField}_lte`
     await page.evaluate(({ gteKey, lteKey }) => {
@@ -349,7 +349,7 @@ test.describe('Bugs connus (régressions)', () => {
     const gteRegex = new RegExp(`(?:^|[?&])${gteKey}=`)
     await expect.poll(async () => await firstFrame.getAttribute('src'), { timeout: 10_000 }).toMatch(gteRegex)
 
-    // Bascule le filtre en liste (slider off) via le message set-config du draft.
+    // Switches the filter to a list (slider off) via the draft set-config message.
     await page.evaluate(({ labelField }) => {
       const cfg = JSON.parse(JSON.stringify(window.APPLICATION.configuration))
       cfg.filters = (cfg.filters || []).map((f: { labelField: string }) => f.labelField === labelField ? { ...f, slider: false } : { ...f })
@@ -359,7 +359,7 @@ test.describe('Bugs connus (régressions)', () => {
       }))
     }, { labelField: sliderFilter!.labelField })
 
-    // L'URL et les embeds ne doivent plus contenir les bornes gte/lte périmées.
+    // The URL and the embeds must no longer contain the stale gte/lte bounds.
     await expect.poll(
       async () => new URL(await page.evaluate(() => location.href)).searchParams.has(gteKey),
       { timeout: 10_000 }
@@ -369,8 +369,8 @@ test.describe('Bugs connus (régressions)', () => {
       { timeout: 10_000 }
     ).not.toMatch(gteRegex)
 
-    // Rebascule en slider : les bornes étant nettoyées, le slider revient sur la plage complète
-    // et l'iframe ne doit pas recevoir de gte/lte orphelin.
+    // Switch back to slider: the bounds being cleared, the slider returns to the full range
+    // and the iframe must not receive an orphan gte/lte.
     await page.evaluate(({ labelField }) => {
       const cfg = JSON.parse(JSON.stringify(window.APPLICATION.configuration))
       cfg.filters = (cfg.filters || []).map((f: { labelField: string }) => f.labelField === labelField ? { ...f, slider: true } : { ...f })
@@ -387,22 +387,22 @@ test.describe('Bugs connus (régressions)', () => {
     ).not.toMatch(gteRegex)
   })
 
-  test('K4 — la barre d\'actions reste dans sa ligne en hauteur automatique', async ({ page }) => {
+  test('K4 — the actions bar stays in its row with automatic height', async ({ page }) => {
     await page.goto('/app/')
     const config = await getDevConfig(page)
 
-    // Comme en K2 : un élément application `valueMandatory` ne rend ni iframe
-    // ni barre d'actions avant la sélection de ses filtres requis. On
-    // sélectionne d'abord une valeur dans le premier filtre dynamique
-    // non-slider, puis on dérive les champs actifs qui en résultent.
+    // As in K2: a `valueMandatory` application element renders neither iframe
+    // nor actions bar before its required filters are selected. We
+    // first select a value in the first non-slider dynamic
+    // filter, then derive the resulting active fields.
     const nonSliderFilters = (config.filters || []).filter(f => f.labelField && !f.slider)
     if (nonSliderFilters.length) {
       await selectFirstFilterOption(page, 0)
     }
     const activeFields = [...initialActiveFields(config), ...nonSliderFilters.slice(0, 1).flatMap(f => f.labelField ? [f.labelField] : [])]
 
-    // Un barre d'actions n'apparaît que pour un élément application (boutons
-    // embed/capture) ou une vue table (sources en fallback sur le dataset).
+    // An actions bar only appears for an application element (embed/capture
+    // buttons) or a table view (sources falling back on the dataset).
     const hasActionBarElement = visibleElements(config).some(el => {
       if (!mandatoryFiltersSatisfied(el, activeFields)) return false
       if (el.type === 'application') return !!el.application?.id && !!el.application.href
@@ -411,12 +411,12 @@ test.describe('Bugs connus (régressions)', () => {
     })
     test.skip(!hasActionBarElement, 'La config courante n\'a aucun élément avec barre d\'actions rendu')
 
-    // Force le mode auto (hauteurs -1) et l'affichage des actions : dans
-    // l'état bugué, la barre d'actions d'un élément chevauche l'élément
-    // suivant (hauteur:100% résolu sur une ligne flex wrap). Les trois flags
-    // sont activés car la liste des sources d'une application peut être
-    // illisible dans certains contextes (permission readConfig manquante) ;
-    // les boutons capture/embed ne dépendent d'aucun fetch.
+    // Forces auto mode (heights -1) and the display of actions: in the
+    // buggy state, the actions bar of an element overlaps the next
+    // element (height:100% resolved on a flex wrap row). The three flags
+    // are enabled because the sources list of an application can be
+    // unreadable in some contexts (missing readConfig permission);
+    // the capture/embed buttons depend on no fetch.
     await page.evaluate(() => {
       const cfg = JSON.parse(JSON.stringify(window.APPLICATION.configuration))
       cfg.showSources = true
@@ -429,14 +429,14 @@ test.describe('Bugs connus (régressions)', () => {
       }))
     })
 
-    // Une barre d'actions doit apparaître sous les éléments éligibles.
+    // An actions bar must appear below the eligible elements.
     await expect(
       page.locator('.v-card-actions').first()
     ).toBeVisible({ timeout: 20_000 })
 
-    // Aucune barre d'actions ne doit intersecter le titre ou le d-frame d'un
-    // AUTRE élément (sa propre barre suit exactement son iframe, sans
-    // chevauchement : bar.top === frame.bottom).
+    // No actions bar may intersect the title or the d-frame of
+    // ANOTHER element (its own bar follows its iframe exactly, without
+    // overlap: bar.top === frame.bottom).
     await expect.poll(async () => {
       const boxes = await page.evaluate(() => {
         const rect = (el: Element) => {
@@ -462,18 +462,18 @@ test.describe('Bugs connus (régressions)', () => {
     }).toBe(true)
   })
 
-  test('K5 — mode comparaison : les filtres transmis aux embeds sont dé-préfixés', async ({ page }) => {
-    // Le mode comparaison se pilote par l'URL (`view=compare`) : le switch
-    // n'est visible que si `allowDuplicate`, mais l'URL suffit à rendre les
-    // deux colonnes (préfixe de colonne `c` à droite).
+  test('K5 — compare view: filters forwarded to embeds are unprefixed', async ({ page }) => {
+    // The compare view is driven by the URL (`view=compare`): the switch
+    // is only visible with `allowDuplicate`, but the URL is enough to render the
+    // two columns (column prefix `c` on the right).
     await page.goto('/app/?view=compare')
     const config = await getDevConfig(page)
 
     await expect(page.locator('.v-container').first()).toBeVisible({ timeout: 20_000 })
 
-    // Débloque les éléments `valueMandatory` dans les DEUX colonnes : un
-    // autocomplete par filtre non-slider et par colonne (les filtres de la
-    // colonne gauche précèdent ceux de la colonne droite dans le DOM).
+    // Unlocks the `valueMandatory` elements in BOTH columns: one
+    // autocomplete per non-slider filter and per column (the left column's
+    // filters precede the right column's in the DOM).
     const nonSliderFilters = (config.filters || []).filter(f => f.labelField && !f.slider)
     let unGateField: string | undefined
     if (nonSliderFilters.length) {
@@ -489,9 +489,9 @@ test.describe('Bugs connus (régressions)', () => {
     await expect(allFrames).toHaveCount(virtualFrames.length * 2, { timeout: 20_000 })
     const srcs = await allFrames.evaluateAll(els => els.map(el => el.getAttribute('src') || ''))
 
-    // 1) Aucun embed ne doit porter de clé préfixée par la colonne compare
-    //    (`c_d_...`) : les applications lisent le format `_d_<datasetId>_...`
-    //    (`getConceptFilters`) et les vues dataset sont dé-préfixées par
+    // 1) No embed may carry a key prefixed by the compare column
+    //    (`c_d_...`): applications read the `_d_<datasetId>_...` format
+    //    (`getConceptFilters`) and dataset views are unprefixed by
     //    `stripDatasetScope`.
     for (const src of srcs) {
       const query = queryOf(src)
@@ -500,9 +500,9 @@ test.describe('Bugs connus (régressions)', () => {
       }
     }
 
-    // 2) Les static filters sont transmis aux applications des deux colonnes
-    //    sous la forme `_d_<rootDatasetId>_<field>_<op>` (les champs dont le
-    //    filtre dynamique est actif l'emportent et sont sautés).
+    // 2) The static filters are forwarded to the applications of both columns
+    //    as `_d_<rootDatasetId>_<field>_<op>` (fields whose
+    //    dynamic filter is active win and are skipped).
     const rootDatasetId = config.datasets?.[0]?.id
     const staticFilters = config.staticFilters || []
     const hasFilteredApp = visibleElements(config).some(el => el.type === 'application' && !!el.application?.id)
@@ -524,14 +524,14 @@ test.describe('Bugs connus (régressions)', () => {
     }
   })
 
-  test('K6 — dimensionnement des d-frame : respect de la hauteur fixe (même avec df:overflow) et ratio d\'aspect en repli', async ({ page }) => {
+  test('K6 — d-frame sizing: fixed height honored (even with df:overflow) and aspect ratio as fallback', async ({ page }) => {
     await page.goto('/app/')
     await expect(page.locator('.v-container').first()).toBeVisible({ timeout: 20_000 })
 
     const firstFrame = page.locator('d-frame').first()
     await expect(firstFrame).toBeVisible({ timeout: 20_000 })
 
-    // 1) En hauteur fixe (800px), le d-frame doit porter une hauteur explicite et aucun aspect-ratio
+    // 1) With fixed height (800px), the d-frame must carry an explicit height and no aspect-ratio
     await page.evaluate(() => {
       const cfg = JSON.parse(JSON.stringify(window.APPLICATION.configuration))
       if (cfg.sections?.[0]?.rows?.[0]) {
@@ -546,7 +546,7 @@ test.describe('Bugs connus (régressions)', () => {
     await expect(firstFrame).toHaveAttribute('style', /height:\s*\d+px/)
     expect(await firstFrame.getAttribute('aspect-ratio')).toBeNull()
 
-    // 2) En hauteur auto (indéfinie), le d-frame doit porter aspect-ratio="" pour le repli responsif
+    // 2) With auto (undefined) height, the d-frame must carry aspect-ratio="" for the responsive fallback
     await page.evaluate(() => {
       const cfg = JSON.parse(JSON.stringify(window.APPLICATION.configuration))
       if (cfg.sections?.[0]?.rows?.[0]) {
@@ -563,16 +563,16 @@ test.describe('Bugs connus (régressions)', () => {
     expect(autoStyle).not.toContain('height:')
   })
 
-  test('K7 — hauteur par breakpoint : fixe à partir de md, repli auto en mobile', async ({ page }) => {
+  test('K7 — height per breakpoint: fixed from md up, auto fallback on mobile', async ({ page }) => {
     await page.goto('/app/')
     await expect(page.locator('.v-container').first()).toBeVisible({ timeout: 20_000 })
 
     const frames = page.locator('d-frame')
     await expect(frames.first()).toBeVisible({ timeout: 20_000 })
 
-    // Toutes les lignes passent en hauteur par breakpoint : le test reste
-    // indépendant de la structure (les colonnes répartissent la hauteur de
-    // ligne entre leurs enfants, un d-frame n'y porte donc pas la valeur md).
+    // Every row switches to per-breakpoint height: the test stays
+    // independent of the structure (columns split the row height
+    // among their children, so a d-frame there does not carry the md value).
     await page.setViewportSize({ width: 1400, height: 900 })
     await page.evaluate(() => {
       const cfg = JSON.parse(JSON.stringify(window.APPLICATION.configuration))
@@ -590,20 +590,20 @@ test.describe('Bugs connus (régressions)', () => {
       style: el.getAttribute('style') || '',
       aspectRatio: el.getAttribute('aspect-ratio')
     })))
-    // Desktop (lg) : la valeur md s'applique par cascade, chaque embed a une hauteur explicite.
+    // Desktop (lg): the md value applies by cascade, each embed has an explicit height.
     await expect.poll(async () => (await frameStyles()).every(f => /height:\s*\d+px/.test(f.style) && f.aspectRatio === null)).toBe(true)
 
-    // Mobile (xs) : default -1 → hauteur automatique et repli sur le ratio d'aspect.
+    // Mobile (xs): default -1 → automatic height and fallback on the aspect ratio.
     await page.setViewportSize({ width: 390, height: 800 })
     await expect.poll(async () => (await frameStyles()).every(f => f.aspectRatio === '' && !f.style.includes('height:'))).toBe(true)
   })
 })
 
-test.describe('Recherche dans les filtres', () => {
+test.describe('Search in filters', () => {
   // carto-stats (vue-router 3) rejects a redundant router.replace, uncaught, when a filter changes.
   test.use({ expectedConsole: [...embeddedVisusConsole, 'Avoided redundant navigation to current location'] })
 
-  test('K8 — recherche d\'un filtre : la réponse de l\'API n\'est pas refiltrée (accents, tirets), le mode showAllValues ignore les accents', async ({ page }) => {
+  test('K8 — filter search: the API response is not filtered again (accents, hyphens), showAllValues mode ignores accents', async ({ page }) => {
     await page.route('**/values-labels/**', route => route.fulfill({
       json: [{ value: 'Nîmes', label: 'Nîmes' }, { value: 'Saint-Étienne', label: 'Saint-Étienne' }],
       headers: { 'access-control-allow-origin': '*' }
@@ -614,15 +614,15 @@ test.describe('Recherche dans les filtres', () => {
     test.skip(!(config.filters || []).some(f => !(f as { slider?: boolean }).slider), 'La config courante n\'a pas de filtre liste')
     await expect(autocomplete).toBeVisible({ timeout: 20_000 })
 
-    // Recherche serveur : l'API a déjà trouvé la valeur, le libellé ne contient
-    // pourtant pas le texte saisi.
+    // Server search: the API already found the value, yet the label does
+    // not contain the typed text.
     const option = (name: string) => page.locator('.v-list-item').filter({ hasText: name })
     await autocomplete.fill('nimes')
     await expect(option('Nîmes')).toBeVisible({ timeout: 5_000 })
     await autocomplete.fill('saint etienne')
     await expect(option('Saint-Étienne')).toBeVisible({ timeout: 5_000 })
 
-    // showAllValues : pas de recherche serveur, le filtre reste côté client.
+    // showAllValues: no server search, the filter stays client-side.
     await autocomplete.fill('')
     await page.evaluate(() => {
       const cfg = JSON.parse(JSON.stringify(window.APPLICATION.configuration))

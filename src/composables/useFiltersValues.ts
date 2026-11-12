@@ -6,12 +6,17 @@
  * in `utils/filters.ts` (`serializeFiltersValues`); this composable only
  * orchestrates the values resolution (fetch) and the reactivity.
  */
-import { computed, ref, watch, type Ref } from 'vue'
+import type { Ref } from 'vue'
+import type { DashboardFilter } from '@/config'
+import type {
+  FiltersValues,
+  ApplicationFiltersValues
+} from '@/utils/filters'
+import { computed, ref, watch } from 'vue'
 import { ofetch } from 'ofetch'
 import { filters2params } from '@data-fair/lib-utils/filters/index.js'
 import { useAsyncAction } from '@data-fair/lib-vue/async-action.js'
 import reactiveSearchParams from '@data-fair/lib-vue/reactive-search-params-global.js'
-import type { DashboardFilter } from '@/config'
 import { useConfig } from './config'
 import { datasetFilterKey } from '@/utils/dataset-filter'
 import { collectEmissionsTargets, publishedEmissions } from '@/utils/emissions'
@@ -21,9 +26,7 @@ import {
   collectFilterEmitFields,
   collectReceivedFilters,
   isRangeFilter,
-  serializeFiltersValues,
-  type FiltersValues,
-  type ApplicationFiltersValues
+  serializeFiltersValues
 } from '@/utils/filters'
 
 export interface UseFiltersValuesOptions {

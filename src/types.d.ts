@@ -12,14 +12,14 @@ declare global {
       configuration: DashboardConfig
       baseApp: { id: string; url: string; meta: Record<string, unknown> }
     }
-    /** Posé par _public.js, lu par la session à la place du fetch déprécié. */
+    /** Set by _public.js, read by the session instead of the deprecated fetch. */
     __PUBLIC_SITE_INFO?: FullSiteInfo
     iFrameResizer: {
       heightCalculationMethod: string
     }
-    /** Options lues par le shim v-iframe-compat injecté par DataFair (df:sync-state). */
+    /** Options read by the v-iframe-compat shim injected by DataFair (df:sync-state). */
     vIframeOptions?: { reactiveParams: unknown }
-    /** Fonction injectée par le service de capture DataFair. */
+    /** Function injected by the DataFair capture service. */
     triggerCapture?: (animationSupported?: boolean) => void
   }
 }

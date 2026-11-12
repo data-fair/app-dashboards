@@ -1,14 +1,15 @@
-import { computed, inject, ref, toRaw, type App, type Ref } from 'vue'
+import type { App, Ref } from 'vue'
 import type { Application, Field } from '@data-fair/lib-common-types/application/index.js'
-import createDFrameAdapter from '@data-fair/frame/lib/vue-reactive/state-change-adapter.js'
-import reactiveSearchParams from '@data-fair/lib-vue/reactive-search-params-global.js'
-import { parseAccessKey, setByPath, computeConfigError } from '@/utils/config'
 import type {
   DashboardConfig,
   DashboardDataset,
   DashboardFilter,
   DashboardSection
 } from '@/config'
+import { computed, inject, ref, toRaw } from 'vue'
+import createDFrameAdapter from '@data-fair/frame/lib/vue-reactive/state-change-adapter.js'
+import reactiveSearchParams from '@data-fair/lib-vue/reactive-search-params-global.js'
+import { parseAccessKey, setByPath, computeConfigError } from '@/utils/config'
 
 export interface ConfigState {
   application: Application & { href: string; exposedUrl: string; apiUrl: string; wsUrl: string }
@@ -31,7 +32,7 @@ export function createConfig () {
   // shape as-is and narrow to the dashboard types where it matters.
   const config = ref<DashboardConfig>((application?.configuration || {}) as DashboardConfig)
 
-  // Dataset principal
+  // Main dataset
   const dataset = computed<DashboardDataset | undefined>(() => config.value?.datasets?.[0] as DashboardDataset | undefined)
   const datasets = computed<DashboardDataset[]>(() => (config.value?.datasets || []) as DashboardDataset[])
 
@@ -46,7 +47,7 @@ export function createConfig () {
   const filters = computed<DashboardFilter[] | undefined>(() => config.value?.filters)
   const sections = computed<DashboardSection[] | undefined>(() => config.value?.sections)
 
-  // AccessKey pour les liens partagés
+  // AccessKey for shared links
   const accessKey = ref<string | null>(parseAccessKey(window.APPLICATION?.exposedUrl))
 
   const dFrameAdapter = createDFrameAdapter(reactiveSearchParams)
@@ -106,20 +107,20 @@ const onSetConfigMessage = (
     if (event.data?.type !== 'set-config' || !event.data?.content) return
     const { content } = event.data
     if (content.configuration) {
-      // Tolérance défensive : format enveloppé, jamais émis par l'UI actuelle.
+      // Defensive tolerance: wrapped format, never emitted by the current UI.
       config.value = content.configuration
     } else if (content.field && 'value' in content) {
-      // Update par path : { field: 'sections.0.title', value: '...' }
+      // Update by path: { field: 'sections.0.title', value: '...' }
       const newConfig = JSON.parse(JSON.stringify(config.value))
       setByPath(newConfig, content.field, content.value)
       config.value = newConfig
     } else if (CONFIG_KEYS.some(key => key in content)) {
-      // L'UI DataFair envoie le modèle de configuration complet
-      // (`editConfig` dans application-config.vue) ; VJSF omet simplement les
-      // clés vidées (ex. `filters` après suppression du dernier filtre,
-      // `title`/`description` vidés). Fusionner puis retirer les clés absentes
-      // pour que les suppressions en draft s'appliquent au lieu de rester
-      // figées dans l'aperçu.
+      // The DataFair UI sends the full configuration model
+      // (`editConfig` in application-config.vue); VJSF simply omits emptied
+      // keys (e.g. `filters` after removing the last filter, emptied
+      // `title`/`description`). Merge then remove the missing keys so that
+      // deletions in draft apply instead of staying frozen
+      // in the preview.
       const newConfig = { ...toRaw(config.value), ...content }
       for (const key of CONFIG_KEYS) {
         if (!(key in content)) delete newConfig[key]

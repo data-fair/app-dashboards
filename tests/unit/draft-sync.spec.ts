@@ -1,3 +1,4 @@
+import type { DashboardConfig, DashboardElement, DashboardSection } from '@/config'
 import { test, expect } from '@playwright/test'
 import { fn, stubGlobal, unstubAllGlobals } from './helpers/spy'
 import {
@@ -7,26 +8,25 @@ import {
   buildSyncDeltas,
   postConfigField
 } from '@/utils/draft-sync'
-import type { DashboardConfig, DashboardElement, DashboardSection } from '@/config'
 
 const el = (element: { type: DashboardElement['type'] } & Record<string, unknown>): DashboardElement => element as unknown as DashboardElement
 
 test.describe('flattenElements', () => {
   const section = (rows: DashboardSection['rows']): DashboardSection => ({ rows })
 
-  test('renvoie [] sans sections', () => {
+  test('returns [] without sections', () => {
     expect(flattenElements(undefined)).toEqual([])
   })
 
-  test('renvoie [] pour une section sans rows', () => {
+  test('returns [] for a section without rows', () => {
     expect(flattenElements([{ rows: undefined } as unknown as DashboardSection])).toEqual([])
   })
 
-  test('renvoie [] pour une row sans elements', () => {
+  test('returns [] for a row without elements', () => {
     expect(flattenElements([{ rows: [{ height: 0, elements: undefined }] } as unknown as DashboardSection])).toEqual([])
   })
 
-  test('aplatit les éléments simples', () => {
+  test('flattens simple elements', () => {
     const elements = flattenElements([
       section([{ height: 0, elements: [el({ type: 'text', content: 'a' }), el({ type: 'application' })] }])
     ])
@@ -34,7 +34,7 @@ test.describe('flattenElements', () => {
     expect(elements.map(e => e.type)).toEqual(['text', 'application'])
   })
 
-  test('aplatit les colonnes imbriquées (les éléments internes remplacent la colonne)', () => {
+  test('flattens nested columns (the inner elements replace the column)', () => {
     const inner1 = el({ type: 'tablePreview' })
     const inner2 = el({ type: 'form' })
     const elements = flattenElements([
@@ -43,7 +43,7 @@ test.describe('flattenElements', () => {
     expect(elements).toEqual([inner1, inner2])
   })
 
-  test('aplatit récursivement les colonnes de colonnes', () => {
+  test('recursively flattens columns of columns', () => {
     const leaf = el({ type: 'application' })
     const nested = el({ type: 'column', elements: [leaf] })
     const deep = el({ type: 'column', elements: [nested, el({ type: 'text', content: 't' })] })
@@ -55,7 +55,7 @@ test.describe('flattenElements', () => {
 })
 
 test.describe('extractReferencedApplications', () => {
-  test('collecte les applications avec id + title, déduplique', () => {
+  test('collects the applications with id + title, deduplicates', () => {
     const app = (id: string, title = id) => ({ type: 'application', application: { id, title } })
     const refs = extractReferencedApplications([
       app('a', 'A'), app('a', 'A'), app('b', 'B'), el({ type: 'text' })
@@ -63,7 +63,7 @@ test.describe('extractReferencedApplications', () => {
     expect(refs).toEqual([{ id: 'a', title: 'A' }, { id: 'b', title: 'B' }])
   })
 
-  test('ignore les applications sans id ou sans title', () => {
+  test('ignores applications without id or without title', () => {
     expect(extractReferencedApplications([
       { type: 'application', application: { id: 'a' } },
       { type: 'application', application: { title: 'B' } }
@@ -75,11 +75,11 @@ test.describe('extractReferencedDatasets', () => {
   const filtersDataset = { id: 'root', title: 'Root', href: '/root' }
   const ds = (id: string, title = id) => el({ type: 'tablePreview', dataset: { id, title, href: `/${id}` } })
 
-  test('renvoie [] sans filtersDataset', () => {
+  test('returns [] without filtersDataset', () => {
     expect(extractReferencedDatasets([ds('a')] as DashboardElement[], undefined)).toEqual([])
   })
 
-  test('collecte les datasets des tablePreview/download/form, hors dataset racine, racine en tête', () => {
+  test('collects the datasets of tablePreview/download/form, excluding the root dataset, root first', () => {
     const refs = extractReferencedDatasets(
       [
         ds('a'),
@@ -98,7 +98,7 @@ test.describe('extractReferencedDatasets', () => {
     ])
   })
 
-  test('déduplique par id et ignore les datasets incomplets', () => {
+  test('deduplicates by id and ignores incomplete datasets', () => {
     const refs = extractReferencedDatasets(
       [ds('a'), ds('a'), el({ type: 'tablePreview', dataset: { id: 'x' } })],
       filtersDataset
@@ -117,11 +117,11 @@ test.describe('buildSyncDeltas', () => {
     sections: [{ rows: [{ height: 0, elements: [el({ type: 'application', application: { id: 'a', title: 'A' } })] }] }]
   } as any
 
-  test('renvoie {} sans changement', () => {
+  test('returns {} without change', () => {
     expect(buildSyncDeltas(base, JSON.parse(JSON.stringify(base)))).toEqual({})
   })
 
-  test('signale un delta applications quand une application est ajoutée', () => {
+  test('reports an applications delta when an application is added', () => {
     const next: DashboardConfig = JSON.parse(JSON.stringify(base))
     next.sections![0].rows[0].elements.push(el({ type: 'application', application: { id: 'b', title: 'B' } }))
     expect(buildSyncDeltas(base, next)).toEqual({
@@ -129,7 +129,7 @@ test.describe('buildSyncDeltas', () => {
     })
   })
 
-  test('signale un delta datasets quand un dataset d\'élément est ajouté', () => {
+  test('reports a datasets delta when an element dataset is added', () => {
     const next: DashboardConfig = JSON.parse(JSON.stringify(base))
     next.sections![0].rows[0].elements.push(el({ type: 'tablePreview', dataset: { id: 'ext', title: 'Ext', href: '/ext' } }))
     expect(buildSyncDeltas(base, next)).toEqual({
@@ -140,14 +140,14 @@ test.describe('buildSyncDeltas', () => {
     })
   })
 
-  test('ne signale pas de delta datasets si la config n\'a pas de dataset racine', () => {
+  test('reports no datasets delta if the config has no root dataset', () => {
     const prev = { applications: [{ id: 'a', title: 'A' }] }
     const next: DashboardConfig = JSON.parse(JSON.stringify(prev))
     next.sections = [{ rows: [{ height: 0, elements: [el({ type: 'application', application: { id: 'a', title: 'A' } })] }] }]
     expect(buildSyncDeltas(prev as DashboardConfig, next)).toEqual({})
   })
 
-  test('signale un delta applications quand next déclare des applications absentes de prev', () => {
+  test('reports an applications delta when next declares applications missing from prev', () => {
     const prev: DashboardConfig = { sections: base.sections }
     const next: DashboardConfig = JSON.parse(JSON.stringify(prev))
     next.applications = [{ id: 'a', title: 'A' }]
@@ -156,10 +156,10 @@ test.describe('buildSyncDeltas', () => {
     })
   })
 
-  test('ne signale pas de delta applications quand prev et next déclarent les mêmes ids', () => {
+  test('reports no applications delta when prev and next declare the same ids', () => {
     const prev: DashboardConfig = { applications: [{ id: 'a', title: 'A' }], sections: base.sections }
     const next: DashboardConfig = JSON.parse(JSON.stringify(prev))
-    // Seuls les ids sont comparés : un changement de titre n'est pas détecté.
+    // Only the ids are compared: a title change is not detected.
     next.applications = [{ id: 'a', title: 'A renommé' }]
     expect(buildSyncDeltas(prev, next)).toEqual({})
   })
@@ -168,7 +168,7 @@ test.describe('buildSyncDeltas', () => {
 test.describe('postConfigField', () => {
   test.afterEach(() => unstubAllGlobals())
 
-  test('ne poste rien quand l\'app est la page racine', () => {
+  test('posts nothing when the app is the root page', () => {
     const postMessage = fn()
     const windowObj: any = { postMessage }
     windowObj.parent = windowObj
@@ -177,7 +177,7 @@ test.describe('postConfigField', () => {
     expect(postMessage.calls).toHaveLength(0)
   })
 
-  test('poste set-config à window.parent sinon', () => {
+  test('posts set-config to window.parent otherwise', () => {
     const postMessage = fn()
     stubGlobal('window', { parent: { postMessage }, postMessage } as any)
     postConfigField('applications', [{ id: 'a', title: 'A' }])

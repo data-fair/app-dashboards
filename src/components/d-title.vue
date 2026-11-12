@@ -6,12 +6,12 @@
  * bottom-large). All visual properties come from a `style` prop shaped
  * like `TitleStyle`; missing fields fall back to `defaults`.
  */
-import { computed } from 'vue'
 import type { TitleColor, TitleSize, TitleStyle, TitleTag } from '@/config'
+import { computed } from 'vue'
 
-// Le composant rend une racine fragment (titre + divider optionnel) :
-// sans inheritAttrs: false, les classes passées par le parent (ex. mt-8)
-// sont ignorées avec un warning Vue "Extraneous non-props attributes".
+// The component renders a fragment root (title + optional divider):
+// without inheritAttrs: false, the classes passed by the parent (e.g. mt-8)
+// are dropped with a Vue "Extraneous non-props attributes" warning.
 defineOptions({ inheritAttrs: false })
 
 const props = withDefaults(defineProps<{

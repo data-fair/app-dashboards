@@ -2,10 +2,10 @@
  * Watch the dashboard configuration and propagate application/dataset
  * references to the parent iframe (used in DataFair's draft mode).
  */
-import { watch } from 'vue'
-import reactiveSearchParams from '@data-fair/lib-vue/reactive-search-params-global.js'
 import type { Ref } from 'vue'
 import type { DashboardConfig } from '@/config'
+import { watch } from 'vue'
+import reactiveSearchParams from '@data-fair/lib-vue/reactive-search-params-global.js'
 import { buildSyncDeltas, postConfigField } from '@/utils/draft-sync'
 
 export const useParentSync = (config: Ref<DashboardConfig>) => {

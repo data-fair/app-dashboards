@@ -1,7 +1,8 @@
 /**
  * Send validation errors to the parent DataFair instance when running in draft mode.
  */
-import { watch, type Ref } from 'vue'
+import type { Ref } from 'vue'
+import { watch } from 'vue'
 import { ofetch } from 'ofetch'
 import { getErrorMsg } from '@data-fair/lib-vue/ui-notif.js'
 import reactiveSearchParams from '@data-fair/lib-vue/reactive-search-params-global.js'

@@ -13,13 +13,15 @@
  * single `simple_metrics_agg` call and the value is a `[min, max]` pair stored
  * in the URL as `_gte` / `_lte` keys.
  */
-import { computed, ref, toValue, watch, type Ref } from 'vue'
+import type { Ref } from 'vue'
+import type { DashboardConfig, DashboardFilter } from '@/config'
+import type { ValueLabel } from '@/utils/filters'
+import { computed, ref, toValue, watch } from 'vue'
 import { useDebounce } from '@vueuse/core'
 import { useFetch } from '@data-fair/lib-vue/fetch.js'
 import reactiveSearchParams from '@data-fair/lib-vue/reactive-search-params-global.js'
-import type { DashboardConfig, DashboardFilter } from '@/config'
 import { datasetFilterKey } from '@/utils/dataset-filter'
-import { buildMetricsUrl, buildValuesLabelsUrl, isRangeFilter, mergeAndSortItems, type ValueLabel } from '@/utils/filters'
+import { buildMetricsUrl, buildValuesLabelsUrl, isRangeFilter, mergeAndSortItems } from '@/utils/filters'
 
 export interface UseFilterStateOptions {
   /**

@@ -20,8 +20,8 @@
  * The namespaced channel has neither problem: a scope only ever matches itself.
  */
 import type { ApplicationElement, DashboardElement, DashboardSection, FormElement, SyncParams, TablePreviewElement } from '@/config'
-import { dedupeKeys, elementKey } from './layout'
 import type { ReactiveParams } from './filters'
+import { dedupeKeys, elementKey } from './layout'
 
 /** Trailing REST operator of a filter key (`codeCommune_in` → `codeCommune`). */
 export const FILTER_OP_SUFFIX = /_(in|nin|eq|neq|lt|lte|gt|gte|starts|exists|nexists|contains|search)$/

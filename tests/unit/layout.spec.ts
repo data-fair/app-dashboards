@@ -1,6 +1,6 @@
+import type { DashboardElement, DashboardRow } from '@/config'
 import { test, expect } from '@playwright/test'
 import { computeSectionBreakpoints, dedupeKeys, elementKey, resolveRowHeight } from '@/utils/layout'
-import type { DashboardElement, DashboardRow } from '@/config'
 
 const el = (type: DashboardElement['type'], width?: 1 | 2 | 3): DashboardElement =>
   ({ type, ...(width ? { width } : {}) }) as DashboardElement
@@ -13,78 +13,78 @@ const widthsOf = (rows: ReturnType<typeof computeSectionBreakpoints>, index: num
 }
 
 test.describe('computeSectionBreakpoints', () => {
-  test('renvoie [] sans rows', () => {
+  test('returns [] without rows', () => {
     expect(computeSectionBreakpoints(undefined)).toEqual([])
     expect(computeSectionBreakpoints([])).toEqual([])
   })
 
-  test('traite une row sans éléments', () => {
+  test('handles a row without elements', () => {
     const rows = computeSectionBreakpoints([{ height: 0, elements: undefined } as unknown as DashboardRow])
     expect(rows).toHaveLength(1)
     expect(rows[0].elements).toEqual([])
     expect(rows[0].layouts).toEqual([])
   })
 
-  test('un seul élément par défaut (largeur 2) occupe les 12 colonnes partout', () => {
+  test('a single default element (width 2) spans the 12 columns everywhere', () => {
     const rows = computeSectionBreakpoints([row(300, el('application'))])
     expect(widthsOf(rows, 0)).toEqual({ sm: 12, md: 12, lg: 12, xl: 12 })
     expect(rows[0].height).toBe(300)
   })
 
-  test('deux éléments de largeur 2 : md partagé, lg/xl mis à l\'échelle', () => {
+  test('two width-2 elements: md shared, lg/xl scaled', () => {
     const rows = computeSectionBreakpoints([row(0, el('application'), el('text'))])
     expect(widthsOf(rows, 0)).toEqual({ sm: 12, md: 6, lg: 6, xl: 6 })
     expect(widthsOf(rows, 1)).toEqual({ sm: 12, md: 6, lg: 6, xl: 6 })
   })
 
-  test('trois éléments de largeur 2 : wrap sur sm/md, une seule ligne sur lg/xl', () => {
+  test('three width-2 elements: wrap on sm/md, a single line on lg/xl', () => {
     const rows = computeSectionBreakpoints([row(0, el('application'), el('application'), el('tablePreview'))])
-    // sm/md : le 3e déborde (12+12 et 6+6+6 > 12) → nouvelle ligne, span 12
+    // sm/md: the 3rd overflows (12+12 and 6+6+6 > 12) → new line, span 12
     expect(widthsOf(rows, 0)).toEqual({ sm: 12, md: 6, lg: 4, xl: 4 })
     expect(widthsOf(rows, 1)).toEqual({ sm: 12, md: 6, lg: 4, xl: 4 })
     expect(widthsOf(rows, 2)).toEqual({ sm: 12, md: 12, lg: 4, xl: 4 })
   })
 
-  test('largeurs 1 et 3 côte à côte : spans proportionnels à la ligne', () => {
+  test('widths 1 and 3 side by side: spans proportional to the row', () => {
     const rows = computeSectionBreakpoints([row(0, el('text', 1), el('application', 3))])
-    // xl : 2 + 6 = 8 ≤ 12 → spans arrondis 3 et 9
+    // xl: 2 + 6 = 8 ≤ 12 → rounded spans 3 and 9
     expect(widthsOf(rows, 0).xl).toBe(3)
     expect(widthsOf(rows, 1).xl).toBe(9)
   })
 
-  test('une ligne pleine de trois largeurs (1+2+3) tient sur xl', () => {
+  test('a full row of three widths (1+2+3) fits on xl', () => {
     const rows = computeSectionBreakpoints([row(0, el('text', 1), el('text', 2), el('application', 3))])
-    // xl : 2 + 3 + 6 = 11 ≤ 12 → cpt=11, spans floor(0.3+12*2/11)=2, floor(0.3+12*3/11)=3, floor(0.3+12*6/11)=6
+    // xl: 2 + 3 + 6 = 11 ≤ 12 → cpt=11, spans floor(0.3+12*2/11)=2, floor(0.3+12*3/11)=3, floor(0.3+12*6/11)=6
     expect(widthsOf(rows, 0).xl).toBe(2)
     expect(widthsOf(rows, 1).xl).toBe(3)
     expect(widthsOf(rows, 2).xl).toBe(6)
   })
 
-  test('les éléments text sont classés order-first à chaque breakpoint', () => {
+  test('text elements are classed order-first at each breakpoint', () => {
     const rows = computeSectionBreakpoints([row(0, el('text'), el('tablePreview'))])
     const textLayout = rows[0].layouts[0]
     const otherLayout = rows[0].layouts[1]
     expect(textLayout.class).toContain('order-first')
-    // Les classes order-{sm|md|lg|xl}-* sont accumulées : le texte est
-    // order-first sur sm (il occupe seul la ligne) puis repasse en 1ère
-    // position sur md/lg/xl quand il partage la ligne avec la table.
+    // The order-{sm|md|lg|xl}-* classes are accumulated: the text is
+    // order-first on sm (it fills the row alone) then goes back to 1st
+    // position on md/lg/xl when it shares the row with the table.
     expect(textLayout.class).toEqual([
       'order-first', 'order-sm-first', 'order-md-1', 'order-lg-1', 'order-xl-1'
     ])
     expect(otherLayout.class).toEqual(['order-sm-2', 'order-md-2', 'order-lg-2', 'order-xl-2'])
   })
 
-  test('traite chaque row indépendamment', () => {
+  test('handles each row independently', () => {
     const rows = computeSectionBreakpoints([row(100, el('application')), row(200, el('tablePreview', 1), el('tablePreview', 1))])
     expect(rows).toHaveLength(2)
     expect(rows[0].height).toBe(100)
     expect(rows[1].height).toBe(200)
-    // md : 4 + 4 = 8 ≤ 12 → spans 6/6
+    // md: 4 + 4 = 8 ≤ 12 → spans 6/6
     expect(rows[1].layouts[0].md).toBe(6)
     expect(rows[1].layouts[1].md).toBe(6)
   })
 
-  test('conserve height et heights pour la résolution par breakpoint', () => {
+  test('keeps height and heights for the per-breakpoint resolution', () => {
     const rows = computeSectionBreakpoints([{ height: 400, heights: { md: 800 }, elements: [] }])
     expect(rows[0].height).toBe(400)
     expect(rows[0].heights).toEqual({ md: 800 })
@@ -92,12 +92,12 @@ test.describe('computeSectionBreakpoints', () => {
 })
 
 test.describe('resolveRowHeight', () => {
-  test('sans hauteur par breakpoint, renvoie la hauteur unique ou undefined', () => {
+  test('without per-breakpoint height, returns the single height or undefined', () => {
     expect(resolveRowHeight({ height: 400 }, 'md')).toBe(400)
     expect(resolveRowHeight({}, 'md')).toBeUndefined()
   })
 
-  test('default couvre xs/sm, md et au-delà reprennent la valeur définie', () => {
+  test('default covers xs/sm, md and above take the defined value', () => {
     const row = { heights: { default: -1, md: 717 } }
     expect(resolveRowHeight(row, 'xs')).toBe(-1)
     expect(resolveRowHeight(row, 'sm')).toBe(-1)
@@ -106,7 +106,7 @@ test.describe('resolveRowHeight', () => {
     expect(resolveRowHeight(row, 'xl')).toBe(717)
   })
 
-  test('cascade mobile-first : sm s\'applique à md si md est absent', () => {
+  test('mobile-first cascade: sm applies to md if md is missing', () => {
     const row = { heights: { sm: 300, lg: 500 } }
     expect(resolveRowHeight(row, 'xs')).toBeUndefined()
     expect(resolveRowHeight(row, 'sm')).toBe(300)
@@ -115,14 +115,14 @@ test.describe('resolveRowHeight', () => {
     expect(resolveRowHeight(row, 'xl')).toBe(500)
   })
 
-  test('la hauteur unique sert de repli quand heights n\'a pas de default', () => {
+  test('the single height is the fallback when heights has no default', () => {
     const row = { height: 400, heights: { md: 800 } }
     expect(resolveRowHeight(row, 'xs')).toBe(400)
     expect(resolveRowHeight(row, 'sm')).toBe(400)
     expect(resolveRowHeight(row, 'md')).toBe(800)
   })
 
-  test('heights.default prime sur la hauteur unique et xxl vaut xl', () => {
+  test('heights.default takes precedence over the single height and xxl equals xl', () => {
     const row = { height: 400, heights: { default: -1, xl: 900 } }
     expect(resolveRowHeight(row, 'xs')).toBe(-1)
     expect(resolveRowHeight(row, 'xxl')).toBe(900)
@@ -130,14 +130,14 @@ test.describe('resolveRowHeight', () => {
 })
 
 test.describe('elementKey', () => {
-  test('identifie les éléments par leur dataset/application plutôt que par l\'index', () => {
+  test('identifies elements by their dataset/application rather than by index', () => {
     expect(elementKey({ type: 'tablePreview', dataset: { id: 'a' } } as DashboardElement, 0)).toBe('tablePreview-a')
     expect(elementKey({ type: 'download', dataset: { id: 'a' } } as DashboardElement, 0)).toBe('download-a')
     expect(elementKey({ type: 'form', dataset: { id: 'b' } } as DashboardElement, 5)).toBe('form-b')
     expect(elementKey({ type: 'application', application: { id: 'x' } } as DashboardElement, 9)).toBe('application-x')
   })
 
-  test('retombe sur l\'index pour les éléments racine (source root) et sans identité', () => {
+  test('falls back on the index for root elements (root source) and without identity', () => {
     expect(elementKey({ type: 'tablePreview' } as DashboardElement, 2)).toBe('tablePreview-root')
     expect(elementKey({ type: 'text', content: 'c' } as DashboardElement, 3)).toBe('text-c')
     expect(elementKey({ type: 'text' } as DashboardElement, 4)).toBe('text-4')
@@ -146,7 +146,7 @@ test.describe('elementKey', () => {
 })
 
 test.describe('dedupeKeys', () => {
-  test('garde le premier exemplaire et suffixe les doublons', () => {
+  test('keeps the first copy and suffixes the duplicates', () => {
     expect(dedupeKeys(['a', 'a', 'b', 'a'])).toEqual(['a', 'a#1', 'b', 'a#2'])
   })
 })

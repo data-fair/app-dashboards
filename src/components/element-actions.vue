@@ -4,13 +4,13 @@
  * and capture download button. Visibility is controlled by config flags and
  * the element type.
  */
+import type { DashboardElement } from '@/config'
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { mdiCodeTags, mdiCamera } from '@mdi/js'
 import { useConfig } from '@/composables/config'
 import { useEmbedCode } from '@/composables/useEmbedCode'
 import { isApplicationElement } from '@/config'
-import type { DashboardElement } from '@/config'
 
 const props = defineProps<{
   element: DashboardElement

@@ -1,10 +1,10 @@
+import type { DashboardConfig, DashboardSection, SyncParams } from '@/config'
+import type { Field } from '@data-fair/lib-common-types/application/index.js'
 import './helpers/dom'
 import { test, expect } from '@playwright/test'
 import { nextTick, ref } from 'vue'
 import reactiveSearchParams from '@data-fair/lib-vue/reactive-search-params-global.js'
 import { useEmissionsProjection } from '@/composables/useEmissionsProjection'
-import type { DashboardConfig, DashboardSection, SyncParams } from '@/config'
-import type { Field } from '@data-fair/lib-common-types/application/index.js'
 import { probe, unmountProbes } from './helpers/probe'
 
 const section = (elements: unknown[]): DashboardSection[] => ([{ rows: [{ elements }] } as unknown as DashboardSection])
@@ -24,7 +24,7 @@ test.afterEach(() => {
   for (const key of Object.keys(reactiveSearchParams)) delete reactiveSearchParams[key]
 })
 
-test('projette les filtres d\'un visu vers le namespace propre (partage des filtres)', async () => {
+test('projects a visu\'s filters into the clean namespace (filter sharing)', async () => {
   setup({ sections: section([app('sankey')]) })
   reactiveSearchParams['application-sankey__c_codeCommune_in'] = '86194'
   reactiveSearchParams['application-sankey_page'] = '2'
@@ -34,7 +34,7 @@ test('projette les filtres d\'un visu vers le namespace propre (partage des filt
   expect(reactiveSearchParams.page).toBeUndefined()
 })
 
-test('un mode sandboxed ne publie rien dans le namespace propre', async () => {
+test('a sandboxed mode publishes nothing in the clean namespace', async () => {
   setup({ sections: section([app('sankey', 'sandboxed')]) })
   reactiveSearchParams['application-sankey__d_src__id_eq'] = '12'
   await nextTick()
@@ -42,7 +42,7 @@ test('un mode sandboxed ne publie rien dans le namespace propre', async () => {
   expect(reactiveSearchParams['application-sankey__d_src__id_eq']).toBe('12')
 })
 
-test('un mode none purge les clés namespacées et ne publie rien', async () => {
+test('a none mode purges the namespaced keys and publishes nothing', async () => {
   const { configRef } = setup({ sections: section([app('sankey')]) })
   reactiveSearchParams['application-sankey__c_codeCommune_in'] = '86194'
   await nextTick()
@@ -54,7 +54,7 @@ test('un mode none purge les clés namespacées et ne publie rien', async () => 
   expect(reactiveSearchParams['application-sankey__c_codeCommune_in']).toBeUndefined()
 })
 
-test('ne projette jamais une clé que le dashboard gère lui-même', async () => {
+test('never projects a key the dashboard manages itself', async () => {
   setup({
     datasets: [{ id: 'ds1' }] as DashboardConfig['datasets'],
     filters: [{ labelField: 'dep' }],
@@ -65,32 +65,32 @@ test('ne projette jamais une clé que le dashboard gère lui-même', async () =>
   expect(reactiveSearchParams._d_ds1_dep_in).toBeUndefined()
 })
 
-test('adopte après rechargement une clé propre qui double une émission, pour pouvoir la retirer', async () => {
-  // Rechargement : l'URL porte les deux canaux du même filtre.
+test('after a reload, adopts a clean key duplicating an emission, so it can remove it', async () => {
+  // Reload: the URL carries both channels of the same filter.
   reactiveSearchParams['application-sankey__c_codeCommune_in'] = '86194'
   reactiveSearchParams._c_codeCommune_in = '86194'
   setup({ sections: section([app('sankey'), { type: 'text' }]) })
 
-  // Le visu efface son filtre : la clé publiée doit disparaître aussi.
+  // The visu clears its filter: the published key must disappear too.
   delete reactiveSearchParams['application-sankey__c_codeCommune_in']
   await nextTick()
   expect(reactiveSearchParams._c_codeCommune_in).toBeUndefined()
 })
 
-test('ne supprime pas une clé propre reprise par un autre écrivain', async () => {
+test('does not remove a clean key taken over by another writer', async () => {
   setup({ sections: section([app('sankey')]) })
   reactiveSearchParams['application-sankey__c_codeCommune_in'] = '86194'
   await nextTick()
   expect(reactiveSearchParams._c_codeCommune_in).toBe('86194')
 
-  // La clé est mise à jour ailleurs (page porteuse) puis l'émission disparaît.
+  // The key is updated elsewhere (host page) then the emission disappears.
   reactiveSearchParams._c_codeCommune_in = '44109'
   delete reactiveSearchParams['application-sankey__c_codeCommune_in']
   await nextTick()
   expect(reactiveSearchParams._c_codeCommune_in).toBe('44109')
 })
 
-test('recopie une sélection dans la clé privée de l\'autre colonne', async () => {
+test('copies a selection into the private key of the other column', async () => {
   reactiveSearchParams.view = 'compare'
   setup({ sections: section([app('map')]) })
 
@@ -98,18 +98,18 @@ test('recopie une sélection dans la clé privée de l\'autre colonne', async ()
   await nextTick()
   expect(reactiveSearchParams['c_application-map__d_ds1__id_eq']).toBe('2024-row')
 
-  // Le dernier clic gagne, dans l'autre sens aussi.
+  // The last click wins, the other way too.
   reactiveSearchParams['c_application-map__d_ds1__id_eq'] = '2025-row'
   await nextTick()
   expect(reactiveSearchParams['application-map__d_ds1__id_eq']).toBe('2025-row')
 
-  // Un effacement se propage aux deux colonnes.
+  // A clear propagates to both columns.
   delete reactiveSearchParams['c_application-map__d_ds1__id_eq']
   await nextTick()
   expect(reactiveSearchParams['application-map__d_ds1__id_eq']).toBeUndefined()
 })
 
-test('ne recopie pas une clé possédée par le dashboard', async () => {
+test('does not copy a key owned by the dashboard', async () => {
   reactiveSearchParams.view = 'compare'
   setup({
     datasets: [{ id: 'ds1' }] as DashboardConfig['datasets'],
